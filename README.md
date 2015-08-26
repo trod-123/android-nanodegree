@@ -1,2 +1,5 @@
-# My Udactiy Android Developer Nanodegree Projects
-A collection of my projects for Udacity's Android Developer Nanodegree
+# hi!
+This is my collection of projects for Udacity's Android Developer Nanodegree.
+
+Currently contains:
+ -Project 0: Nanodegree Portfolio
