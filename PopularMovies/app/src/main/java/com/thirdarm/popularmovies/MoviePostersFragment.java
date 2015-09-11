@@ -13,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.MovieDBResults;
@@ -37,6 +38,7 @@ public class MoviePostersFragment extends Fragment {
     public final int mDelay = 100;
 
     // views
+    View rootView;
     GridView mPostersGrid;
 
     // Playing with TMDB
@@ -44,6 +46,7 @@ public class MoviePostersFragment extends Fragment {
     public List<MovieDBResults.MovieDBResult> results;
     public ArrayList<MovieDB> movies;
     public ArrayList<String> poster_urls;
+    public final String poster_size = "w500";
 
     public MoviePostersFragment() {
         // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
@@ -66,27 +69,12 @@ public class MoviePostersFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // gets a reference to the root view
-        View rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
+        rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
 
-        // gets a reference to the GridView
-        mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
-
-        // sets the adapter for the GridView
-        mPostersGrid.setAdapter(new PostersAdapter(getActivity()));
-
-        // launches a "more details" screen for the selected movie
-        mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        String test = "";
-
+        // Create TMDB API
         TMDB = new TMDB(mContext, getString(R.string.movie_api_key));
 
-        TMDB.discover("popularity.desc");
-        //Log.v(LOG_TAG, TMDB.getResults().get(0).getTitle());
+        populateMovies(TMDB, "vote_average.desc");
 
         // Can't do this. Result ends up being null even though it was called through onResponse().
         //  Apparently, even though result was modified in onResponse(), it returns to being null
@@ -103,22 +91,30 @@ public class MoviePostersFragment extends Fragment {
         //  the thread is continuously checking, it waits for some mDelay to reduce the number
         //  of getResults() calls to TMDB.
         // TODO: Now, is this efficient?
-        populateMovieDBInfo();
 
         return rootView;
+    }
+
+    public void populateMovies(TMDB api, String sort) {
+        api.discover(sort);
+        populateMovieDBInfo();
     }
 
     public void populateMovieDBInfo() {
         new Thread(new Runnable() {
             public void run() {
                 // first check if the results are ready
-                results = getResults(TMDB);
+                results = getResults(TMDB); // issue. it waits for it to return before proceeding
+                //  to next method below
 
                 // now get the individual movies and populate the movies list
                 movies = getMovies(TMDB);
 
                 // now get the poster URLs for each of the movies
                 poster_urls = getPosterUrls(movies);
+
+                // finally, get and fill the grid with posters
+                setPostersGridView(rootView); // uses post() to fill the grid
             }
         }).start();
     }
@@ -147,6 +143,7 @@ public class MoviePostersFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
         return api.getMovies();
     }
 
@@ -155,7 +152,30 @@ public class MoviePostersFragment extends Fragment {
         for (MovieDB movie : movies) {
             urls.add(movie.getPosterPath());
         }
+        Log.d(LOG_TAG, "Size of poster_urls: " + urls.size());
         return urls;
+    }
+
+    public void setPostersGridView(View rootView) {
+        // gets a reference to the GridView
+        mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
+        Log.d(LOG_TAG, "Got mPostersGrid reference");
+
+        // Sets the adapter for the GridView. Needs to call post() because this method is called
+        //  from another thread
+        mPostersGrid.post(new Runnable() {
+            @Override
+            public void run() {
+                mPostersGrid.setAdapter(new PostersAdapter(mContext, poster_urls));
+
+                // launches a "more details" screen for the selected movie
+                mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                        Toast.makeText(getActivity(), movies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     // ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
@@ -164,13 +184,15 @@ public class MoviePostersFragment extends Fragment {
     //  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
     public class PostersAdapter extends BaseAdapter {
         private Context mContext;
+        private ArrayList<String> image_urls;
 
-        public PostersAdapter(Context c) {
+        public PostersAdapter(Context c, ArrayList<String> images) {
             mContext = c;
+            image_urls = images;
         }
 
         public int getCount() {
-            return mThumbIds.length;
+            return image_urls.size();
         }
 
         // returns the actual object at specified position
@@ -190,34 +212,27 @@ public class MoviePostersFragment extends Fragment {
         //     - if view is null, a view is initialized and configured with desired properties
         //     - if view is not null, that view is then returned
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
+            final int p = position;
+            final ImageView imageView;
             if (convertView == null) {
                 // if it's not recycled, initialize some attributes
                 imageView = new ImageView(mContext);
-                imageView.setLayoutParams(new GridView.LayoutParams(POSTER_WIDTH, POSTER_HEIGHT));
+                //imageView.setLayoutParams(new GridView.LayoutParams(POSTER_WIDTH, POSTER_HEIGHT));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(GRID_PADDING, GRID_PADDING, GRID_PADDING, GRID_PADDING);
             } else {
                 imageView = (ImageView) convertView;
             }
 
-            imageView.setImageResource(mThumbIds[position]);
+            Log.d(LOG_TAG, "About to run picasso");
+            Log.d(LOG_TAG, "Image url link: " + getString(R.string.image_base_url) + poster_size + poster_urls.get(position));
+            Picasso.with(mContext)
+                    .load(getString(R.string.image_base_url) + poster_size + poster_urls.get(position))
+                    .placeholder(R.drawable.piq_76054_400x400)
+                    .error(R.drawable.piq_76054_400x400)
+                    .into(imageView);
+
             return imageView;
         }
-
-        // reference to images
-        private Integer[] mThumbIds = {
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7,
-                R.drawable.sample_0, R.drawable.sample_1,
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7,
-                R.drawable.sample_0, R.drawable.sample_1,
-                R.drawable.sample_2, R.drawable.sample_3,
-                R.drawable.sample_4, R.drawable.sample_5,
-                R.drawable.sample_6, R.drawable.sample_7
-        };
     }
 }
