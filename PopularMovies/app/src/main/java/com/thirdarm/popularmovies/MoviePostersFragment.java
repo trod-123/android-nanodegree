@@ -1,25 +1,31 @@
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.thirdarm.popularmovies.API.TMDB;
+import com.thirdarm.popularmovies.model.MovieDB;
+import com.thirdarm.popularmovies.model.MovieDBResults;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment consisting of a grid of movie posters
  */
 public class MoviePostersFragment extends Fragment {
 
-    public final String LOG_TAG = "MY MOVIES APP";
+    public final String LOG_TAG = "MoviePostersFragment";
 
     // display constants
     public final int POSTER_WIDTH = 185;
@@ -27,8 +33,17 @@ public class MoviePostersFragment extends Fragment {
     public final int GRID_PADDING = 0;
     public final int NUM_POSTERS = 10;
 
+    public Context mContext;
+    public final int mDelay = 100;
+
     // views
     GridView mPostersGrid;
+
+    // Playing with TMDB
+    public TMDB TMDB;
+    public List<MovieDBResults.MovieDBResult> results;
+    public ArrayList<MovieDB> movies;
+    public ArrayList<String> poster_urls;
 
     public MoviePostersFragment() {
         // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
@@ -41,6 +56,8 @@ public class MoviePostersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = getActivity();
 
     }
 
@@ -64,7 +81,81 @@ public class MoviePostersFragment extends Fragment {
             }
         });
 
+        String test = "";
+
+        TMDB = new TMDB(mContext, getString(R.string.movie_api_key));
+
+        TMDB.discover("popularity.desc");
+        //Log.v(LOG_TAG, TMDB.getResults().get(0).getTitle());
+
+        // Can't do this. Result ends up being null even though it was called through onResponse().
+        //  Apparently, even though result was modified in onResponse(), it returns to being null
+        //  when onResponse() has been completed.
+        // results = TMDB.getResults().get(0).getTitle();
+
+        // The reason why it is null when the above line is called is because the app is still
+        //  getting data from the server, and therefore it needs to wait for until the
+        //  data has been collected before it is no longer null.
+
+        // TODO_DONE: Need to figure out how to make the result change persistent
+        // Bingo. Run a new thread that continuously checks to see if result has been loaded with
+        //  the List<MovieDBResult> data, and once it has been loaded, access the data. While
+        //  the thread is continuously checking, it waits for some mDelay to reduce the number
+        //  of getResults() calls to TMDB.
+        // TODO: Now, is this efficient?
+        populateMovieDBInfo();
+
         return rootView;
+    }
+
+    public void populateMovieDBInfo() {
+        new Thread(new Runnable() {
+            public void run() {
+                // first check if the results are ready
+                results = getResults(TMDB);
+
+                // now get the individual movies and populate the movies list
+                movies = getMovies(TMDB);
+
+                // now get the poster URLs for each of the movies
+                poster_urls = getPosterUrls(movies);
+            }
+        }).start();
+    }
+
+    public List<MovieDBResults.MovieDBResult> getResults(TMDB api) {
+        while (api.getResults() == null) {
+            try {
+                Thread.sleep(mDelay);
+                Log.d(LOG_TAG, "A getResults() call");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+       return api.getResults();
+    }
+
+    public ArrayList<MovieDB> getMovies(TMDB api) {
+        for (int i : api.getMovieIDs()) {
+            api.getMovieDetails(i);
+        }
+        while (api.getMovies().size() != api.getMovieIDs().length) {
+            try {
+                Thread.sleep(mDelay);
+                Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return api.getMovies();
+    }
+
+    public ArrayList<String> getPosterUrls(ArrayList<MovieDB> movies) {
+        ArrayList<String> urls = new ArrayList<>();
+        for (MovieDB movie : movies) {
+            urls.add(movie.getPosterPath());
+        }
+        return urls;
     }
 
     // ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items

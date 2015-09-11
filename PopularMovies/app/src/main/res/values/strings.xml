@@ -2,6 +2,11 @@
 
     <string name="app_name">Movies</string>
 
+    <!-- App Bar buttons -->
     <string name="action_settings">Preferences</string>
+
+    <!-- URL bases -->
+    <string name="base_url">https://api.themoviedb.org/3/</string>
+    <string name="image_base_url">http://image.tmdb.org/t/p/</string>
 
 </resources>
