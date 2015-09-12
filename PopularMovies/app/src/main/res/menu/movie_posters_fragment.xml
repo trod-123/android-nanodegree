@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+
+    <item android:id="@+id/action_get_latest" android:title="@string/action_sort_latest"
+        android:orderInCategory="1" app:showAsAction="never" />
+
+    <item android:id="@+id/action_get_playing" android:title="@string/action_sort_playing"
+        android:orderInCategory="2" app:showAsAction="never" />
+
+    <item android:id="@+id/action_get_popular" android:title="@string/action_sort_popular"
+        android:orderInCategory="3" app:showAsAction="never" />
+
+    <item android:id="@+id/action_get_rated" android:title="@string/action_sort_rated"
+        android:orderInCategory="4" app:showAsAction="never" />
+
+    <item android:id="@+id/action_get_upcoming" android:title="@string/action_sort_upcoming"
+        android:orderInCategory="5" app:showAsAction="never" />
+
+</menu>

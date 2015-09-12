@@ -1,10 +1,14 @@
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,6 +17,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
@@ -68,6 +73,44 @@ public class MoviePostersFragment extends Fragment {
 
         mContext = getActivity();
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar
+        inflater.inflate(R.menu.movie_posters_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_get_latest:
+                populateMovies("getLatest", TMDB, null);
+                return true;
+
+            case R.id.action_get_playing:
+                populateMovies("getNowPlaying", TMDB, null);
+                return true;
+
+            case R.id.action_get_popular:
+                populateMovies("getPopular", TMDB, null);
+                return true;
+
+            case R.id.action_get_rated:
+                populateMovies("getTopRated", TMDB, null);
+                return true;
+
+            case R.id.action_get_upcoming:
+                populateMovies("getUpcoming", TMDB, null);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -253,8 +296,7 @@ public class MoviePostersFragment extends Fragment {
         //     - if view is null, a view is initialized and configured with desired properties
         //     - if view is not null, that view is then returned
         public View getView(int position, View convertView, ViewGroup parent) {
-            final int p = position;
-            final ImageView imageView;
+            ImageView imageView;
             if (convertView == null) {
                 // if it's not recycled, initialize some attributes
                 imageView = new ImageView(mContext);
@@ -267,12 +309,31 @@ public class MoviePostersFragment extends Fragment {
 
             Log.d(LOG_TAG, "About to run picasso...");
             Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
-            Picasso.with(mContext)
+
+            Picasso.Builder builder = new Picasso.Builder(mContext);
+            builder.listener(new Picasso.Listener() {
+                @Override public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e) {
+                    Log.e(LOG_TAG, "ERROR PICASSO DID NOT LOAD IMAGE");
+                    e.printStackTrace();
+                }
+            });
+
+            final int p = position;
+            builder.build()
                     .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
                     .networkPolicy(NetworkPolicy.OFFLINE)
-                    .placeholder(R.drawable.piq_76054_400x400)
+                    .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
-                    .into(imageView);
+                    .into(imageView, new Callback() {
+                        @Override public void onSuccess() {
+                            Log.e(LOG_TAG, movies.get(p).getTitle() + ": loaded successfully");
+                        }
+
+                        @Override public void onError() {
+                            Log.e(LOG_TAG, movies.get(p).getTitle() + ": ERROR PICASSO DID NOT LOAD IMAGE");
+                        }
+
+                    });
 
             return imageView;
         }

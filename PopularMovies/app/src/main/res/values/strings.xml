@@ -4,5 +4,10 @@
 
     <!-- App Bar buttons -->
     <string name="action_settings">Preferences</string>
+    <string name="action_sort_latest">Get latest</string>
+    <string name="action_sort_playing">Get now playing</string>
+    <string name="action_sort_popular">Get popular</string>
+    <string name="action_sort_rated">Get top rated</string>
+    <string name="action_sort_upcoming">Get upcoming</string>
 
 </resources>
