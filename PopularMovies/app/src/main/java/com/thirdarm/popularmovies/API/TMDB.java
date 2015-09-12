@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.thirdarm.popularmovies.R;
+import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.MovieDBResults;
 
@@ -23,30 +24,41 @@ import retrofit.Retrofit;
  */
 public class TMDB {
 
+    // Constants for interface method calls
+    public final String[] methods = {
+            "discover",
+            "getNowPlaying",
+            "getPopular",
+            "getTopRated",
+            "getUpcoming"
+    };
+
+    public static final String DISCOVER = "discover";
+    public static final String GETLATEST = "getLatest";
+    public static final String GETNOWPLAYING = "getNowPlaying";
+    public static final String GETPOPULAR = "getPopular";
+    public static final String GETTOPRATED = "getTopRated";
+    public static final String GETUPCOMING = "getUpcoming";
+
     private final String LOG_TAG = "Movies/TMDB";
+
     private String API_KEY;
-    private Retrofit retrofit;
+    private String LANGUAGE;
     private APIService api;
+
     private List<MovieDBResults.MovieDBResult> results;
     private int[] movieIDs;
     private ArrayList<MovieDB> movies = new ArrayList<>();
 
     // constructor
-    public TMDB(Context c, String key) {
+    public TMDB(String key, String language_code) {
         API_KEY = key;
-        retrofit = new Retrofit.Builder()
-                .baseUrl(c.getString(R.string.base_url))
+        LANGUAGE = language_code;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(APIService.class);
-    }
-
-    public APIService getAPI() {
-        return api;
-    }
-
-    public String getKey() {
-        return API_KEY;
     }
 
     public List<MovieDBResults.MovieDBResult> getResults() {
@@ -61,14 +73,12 @@ public class TMDB {
         return movies;
     }
 
-    // generate MovieDBResults object
-    public void discover(String sort) {
-        Call<MovieDBResults> response = api.discover(API_KEY, sort);
+    // General method for getting MovieDBResults (called by APIService methods below)
+    public void getResults(Call<MovieDBResults> response) {
         response.enqueue(new Callback<MovieDBResults>() {
             // Below methods occur on main thread
             @Override
             public void onResponse(Response<MovieDBResults> response) {
-
                 // generate results
                 results = response.body().getMovieDBResults();
 
@@ -86,7 +96,37 @@ public class TMDB {
         });
     }
 
-    // generate MovieDB object
+    // Generate MovieDBResults for /discover
+    public void discover(String sort) {
+        clear();
+        getResults(api.discover(API_KEY, sort));
+    }
+
+    // Generate MovieDBResults for now playing movies
+    public void getNowPlaying() {
+        clear();
+        getResults(api.getNowPlaying(API_KEY, 1, LANGUAGE));
+    }
+
+    // Generate MovieDBResults for popular movies
+    public void getPopular() {
+        clear();
+        getResults(api.getPopular(API_KEY, 1, LANGUAGE));
+    }
+
+    // Generate MovieDBResults for top rated movies
+    public void getTopRated() {
+        clear();
+        getResults(api.getTopRated(API_KEY, 1, LANGUAGE));
+    }
+
+    // Generate MovieDBResults for upcoming movies
+    public void getUpcoming() {
+        clear();
+        getResults(api.getUpcoming(API_KEY, 1, LANGUAGE));
+    }
+
+    // Generate MovieDB object
     public void getMovieDetails(int id) {
         Call<MovieDB> response = api.getMovieDetails(id, API_KEY, "images,releases,trailers");
         response.enqueue(new Callback<MovieDB>() {
@@ -102,46 +142,11 @@ public class TMDB {
         });
     }
 
-    //    public class LoadResults implements Runnable {
-//
-//        @Override
-//        public void run() {
-//            while (results == null) {
-//                try {
-//                    Thread.sleep(mDelay);
-//                    Log.d(LOG_TAG, "A call");
-//                } catch (InterruptedException e) {
-//
-//                }
-//            }
-//        }
-//
-//        public List<MovieDBResults.MovieDBResult> getResults() {
-//            return results;
-//        }
-//    }
-//
-//    public List<MovieDBResults.MovieDBResult> getResults() {
-//        LoadResults lr = new LoadResults();
-//        new Thread(lr).start();
-//    }
-//
-//    public class LoadResults extends AsyncTask<Void, Void, List<MovieDBResults.MovieDBResult>> {
-//
-//        @Override protected List<MovieDBResults.MovieDBResult> doInBackground(Void... params) {
-//            while (results == null) {
-//                try {
-//                    Thread.sleep(mDelay);
-//                    Log.d(LOG_TAG, "A call");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            return results;
-//        }
-//
-//        @Override protected void onPostExecute(List<MovieDBResults.MovieDBResult> result) {
-//
-//        }
-//    }
+    // Clear MovieDBResults and movies lists for new search queries
+    public void clear() {
+        if (results != null && movies != null){
+            results.clear();
+            movies.clear();
+        }
+    }
 }

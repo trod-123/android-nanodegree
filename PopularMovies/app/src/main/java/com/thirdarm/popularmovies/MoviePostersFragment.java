@@ -13,12 +13,17 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
+import com.thirdarm.popularmovies.constant.DISCOVER;
+import com.thirdarm.popularmovies.constant.IMAGE;
+import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.MovieDBResults;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,7 +51,8 @@ public class MoviePostersFragment extends Fragment {
     public List<MovieDBResults.MovieDBResult> results;
     public ArrayList<MovieDB> movies;
     public ArrayList<String> poster_urls;
-    public final String poster_size = "w500";
+    public final String poster_size = IMAGE.SIZE.POSTER.w500;
+    public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
 
     public MoviePostersFragment() {
         // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
@@ -72,9 +78,9 @@ public class MoviePostersFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
 
         // Create TMDB API
-        TMDB = new TMDB(mContext, getString(R.string.movie_api_key));
+        TMDB = new TMDB(getString(R.string.movie_api_key), "en");
 
-        populateMovies(TMDB, "vote_average.desc");
+        populateMovies("getPopular", TMDB, null);
 
         // Can't do this. Result ends up being null even though it was called through onResponse().
         //  Apparently, even though result was modified in onResponse(), it returns to being null
@@ -95,8 +101,40 @@ public class MoviePostersFragment extends Fragment {
         return rootView;
     }
 
-    public void populateMovies(TMDB api, String sort) {
-        api.discover(sort);
+
+    /*
+    The following methods deal with collecting and parsing JSON data from the TMDB servers via
+     API calls, and filling the main UI with posters.
+     */
+
+    public void populateMovies(String category, TMDB api, String sort) {
+        assert (Arrays.asList(api.methods).contains(category));
+        switch (category) {
+            case "discover": {
+                try {
+                    api.discover(sort);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case "getNowPlaying": {
+                api.getNowPlaying();
+                break;
+            }
+            case "getPopular": {
+                api.getPopular();
+                break;
+            }
+            case "getTopRated": {
+                api.getTopRated();
+                break;
+            }
+            case "getUpcoming": {
+                api.getUpcoming();
+                break;
+            }
+        }
         populateMovieDBInfo();
     }
 
@@ -178,10 +216,13 @@ public class MoviePostersFragment extends Fragment {
         });
     }
 
-    // ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
-    //  to be displayed in the grid.
-    // Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
-    //  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
+
+    /*
+    ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
+     to be displayed in the grid.
+    Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
+     Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
+     */
     public class PostersAdapter extends BaseAdapter {
         private Context mContext;
         private ArrayList<String> image_urls;
@@ -224,10 +265,11 @@ public class MoviePostersFragment extends Fragment {
                 imageView = (ImageView) convertView;
             }
 
-            Log.d(LOG_TAG, "About to run picasso");
-            Log.d(LOG_TAG, "Image url link: " + getString(R.string.image_base_url) + poster_size + poster_urls.get(position));
+            Log.d(LOG_TAG, "About to run picasso...");
+            Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
             Picasso.with(mContext)
-                    .load(getString(R.string.image_base_url) + poster_size + poster_urls.get(position))
+                    .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
+                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.piq_76054_400x400)
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView);
