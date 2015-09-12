@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
-    <item android:id="@+id/action_get_latest" android:title="@string/action_sort_latest"
+    <item android:id="@+id/action_discover" android:title="@string/action_discover"
         android:orderInCategory="1" app:showAsAction="never" />
 
     <item android:id="@+id/action_get_playing" android:title="@string/action_sort_playing"

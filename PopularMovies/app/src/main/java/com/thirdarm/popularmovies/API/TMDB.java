@@ -75,6 +75,7 @@ public class TMDB {
 
     // General method for getting MovieDBResults (called by APIService methods below)
     public void getResults(Call<MovieDBResults> response) {
+        clear();
         response.enqueue(new Callback<MovieDBResults>() {
             // Below methods occur on main thread
             @Override
@@ -98,42 +99,47 @@ public class TMDB {
 
     // Generate MovieDBResults for /discover
     public void discover(String sort) {
-        clear();
         getResults(api.discover(API_KEY, sort));
     }
 
     // Generate MovieDBResults for now playing movies
     public void getNowPlaying() {
-        clear();
         getResults(api.getNowPlaying(API_KEY, 1, LANGUAGE));
     }
 
     // Generate MovieDBResults for popular movies
     public void getPopular() {
-        clear();
         getResults(api.getPopular(API_KEY, 1, LANGUAGE));
     }
 
     // Generate MovieDBResults for top rated movies
     public void getTopRated() {
-        clear();
         getResults(api.getTopRated(API_KEY, 1, LANGUAGE));
     }
 
     // Generate MovieDBResults for upcoming movies
     public void getUpcoming() {
-        clear();
         getResults(api.getUpcoming(API_KEY, 1, LANGUAGE));
     }
 
     // Generate MovieDB object
     public void getMovieDetails(int id) {
+        // allow id to be referenced in onResponse()
+        final int i = id;
+
         Call<MovieDB> response = api.getMovieDetails(id, API_KEY, "images,releases,trailers");
         response.enqueue(new Callback<MovieDB>() {
             // Below methods occur on main thread
             @Override public void onResponse(Response<MovieDB> response) {
-                movies.add(response.body());
-                Log.d(LOG_TAG, "Movie added to list");
+                // prevent null responses from being added to movies list by calling
+                //  getMovieDetails(id) recursively until response is no longer null
+                if (response.body() == null) {
+                    //Log.d(LOG_TAG, "Movie " + i + " is null!!!!!!!!!!!");
+                    getMovieDetails(i);
+                } else {
+                    movies.add(response.body());
+                    //Log.d(LOG_TAG, "Movie " + i + " has really been added");
+                }
             }
 
             @Override public void onFailure(Throwable t) {
@@ -144,9 +150,11 @@ public class TMDB {
 
     // Clear MovieDBResults and movies lists for new search queries
     public void clear() {
-        if (results != null && movies != null){
-            results.clear();
-            movies.clear();
+        if (results != null && movies != null && movieIDs != null){
+            results = null;
+            movies = new ArrayList<>();
+            movieIDs = null;
+            Log.d(LOG_TAG, "Cleared MovieDB data objects");
         }
     }
 }

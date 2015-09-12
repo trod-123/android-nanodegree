@@ -58,6 +58,7 @@ public class MoviePostersFragment extends Fragment {
     public ArrayList<String> poster_urls;
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
     public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
+    public boolean load_guard = true;
 
     public MoviePostersFragment() {
         // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
@@ -89,8 +90,8 @@ public class MoviePostersFragment extends Fragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_get_latest:
-                populateMovies("getLatest", TMDB, null);
+            case R.id.action_discover:
+                populateMovies("discover", TMDB, sort_by);
                 return true;
 
             case R.id.action_get_playing:
@@ -119,6 +120,9 @@ public class MoviePostersFragment extends Fragment {
 
         // gets a reference to the root view
         rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
+
+        // gets a reference to the GridView
+        mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
         TMDB = new TMDB(getString(R.string.movie_api_key), "en");
@@ -151,7 +155,13 @@ public class MoviePostersFragment extends Fragment {
      */
 
     public void populateMovies(String category, TMDB api, String sort) {
-        assert (Arrays.asList(api.methods).contains(category));
+        if (!load_guard) {
+            Log.d(LOG_TAG, "STILL LOADING PLEASE WAIT");
+            return;
+        } else {
+            load_guard = false;
+        }
+
         switch (category) {
             case "discover": {
                 try {
@@ -159,25 +169,31 @@ public class MoviePostersFragment extends Fragment {
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
+                Log.d(LOG_TAG, "Discover clicked");
                 break;
             }
             case "getNowPlaying": {
                 api.getNowPlaying();
+                Log.d(LOG_TAG, "Now playing clicked");
                 break;
             }
             case "getPopular": {
                 api.getPopular();
+                Log.d(LOG_TAG, "Popular clicked");
                 break;
             }
             case "getTopRated": {
                 api.getTopRated();
+                Log.d(LOG_TAG, "Top rated clicked");
                 break;
             }
             case "getUpcoming": {
                 api.getUpcoming();
+                Log.d(LOG_TAG, "Upcoming clicked");
                 break;
             }
         }
+        resetPostersGridView();
         populateMovieDBInfo();
     }
 
@@ -195,7 +211,7 @@ public class MoviePostersFragment extends Fragment {
                 poster_urls = getPosterUrls(movies);
 
                 // finally, get and fill the grid with posters
-                setPostersGridView(rootView); // uses post() to fill the grid
+                setPostersGridView(); // uses post() to fill the grid
             }
         }).start();
     }
@@ -204,7 +220,7 @@ public class MoviePostersFragment extends Fragment {
         while (api.getResults() == null) {
             try {
                 Thread.sleep(mDelay);
-                Log.d(LOG_TAG, "A getResults() call");
+                //Log.d(LOG_TAG, "A getResults() call");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -215,33 +231,43 @@ public class MoviePostersFragment extends Fragment {
     public ArrayList<MovieDB> getMovies(TMDB api) {
         for (int i : api.getMovieIDs()) {
             api.getMovieDetails(i);
+            //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
         }
+        //Log.d(LOG_TAG, "Length of MovieIDs: " + api.getMovieIDs().length);
         while (api.getMovies().size() != api.getMovieIDs().length) {
             try {
                 Thread.sleep(mDelay);
-                Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
+                //Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
+        //Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
         return api.getMovies();
     }
 
     public ArrayList<String> getPosterUrls(ArrayList<MovieDB> movies) {
+
+//        // for debugging. save for future errors
+//        Log.d(LOG_TAG, "Posters movie size: " + movies.size());
+//        for (MovieDB movie : movies) {
+//            if (movie == null) {
+//                Log.d(LOG_TAG, "MOVIE IS NULL");
+//            } else {
+//                Log.d(LOG_TAG, "Movie is not null");
+//            }
+//        }
+
         ArrayList<String> urls = new ArrayList<>();
         for (MovieDB movie : movies) {
             urls.add(movie.getPosterPath());
+            //Log.d(LOG_TAG, movie.getTitle() + " poster added");
         }
-        Log.d(LOG_TAG, "Size of poster_urls: " + urls.size());
+        //Log.d(LOG_TAG, "Size of poster_urls: " + urls.size());
         return urls;
     }
 
-    public void setPostersGridView(View rootView) {
-        // gets a reference to the GridView
-        mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
-        Log.d(LOG_TAG, "Got mPostersGrid reference");
-
+    public void setPostersGridView() {
         // Sets the adapter for the GridView. Needs to call post() because this method is called
         //  from another thread
         mPostersGrid.post(new Runnable() {
@@ -255,6 +281,17 @@ public class MoviePostersFragment extends Fragment {
                         Toast.makeText(getActivity(), movies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
                     }
                 });
+                //Log.d(LOG_TAG, "Posters loaded");
+                load_guard = true;
+            }
+        });
+    }
+
+    // Resets the GridView for reloading new posters
+    public void resetPostersGridView() {
+        mPostersGrid.post(new Runnable() {
+            @Override public void run() {
+                mPostersGrid.setAdapter(null);
             }
         });
     }
@@ -307,32 +344,32 @@ public class MoviePostersFragment extends Fragment {
                 imageView = (ImageView) convertView;
             }
 
-            Log.d(LOG_TAG, "About to run picasso...");
-            Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
+            //Log.d(LOG_TAG, "About to run picasso...");
+            //Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
 
-            Picasso.Builder builder = new Picasso.Builder(mContext);
-            builder.listener(new Picasso.Listener() {
-                @Override public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e) {
-                    Log.e(LOG_TAG, "ERROR PICASSO DID NOT LOAD IMAGE");
-                    e.printStackTrace();
-                }
-            });
+//          //Do not include here as it consumes too much memory and results in crash
+//            Picasso.Builder builder = new Picasso.Builder(mContext);
+//            builder.listener(new Picasso.Listener() {
+//                @Override public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e) {
+//                    Log.e(LOG_TAG, "ERROR PICASSO DID NOT LOAD IMAGE");
+//                    e.printStackTrace();
+//                }
+//            });
 
             final int p = position;
-            builder.build()
+            Picasso.with(mContext)
                     .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
                     .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView, new Callback() {
                         @Override public void onSuccess() {
-                            Log.e(LOG_TAG, movies.get(p).getTitle() + ": loaded successfully");
+                            Log.d(LOG_TAG, movies.get(p).getTitle() + ": loaded successfully");
                         }
 
                         @Override public void onError() {
                             Log.e(LOG_TAG, movies.get(p).getTitle() + ": ERROR PICASSO DID NOT LOAD IMAGE");
                         }
-
                     });
 
             return imageView;
