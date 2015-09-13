@@ -229,6 +229,18 @@ public class MoviePostersFragment extends Fragment {
         for (int i : api.getMovieIDs()) {
             api.getMovieDetails(i);
             //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
+
+            // make sure that the movies are added in the right order by waiting until the
+            //  current movie has been added to the movies list before adding the next
+            int current = api.getMovies().size();
+            while (current != api.getMovies().size() - 1) {
+                try {
+                    Thread.sleep(mDelay);
+                    //Log.d(LOG_TAG, "A getMovies().size() call");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         //Log.d(LOG_TAG, "Length of MovieIDs: " + api.getMovieIDs().length);
         while (api.getMovies().size() != api.getMovieIDs().length) {
@@ -259,6 +271,7 @@ public class MoviePostersFragment extends Fragment {
         for (MovieDB movie : movies) {
             urls.add(movie.getPosterPath());
             //Log.d(LOG_TAG, movie.getTitle() + " poster added");
+            Log.d(LOG_TAG, movie.getTitle() + ": poster link " + movie.getPosterPath());
         }
         //Log.d(LOG_TAG, "Size of poster_urls: " + urls.size());
         return urls;
