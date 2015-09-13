@@ -364,7 +364,6 @@ public class MoviePostersFragment extends Fragment {
             final int p = position;
             Picasso.with(mContext)
                     .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
-                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView, new Callback() {
