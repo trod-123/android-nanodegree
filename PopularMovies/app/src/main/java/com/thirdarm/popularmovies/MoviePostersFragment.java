@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
@@ -27,6 +29,7 @@ import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.MovieDBResults;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,12 +40,6 @@ import java.util.List;
 public class MoviePostersFragment extends Fragment {
 
     public final String LOG_TAG = "MoviePostersFragment";
-
-    // display constants
-    public final int POSTER_WIDTH = 185;
-    public final int POSTER_HEIGHT = 277;
-    public final int GRID_PADDING = 0;
-    public final int NUM_POSTERS = 10;
 
     public Context mContext;
     public final int mDelay = 100;
@@ -306,10 +303,12 @@ public class MoviePostersFragment extends Fragment {
     public class PostersAdapter extends BaseAdapter {
         private Context mContext;
         private ArrayList<String> image_urls;
+        private LayoutInflater inflater;
 
         public PostersAdapter(Context c, ArrayList<String> images) {
             mContext = c;
             image_urls = images;
+            inflater = LayoutInflater.from(c);
         }
 
         public int getCount() {
@@ -333,16 +332,22 @@ public class MoviePostersFragment extends Fragment {
         //     - if view is null, a view is initialized and configured with desired properties
         //     - if view is not null, that view is then returned
         public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
             if (convertView == null) {
-                // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
-                //imageView.setLayoutParams(new GridView.LayoutParams(POSTER_WIDTH, POSTER_HEIGHT));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(GRID_PADDING, GRID_PADDING, GRID_PADDING, GRID_PADDING);
-            } else {
-                imageView = (ImageView) convertView;
+                convertView = inflater.inflate(R.layout.poster, null);
             }
+
+            TextView name = (TextView) convertView.findViewById(R.id.poster_name);
+            name.setText(movies.get(position).getTitle());
+
+            TextView date = (TextView) convertView.findViewById(R.id.poster_date);
+            date.setText(movies.get(position).getReleaseDate());
+
+            TextView rating = (TextView) convertView.findViewById(R.id.poster_rating);
+            rating.setText("Rating: " +
+                    new DecimalFormat("#.##").format(movies.get(position).getVoteAverage()) +
+                    " (" + movies.get(position).getVoteCount() + " reviews)");
+
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
 
             //Log.d(LOG_TAG, "About to run picasso...");
             //Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
@@ -363,6 +368,8 @@ public class MoviePostersFragment extends Fragment {
                     .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView, new Callback() {
+
+                        // Callback used to notify whether Picasso successfully loaded the image
                         @Override public void onSuccess() {
                             Log.d(LOG_TAG, movies.get(p).getTitle() + ": loaded successfully");
                         }
@@ -372,7 +379,7 @@ public class MoviePostersFragment extends Fragment {
                         }
                     });
 
-            return imageView;
+            return convertView;
         }
     }
 }

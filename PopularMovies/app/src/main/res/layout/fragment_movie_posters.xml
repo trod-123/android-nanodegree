@@ -8,11 +8,8 @@
     <GridView
         android:id="@+id/posters_grid"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:numColumns="auto_fit"
-        android:verticalSpacing="0dp" android:horizontalSpacing="0dp"
-        android:stretchMode="columnWidth"
         android:gravity="center" />
-
 
 </LinearLayout>
