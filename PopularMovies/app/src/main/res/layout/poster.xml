@@ -10,14 +10,14 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="250px"
+        android:layout_height="300px"
         android:background="#a0424242"
         android:layout_alignParentBottom="true"/>
 
     <LinearLayout
         android:id="@+id/poster_details"
         android:layout_width="match_parent"
-        android:layout_height="250px"
+        android:layout_height="300px"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:padding="@dimen/activity_padding_margin">
