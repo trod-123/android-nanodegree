@@ -1,12 +1,10 @@
 package com.thirdarm.popularmovies.API;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.thirdarm.popularmovies.R;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
-import com.thirdarm.popularmovies.model.MovieDBResults;
+import com.thirdarm.popularmovies.model.Results;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +44,7 @@ public class TMDB {
     private String LANGUAGE;
     private APIService api;
 
-    private List<MovieDBResults.MovieDBResult> results;
+    private List<Results.MovieDBResult> results;
     private int[] movieIDs;
     private ArrayList<MovieDB> movies = new ArrayList<>();
 
@@ -61,7 +59,7 @@ public class TMDB {
         api = retrofit.create(APIService.class);
     }
 
-    public List<MovieDBResults.MovieDBResult> getResults() {
+    public List<Results.MovieDBResult> getResults() {
         return results;
     }
 
@@ -73,13 +71,13 @@ public class TMDB {
         return movies;
     }
 
-    // General method for getting MovieDBResults (called by APIService methods below)
-    public void getResults(Call<MovieDBResults> response) {
+    // General method for getting Results (called by APIService methods below)
+    public void getResults(Call<Results> response) {
         clear();
-        response.enqueue(new Callback<MovieDBResults>() {
+        response.enqueue(new Callback<Results>() {
             // Below methods occur on main thread
             @Override
-            public void onResponse(Response<MovieDBResults> response) {
+            public void onResponse(Response<Results> response) {
                 // generate results
                 results = response.body().getMovieDBResults();
 
@@ -97,27 +95,27 @@ public class TMDB {
         });
     }
 
-    // Generate MovieDBResults for /discover
+    // Generate Results for /discover
     public void discover(String sort) {
         getResults(api.discover(API_KEY, sort));
     }
 
-    // Generate MovieDBResults for now playing movies
+    // Generate Results for now playing movies
     public void getNowPlaying() {
         getResults(api.getNowPlaying(API_KEY, 1, LANGUAGE));
     }
 
-    // Generate MovieDBResults for popular movies
+    // Generate Results for popular movies
     public void getPopular() {
         getResults(api.getPopular(API_KEY, 1, LANGUAGE));
     }
 
-    // Generate MovieDBResults for top rated movies
+    // Generate Results for top rated movies
     public void getTopRated() {
         getResults(api.getTopRated(API_KEY, 1, LANGUAGE));
     }
 
-    // Generate MovieDBResults for upcoming movies
+    // Generate Results for upcoming movies
     public void getUpcoming() {
         getResults(api.getUpcoming(API_KEY, 1, LANGUAGE));
     }
@@ -148,7 +146,7 @@ public class TMDB {
         });
     }
 
-    // Clear MovieDBResults and movies lists for new search queries
+    // Clear Results and movies lists for new search queries
     public void clear() {
         if (results != null && movies != null && movieIDs != null){
             results = null;

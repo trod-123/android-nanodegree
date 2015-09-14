@@ -2,9 +2,7 @@ package com.thirdarm.popularmovies.API;
 
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.model.MovieDB;
-import com.thirdarm.popularmovies.model.MovieDBResults;
-
-import java.util.ArrayList;
+import com.thirdarm.popularmovies.model.Results;
 
 import retrofit.Call;
 import retrofit.http.GET;
@@ -22,7 +20,7 @@ public interface APIService {
     // Discovery information
     // https://api.themoviedb.org/3/discover/movie?api_key=###&sort_by=popularity.desc
     @GET("discover/movie")
-    Call<MovieDBResults> discover(@Query(PARAMS.GLOBAL.API_KEY) String key,
+    Call<Results> discover(@Query(PARAMS.GLOBAL.API_KEY) String key,
                                   @Query(PARAMS.DISCOVER.SORT_BY) String sort);
 
     // Latest movie (refreshes everyday)
@@ -33,28 +31,28 @@ public interface APIService {
     // Movies released this week (refreshes everyday)
     // https://api.themoviedb.org/3/movie/now_playing?api_key=###
     @GET("movie/now_playing")
-    Call<MovieDBResults> getNowPlaying(@Query(PARAMS.GLOBAL.API_KEY) String key,
+    Call<Results> getNowPlaying(@Query(PARAMS.GLOBAL.API_KEY) String key,
                                        @Query(PARAMS.DISCOVER.PAGE) int page,
                                        @Query(PARAMS.DISCOVER.LANGUAGE) String code);
 
     // Most popular movies (refreshes everyday)
     // https://api.themoviedb.org/3/movie/popular?api_key=###
     @GET("movie/popular")
-    Call<MovieDBResults> getPopular(@Query(PARAMS.GLOBAL.API_KEY) String key,
+    Call<Results> getPopular(@Query(PARAMS.GLOBAL.API_KEY) String key,
                                     @Query(PARAMS.DISCOVER.PAGE) int page,
                                     @Query(PARAMS.DISCOVER.LANGUAGE) String code);
 
     // Top rated movies (refreshes everyday)
     // https://api.themoviedb.org/3/movie/top_rated?api_key=###
     @GET("movie/top_rated")
-    Call<MovieDBResults> getTopRated(@Query(PARAMS.GLOBAL.API_KEY) String key,
+    Call<Results> getTopRated(@Query(PARAMS.GLOBAL.API_KEY) String key,
                                      @Query(PARAMS.DISCOVER.PAGE) int page,
                                      @Query(PARAMS.DISCOVER.LANGUAGE) String code);
 
     // Upcoming movies (refreshes everyday)
     // https://api.themoviedb.org/3/movie/upcoming?api_key=###
     @GET("movie/upcoming")
-    Call<MovieDBResults> getUpcoming(@Query(PARAMS.GLOBAL.API_KEY) String key,
+    Call<Results> getUpcoming(@Query(PARAMS.GLOBAL.API_KEY) String key,
                                      @Query(PARAMS.DISCOVER.PAGE) int page,
                                      @Query(PARAMS.DISCOVER.LANGUAGE) String code);
 

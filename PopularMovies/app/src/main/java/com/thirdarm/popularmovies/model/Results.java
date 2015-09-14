@@ -18,7 +18,7 @@ import com.google.gson.annotations.SerializedName;
  *   (used for variable names that are different from the key that appears in JSON -
  *    the serialized name is the name of the key as it appears in JSON)
  */
-public class MovieDBResults {
+public class Results {
 
     @Expose
     private Integer page;

@@ -1,5 +1,8 @@
 package com.thirdarm.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
  * POJO created using jsonschema2pojo (http://www.jsonschema2pojo.org/). May not work for all
  *  JSON data
  */
-public class MovieDB {
+public class MovieDB implements Parcelable {
 
     @Expose
     private Boolean adult;
@@ -23,14 +26,14 @@ public class MovieDB {
 
     @SerializedName("belongs_to_collection")
     @Expose
-    private Object belongsToCollection;
+    private Collection belongsToCollection;
 
     @Expose
     private Integer budget;
 
     @SerializedName("genres")
     @Expose
-    private List<MovieDBGenre> movieDBGenres = new ArrayList<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @Expose
     private String homepage;
@@ -62,11 +65,11 @@ public class MovieDB {
 
     @SerializedName("production_companies")
     @Expose
-    private List<MovieDBProductionCompany> productionCompanies = new ArrayList<>();
+    private List<ProductionCompany> productionCompanies = new ArrayList<>();
 
     @SerializedName("production_countries")
     @Expose
-    private List<MovieDBProductionCountry> productionCountries = new ArrayList<>();
+    private List<ProductionCountry> productionCountries = new ArrayList<>();
 
     @SerializedName("release_date")
     @Expose
@@ -80,7 +83,7 @@ public class MovieDB {
 
     @SerializedName("spoken_languages")
     @Expose
-    private List<MovieDBSpokenLanguage> movieDBSpokenLanguages = new ArrayList<>();
+    private List<SpokenLanguage> spokenLanguages = new ArrayList<>();
 
     @Expose
     private String status;
@@ -102,17 +105,17 @@ public class MovieDB {
     @Expose
     private Integer voteCount;
 
-    @SerializedName("images")
+    @SerializedName("image")
     @Expose
-    private MovieDBImages movieDBImages;
+    private Image image;
 
     @SerializedName("releases")
     @Expose
-    private MovieDBReleases movieDBReleases;
+    private Releases releases;
 
     @SerializedName("trailers")
     @Expose
-    private MovieDBTrailers movieDBTrailers;
+    private Trailers trailers;
 
 
     /**
@@ -153,7 +156,7 @@ public class MovieDB {
     /**
      * @param belongsToCollection The belongs_to_collection
      */
-    public void setBelongsToCollection(Object belongsToCollection) {
+    public void setBelongsToCollection(Collection belongsToCollection) {
         this.belongsToCollection = belongsToCollection;
     }
 
@@ -172,17 +175,17 @@ public class MovieDB {
     }
 
     /**
-     * @return The movieDBGenres
+     * @return The genres
      */
-    public List<MovieDBGenre> getMovieDBGenres() {
-        return movieDBGenres;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
     /**
-     * @param movieDBGenres The movieDBGenres
+     * @param genres The genres
      */
-    public void setMovieDBGenres(List<MovieDBGenre> movieDBGenres) {
-        this.movieDBGenres = movieDBGenres;
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 
     /**
@@ -300,28 +303,28 @@ public class MovieDB {
     /**
      * @return The productionCompanies
      */
-    public List<MovieDBProductionCompany> getProductionCompanies() {
+    public List<ProductionCompany> getProductionCompanies() {
         return productionCompanies;
     }
 
     /**
      * @param productionCompanies The production_companies
      */
-    public void setProductionCompanies(List<MovieDBProductionCompany> productionCompanies) {
+    public void setProductionCompanies(List<ProductionCompany> productionCompanies) {
         this.productionCompanies = productionCompanies;
     }
 
     /**
      * @return The productionCountries
      */
-    public List<MovieDBProductionCountry> getProductionCountries() {
+    public List<ProductionCountry> getProductionCountries() {
         return productionCountries;
     }
 
     /**
      * @param productionCountries The production_countries
      */
-    public void setProductionCountries(List<MovieDBProductionCountry> productionCountries) {
+    public void setProductionCountries(List<ProductionCountry> productionCountries) {
         this.productionCountries = productionCountries;
     }
 
@@ -368,17 +371,17 @@ public class MovieDB {
     }
 
     /**
-     * @return The movieDBSpokenLanguages
+     * @return The spokenLanguages
      */
-    public List<MovieDBSpokenLanguage> getMovieDBSpokenLanguages() {
-        return movieDBSpokenLanguages;
+    public List<SpokenLanguage> getSpokenLanguages() {
+        return spokenLanguages;
     }
 
     /**
-     * @param movieDBSpokenLanguages The spoken_languages
+     * @param spokenLanguages The spoken_languages
      */
-    public void setMovieDBSpokenLanguages(List<MovieDBSpokenLanguage> movieDBSpokenLanguages) {
-        this.movieDBSpokenLanguages = movieDBSpokenLanguages;
+    public void setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
+        this.spokenLanguages = spokenLanguages;
     }
 
     /**
@@ -466,686 +469,130 @@ public class MovieDB {
     }
 
     /**
-     * @return The movieDBImages
+     * @return The image
      */
-    public MovieDBImages getMovieDBImages() {
-        return movieDBImages;
+    public Image getImage() {
+        return image;
     }
 
     /**
-     * @param movieDBImages The movieDBImages
+     * @param image The image
      */
-    public void setMovieDBImages(MovieDBImages movieDBImages) {
-        this.movieDBImages = movieDBImages;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     /**
-     * @return The movieDBReleases
+     * @return The releases
      */
-    public MovieDBReleases getMovieDBReleases() {
-        return movieDBReleases;
+    public Releases getReleases() {
+        return releases;
     }
 
     /**
-     * @param movieDBReleases The movieDBReleases
+     * @param releases The releases
      */
-    public void setMovieDBReleases(MovieDBReleases movieDBReleases) {
-        this.movieDBReleases = movieDBReleases;
+    public void setReleases(Releases releases) {
+        this.releases = releases;
     }
 
     /**
-     * @return The movieDBTrailers
+     * @return The trailers
      */
-    public MovieDBTrailers getMovieDBTrailers() {
-        return movieDBTrailers;
+    public Trailers getTrailers() {
+        return trailers;
     }
 
     /**
-     * @param movieDBTrailers The movieDBTrailers
+     * @param trailers The trailers
      */
-    public void setMovieDBTrailers(MovieDBTrailers movieDBTrailers) {
-        this.movieDBTrailers = movieDBTrailers;
+    public void setTrailers(Trailers trailers) {
+        this.trailers = trailers;
     }
 
-    public class MovieDBBackdrop {
 
-        @SerializedName("aspect_ratio")
-        @Expose
-        private Double aspectRatio;
-
-        @SerializedName("file_path")
-        @Expose
-        private String filePath;
-
-        @Expose
-        private Integer height;
-
-        @SerializedName("iso_639_1")
-        @Expose
-        private String iso6391;
-
-        @SerializedName("vote_average")
-        @Expose
-        private Double voteAverage;
-
-        @SerializedName("vote_count")
-        @Expose
-        private Integer voteCount;
-
-        @Expose
-        private Integer width;
-
-
-        /**
-         * @return The aspectRatio
-         */
-        public Double getAspectRatio() {
-            return aspectRatio;
-        }
-
-        /**
-         * @param aspectRatio The aspect_ratio
-         */
-        public void setAspectRatio(Double aspectRatio) {
-            this.aspectRatio = aspectRatio;
-        }
-
-        /**
-         * @return The filePath
-         */
-        public String getFilePath() {
-            return filePath;
-        }
-
-        /**
-         * @param filePath The file_path
-         */
-        public void setFilePath(String filePath) {
-            this.filePath = filePath;
-        }
-
-        /**
-         * @return The height
-         */
-        public Integer getHeight() {
-            return height;
-        }
-
-        /**
-         * @param height The height
-         */
-        public void setHeight(Integer height) {
-            this.height = height;
-        }
-
-        /**
-         * @return The iso6391
-         */
-        public String getIso6391() {
-            return iso6391;
-        }
-
-        /**
-         * @param iso6391 The iso_639_1
-         */
-        public void setIso6391(String iso6391) {
-            this.iso6391 = iso6391;
-        }
-
-        /**
-         * @return The voteAverage
-         */
-        public Double getVoteAverage() {
-            return voteAverage;
-        }
-
-        /**
-         * @param voteAverage The vote_average
-         */
-        public void setVoteAverage(Double voteAverage) {
-            this.voteAverage = voteAverage;
-        }
-
-        /**
-         * @return The voteCount
-         */
-        public Integer getVoteCount() {
-            return voteCount;
-        }
-
-        /**
-         * @param voteCount The vote_count
-         */
-        public void setVoteCount(Integer voteCount) {
-            this.voteCount = voteCount;
-        }
-
-        /**
-         * @return The width
-         */
-        public Integer getWidth() {
-            return width;
-        }
-
-        /**
-         * @param width The width
-         */
-        public void setWidth(Integer width) {
-            this.width = width;
-        }
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public class MovieDBCountry {
-
-        @Expose
-        private String certification;
-
-        @SerializedName("iso_3166_1")
-        @Expose
-        private String iso31661;
-
-        @Expose
-        private Boolean primary;
-
-        @SerializedName("release_date")
-        @Expose
-        private String releaseDate;
-
-        /**
-         * @return The certification
-         */
-        public String getCertification() {
-            return certification;
-        }
-
-        /**
-         * @param certification The certification
-         */
-        public void setCertification(String certification) {
-            this.certification = certification;
-        }
-
-        /**
-         * @return The iso31661
-         */
-        public String getIso31661() {
-            return iso31661;
-        }
-
-        /**
-         * @param iso31661 The iso_3166_1
-         */
-        public void setIso31661(String iso31661) {
-            this.iso31661 = iso31661;
-        }
-
-        /**
-         * @return The primary
-         */
-        public Boolean getPrimary() {
-            return primary;
-        }
-
-        /**
-         * @param primary The primary
-         */
-        public void setPrimary(Boolean primary) {
-            this.primary = primary;
-        }
-
-        /**
-         * @return The releaseDate
-         */
-        public String getReleaseDate() {
-            return releaseDate;
-        }
-
-        /**
-         * @param releaseDate The release_date
-         */
-        public void setReleaseDate(String releaseDate) {
-            this.releaseDate = releaseDate;
-        }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.adult);
+        dest.writeString(this.backdropPath);
+        dest.writeParcelable(this.belongsToCollection, flags);
+        dest.writeValue(this.budget);
+        dest.writeList(this.genres);
+        dest.writeString(this.homepage);
+        dest.writeValue(this.id);
+        dest.writeString(this.imdbId);
+        dest.writeString(this.originalLanguage);
+        dest.writeString(this.originalTitle);
+        dest.writeString(this.overview);
+        dest.writeValue(this.popularity);
+        dest.writeString(this.posterPath);
+        dest.writeList(this.productionCompanies);
+        dest.writeList(this.productionCountries);
+        dest.writeString(this.releaseDate);
+        dest.writeValue(this.revenue);
+        dest.writeValue(this.runtime);
+        dest.writeList(this.spokenLanguages);
+        dest.writeString(this.status);
+        dest.writeString(this.tagline);
+        dest.writeString(this.title);
+        dest.writeValue(this.video);
+        dest.writeValue(this.voteAverage);
+        dest.writeValue(this.voteCount);
+        dest.writeParcelable(this.image, flags);
+        dest.writeParcelable(this.releases, flags);
+        dest.writeParcelable(this.trailers, flags);
     }
 
-    public class MovieDBGenre {
-
-        @Expose
-        private Integer id;
-
-        @Expose
-        private String name;
-
-        /**
-         * @return The id
-         */
-        public Integer getId() {
-            return id;
-        }
-
-        /**
-         * @param id The id
-         */
-        public void setId(Integer id) {
-            this.id = id;
-        }
-
-        /**
-         * @return The name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name The name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
+    public MovieDB() {
     }
 
-    public class MovieDBImages {
-
-        @Expose
-        private List<MovieDBBackdrop> movieDBBackdrops = new ArrayList<MovieDBBackdrop>();
-
-        @Expose
-        private List<MovieDBPoster> movieDBPosters = new ArrayList<MovieDBPoster>();
-
-        /**
-         * @return The movieDBBackdrops
-         */
-        public List<MovieDBBackdrop> getMovieDBBackdrops() {
-            return movieDBBackdrops;
-        }
-
-        /**
-         * @param movieDBBackdrops The movieDBBackdrops
-         */
-        public void setMovieDBBackdrops(List<MovieDBBackdrop> movieDBBackdrops) {
-            this.movieDBBackdrops = movieDBBackdrops;
-        }
-
-        /**
-         * @return The movieDBPosters
-         */
-        public List<MovieDBPoster> getMovieDBPosters() {
-            return movieDBPosters;
-        }
-
-        /**
-         * @param movieDBPosters The movieDBPosters
-         */
-        public void setMovieDBPosters(List<MovieDBPoster> movieDBPosters) {
-            this.movieDBPosters = movieDBPosters;
-        }
+    protected MovieDB(Parcel in) {
+        this.adult = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.backdropPath = in.readString();
+        this.belongsToCollection = in.readParcelable(Collection.class.getClassLoader());
+        this.budget = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.genres = new ArrayList<Genre>();
+        in.readList(this.genres, Genre.class.getClassLoader());
+        this.homepage = in.readString();
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.imdbId = in.readString();
+        this.originalLanguage = in.readString();
+        this.originalTitle = in.readString();
+        this.overview = in.readString();
+        this.popularity = (Double) in.readValue(Double.class.getClassLoader());
+        this.posterPath = in.readString();
+        this.productionCompanies = new ArrayList<ProductionCompany>();
+        in.readList(this.productionCompanies, ProductionCompany.class.getClassLoader());
+        this.productionCountries = new ArrayList<ProductionCountry>();
+        in.readList(this.productionCountries, ProductionCountry.class.getClassLoader());
+        this.releaseDate = in.readString();
+        this.revenue = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.runtime = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.spokenLanguages = new ArrayList<SpokenLanguage>();
+        in.readList(this.spokenLanguages, SpokenLanguage.class.getClassLoader());
+        this.status = in.readString();
+        this.tagline = in.readString();
+        this.title = in.readString();
+        this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
+        this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.image = in.readParcelable(Image.class.getClassLoader());
+        this.releases = in.readParcelable(Releases.class.getClassLoader());
+        this.trailers = in.readParcelable(Trailers.class.getClassLoader());
     }
 
-    public class MovieDBPoster {
-
-        @SerializedName("aspect_ratio")
-        @Expose
-        private Double aspectRatio;
-
-        @SerializedName("file_path")
-        @Expose
-        private String filePath;
-
-        @Expose
-        private Integer height;
-
-        @SerializedName("iso_639_1")
-        @Expose
-        private String iso6391;
-
-        @SerializedName("vote_average")
-        @Expose
-        private Double voteAverage;
-
-        @SerializedName("vote_count")
-        @Expose
-        private Integer voteCount;
-
-        @Expose
-        private Integer width;
-
-        /**
-         * @return The aspectRatio
-         */
-        public Double getAspectRatio() {
-            return aspectRatio;
+    public static final Parcelable.Creator<MovieDB> CREATOR = new Parcelable.Creator<MovieDB>() {
+        public MovieDB createFromParcel(Parcel source) {
+            return new MovieDB(source);
         }
 
-        /**
-         * @param aspectRatio The aspect_ratio
-         */
-        public void setAspectRatio(Double aspectRatio) {
-            this.aspectRatio = aspectRatio;
+        public MovieDB[] newArray(int size) {
+            return new MovieDB[size];
         }
-
-        /**
-         * @return The filePath
-         */
-        public String getFilePath() {
-            return filePath;
-        }
-
-        /**
-         * @param filePath The file_path
-         */
-        public void setFilePath(String filePath) {
-            this.filePath = filePath;
-        }
-
-        /**
-         * @return The height
-         */
-        public Integer getHeight() {
-            return height;
-        }
-
-        /**
-         * @param height The height
-         */
-        public void setHeight(Integer height) {
-            this.height = height;
-        }
-
-        /**
-         * @return The iso6391
-         */
-        public String getIso6391() {
-            return iso6391;
-        }
-
-        /**
-         * @param iso6391 The iso_639_1
-         */
-        public void setIso6391(String iso6391) {
-            this.iso6391 = iso6391;
-        }
-
-        /**
-         * @return The voteAverage
-         */
-        public Double getVoteAverage() {
-            return voteAverage;
-        }
-
-        /**
-         * @param voteAverage The vote_average
-         */
-        public void setVoteAverage(Double voteAverage) {
-            this.voteAverage = voteAverage;
-        }
-
-        /**
-         * @return The voteCount
-         */
-        public Integer getVoteCount() {
-            return voteCount;
-        }
-
-        /**
-         * @param voteCount The vote_count
-         */
-        public void setVoteCount(Integer voteCount) {
-            this.voteCount = voteCount;
-        }
-
-        /**
-         * @return The width
-         */
-        public Integer getWidth() {
-            return width;
-        }
-
-        /**
-         * @param width The width
-         */
-        public void setWidth(Integer width) {
-            this.width = width;
-        }
-    }
-
-    public class MovieDBProductionCompany {
-
-        @Expose
-        private String name;
-
-        @Expose
-        private Integer id;
-
-        /**
-         * @return The name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name The name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        /**
-         * @return The id
-         */
-        public Integer getId() {
-            return id;
-        }
-
-        /**
-         * @param id The id
-         */
-        public void setId(Integer id) {
-            this.id = id;
-        }
-    }
-
-    public class MovieDBProductionCountry {
-
-        @SerializedName("iso_3166_1")
-        @Expose
-        private String iso31661;
-
-        @Expose
-        private String name;
-
-        /**
-         * @return The iso31661
-         */
-        public String getIso31661() {
-            return iso31661;
-        }
-
-        /**
-         * @param iso31661 The iso_3166_1
-         */
-        public void setIso31661(String iso31661) {
-            this.iso31661 = iso31661;
-        }
-
-        /**
-         * @return The name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name The name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
-    public class MovieDBReleases {
-
-        @Expose
-        private List<MovieDBCountry> countries = new ArrayList<MovieDBCountry>();
-
-        /**
-         * @return The countries
-         */
-        public List<MovieDBCountry> getCountries() {
-            return countries;
-        }
-
-        /**
-         * @param countries The countries
-         */
-        public void setCountries(List<MovieDBCountry> countries) {
-            this.countries = countries;
-        }
-    }
-
-    public class MovieDBSpokenLanguage {
-
-        @SerializedName("iso_639_1")
-        @Expose
-        private String iso6391;
-        @Expose
-        private String name;
-
-        /**
-         * @return The iso6391
-         */
-        public String getIso6391() {
-            return iso6391;
-        }
-
-        /**
-         * @param iso6391 The iso_639_1
-         */
-        public void setIso6391(String iso6391) {
-            this.iso6391 = iso6391;
-        }
-
-        /**
-         * @return The name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name The name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
-    public class MovieDBTrailers {
-
-        @Expose
-        private List<Object> quicktime = new ArrayList<Object>();
-
-        @Expose
-        private List<MovieDBYoutube> movieDBYoutube = new ArrayList<MovieDBYoutube>();
-
-        /**
-         * @return The quicktime
-         */
-        public List<Object> getQuicktime() {
-            return quicktime;
-        }
-
-        /**
-         * @param quicktime The quicktime
-         */
-        public void setQuicktime(List<Object> quicktime) {
-            this.quicktime = quicktime;
-        }
-
-        /**
-         * @return The movieDBYoutube
-         */
-        public List<MovieDBYoutube> getMovieDBYoutube() {
-            return movieDBYoutube;
-        }
-
-        /**
-         * @param movieDBYoutube The movieDBYoutube
-         */
-        public void setMovieDBYoutube(List<MovieDBYoutube> movieDBYoutube) {
-            this.movieDBYoutube = movieDBYoutube;
-        }
-    }
-
-    public class MovieDBYoutube {
-
-        @Expose
-        private String name;
-
-        @Expose
-        private String size;
-
-        @Expose
-        private String source;
-
-        @Expose
-        private String type;
-
-        /**
-         * @return The name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * @param name The name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        /**
-         * @return The size
-         */
-        public String getSize() {
-            return size;
-        }
-
-        /**
-         * @param size The size
-         */
-        public void setSize(String size) {
-            this.size = size;
-        }
-
-        /**
-         * @return The source
-         */
-        public String getSource() {
-            return source;
-        }
-
-        /**
-         * @param source The source
-         */
-        public void setSource(String source) {
-            this.source = source;
-        }
-
-        /**
-         * @return The type
-         */
-        public String getType() {
-            return type;
-        }
-
-        /**
-         * @param type The type
-         */
-        public void setType(String type) {
-            this.type = type;
-        }
-    }
+    };
 }
