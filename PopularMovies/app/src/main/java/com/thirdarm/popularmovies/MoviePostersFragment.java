@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +71,6 @@ public class MoviePostersFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity();
-
     }
 
     @Override
@@ -150,6 +150,16 @@ public class MoviePostersFragment extends Fragment {
     The following methods deal with collecting and parsing JSON data from the TMDB servers via
      API calls, and filling the main UI with posters.
      */
+
+    public void showProgressBar() {
+        LinearLayout pc = (LinearLayout) rootView.findViewById(R.id.progress_container);
+        pc.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        LinearLayout pc = (LinearLayout) rootView.findViewById(R.id.progress_container);
+        pc.setVisibility(View.GONE);
+    }
 
     public void populateMovies(String category, TMDB api, String sort) {
         if (!load_guard) {
@@ -293,12 +303,14 @@ public class MoviePostersFragment extends Fragment {
                 });
                 //Log.d(LOG_TAG, "Posters loaded");
                 load_guard = true;
+                hideProgressBar();
             }
         });
     }
 
     // Resets the GridView for reloading new posters
     public void resetPostersGridView() {
+        showProgressBar();
         mPostersGrid.post(new Runnable() {
             @Override public void run() {
                 mPostersGrid.setAdapter(null);
