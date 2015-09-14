@@ -153,6 +153,10 @@ public class MoviePostersFragment extends Fragment {
 
     public void showProgressBar() {
         LinearLayout pc = (LinearLayout) rootView.findViewById(R.id.progress_container);
+
+        // TODO: Figure out how to fade the view in and out instead of having it just appear
+        //  right away
+        pc.bringToFront();
         pc.setVisibility(View.VISIBLE);
     }
 
@@ -168,6 +172,8 @@ public class MoviePostersFragment extends Fragment {
         } else {
             load_guard = false;
         }
+
+        showProgressBar();
 
         switch (category) {
             case "discover": {
@@ -200,7 +206,7 @@ public class MoviePostersFragment extends Fragment {
                 break;
             }
         }
-        resetPostersGridView();
+        //resetPostersGridView();
         populateMovieDBInfo();
     }
 
