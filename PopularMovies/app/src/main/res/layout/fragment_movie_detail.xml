@@ -1,0 +1,156 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity$MoviePostersFragment"
+    android:background="#FF000000">
+
+    <!-- Progress bar, to display while loading data from server -->
+    <LinearLayout
+        android:id="@+id/progress_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="#a0242424"
+        android:visibility="gone" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="3"/>
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            style="@style/Widget.AppCompat.ProgressBar" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:text="Loading..."
+            android:textColor="#FFF0F0F0" />
+
+    </LinearLayout>
+
+    <!-- Movie details -->
+    <ScrollView
+        android:id="@+id/parent_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <!-- movie banner -->
+            <RelativeLayout
+                android:id="@+id/banner_container"
+                android:layout_width="match_parent"
+                android:layout_height="600px" >
+
+                <ImageView
+                    android:id="@+id/banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
+                <TextView
+                    android:id="@+id/banner_title"
+                    android:text="TEST TEST TEST"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    style="@style/ShadowText"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:textStyle="bold|italic"
+                    android:gravity="bottom|center"
+                    android:padding="@dimen/activity_padding_margin" />
+
+
+            </RelativeLayout>
+
+            <!-- movie details -->
+            <LinearLayout
+                android:id="@+id/details_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:padding="@dimen/activity_padding_margin" >
+
+                <!-- Overview -->
+                <TextView
+                    android:id="@+id/title_overview"
+                    android:text="Overview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/abc_text_size_large_material" />
+
+                <TextView
+                    android:id="@+id/overview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:paddingBottom="@dimen/activity_padding_margin" />
+
+                <!-- Rating -->
+                <TextView
+                    android:id="@+id/title_rating"
+                    android:text="Rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+
+                <TextView
+                    android:id="@+id/rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:paddingBottom="@dimen/activity_padding_margin" />
+
+
+                <!-- Release date -->
+                <TextView
+                    android:id="@+id/title_release"
+                    android:text="Release info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+
+                <TextView
+                    android:id="@+id/release"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:paddingBottom="@dimen/activity_padding_margin" />
+
+            </LinearLayout>
+
+            <!-- Credits and copyright -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All info and images from The Movie Database"
+                android:textColor="#FFFFFFFF"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:textStyle="italic"
+                android:layout_gravity="bottom|center_horizontal" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

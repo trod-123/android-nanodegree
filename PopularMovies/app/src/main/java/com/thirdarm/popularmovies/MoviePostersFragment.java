@@ -1,10 +1,9 @@
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,21 +17,18 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.DISCOVER;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
-import com.thirdarm.popularmovies.model.MovieDBResults;
+import com.thirdarm.popularmovies.model.Results;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,7 +47,7 @@ public class MoviePostersFragment extends Fragment {
 
     // Playing with TMDB
     public TMDB TMDB;
-    public List<MovieDBResults.MovieDBResult> results;
+    public List<Results.MovieDBResult> results;
     public ArrayList<MovieDB> movies;
     public ArrayList<String> poster_urls;
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
@@ -229,7 +225,7 @@ public class MoviePostersFragment extends Fragment {
         }).start();
     }
 
-    public List<MovieDBResults.MovieDBResult> getResults(TMDB api) {
+    public List<Results.MovieDBResult> getResults(TMDB api) {
         while (api.getResults() == null) {
             try {
                 Thread.sleep(mDelay);
@@ -304,7 +300,11 @@ public class MoviePostersFragment extends Fragment {
                 // launches a "more details" screen for the selected movie
                 mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                        Toast.makeText(getActivity(), movies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(), movies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
+                        MovieDB dataToSend = movies.get(position);
+                        Intent intent = new Intent(mContext, DetailActivity.class);
+                        intent.putExtra("myData", dataToSend);
+                        startActivity(intent);
                     }
                 });
                 //Log.d(LOG_TAG, "Posters loaded");
