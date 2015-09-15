@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">Movies</string>
+    <string name="title_activity_detail">Movie details</string>
 
     <!-- App Bar buttons -->
     <string name="action_settings">Preferences</string>

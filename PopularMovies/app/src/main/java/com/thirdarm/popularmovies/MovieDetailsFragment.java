@@ -23,6 +23,8 @@ import java.text.DecimalFormat;
  */
 public class MovieDetailsFragment extends Fragment {
 
+    public static final String LOG_TAG = "Movies/Detail";
+
     Context mContext;
     View rootView;
     Intent intent;
@@ -45,11 +47,6 @@ public class MovieDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-        ImageView banner_image = (ImageView) rootView.findViewById(R.id.banner);
-        TextView banner_title = (TextView) rootView.findViewById(R.id.banner_title);
-        TextView overview = (TextView) rootView.findViewById(R.id.overview);
-        TextView rating = (TextView) rootView.findViewById(R.id.rating);
-        TextView release = (TextView) rootView.findViewById(R.id.release);
 
         // make sure to first check, before loading any intent extras or anything from intents,
         //  that the intent is not null and that intent has extra text matching the
@@ -61,25 +58,32 @@ public class MovieDetailsFragment extends Fragment {
             getActivity().setTitle(movie.getTitle());
 
             // set banner image
+            // TODO: What to do if the backdrop_path == null?
             Picasso.with(mContext)
                     .load(URL.BASE_IMAGE_URL + IMAGE.SIZE.BACKDROP.w1280 + movie.getBackdropPath())
                     .fit()
-                    .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
-                    .into(banner_image);
+                    .into((ImageView) rootView.findViewById(R.id.banner));
 
             // set movie tagline
-            banner_title.setText("\"" + movie.getTagline() + "\"");
+            Log.d(LOG_TAG, "Tagline for movie " + movie.getId() + ": " + movie.getTagline());
+            if (movie.getTagline().length() != 0) {
+                ((TextView)rootView.findViewById(R.id.banner_title)).setText("\"" + movie.getTagline() + "\"");
+            }
 
             // set overview
-            overview.setText(movie.getOverview());
+            if (movie.getOverview().length() != 0) {
+                ((TextView) rootView.findViewById(R.id.overview)).setText(movie.getOverview());
+            } else {
+                ((TextView) rootView.findViewById(R.id.overview)).setText("Overview not available");
+            }
 
             // set rating
-            rating.setText(new DecimalFormat("#.##").format(movie.getVoteAverage()) +
+            ((TextView) rootView.findViewById(R.id.rating)).setText(new DecimalFormat("#.##").format(movie.getVoteAverage()) +
                     " (" + movie.getVoteCount() + " reviews)");
 
             // set release
-            release.setText(movie.getReleaseDate());
+            ((TextView) rootView.findViewById(R.id.release)).setText(movie.getReleaseDate());
 
         }
 
