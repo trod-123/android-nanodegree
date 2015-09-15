@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -175,6 +176,7 @@ public class MoviePostersFragment extends Fragment {
     public void populateMovies(String category, TMDB api, String sort) {
 
         // check for internet connection
+        // TODO: Make internet connection checks persistent while grabbing data from server
         if (!isNetworkAvailable()) {
             progress_status.setText("There is no active internet connection.");
             progress_container.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
@@ -183,7 +185,7 @@ public class MoviePostersFragment extends Fragment {
 
         // check if sort buttons have been clicked before results have been loaded
         if (!load_guard) {
-            Log.d(LOG_TAG, "STILL LOADING PLEASE WAIT");
+            Toast.makeText(mContext, "Still loading results. Please wait.", Toast.LENGTH_SHORT).show();
             return;
         } else {
             load_guard = false;
