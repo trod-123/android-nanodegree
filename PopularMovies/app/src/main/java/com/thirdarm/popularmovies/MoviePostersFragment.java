@@ -44,6 +44,8 @@ public class MoviePostersFragment extends Fragment {
     // views
     View rootView;
     GridView mPostersGrid;
+    LinearLayout progress_container;
+    public static TextView progress_status; // allow other classes to modify the loading status
 
     // Playing with TMDB
     public TMDB TMDB;
@@ -113,6 +115,8 @@ public class MoviePostersFragment extends Fragment {
 
         // gets a reference to the root view
         rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
+        progress_container = (LinearLayout) rootView.findViewById(R.id.progress_container);
+        progress_status = (TextView) rootView.findViewById(R.id.progress);
 
         // gets a reference to the GridView
         mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
@@ -148,12 +152,10 @@ public class MoviePostersFragment extends Fragment {
      */
 
     public void showProgressBar() {
-        LinearLayout pc = (LinearLayout) rootView.findViewById(R.id.progress_container);
-
         // TODO: Figure out how to fade the view in and out instead of having it just appear
         //  right away
-        pc.bringToFront();
-        pc.setVisibility(View.VISIBLE);
+        progress_container.bringToFront();
+        progress_container.setVisibility(View.VISIBLE);
     }
 
     public void hideProgressBar() {
@@ -178,26 +180,31 @@ public class MoviePostersFragment extends Fragment {
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
+                progress_status.setText("Loading discover...");
                 Log.d(LOG_TAG, "Discover clicked");
                 break;
             }
             case "getNowPlaying": {
                 api.getNowPlaying();
+                progress_status.setText("Loading now playing movies...");
                 Log.d(LOG_TAG, "Now playing clicked");
                 break;
             }
             case "getPopular": {
                 api.getPopular();
+                progress_status.setText("Loading popular movies...");
                 Log.d(LOG_TAG, "Popular clicked");
                 break;
             }
             case "getTopRated": {
                 api.getTopRated();
+                progress_status.setText("Loading top rated movies...");
                 Log.d(LOG_TAG, "Top rated clicked");
                 break;
             }
             case "getUpcoming": {
                 api.getUpcoming();
+                progress_status.setText("Loading upcoming movies...");
                 Log.d(LOG_TAG, "Upcoming clicked");
                 break;
             }
@@ -226,6 +233,12 @@ public class MoviePostersFragment extends Fragment {
     }
 
     public List<Results.MovieDBResult> getResults(TMDB api) {
+        progress_status.post(new Runnable() {
+            @Override
+            public void run() {
+                progress_status.setText("Loading results...");
+            }
+        });
         while (api.getResults() == null) {
             try {
                 Thread.sleep(mDelay);
@@ -238,6 +251,12 @@ public class MoviePostersFragment extends Fragment {
     }
 
     public ArrayList<MovieDB> getMovies(TMDB api) {
+        progress_status.post(new Runnable() {
+            @Override
+            public void run() {
+                progress_status.setText("Loading movies...");
+            }
+        });
         for (int i : api.getMovieIDs()) {
             api.getMovieDetails(i);
             //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
@@ -279,6 +298,13 @@ public class MoviePostersFragment extends Fragment {
 //            }
 //        }
 
+        progress_status.post(new Runnable() {
+            @Override
+            public void run() {
+                progress_status.setText("Grabbing posters...");
+            }
+        });
+
         ArrayList<String> urls = new ArrayList<>();
         for (MovieDB movie : movies) {
             urls.add(movie.getPosterPath());
@@ -290,6 +316,13 @@ public class MoviePostersFragment extends Fragment {
     }
 
     public void setPostersGridView() {
+        progress_status.post(new Runnable() {
+            @Override
+            public void run() {
+                progress_status.setText("Setting up UI...");
+            }
+        });
+
         // Sets the adapter for the GridView. Needs to call post() because this method is called
         //  from another thread
         mPostersGrid.post(new Runnable() {
@@ -395,7 +428,6 @@ public class MoviePostersFragment extends Fragment {
             final int p = position;
             Picasso.with(mContext)
                     .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
-                    .placeholder(R.drawable.sample_0)
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView, new Callback() {
 

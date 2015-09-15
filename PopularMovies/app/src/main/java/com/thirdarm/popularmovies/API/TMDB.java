@@ -2,6 +2,7 @@ package com.thirdarm.popularmovies.API;
 
 import android.util.Log;
 
+import com.thirdarm.popularmovies.MoviePostersFragment;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.Results;
@@ -74,18 +75,22 @@ public class TMDB {
     // General method for getting Results (called by APIService methods below)
     public void getResults(Call<Results> response) {
         clear();
+        MoviePostersFragment.progress_status.setText("Establishing server connection...");
         response.enqueue(new Callback<Results>() {
             // Below methods occur on main thread
             @Override
             public void onResponse(Response<Results> response) {
                 // generate results
                 results = response.body().getMovieDBResults();
+                MoviePostersFragment.progress_status.setText("Got movie results");
 
                 // generate movieIDs list
+                MoviePostersFragment.progress_status.setText("Generating movie IDs list...");
                 movieIDs = new int[results.size()];
                 for (int i = 0; i < movieIDs.length; i++) {
                     movieIDs[i] = results.get(i).getId();
                 }
+                MoviePostersFragment.progress_status.setText("Finished generating movie IDs list");
             }
 
             @Override
@@ -136,6 +141,7 @@ public class TMDB {
                     getMovieDetails(i);
                 } else {
                     movies.add(response.body());
+                    MoviePostersFragment.progress_status.setText("Added " + response.body().getTitle());
                     //Log.d(LOG_TAG, "Movie " + i + " has really been added");
                 }
             }
