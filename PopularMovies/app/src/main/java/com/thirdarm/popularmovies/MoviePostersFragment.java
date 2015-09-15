@@ -200,32 +200,37 @@ public class MoviePostersFragment extends Fragment {
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
+                getActivity().setTitle("Discover");
                 progress_status.setText("Loading discover...");
-                Log.d(LOG_TAG, "Discover clicked");
+                //Log.d(LOG_TAG, "Discover clicked");
                 break;
             }
             case "getNowPlaying": {
                 api.getNowPlaying();
+                getActivity().setTitle("Now Playing");
                 progress_status.setText("Loading now playing movies...");
-                Log.d(LOG_TAG, "Now playing clicked");
+                //Log.d(LOG_TAG, "Now playing clicked");
                 break;
             }
             case "getPopular": {
                 api.getPopular();
+                getActivity().setTitle("Popular Movies");
                 progress_status.setText("Loading popular movies...");
-                Log.d(LOG_TAG, "Popular clicked");
+                //Log.d(LOG_TAG, "Popular clicked");
                 break;
             }
             case "getTopRated": {
                 api.getTopRated();
+                getActivity().setTitle("Top Rated Movies");
                 progress_status.setText("Loading top rated movies...");
-                Log.d(LOG_TAG, "Top rated clicked");
+                //Log.d(LOG_TAG, "Top rated clicked");
                 break;
             }
             case "getUpcoming": {
                 api.getUpcoming();
+                getActivity().setTitle("Upcoming Movies");
                 progress_status.setText("Loading upcoming movies...");
-                Log.d(LOG_TAG, "Upcoming clicked");
+                //Log.d(LOG_TAG, "Upcoming clicked");
                 break;
             }
         }
