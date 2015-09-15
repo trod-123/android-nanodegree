@@ -2,6 +2,8 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -155,6 +157,7 @@ public class MoviePostersFragment extends Fragment {
         // TODO: Figure out how to fade the view in and out instead of having it just appear
         //  right away
         progress_container.bringToFront();
+        progress_container.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
         progress_container.setVisibility(View.VISIBLE);
     }
 
@@ -163,7 +166,22 @@ public class MoviePostersFragment extends Fragment {
         pc.setVisibility(View.GONE);
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
     public void populateMovies(String category, TMDB api, String sort) {
+
+        // check for internet connection
+        if (!isNetworkAvailable()) {
+            progress_status.setText("There is no active internet connection.");
+            progress_container.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
+            return;
+        }
+
+        // check if sort buttons have been clicked before results have been loaded
         if (!load_guard) {
             Log.d(LOG_TAG, "STILL LOADING PLEASE WAIT");
             return;
@@ -212,6 +230,56 @@ public class MoviePostersFragment extends Fragment {
         //resetPostersGridView();
         populateMovieDBInfo();
     }
+
+
+//    public class FetchMovieResults extends AsyncTask<TMDB, Void, Void> {
+//
+//        TMDB api;
+//
+//        @Override protected Void doInBackground(TMDB... tmdb) {
+//            this.api = tmdb[0];
+//            // get api results
+//            api.getResults();
+//            return Void;
+//        }
+//
+//        @Override protected void onPostExecute(Void v) {
+//
+//            // make sure result is not null
+//
+//            }
+//
+//            // get movie details
+//            for (int i : api[0].getMovieIDs()) {
+//                api[0].getMovieDetails(i);
+//                //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
+//
+//                // make sure that the movies are added in the right order by waiting until the
+//                //  current movie has been added to the movies list before adding the next
+//                int current = api[0].getMovies().size();
+//                while (current != api[0].getMovies().size() - 1) {
+//                    try {
+//                        Thread.sleep(mDelay);
+//                        //Log.d(LOG_TAG, "A getMovies().size() call");
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            //Log.d(LOG_TAG, "Length of MovieIDs: " + api.getMovieIDs().length);
+//            while (api[0].getMovies().size() != api.getMovieIDs().length) {
+//                try {
+//                    Thread.sleep(mDelay);
+//                    //Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            //Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
+//            return api.getMovies();
+//            params[0].getMovieIDs();
+//        }
+//    }
 
     public void populateMovieDBInfo() {
         new Thread(new Runnable() {
