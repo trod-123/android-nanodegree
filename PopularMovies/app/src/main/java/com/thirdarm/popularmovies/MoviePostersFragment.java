@@ -37,6 +37,7 @@ import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.function.ReleaseDates;
 import com.thirdarm.popularmovies.model.MovieDB;
 
 import java.text.DecimalFormat;
@@ -356,7 +357,7 @@ public class MoviePostersFragment extends Fragment {
             name.setText(movies.get(position).getTitle());
 
             AutoResizeTextView date = (AutoResizeTextView) convertView.findViewById(R.id.poster_date);
-            date.setText(movies.get(position).getReleaseDate());
+            date.setText(ReleaseDates.convertDateFormat(movies.get(position).getReleaseDate()));
 
             AutoResizeTextView rating = (AutoResizeTextView) convertView.findViewById(R.id.poster_rating);
             rating.setText(

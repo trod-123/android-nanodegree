@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.function.ReleaseDates;
 import com.thirdarm.popularmovies.model.Genre;
 import com.thirdarm.popularmovies.model.MovieDB;
 
@@ -96,7 +96,8 @@ public class MovieDetailsFragment extends Fragment {
             // set rating
             ((TextView) rootView.findViewById(R.id.rating))
                     .setText(
-                            "Rating: "
+                            getString(R.string.detail_ratings)
+                                    +": "
                                     + new DecimalFormat("#.##").format(movie.getVoteAverage())
                                     + " ("
                                     + movie.getVoteCount()
@@ -106,9 +107,7 @@ public class MovieDetailsFragment extends Fragment {
 
             // set release
             ((TextView) rootView.findViewById(R.id.release))
-                    .setText(
-                            "Released "
-                                    + movie.getReleaseDate());
+                    .setText(ReleaseDates.setReleaseDate(mContext, movie));
 
             // set genres
             String genres = "Genres:\n";

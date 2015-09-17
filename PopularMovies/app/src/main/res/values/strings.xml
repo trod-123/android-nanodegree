@@ -38,7 +38,7 @@
     <string name="detail_extra">Info at a glance</string>
     <string name="detail_ratings">Rating</string>
     <string name="detail_reviews">Reviews</string>
-    <string name="detail_release_date">Released</string>
+    <string name="detail_release_date">Release</string>
     <string name="detail_release_info">Release info</string>
 
     <!-- Loading error messages -->
