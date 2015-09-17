@@ -55,6 +55,7 @@ public class MoviePostersFragment extends Fragment {
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
     public String category = PARAMS.CATEGORY.POPULAR;
     public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
+    public String language = "en";
     public boolean load_guard = true;
 
     public MoviePostersFragment() {
@@ -122,7 +123,7 @@ public class MoviePostersFragment extends Fragment {
         mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
-        TMDB = new TMDB(getString(R.string.movie_api_key), "en", 1);
+        TMDB = new TMDB(getString(R.string.movie_api_key), language, 1);
 
         // Populate with popular movies by default
         new FetchMovieResultsTask().execute(category);
@@ -203,11 +204,32 @@ public class MoviePostersFragment extends Fragment {
         progress_container.bringToFront();
         progress_container.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
         progress_container.setVisibility(View.VISIBLE);
+        enableDisableViewGroup((ViewGroup) rootView, false);
     }
 
     public void hideProgressBar() {
-        LinearLayout pc = (LinearLayout) rootView.findViewById(R.id.progress_container);
-        pc.setVisibility(View.GONE);
+        progress_container.setVisibility(View.GONE);
+        rootView.setClickable(true);
+        enableDisableViewGroup((ViewGroup) rootView, true);
+    }
+
+    /**
+     * Enables/Disables all child views in a view group.
+     * From http://stackoverflow.com/questions/5418510/disable-the-touch-events-for-all-the-views
+     *
+     * @param viewGroup the view group
+     * @param enabled <code>true</code> to enable, <code>false</code> to disable
+     * the views.
+     */
+    public void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled) {
+        int childCount = viewGroup.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View view = viewGroup.getChildAt(i);
+            view.setEnabled(enabled);
+            if (view instanceof ViewGroup) {
+                enableDisableViewGroup((ViewGroup) view, enabled);
+            }
+        }
     }
 
     // Check network connection
