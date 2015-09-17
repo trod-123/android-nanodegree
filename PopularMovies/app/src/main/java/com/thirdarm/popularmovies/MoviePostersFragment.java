@@ -54,7 +54,6 @@ public class MoviePostersFragment extends Fragment {
     public TMDB TMDB;
     public List<Results.MovieDBResult> results;
     public ArrayList<MovieDB> movies;
-    public ArrayList<String> poster_urls;
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
     public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
     public boolean load_guard = true;
@@ -298,9 +297,6 @@ public class MoviePostersFragment extends Fragment {
                 // now get the individual movies and populate the movies list
                 movies = getMovies(TMDB);
 
-                // now get the poster URLs for each of the movies
-                poster_urls = getPosterUrls(movies);
-
                 // finally, get and fill the grid with posters
                 setPostersGridView(); // uses post() to fill the grid
             }
@@ -361,35 +357,6 @@ public class MoviePostersFragment extends Fragment {
         return api.getMovies();
     }
 
-    public ArrayList<String> getPosterUrls(ArrayList<MovieDB> movies) {
-
-//        // for debugging. save for future errors
-//        Log.d(LOG_TAG, "Posters movie size: " + movies.size());
-//        for (MovieDB movie : movies) {
-//            if (movie == null) {
-//                Log.d(LOG_TAG, "MOVIE IS NULL");
-//            } else {
-//                Log.d(LOG_TAG, "Movie is not null");
-//            }
-//        }
-
-        progress_status.post(new Runnable() {
-            @Override
-            public void run() {
-                progress_status.setText("Grabbing posters...");
-            }
-        });
-
-        ArrayList<String> urls = new ArrayList<>();
-        for (MovieDB movie : movies) {
-            urls.add(movie.getPosterPath());
-            //Log.d(LOG_TAG, movie.getTitle() + " poster added");
-            Log.d(LOG_TAG, movie.getTitle() + ": poster link " + movie.getPosterPath());
-        }
-        //Log.d(LOG_TAG, "Size of poster_urls: " + urls.size());
-        return urls;
-    }
-
     public void setPostersGridView() {
         progress_status.post(new Runnable() {
             @Override
@@ -403,7 +370,7 @@ public class MoviePostersFragment extends Fragment {
         mPostersGrid.post(new Runnable() {
             @Override
             public void run() {
-                mPostersGrid.setAdapter(new PostersAdapter(mContext, poster_urls));
+                mPostersGrid.setAdapter(new PostersAdapter(mContext, movies));
 
                 // launches a "more details" screen for the selected movie
                 mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -441,17 +408,17 @@ public class MoviePostersFragment extends Fragment {
      */
     public class PostersAdapter extends BaseAdapter {
         private Context mContext;
-        private ArrayList<String> image_urls;
+        private List<MovieDB> movies;
         private LayoutInflater inflater;
 
-        public PostersAdapter(Context c, ArrayList<String> images) {
+        public PostersAdapter(Context c, List<MovieDB> movies) {
             mContext = c;
-            image_urls = images;
+            this.movies = movies;
             inflater = LayoutInflater.from(c);
         }
 
         public int getCount() {
-            return image_urls.size();
+            return movies.size();
         }
 
         // returns the actual object at specified position
@@ -470,7 +437,7 @@ public class MoviePostersFragment extends Fragment {
         //  - checks to see if that view is null
         //     - if view is null, a view is initialized and configured with desired properties
         //     - if view is not null, that view is then returned
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.poster, null);
             }
@@ -500,19 +467,18 @@ public class MoviePostersFragment extends Fragment {
 //                }
 //            });
 
-            final int p = position;
             Picasso.with(mContext)
-                    .load(URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position))
+                    .load(URL.BASE_IMAGE_URL + poster_size + movies.get(position).getPosterPath())
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView, new Callback() {
 
                         // Callback used to notify whether Picasso successfully loaded the image
                         @Override public void onSuccess() {
-                            Log.d(LOG_TAG, movies.get(p).getTitle() + ": loaded successfully");
+                            Log.d(LOG_TAG, movies.get(position).getTitle() + ": loaded successfully");
                         }
 
                         @Override public void onError() {
-                            Log.e(LOG_TAG, movies.get(p).getTitle() + ": ERROR PICASSO DID NOT LOAD IMAGE");
+                            Log.e(LOG_TAG, movies.get(position).getTitle() + ": ERROR PICASSO DID NOT LOAD IMAGE");
                         }
                     });
 
