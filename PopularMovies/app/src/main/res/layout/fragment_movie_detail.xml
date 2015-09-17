@@ -51,6 +51,47 @@
 
             </RelativeLayout>
 
+            <!-- movie poster -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/activity_padding_margin" >
+
+                <!-- Poster -->
+                <ImageView
+                    android:id="@+id/poster"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/activity_padding_margin" >
+
+                    <!-- Rating -->
+                    <TextView
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:paddingBottom="@dimen/activity_padding_margin" />
+
+
+                    <!-- Release date -->
+                    <TextView
+                        android:id="@+id/release"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="@dimen/abc_text_size_small_material" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
             <!-- movie details -->
             <LinearLayout
                 android:id="@+id/details_container"
@@ -72,43 +113,6 @@
 
                 <TextView
                     android:id="@+id/overview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
-
-                <!-- Rating -->
-                <TextView
-                    android:id="@+id/title_rating"
-                    android:text="@string/detail_ratings"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
-
-                <TextView
-                    android:id="@+id/rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
-
-
-                <!-- Release date -->
-                <TextView
-                    android:id="@+id/title_release"
-                    android:text="@string/detail_release_info"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
-
-                <TextView
-                    android:id="@+id/release"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFFFF"

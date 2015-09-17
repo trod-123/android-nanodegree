@@ -80,6 +80,11 @@ public class MovieDetailsFragment extends Fragment {
                     .error(R.drawable.piq_76054_400x400)
                     .into((ImageView) rootView.findViewById(R.id.banner));
 
+            Picasso.with(mContext)
+                    .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 + movie.getPosterPath())
+                    .error(R.drawable.piq_76054_400x400)
+                    .into((ImageView) rootView.findViewById(R.id.poster));
+
             // set movie tagline if there is one
             if (movie.getTagline().length() != 0) {
                 ((TextView) rootView.findViewById(R.id.banner_title))
@@ -98,7 +103,8 @@ public class MovieDetailsFragment extends Fragment {
             // set rating
             ((TextView) rootView.findViewById(R.id.rating))
                     .setText(
-                            new DecimalFormat("#.##").format(movie.getVoteAverage())
+                            "Rating: "
+                                    + new DecimalFormat("#.##").format(movie.getVoteAverage())
                                     + " ("
                                     + movie.getVoteCount()
                                     + " "
@@ -107,7 +113,9 @@ public class MovieDetailsFragment extends Fragment {
 
             // set release
             ((TextView) rootView.findViewById(R.id.release))
-                    .setText(movie.getReleaseDate());
+                    .setText(
+                            "Released "
+                                    + movie.getReleaseDate());
         }
 
         TextView url_text = (TextView) rootView.findViewById(R.id.tmdb_link);
