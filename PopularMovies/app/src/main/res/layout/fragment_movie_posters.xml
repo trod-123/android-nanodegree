@@ -23,10 +23,11 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:background="#f0242424">
+        android:background="#f0242424"
+        android:padding="@dimen/activity_padding_margin" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"/>
 
@@ -38,13 +39,16 @@
             android:layout_gravity="center"
             style="@style/Widget.AppCompat.ProgressBar" />
 
-        <TextView
+        <com.thirdarm.popularmovies.AutoResizeTextView
             android:id="@+id/progress"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
             android:text="@string/status_loading"
-            android:textColor="#FFF0F0F0" />
+            android:textColor="#FFF0F0F0"
+            android:maxLines="2"
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:gravity="top|center" />
 
     </LinearLayout>
 

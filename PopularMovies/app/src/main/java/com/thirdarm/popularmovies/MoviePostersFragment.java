@@ -352,13 +352,13 @@ public class MoviePostersFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.poster, null);
             }
 
-            TextView name = (TextView) convertView.findViewById(R.id.poster_name);
+            AutoResizeTextView name = (AutoResizeTextView) convertView.findViewById(R.id.poster_name);
             name.setText(movies.get(position).getTitle());
 
-            TextView date = (TextView) convertView.findViewById(R.id.poster_date);
+            AutoResizeTextView date = (AutoResizeTextView) convertView.findViewById(R.id.poster_date);
             date.setText(movies.get(position).getReleaseDate());
 
-            TextView rating = (TextView) convertView.findViewById(R.id.poster_rating);
+            AutoResizeTextView rating = (AutoResizeTextView) convertView.findViewById(R.id.poster_rating);
             rating.setText(
                     getString(R.string.detail_ratings)
                             + ": "
