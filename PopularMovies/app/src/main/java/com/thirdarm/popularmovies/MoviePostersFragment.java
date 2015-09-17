@@ -43,7 +43,7 @@ public class MoviePostersFragment extends Fragment {
 
     // views
     public View rootView;
-    public GridView mPostersGrid;
+    public GridView mGridView;
     public LinearLayout progress_container;
     public static TextView progress_status; // allow other classes to modify the loading status
 
@@ -108,23 +108,42 @@ public class MoviePostersFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    // Save and reuse information upon activity destroy
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (load_guard && movies != null) {
+            outState.putParcelableArrayList("movies", movies);
+            outState.putString("title", category);
+            outState.putInt("position", mGridView.getFirstVisiblePosition());
+        }
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // gets a reference to the root view
+        // Get a reference to layout elements
         rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
         progress_container = (LinearLayout) rootView.findViewById(R.id.progress_container);
         progress_status = (TextView) rootView.findViewById(R.id.progress);
-
-        // gets a reference to the GridView
-        mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
+        mGridView = (GridView) rootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
         TMDB = new TMDB(getString(R.string.movie_api_key), language, 1);
 
-        // Populate with popular movies by default
-        new FetchMovieResultsTask().execute(category);
+        // Recycle information from last destroy, if applicable
+        if(savedInstanceState != null &&
+                savedInstanceState.containsKey("movies") &&
+                savedInstanceState.containsKey("title") &&
+                savedInstanceState.containsKey("position")) {
+            setGridView(movies = savedInstanceState.getParcelableArrayList("movies"));
+            setTitle(category = savedInstanceState.getString("title"));
+            mGridView.smoothScrollToPosition(savedInstanceState.getInt("position"));
+            hideProgressBar();
+        } else {
+            // Otherwise, populate with popular movies by default
+            new FetchMovieResultsTask().execute(category);
+        }
 
         return rootView;
     }
@@ -176,18 +195,7 @@ public class MoviePostersFragment extends Fragment {
         @Override protected void onPostExecute(ArrayList<MovieDB> result) {
             // Make sure result is not null
             if (result != null) {
-                movies = result;
-                mPostersGrid.setAdapter(new PostersAdapter(mContext, movies));
-
-                // Launch a "more details" screen for the selected movie
-                mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                        MovieDB dataToSend = movies.get(position);
-                        Intent intent = new Intent(mContext, DetailActivity.class);
-                        intent.putExtra("myData", dataToSend);
-                        startActivity(intent);
-                    }
-                });
+                setGridView(movies = result);
 
                 // Enable reloading and hide the progress spinner
                 load_guard = true;
@@ -261,6 +269,21 @@ public class MoviePostersFragment extends Fragment {
                 break;
             }
         }
+    }
+
+    // Populate grid view with posters
+    public void setGridView(final ArrayList<MovieDB> movies) {
+        mGridView.setAdapter(new PostersAdapter(mContext, movies));
+
+        // Launch a "more details" screen for the selected movie
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                MovieDB dataToSend = movies.get(position);
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                intent.putExtra("myData", dataToSend);
+                startActivity(intent);
+            }
+        });
     }
 
 

@@ -1,57 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/poster_container"
-    android:layout_width="550px" android:layout_height="750px">
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:padding="2dp">
 
+    <!-- Movie poster takes up whole space -->
     <ImageView
         android:id="@+id/poster"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
 
+    <!-- Shadow overlay for text -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="300px"
+        android:layout_height="125dp"
         android:background="#a0424242"
         android:layout_alignParentBottom="true"/>
 
+    <!-- For the text overlay -->
     <LinearLayout
         android:id="@+id/poster_details"
         android:layout_width="match_parent"
-        android:layout_height="300px"
+        android:layout_height="125dp"
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:padding="@dimen/activity_padding_margin">
 
-        <TextView
+        <com.thirdarm.popularmovies.AutoResizeTextView
             android:id="@+id/poster_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
             android:text="Mad Max: The Fury Road"
             android:gravity="bottom"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:textIsSelectable="false"
             android:textStyle="bold"
-            android:textColor="#FFFFFFFF" />
+            android:textColor="#FFFFFFFF"
+            android:textSize="@dimen/abc_text_size_subhead_material" />
 
-        <TextView
+        <com.thirdarm.popularmovies.AutoResizeTextView
             android:id="@+id/poster_date"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textSize="@dimen/abc_text_size_small_material"
             android:text="Released August 12, 2014"
             android:gravity="bottom"
             android:textColor="#FFFFFFFF" />
 
-        <TextView
+        <com.thirdarm.popularmovies.AutoResizeTextView
             android:id="@+id/poster_rating"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="Rating: 5/5 (4000 votes)"
-            android:textColor="#FFFFFFFF"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textColor="#FFFFFFFF" />
 
     </LinearLayout>
 
