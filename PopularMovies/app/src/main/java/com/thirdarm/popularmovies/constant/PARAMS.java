@@ -11,6 +11,15 @@ public class PARAMS {
         public static final String API_KEY = "api_key";
     }
 
+    public class CATEGORY {
+        public static final String DISCOVER = "discover";
+        public static final String LATEST = "latest";
+        public static final String PLAYING = "now_playing";
+        public static final String POPULAR = "popular";
+        public static final String TOP = "top_rated";
+        public static final String UPCOMING = "upcoming";
+    }
+
     public class DISCOVER {
         public static final String CERTIFICATION_COUNTRY = "certification_country"; // ISO 3166-1
         public static final String CERTIFICATION = "certification";

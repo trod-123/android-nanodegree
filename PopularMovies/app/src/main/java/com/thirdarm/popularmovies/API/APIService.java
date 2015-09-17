@@ -18,49 +18,32 @@ import retrofit.http.Query;
 public interface APIService {
 
     // Discovery information
-    // https://api.themoviedb.org/3/discover/movie?api_key=###&sort_by=popularity.desc
+    // https://api.themoviedb.org/3/discover/movie?api_key=###&sort_by=##&language=###&page=###
     @GET("discover/movie")
     Call<Results> discover(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                                  @Query(PARAMS.DISCOVER.SORT_BY) String sort);
+                           @Query(PARAMS.DISCOVER.SORT_BY) String sort,
+                           @Query(PARAMS.DISCOVER.LANGUAGE) String code,
+                           @Query(PARAMS.DISCOVER.PAGE) int page);
 
     // Latest movie (refreshes everyday)
-    // https://api.themoviedb.org/3/movie/latest?api_key=###
+    // https://api.themoviedb.org/3/movie/latest?api_key=###&language=###
     @GET("movie/latest")
-    Call<MovieDB> getLatest(@Query(PARAMS.GLOBAL.API_KEY) String key);
+    Call<MovieDB> getLatest(@Query(PARAMS.GLOBAL.API_KEY) String key,
+                            @Query(PARAMS.DISCOVER.LANGUAGE) String code);
 
     // Movies released this week (refreshes everyday)
-    // https://api.themoviedb.org/3/movie/now_playing?api_key=###
-    @GET("movie/now_playing")
-    Call<Results> getNowPlaying(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                                       @Query(PARAMS.DISCOVER.PAGE) int page,
-                                       @Query(PARAMS.DISCOVER.LANGUAGE) String code);
-
-    // Most popular movies (refreshes everyday)
-    // https://api.themoviedb.org/3/movie/popular?api_key=###
-    @GET("movie/popular")
-    Call<Results> getPopular(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                                    @Query(PARAMS.DISCOVER.PAGE) int page,
-                                    @Query(PARAMS.DISCOVER.LANGUAGE) String code);
-
-    // Top rated movies (refreshes everyday)
-    // https://api.themoviedb.org/3/movie/top_rated?api_key=###
-    @GET("movie/top_rated")
-    Call<Results> getTopRated(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                                     @Query(PARAMS.DISCOVER.PAGE) int page,
-                                     @Query(PARAMS.DISCOVER.LANGUAGE) String code);
-
-    // Upcoming movies (refreshes everyday)
-    // https://api.themoviedb.org/3/movie/upcoming?api_key=###
-    @GET("movie/upcoming")
-    Call<Results> getUpcoming(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                                     @Query(PARAMS.DISCOVER.PAGE) int page,
-                                     @Query(PARAMS.DISCOVER.LANGUAGE) String code);
-
+    // https://api.themoviedb.org/3/movie/{category}?api_key=###&language=###&page=###
+    @GET("movie/{category}")
+    Call<Results> getResults(@Path("category") String category,
+                             @Query(PARAMS.GLOBAL.API_KEY) String key,
+                             @Query(PARAMS.DISCOVER.LANGUAGE) String code,
+                             @Query(PARAMS.DISCOVER.PAGE) int page);
 
     // Individual movie information
     // https://api.themoviedb.org/3/movie/550?api_key=###&append_to_response=images,releases,trailers
     @GET("movie/{id}")
     Call<MovieDB> getMovieDetails(@Path("id") int id,
                                   @Query(PARAMS.GLOBAL.API_KEY) String key,
+                                  @Query(PARAMS.DISCOVER.LANGUAGE) String code,
                                   @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
 }

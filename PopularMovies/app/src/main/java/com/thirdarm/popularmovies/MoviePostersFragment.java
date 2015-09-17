@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,14 +22,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.DISCOVER;
 import com.thirdarm.popularmovies.constant.IMAGE;
+import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
-import com.thirdarm.popularmovies.model.Results;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -42,19 +42,18 @@ public class MoviePostersFragment extends Fragment {
     public final String LOG_TAG = "MoviePostersFragment";
 
     public Context mContext;
-    public final int mDelay = 100;
 
     // views
-    View rootView;
-    GridView mPostersGrid;
-    LinearLayout progress_container;
+    public View rootView;
+    public GridView mPostersGrid;
+    public LinearLayout progress_container;
     public static TextView progress_status; // allow other classes to modify the loading status
 
     // Playing with TMDB
     public TMDB TMDB;
-    public List<Results.MovieDBResult> results;
     public ArrayList<MovieDB> movies;
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
+    public String category = PARAMS.CATEGORY.POPULAR;
     public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
     public boolean load_guard = true;
 
@@ -88,26 +87,25 @@ public class MoviePostersFragment extends Fragment {
 
         switch (id) {
             case R.id.action_discover:
-                populateMovies("discover", TMDB, sort_by);
+                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.DISCOVER);
                 return true;
 
             case R.id.action_get_playing:
-                populateMovies("getNowPlaying", TMDB, null);
+                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.PLAYING);
                 return true;
 
             case R.id.action_get_popular:
-                populateMovies("getPopular", TMDB, null);
+                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.POPULAR);
                 return true;
 
             case R.id.action_get_rated:
-                populateMovies("getTopRated", TMDB, null);
+                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.TOP);
                 return true;
 
             case R.id.action_get_upcoming:
-                populateMovies("getUpcoming", TMDB, null);
+                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.UPCOMING);
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -124,34 +122,80 @@ public class MoviePostersFragment extends Fragment {
         mPostersGrid = (GridView) rootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
-        TMDB = new TMDB(getString(R.string.movie_api_key), "en");
+        TMDB = new TMDB(getString(R.string.movie_api_key), "en", 1);
 
-        populateMovies("getPopular", TMDB, null);
-
-        // Can't do this. Result ends up being null even though it was called through onResponse().
-        //  Apparently, even though result was modified in onResponse(), it returns to being null
-        //  when onResponse() has been completed.
-        // results = TMDB.getResults().get(0).getTitle();
-
-        // The reason why it is null when the above line is called is because the app is still
-        //  getting data from the server, and therefore it needs to wait for until the
-        //  data has been collected before it is no longer null.
-
-        // TODO_DONE: Need to figure out how to make the result change persistent
-        // Bingo. Run a new thread that continuously checks to see if result has been loaded with
-        //  the List<MovieDBResult> data, and once it has been loaded, access the data. While
-        //  the thread is continuously checking, it waits for some mDelay to reduce the number
-        //  of getResults() calls to TMDB.
-        // TODO: Now, is this efficient?
+        // Populate with popular movies by default
+        new FetchMovieResultsTask().execute(category);
 
         return rootView;
     }
 
 
-    /*
-    The following methods deal with collecting and parsing JSON data from the TMDB servers via
-     API calls, and filling the main UI with posters.
+    /**
+     * Methods below collect and parse JSON data from the TMDB servers via API calls and
+     * fill the main UI with posters in a grid view.
      */
+
+    // AsyncTask for fetching movie data
+    public class FetchMovieResultsTask extends AsyncTask<String, Void, ArrayList<MovieDB>> {
+        @Override protected void onPreExecute() {
+            // Check for internet connection
+            // TODO: Make internet connection checks persistent while grabbing data from server
+            if (!isNetworkAvailable()) {
+                progress_status.setText("There is no active internet connection.");
+                progress_container.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
+                cancel(true);
+            }
+
+            // Check if sort buttons have been clicked before results have been loaded
+            if (!load_guard) {
+                Toast.makeText(mContext, "Still loading results. Please wait.", Toast.LENGTH_SHORT).show();
+                cancel(true);
+            } else {
+                // Disable reloading while grid is being populated
+                load_guard = false;
+            }
+
+            // Stop the AsyncTask if either condition above is met
+            if (isCancelled()) {
+                return;
+            }
+
+            // Otherwise, proceed with the AsyncTask
+            showProgressBar();
+            setTitle(category);
+        }
+
+        @Override protected ArrayList<MovieDB> doInBackground(String... category) {
+            if (category[0] == PARAMS.CATEGORY.DISCOVER) {
+                return TMDB.discover(sort_by);
+            } else {
+                return TMDB.getResults(category[0]);
+            }
+        }
+
+        @Override protected void onPostExecute(ArrayList<MovieDB> result) {
+            // Make sure result is not null
+            if (result != null) {
+                movies = result;
+                mPostersGrid.setAdapter(new PostersAdapter(mContext, movies));
+
+                // Launch a "more details" screen for the selected movie
+                mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                        MovieDB dataToSend = movies.get(position);
+                        Intent intent = new Intent(mContext, DetailActivity.class);
+                        intent.putExtra("myData", dataToSend);
+                        startActivity(intent);
+                    }
+                });
+
+                // Enable reloading and hide the progress spinner
+                load_guard = true;
+                hideProgressBar();
+            }
+        }
+    }
 
     public void showProgressBar() {
         // TODO: Figure out how to fade the view in and out instead of having it just appear
@@ -166,245 +210,45 @@ public class MoviePostersFragment extends Fragment {
         pc.setVisibility(View.GONE);
     }
 
+    // Check network connection
     private boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    public void populateMovies(String category, TMDB api, String sort) {
-
-        // check for internet connection
-        // TODO: Make internet connection checks persistent while grabbing data from server
-        if (!isNetworkAvailable()) {
-            progress_status.setText("There is no active internet connection.");
-            progress_container.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
-            return;
-        }
-
-        // check if sort buttons have been clicked before results have been loaded
-        if (!load_guard) {
-            Toast.makeText(mContext, "Still loading results. Please wait.", Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            load_guard = false;
-        }
-
-        showProgressBar();
-
+    // Set the title of the activity based on sort category
+    public void setTitle(String category) {
         switch (category) {
-            case "discover": {
-                try {
-                    api.discover(sort);
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
+            case PARAMS.CATEGORY.DISCOVER: {
                 getActivity().setTitle("Discover");
-                progress_status.setText("Loading discover...");
-                //Log.d(LOG_TAG, "Discover clicked");
                 break;
             }
-            case "getNowPlaying": {
-                api.getNowPlaying();
-                getActivity().setTitle("Now Playing");
-                progress_status.setText("Loading now playing movies...");
-                //Log.d(LOG_TAG, "Now playing clicked");
+            case PARAMS.CATEGORY.PLAYING: {
+                getActivity().setTitle("Now playing");
                 break;
             }
-            case "getPopular": {
-                api.getPopular();
-                getActivity().setTitle("Popular Movies");
-                progress_status.setText("Loading popular movies...");
-                //Log.d(LOG_TAG, "Popular clicked");
+            case PARAMS.CATEGORY.POPULAR: {
+                getActivity().setTitle("Popular movies");
                 break;
             }
-            case "getTopRated": {
-                api.getTopRated();
-                getActivity().setTitle("Top Rated Movies");
-                progress_status.setText("Loading top rated movies...");
-                //Log.d(LOG_TAG, "Top rated clicked");
+            case PARAMS.CATEGORY.TOP: {
+                getActivity().setTitle("Top rated");
                 break;
             }
-            case "getUpcoming": {
-                api.getUpcoming();
-                getActivity().setTitle("Upcoming Movies");
-                progress_status.setText("Loading upcoming movies...");
-                //Log.d(LOG_TAG, "Upcoming clicked");
+            case PARAMS.CATEGORY.UPCOMING: {
+                getActivity().setTitle("Upcoming movies");
                 break;
             }
         }
-        //resetPostersGridView();
-        populateMovieDBInfo();
     }
 
 
-//    public class FetchMovieResults extends AsyncTask<TMDB, Void, Void> {
-//
-//        TMDB api;
-//
-//        @Override protected Void doInBackground(TMDB... tmdb) {
-//            this.api = tmdb[0];
-//            // get api results
-//            api.getResults();
-//            return Void;
-//        }
-//
-//        @Override protected void onPostExecute(Void v) {
-//
-//            // make sure result is not null
-//
-//            }
-//
-//            // get movie details
-//            for (int i : api[0].getMovieIDs()) {
-//                api[0].getMovieDetails(i);
-//                //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
-//
-//                // make sure that the movies are added in the right order by waiting until the
-//                //  current movie has been added to the movies list before adding the next
-//                int current = api[0].getMovies().size();
-//                while (current != api[0].getMovies().size() - 1) {
-//                    try {
-//                        Thread.sleep(mDelay);
-//                        //Log.d(LOG_TAG, "A getMovies().size() call");
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            //Log.d(LOG_TAG, "Length of MovieIDs: " + api.getMovieIDs().length);
-//            while (api[0].getMovies().size() != api.getMovieIDs().length) {
-//                try {
-//                    Thread.sleep(mDelay);
-//                    //Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            //Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
-//            return api.getMovies();
-//            params[0].getMovieIDs();
-//        }
-//    }
-
-    public void populateMovieDBInfo() {
-        new Thread(new Runnable() {
-            public void run() {
-                // first check if the results are ready
-                results = getResults(TMDB); // issue. it waits for it to return before proceeding
-                //  to next method below
-
-                // now get the individual movies and populate the movies list
-                movies = getMovies(TMDB);
-
-                // finally, get and fill the grid with posters
-                setPostersGridView(); // uses post() to fill the grid
-            }
-        }).start();
-    }
-
-    public List<Results.MovieDBResult> getResults(TMDB api) {
-        progress_status.post(new Runnable() {
-            @Override
-            public void run() {
-                progress_status.setText("Loading results...");
-            }
-        });
-        while (api.getResults() == null) {
-            try {
-                Thread.sleep(mDelay);
-                //Log.d(LOG_TAG, "A getResults() call");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-       return api.getResults();
-    }
-
-    public ArrayList<MovieDB> getMovies(TMDB api) {
-        progress_status.post(new Runnable() {
-            @Override
-            public void run() {
-                progress_status.setText("Loading movies...");
-            }
-        });
-        for (int i : api.getMovieIDs()) {
-            api.getMovieDetails(i);
-            //Log.d(LOG_TAG, "I think Movie " + i + " has been added");
-
-            // make sure that the movies are added in the right order by waiting until the
-            //  current movie has been added to the movies list before adding the next
-            int current = api.getMovies().size();
-            while (current != api.getMovies().size() - 1) {
-                try {
-                    Thread.sleep(mDelay);
-                    //Log.d(LOG_TAG, "A getMovies().size() call");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        //Log.d(LOG_TAG, "Length of MovieIDs: " + api.getMovieIDs().length);
-        while (api.getMovies().size() != api.getMovieIDs().length) {
-            try {
-                Thread.sleep(mDelay);
-                //Log.d(LOG_TAG, "A getMovies() and getMovieIDs() call");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        //Log.d(LOG_TAG, "Size of getMovies(): " + api.getMovies().size());
-        return api.getMovies();
-    }
-
-    public void setPostersGridView() {
-        progress_status.post(new Runnable() {
-            @Override
-            public void run() {
-                progress_status.setText("Setting up UI...");
-            }
-        });
-
-        // Sets the adapter for the GridView. Needs to call post() because this method is called
-        //  from another thread
-        mPostersGrid.post(new Runnable() {
-            @Override
-            public void run() {
-                mPostersGrid.setAdapter(new PostersAdapter(mContext, movies));
-
-                // launches a "more details" screen for the selected movie
-                mPostersGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                        //Toast.makeText(getActivity(), movies.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-                        MovieDB dataToSend = movies.get(position);
-                        Intent intent = new Intent(mContext, DetailActivity.class);
-                        intent.putExtra("myData", dataToSend);
-                        startActivity(intent);
-                    }
-                });
-                //Log.d(LOG_TAG, "Posters loaded");
-                load_guard = true;
-                hideProgressBar();
-            }
-        });
-    }
-
-    // Resets the GridView for reloading new posters
-    public void resetPostersGridView() {
-        showProgressBar();
-        mPostersGrid.post(new Runnable() {
-            @Override public void run() {
-                mPostersGrid.setAdapter(null);
-            }
-        });
-    }
-
-
-    /*
-    ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
-     to be displayed in the grid.
-    Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
-     Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
+    /**
+     * ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
+     *  to be displayed in the grid.
+     * Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
+     *  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
      */
     public class PostersAdapter extends BaseAdapter {
         private Context mContext;
@@ -431,13 +275,13 @@ public class MoviePostersFragment extends Fragment {
             return 0;
         }
 
-        // creates a new view (in this case, ImageView) for each item referenced by the Adapter
+        // Creates a new view (in this case, ImageView) for each item referenced by the Adapter
         // How it works:
         //  - a view is passed in, which is normally a recycled object
         //  - checks to see if that view is null
         //     - if view is null, a view is initialized and configured with desired properties
         //     - if view is not null, that view is then returned
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = inflater.inflate(R.layout.poster, null);
             }
@@ -455,32 +299,10 @@ public class MoviePostersFragment extends Fragment {
 
             ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
 
-            //Log.d(LOG_TAG, "About to run picasso...");
-            //Log.d(LOG_TAG, "Image url link: " + URL.BASE_IMAGE_URL + poster_size + poster_urls.get(position));
-
-//          //Do not include here as it consumes too much memory and results in crash
-//            Picasso.Builder builder = new Picasso.Builder(mContext);
-//            builder.listener(new Picasso.Listener() {
-//                @Override public void onImageLoadFailed(Picasso picasso, Uri uri, Exception e) {
-//                    Log.e(LOG_TAG, "ERROR PICASSO DID NOT LOAD IMAGE");
-//                    e.printStackTrace();
-//                }
-//            });
-
             Picasso.with(mContext)
                     .load(URL.BASE_IMAGE_URL + poster_size + movies.get(position).getPosterPath())
                     .error(R.drawable.piq_76054_400x400)
-                    .into(imageView, new Callback() {
-
-                        // Callback used to notify whether Picasso successfully loaded the image
-                        @Override public void onSuccess() {
-                            Log.d(LOG_TAG, movies.get(position).getTitle() + ": loaded successfully");
-                        }
-
-                        @Override public void onError() {
-                            Log.e(LOG_TAG, movies.get(position).getTitle() + ": ERROR PICASSO DID NOT LOAD IMAGE");
-                        }
-                    });
+                    .into(imageView);
 
             return convertView;
         }
