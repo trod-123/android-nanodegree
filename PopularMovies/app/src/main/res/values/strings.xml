@@ -35,6 +35,7 @@
 
     <!-- Movies detail headers -->
     <string name="detail_overview">Overview</string>
+    <string name="detail_extra">Info at a glance</string>
     <string name="detail_ratings">Rating</string>
     <string name="detail_reviews">Reviews</string>
     <string name="detail_release_date">Released</string>

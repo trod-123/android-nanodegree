@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.model.Genre;
 import com.thirdarm.popularmovies.model.MovieDB;
 
 import java.text.DecimalFormat;
@@ -80,24 +81,16 @@ public class MovieDetailsFragment extends Fragment {
                     .error(R.drawable.piq_76054_400x400)
                     .into((ImageView) rootView.findViewById(R.id.banner));
 
+            // set poster image
             Picasso.with(mContext)
                     .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 + movie.getPosterPath())
-                    .error(R.drawable.piq_76054_400x400)
+                    .error(R.drawable.sample_0)
                     .into((ImageView) rootView.findViewById(R.id.poster));
 
             // set movie tagline if there is one
             if (movie.getTagline().length() != 0) {
                 ((TextView) rootView.findViewById(R.id.banner_title))
                         .setText("\"" + movie.getTagline() + "\"");
-            }
-
-            // set overview
-            if (movie.getOverview().length() != 0) {
-                ((TextView) rootView.findViewById(R.id.overview))
-                        .setText(movie.getOverview());
-            } else {
-                ((TextView) rootView.findViewById(R.id.overview))
-                        .setText(getString(R.string.error_overview));
             }
 
             // set rating
@@ -116,6 +109,28 @@ public class MovieDetailsFragment extends Fragment {
                     .setText(
                             "Released "
                                     + movie.getReleaseDate());
+
+            // set genres
+            String genres = "Genres:\n";
+            for (int i = 0; i < movie.getGenres().size(); i++) {
+                Genre genre = movie.getGenres().get(i);
+                if (i != movie.getGenres().size() - 1) {
+                    genres += genre.getName() + ", ";
+                } else {
+                    genres += genre.getName();
+                }
+            }
+            ((TextView) rootView.findViewById(R.id.genres))
+                    .setText(genres);
+
+            // set overview
+            if (movie.getOverview().length() != 0) {
+                ((TextView) rootView.findViewById(R.id.overview))
+                        .setText(movie.getOverview());
+            } else {
+                ((TextView) rootView.findViewById(R.id.overview))
+                        .setText(getString(R.string.error_overview));
+            }
         }
 
         TextView url_text = (TextView) rootView.findViewById(R.id.tmdb_link);

@@ -8,67 +8,99 @@
 
   Currently for educational purposes only.
 -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity$MoviePostersFragment"
-    android:background="#FF000000">
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    tools:context=".MainActivity$MovieDetailsFragment"
+    android:background="#FF000000"
+    android:id="@+id/parent_container" >
 
-    <!-- Movie details -->
-    <ScrollView
-        android:id="@+id/parent_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
+        <!-- movie banner -->
+        <RelativeLayout
+            android:id="@+id/banner_container"
+            android:layout_width="match_parent"
+            android:layout_height="192dp" >
+
+            <ImageView
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/banner_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="@style/ShadowText"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textStyle="bold|italic"
+                android:gravity="bottom|center"
+                android:padding="@dimen/activity_padding_margin" />
+
+        </RelativeLayout>
+
+        <!-- movie details -->
+        <LinearLayout
+            android:id="@+id/details_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_padding_margin" >
+
+            <!-- Overview -->
+            <TextView
+                android:id="@+id/title_overview"
+                android:text="@string/detail_overview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textStyle="bold"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+            <TextView
+                android:id="@+id/overview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="@dimen/abc_text_size_small_material" />
+
+        </LinearLayout>
+
+        <!-- More information and poster -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="@dimen/activity_padding_margin" >
 
-            <!-- movie banner -->
-            <RelativeLayout
-                android:id="@+id/banner_container"
-                android:layout_width="match_parent"
-                android:layout_height="600px" >
+            <!-- Header -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/detail_extra"
+                android:textColor="#FFFFFFFF"
+                android:textStyle="bold"
+                android:textSize="@dimen/abc_text_size_medium_material" />
 
-                <ImageView
-                    android:id="@+id/banner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <TextView
-                    android:id="@+id/banner_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    style="@style/ShadowText"
-                    android:textSize="@dimen/abc_text_size_medium_material"
-                    android:textStyle="bold|italic"
-                    android:gravity="bottom|center"
-                    android:padding="@dimen/activity_padding_margin" />
-
-
-            </RelativeLayout>
-
-            <!-- movie poster -->
+            <!-- Body of 2 columns -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/activity_padding_margin" >
+                android:orientation="horizontal" >
 
-                <!-- Poster -->
-                <ImageView
-                    android:id="@+id/poster"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
+                <!-- Quick information column -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:orientation="vertical"
-                    android:padding="@dimen/activity_padding_margin" >
+                    android:paddingRight="@dimen/activity_padding_margin">
 
                     <!-- Rating -->
                     <TextView
@@ -79,10 +111,17 @@
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
 
-
                     <!-- Release date -->
                     <TextView
                         android:id="@+id/release"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFFFF"
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:paddingBottom="@dimen/activity_padding_margin" />
+
+                    <TextView
+                        android:id="@+id/genres"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFFFF"
@@ -90,34 +129,12 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <!-- movie details -->
-            <LinearLayout
-                android:id="@+id/details_container"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:padding="@dimen/activity_padding_margin" >
-
-                <!-- Overview -->
-                <TextView
-                    android:id="@+id/title_overview"
-                    android:text="@string/detail_overview"
-                    android:layout_width="wrap_content"
+                <!-- Poster column -->
+                <ImageView
+                    android:id="@+id/poster"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/abc_text_size_large_material" />
-
-                <TextView
-                    android:id="@+id/overview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFFFF"
-                    android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
@@ -126,6 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:padding="@dimen/activity_padding_margin"
                 android:layout_gravity="bottom|center_horizontal">
 
                 <TextView
@@ -133,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/footer_tmdb_prefix"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:textSize="@dimen/abc_text_size_caption_material"
                     android:textStyle="italic" />
 
                 <TextView
@@ -142,13 +160,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/footer_tmdb"
                     android:textColor="#FFFFFFFF"
-                    android:textSize="@dimen/abc_text_size_small_material" />
-
+                    android:textSize="@dimen/abc_text_size_caption_material" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </LinearLayout>
 
-</RelativeLayout>
+</ScrollView>
