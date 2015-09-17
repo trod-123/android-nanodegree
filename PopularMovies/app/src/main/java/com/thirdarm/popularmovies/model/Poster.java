@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *   email: cia.123trod@gmail.com
+ *   github: TROD-123
+ *
+ * For Udacity's Android Developer Nanodegree
+ * P1-2: Popular Movies
+ *
+ * Currently for educational purposes only.
+ */
+
 package com.thirdarm.popularmovies.model;
 
 import android.os.Parcel;
@@ -8,6 +19,9 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by TROD on 20150913.
+ *
+ * POJO created using jsonschema2pojo (http://www.jsonschema2pojo.org/). May not work for all
+ *  JSON data
  */
 public class Poster implements Parcelable {
 

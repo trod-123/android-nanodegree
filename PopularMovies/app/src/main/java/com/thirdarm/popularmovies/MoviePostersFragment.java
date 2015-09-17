@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *   email: cia.123trod@gmail.com
+ *   github: TROD-123
+ *
+ * For Udacity's Android Developer Nanodegree
+ * P1-2: Popular Movies
+ *
+ * Currently for educational purposes only.
+ */
+
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
@@ -37,24 +48,31 @@ import java.util.List;
  */
 public class MoviePostersFragment extends Fragment {
 
-    public final String LOG_TAG = "MoviePostersFragment";
+    public static final String LOG_TAG = "MoviePostersFragment";
+    public static final String INTENT_DATA = "myData";
+    public static final String DATA_MOVIES = "movies";
+    public static final String DATA_TITLE = "title";
+    public static final String DATA_POSITION = "position";
 
     public Context mContext;
 
     // views
-    public View rootView;
+    public View mRootView;
     public GridView mGridView;
-    public LinearLayout progress_container;
-    public static TextView progress_status; // allow other classes to modify the loading status
+    public LinearLayout mProgressContainer;
+    public static TextView sProgressStatus; // allow other classes to modify the loading status
 
     // Playing with TMDB
-    public TMDB TMDB;
-    public ArrayList<MovieDB> movies;
-    public final String poster_size = IMAGE.SIZE.POSTER.w500;
-    public String category = PARAMS.CATEGORY.POPULAR;
-    public String sort_by = PARAMS.DISCOVER.SORT.POPULARITY_DESC;
-    public String language = "en";
-    public boolean load_guard = true;
+    public TMDB mTmdb;
+    public ArrayList<MovieDB> mMovies;
+    public final String mPosterSize = IMAGE.SIZE.POSTER.w500;
+    public String mCategory = PARAMS.CATEGORY.POPULAR;
+    public String mSort = PARAMS.DISCOVER.SORT.POPULARITY_DESC;
+    public String mLanguage = "en";
+    public int mPage = 1;
+    public boolean mLoadGuard = true;
+
+
 
     public MoviePostersFragment() {
         // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
@@ -63,7 +81,6 @@ public class MoviePostersFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    // A fragment's onCreate() method is called before its onCreateView() method
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,34 +103,34 @@ public class MoviePostersFragment extends Fragment {
 
         switch (id) {
             case R.id.action_discover:
-                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.DISCOVER);
+                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.DISCOVER);
                 return true;
 
             case R.id.action_get_playing:
-                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.PLAYING);
+                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.PLAYING);
                 return true;
 
             case R.id.action_get_popular:
-                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.POPULAR);
+                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.POPULAR);
                 return true;
 
             case R.id.action_get_rated:
-                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.TOP);
+                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.TOP);
                 return true;
 
             case R.id.action_get_upcoming:
-                new FetchMovieResultsTask().execute(category = PARAMS.CATEGORY.UPCOMING);
+                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.UPCOMING);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    // Save and reuse information upon activity destroy
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (load_guard && movies != null) {
-            outState.putParcelableArrayList("movies", movies);
-            outState.putString("title", category);
-            outState.putInt("position", mGridView.getFirstVisiblePosition());
+        // Save and reuse information upon activity destroy
+        if (mLoadGuard && mMovies != null) {
+            outState.putParcelableArrayList(DATA_MOVIES, mMovies);
+            outState.putString(DATA_TITLE, mCategory);
+            outState.putInt(DATA_POSITION, mGridView.getFirstVisiblePosition());
         }
         super.onSaveInstanceState(outState);
     }
@@ -121,57 +138,53 @@ public class MoviePostersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        // Get a reference to layout elements
-        rootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
-        progress_container = (LinearLayout) rootView.findViewById(R.id.progress_container);
-        progress_status = (TextView) rootView.findViewById(R.id.progress);
-        mGridView = (GridView) rootView.findViewById(R.id.posters_grid);
+        // Get a reference to UI elements
+        mRootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
+        mProgressContainer = (LinearLayout) mRootView.findViewById(R.id.progress_container);
+        sProgressStatus = (TextView) mRootView.findViewById(R.id.progress);
+        mGridView = (GridView) mRootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
-        TMDB = new TMDB(getString(R.string.movie_api_key), language, 1);
+        mTmdb = new TMDB(getString(R.string.movie_api_key), mLanguage, mPage);
 
         // Recycle information from last destroy, if applicable
         if(savedInstanceState != null &&
-                savedInstanceState.containsKey("movies") &&
-                savedInstanceState.containsKey("title") &&
-                savedInstanceState.containsKey("position")) {
-            setGridView(movies = savedInstanceState.getParcelableArrayList("movies"));
-            setTitle(category = savedInstanceState.getString("title"));
-            mGridView.smoothScrollToPosition(savedInstanceState.getInt("position"));
+                savedInstanceState.containsKey(DATA_MOVIES) &&
+                savedInstanceState.containsKey(DATA_TITLE) &&
+                savedInstanceState.containsKey(DATA_POSITION)) {
+            setGridView(mMovies = savedInstanceState.getParcelableArrayList(DATA_MOVIES));
+            setTitle(mCategory = savedInstanceState.getString(DATA_TITLE));
+            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
             hideProgressBar();
         } else {
             // Otherwise, populate with popular movies by default
-            new FetchMovieResultsTask().execute(category);
+            new FetchMovieResultsTask().execute(mCategory);
         }
 
-        return rootView;
+        return mRootView;
     }
 
-
     /**
-     * Methods below collect and parse JSON data from the TMDB servers via API calls and
-     * fill the main UI with posters in a grid view.
+     * Collects and parses JSON data from the TMDB servers via API calls and
+     * fills the main UI with posters in a grid view.
      */
-
-    // AsyncTask for fetching movie data
     public class FetchMovieResultsTask extends AsyncTask<String, Void, ArrayList<MovieDB>> {
         @Override protected void onPreExecute() {
             // Check for internet connection
             // TODO: Make internet connection checks persistent while grabbing data from server
             if (!isNetworkAvailable()) {
-                progress_status.setText("There is no active internet connection.");
-                progress_container.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
+                sProgressStatus.setText(getString(R.string.status_no_internet));
+                mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
                 cancel(true);
             }
 
             // Check if sort buttons have been clicked before results have been loaded
-            if (!load_guard) {
-                Toast.makeText(mContext, "Still loading results. Please wait.", Toast.LENGTH_SHORT).show();
+            if (!mLoadGuard) {
+                Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
                 cancel(true);
             } else {
                 // Disable reloading while grid is being populated
-                load_guard = false;
+                mLoadGuard = false;
             }
 
             // Stop the AsyncTask if either condition above is met
@@ -181,42 +194,44 @@ public class MoviePostersFragment extends Fragment {
 
             // Otherwise, proceed with the AsyncTask
             showProgressBar();
-            setTitle(category);
+            setTitle(mCategory);
         }
 
         @Override protected ArrayList<MovieDB> doInBackground(String... category) {
             if (category[0] == PARAMS.CATEGORY.DISCOVER) {
-                return TMDB.discover(sort_by);
+                return mTmdb.discover(mSort);
             } else {
-                return TMDB.getResults(category[0]);
+                return mTmdb.getResults(category[0]);
             }
         }
 
         @Override protected void onPostExecute(ArrayList<MovieDB> result) {
             // Make sure result is not null
             if (result != null) {
-                setGridView(movies = result);
+                setGridView(mMovies = result);
 
                 // Enable reloading and hide the progress spinner
-                load_guard = true;
+                mLoadGuard = true;
                 hideProgressBar();
             }
         }
     }
 
-    public void showProgressBar() {
+    /** Displays overlay containing loading icon and status and disables touch events */
+     public void showProgressBar() {
         // TODO: Figure out how to fade the view in and out instead of having it just appear
         //  right away
-        progress_container.bringToFront();
-        progress_container.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
-        progress_container.setVisibility(View.VISIBLE);
-        enableDisableViewGroup((ViewGroup) rootView, false);
+        mProgressContainer.bringToFront();
+        mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
+        mProgressContainer.setVisibility(View.VISIBLE);
+        enableDisableViewGroup((ViewGroup) mRootView, false);
     }
 
+    /** Hides overlay and enables touch events */
     public void hideProgressBar() {
-        progress_container.setVisibility(View.GONE);
-        rootView.setClickable(true);
-        enableDisableViewGroup((ViewGroup) rootView, true);
+        mProgressContainer.setVisibility(View.GONE);
+        mRootView.setClickable(true);
+        enableDisableViewGroup((ViewGroup) mRootView, true);
     }
 
     /**
@@ -238,49 +253,57 @@ public class MoviePostersFragment extends Fragment {
         }
     }
 
-    // Check network connection
+    /** Checks network connection */
     private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm =
+                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    // Set the title of the activity based on sort category
+    /**
+     * Sets the title of the activity based on sort category
+     *
+     * @param category the category used to sort movies
+     */
     public void setTitle(String category) {
         switch (category) {
-            case PARAMS.CATEGORY.DISCOVER: {
-                getActivity().setTitle("Discover");
+            case PARAMS.CATEGORY.DISCOVER:
+                getActivity().setTitle(getString(R.string.title_discover));
                 break;
-            }
-            case PARAMS.CATEGORY.PLAYING: {
-                getActivity().setTitle("Now playing");
+
+            case PARAMS.CATEGORY.PLAYING:
+                getActivity().setTitle(getString(R.string.title_playing));
                 break;
-            }
-            case PARAMS.CATEGORY.POPULAR: {
-                getActivity().setTitle("Popular movies");
+
+            case PARAMS.CATEGORY.POPULAR:
+                getActivity().setTitle(getString(R.string.title_popular));
                 break;
-            }
-            case PARAMS.CATEGORY.TOP: {
-                getActivity().setTitle("Top rated");
+
+            case PARAMS.CATEGORY.TOP:
+                getActivity().setTitle(getString(R.string.title_top_rated));
                 break;
-            }
-            case PARAMS.CATEGORY.UPCOMING: {
-                getActivity().setTitle("Upcoming movies");
+
+            case PARAMS.CATEGORY.UPCOMING:
+                getActivity().setTitle(getString(R.string.title_upcoming));
                 break;
-            }
         }
     }
 
-    // Populate grid view with posters
+    /**
+     * Populates the grid view with posters
+     *
+     * @param movies the list of movies
+     */
     public void setGridView(final ArrayList<MovieDB> movies) {
         mGridView.setAdapter(new PostersAdapter(mContext, movies));
 
-        // Launch a "more details" screen for the selected movie
+        // Launch a "more details" screen for the selected movie when poster is clicked
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 MovieDB dataToSend = movies.get(position);
                 Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra("myData", dataToSend);
+                intent.putExtra(INTENT_DATA, dataToSend);
                 startActivity(intent);
             }
         });
@@ -336,14 +359,20 @@ public class MoviePostersFragment extends Fragment {
             date.setText(movies.get(position).getReleaseDate());
 
             TextView rating = (TextView) convertView.findViewById(R.id.poster_rating);
-            rating.setText("Rating: " +
-                    new DecimalFormat("#.##").format(movies.get(position).getVoteAverage()) +
-                    " (" + movies.get(position).getVoteCount() + " reviews)");
+            rating.setText(
+                    getString(R.string.detail_ratings)
+                            + ": "
+                            + new DecimalFormat("#.##").format(movies.get(position).getVoteAverage())
+                            + " ("
+                            + movies.get(position).getVoteCount()
+                            + " "
+                            + getString(R.string.detail_reviews).toLowerCase()
+                            + ")");
 
             ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
 
             Picasso.with(mContext)
-                    .load(URL.IMAGE_BASE + poster_size + movies.get(position).getPosterPath())
+                    .load(URL.IMAGE_BASE + mPosterSize + movies.get(position).getPosterPath())
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView);
 

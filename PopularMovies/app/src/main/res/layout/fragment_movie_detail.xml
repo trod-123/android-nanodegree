@@ -1,3 +1,14 @@
+<!--
+  Copyright (C) 2015 Teddy Rodriguez (TROD)
+    email: cia.123trod@gmail.com
+    github: TROD-123
+
+  For Udacity's Android Developer Nanodegree
+  P1-2: Popular Movies
+
+  Currently for educational purposes only.
+-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent"
@@ -84,7 +95,7 @@
                 <!-- Overview -->
                 <TextView
                     android:id="@+id/title_overview"
-                    android:text="Overview"
+                    android:text="@string/detail_overview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFFFF"
@@ -102,7 +113,7 @@
                 <!-- Rating -->
                 <TextView
                     android:id="@+id/title_rating"
-                    android:text="Rating"
+                    android:text="@string/detail_ratings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFFFF"
@@ -121,7 +132,7 @@
                 <!-- Release date -->
                 <TextView
                     android:id="@+id/title_release"
-                    android:text="Release info"
+                    android:text="@string/detail_release_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFFFF"
@@ -139,14 +150,30 @@
             </LinearLayout>
 
             <!-- Credits and copyright -->
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="All info and images from The Movie Database"
-                android:textColor="#FFFFFFFF"
-                android:textSize="@dimen/abc_text_size_small_material"
-                android:textStyle="italic"
-                android:layout_gravity="bottom|center_horizontal" />
+                android:orientation="horizontal"
+                android:layout_gravity="bottom|center_horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/footer_tmdb_prefix"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:textStyle="italic" />
+
+                <TextView
+                    android:id="@+id/tmdb_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/footer_tmdb"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="@dimen/abc_text_size_small_material" />
+
+
+            </LinearLayout>
 
         </LinearLayout>
 

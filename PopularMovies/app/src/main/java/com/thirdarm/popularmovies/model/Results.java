@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *   email: cia.123trod@gmail.com
+ *   github: TROD-123
+ *
+ * For Udacity's Android Developer Nanodegree
+ * P1-2: Popular Movies
+ *
+ * Currently for educational purposes only.
+ */
+
 package com.thirdarm.popularmovies.model;
 
 import java.util.ArrayList;

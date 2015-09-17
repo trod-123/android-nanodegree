@@ -1,9 +1,21 @@
+/*
+ * Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *   email: cia.123trod@gmail.com
+ *   github: TROD-123
+ *
+ * For Udacity's Android Developer Nanodegree
+ * P1-2: Popular Movies
+ *
+ * Currently for educational purposes only.
+ */
+
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,26 +31,29 @@ import com.thirdarm.popularmovies.model.MovieDB;
 import java.text.DecimalFormat;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment consisting of specific movie details
  */
 public class MovieDetailsFragment extends Fragment {
 
     public static final String LOG_TAG = "Movies/Detail";
 
-    Context mContext;
-    View rootView;
-    Intent intent;
-    MovieDB movie;
+    public Context mContext;
+    public View rootView;
+    public Intent intent;
+    public MovieDB movie;
+
 
     public MovieDetailsFragment() {
     }
 
-    // A fragment's onCreate() method is called before its onCreateView() method
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity();
+
+        // get the intent from the posters activity
         intent = getActivity().getIntent();
     }
 
@@ -48,11 +63,11 @@ public class MovieDetailsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
-        // make sure to first check, before loading any intent extras or anything from intents,
-        //  that the intent is not null and that intent has extra text matching the
-        //  string ID that was loaded in the activity that sent the intent
-        if (intent != null && intent.hasExtra("myData")) {
-            movie = intent.getParcelableExtra("myData");
+        // Make sure to first check, before loading any intent extras or anything from intents,
+        //  that the intent is not null and that the intent contains the key matching the
+        //  string ID that was loaded in the intent sent by the previous activity
+        if (intent != null && intent.hasExtra(MoviePostersFragment.INTENT_DATA)) {
+            movie = intent.getParcelableExtra(MoviePostersFragment.INTENT_DATA);
 
             // set title of movie as title of activity
             getActivity().setTitle(movie.getTitle());
@@ -65,27 +80,38 @@ public class MovieDetailsFragment extends Fragment {
                     .error(R.drawable.piq_76054_400x400)
                     .into((ImageView) rootView.findViewById(R.id.banner));
 
-            // set movie tagline
-            Log.d(LOG_TAG, "Tagline for movie " + movie.getId() + ": " + movie.getTagline());
+            // set movie tagline if there is one
             if (movie.getTagline().length() != 0) {
-                ((TextView)rootView.findViewById(R.id.banner_title)).setText("\"" + movie.getTagline() + "\"");
+                ((TextView) rootView.findViewById(R.id.banner_title))
+                        .setText("\"" + movie.getTagline() + "\"");
             }
 
             // set overview
             if (movie.getOverview().length() != 0) {
-                ((TextView) rootView.findViewById(R.id.overview)).setText(movie.getOverview());
+                ((TextView) rootView.findViewById(R.id.overview))
+                        .setText(movie.getOverview());
             } else {
-                ((TextView) rootView.findViewById(R.id.overview)).setText("Overview not available");
+                ((TextView) rootView.findViewById(R.id.overview))
+                        .setText(getString(R.string.error_overview));
             }
 
             // set rating
-            ((TextView) rootView.findViewById(R.id.rating)).setText(new DecimalFormat("#.##").format(movie.getVoteAverage()) +
-                    " (" + movie.getVoteCount() + " reviews)");
+            ((TextView) rootView.findViewById(R.id.rating))
+                    .setText(
+                            new DecimalFormat("#.##").format(movie.getVoteAverage())
+                                    + " ("
+                                    + movie.getVoteCount()
+                                    + " "
+                                    + getString(R.string.detail_reviews).toLowerCase()
+                                    + ")");
 
             // set release
-            ((TextView) rootView.findViewById(R.id.release)).setText(movie.getReleaseDate());
-
+            ((TextView) rootView.findViewById(R.id.release))
+                    .setText(movie.getReleaseDate());
         }
+
+        TextView url_text = (TextView) rootView.findViewById(R.id.tmdb_link);
+        url_text.setMovementMethod(LinkMovementMethod.getInstance());
 
         return rootView;
     }

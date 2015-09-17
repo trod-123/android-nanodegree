@@ -1,8 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2015 Teddy Rodriguez (TROD)
+    email: cia.123trod@gmail.com
+    github: TROD-123
+
+  For Udacity's Android Developer Nanodegree
+  P1-2: Popular Movies
+
+  Currently for educational purposes only.
+-->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/poster_container"
     android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:padding="2dp">
+    android:padding="@dimen/grid_padding_margin">
 
     <!-- Movie poster takes up whole space -->
     <ImageView
@@ -32,7 +42,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
-            android:text="Mad Max: The Fury Road"
             android:gravity="bottom"
             android:textStyle="bold"
             android:textColor="#FFFFFFFF"
@@ -43,7 +52,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Released August 12, 2014"
             android:gravity="bottom"
             android:textColor="#FFFFFFFF" />
 
@@ -52,7 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Rating: 5/5 (4000 votes)"
             android:textColor="#FFFFFFFF" />
 
     </LinearLayout>

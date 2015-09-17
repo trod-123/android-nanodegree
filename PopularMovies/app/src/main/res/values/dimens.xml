@@ -1,4 +1,15 @@
+<!--
+  Copyright (C) 2015 Teddy Rodriguez (TROD)
+    email: cia.123trod@gmail.com
+    github: TROD-123
+
+  For Udacity's Android Developer Nanodegree
+  P1-2: Popular Movies
+
+  Currently for educational purposes only.
+-->
+
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_padding_margin">16dp</dimen>
+    <dimen name="grid_padding_margin">2dp</dimen>
 </resources>

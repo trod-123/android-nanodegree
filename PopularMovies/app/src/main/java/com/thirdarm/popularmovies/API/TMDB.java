@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *   email: cia.123trod@gmail.com
+ *   github: TROD-123
+ *
+ * For Udacity's Android Developer Nanodegree
+ * P1-2: Popular Movies
+ *
+ * Currently for educational purposes only.
+ */
+
 package com.thirdarm.popularmovies.API;
 
 import com.thirdarm.popularmovies.MoviePostersFragment;
@@ -22,16 +33,18 @@ public class TMDB {
 
     private final String LOG_TAG = "Movies/TMDB";
 
+    // API information
     private String API_KEY;
     private String LANGUAGE;
     private int PAGE;
     private APIService api;
 
+    // movie results
     private List<Results.MovieDBResult> results;
     private int[] movieIDs;
     private ArrayList<MovieDB> movies = new ArrayList<>();
 
-    // constructor
+
     public TMDB(String key, String language_code, int page) {
         API_KEY = key;
         LANGUAGE = language_code;
@@ -43,7 +56,7 @@ public class TMDB {
         api = retrofit.create(APIService.class);
     }
 
-    // Fetch results
+    /** Fetches results */
     public ArrayList<MovieDB> getResults(Call<Results> response) {
         clear();
         try {
@@ -62,27 +75,42 @@ public class TMDB {
         }
     }
 
-    // Generate results for /discover
+    /**
+     * Generates results for /discover
+     *
+     * @param sort method to sort discover results
+     * @return list of movies
+     */
     public ArrayList<MovieDB> discover(String sort) {
         return getResults(api.discover(API_KEY, sort, LANGUAGE, PAGE));
     }
 
-    // Generate results for /movie/{category}
+    /**
+     * Generates results for /movie/{category}
+     *
+     * @param category the category of movies to display
+     * @return list of movies
+     */
     public ArrayList<MovieDB> getResults(String category) {
         return getResults(api.getResults(category, API_KEY, LANGUAGE, PAGE));
     }
 
-    // Generate MovieDB object
+    /**
+     * Generates specific MovieDB object
+     *
+     * @param id the TMDB movie id
+     * @return a movie object
+     */
     public MovieDB getMovieDetails(int id) {
         Call<MovieDB> response = api.getMovieDetails(id, API_KEY, LANGUAGE, "images,releases,trailers");
         try {
             final MovieDB movie = response.execute().body();
             if (movie != null) {
                 // Post loading status to main UI thread
-                MoviePostersFragment.progress_status.post(new Runnable() {
+                MoviePostersFragment.sProgressStatus.post(new Runnable() {
                     @Override
                     public void run() {
-                        MoviePostersFragment.progress_status.setText("Added " + movie.getTitle());
+                        MoviePostersFragment.sProgressStatus.setText("Added " + movie.getTitle());
                     }
                 });
                 return movie;
@@ -95,7 +123,7 @@ public class TMDB {
         }
     }
 
-    // Clear Results and movies lists before reloading grid view
+    /** Clears results and movies lists before reloading grid view */
     public void clear() {
         if (results != null && movies != null && movieIDs != null){
             results = null;
