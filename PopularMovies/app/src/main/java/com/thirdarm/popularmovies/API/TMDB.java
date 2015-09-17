@@ -1,7 +1,5 @@
 package com.thirdarm.popularmovies.API;
 
-import android.util.Log;
-
 import com.thirdarm.popularmovies.MoviePostersFragment;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.model.MovieDB;
@@ -39,7 +37,7 @@ public class TMDB {
         LANGUAGE = language_code;
         PAGE = page;
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL.BASE_URL)
+                .baseUrl(URL.BASE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         api = retrofit.create(APIService.class);

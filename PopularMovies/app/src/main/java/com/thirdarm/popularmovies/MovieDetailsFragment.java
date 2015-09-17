@@ -60,7 +60,7 @@ public class MovieDetailsFragment extends Fragment {
             // set banner image
             // TODO: What to do if the backdrop_path == null?
             Picasso.with(mContext)
-                    .load(URL.BASE_IMAGE_URL + IMAGE.SIZE.BACKDROP.w1280 + movie.getBackdropPath())
+                    .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 + movie.getBackdropPath())
                     .fit()
                     .error(R.drawable.piq_76054_400x400)
                     .into((ImageView) rootView.findViewById(R.id.banner));

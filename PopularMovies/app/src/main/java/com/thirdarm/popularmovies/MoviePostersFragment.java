@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +23,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
-import com.thirdarm.popularmovies.constant.DISCOVER;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
@@ -54,7 +52,7 @@ public class MoviePostersFragment extends Fragment {
     public ArrayList<MovieDB> movies;
     public final String poster_size = IMAGE.SIZE.POSTER.w500;
     public String category = PARAMS.CATEGORY.POPULAR;
-    public String sort_by = DISCOVER.SORT.POPULARITY_DESC;
+    public String sort_by = PARAMS.DISCOVER.SORT.POPULARITY_DESC;
     public String language = "en";
     public boolean load_guard = true;
 
@@ -322,7 +320,7 @@ public class MoviePostersFragment extends Fragment {
             ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
 
             Picasso.with(mContext)
-                    .load(URL.BASE_IMAGE_URL + poster_size + movies.get(position).getPosterPath())
+                    .load(URL.IMAGE_BASE + poster_size + movies.get(position).getPosterPath())
                     .error(R.drawable.piq_76054_400x400)
                     .into(imageView);
 
