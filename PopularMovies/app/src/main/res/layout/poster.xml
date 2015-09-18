@@ -55,7 +55,8 @@
             android:layout_weight="1"
             android:textColor="#FFFFFFFF"
             android:maxLines="1"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:gravity="bottom" />
 
         <com.thirdarm.popularmovies.function.AutoResizeTextView
             android:id="@+id/poster_rating"
@@ -64,7 +65,8 @@
             android:layout_weight="1"
             android:textColor="#FFFFFFFF"
             android:maxLines="1"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:gravity="bottom" />
 
     </LinearLayout>
 

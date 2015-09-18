@@ -38,6 +38,7 @@ import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.function.AutoResizeTextView;
+import com.thirdarm.popularmovies.function.Network;
 import com.thirdarm.popularmovies.function.ReleaseDates;
 import com.thirdarm.popularmovies.model.MovieDB;
 
@@ -62,10 +63,10 @@ public class MoviePostersFragment extends Fragment {
     public View mRootView;
     public GridView mGridView;
     public LinearLayout mProgressContainer;
-    public static TextView sProgressStatus; // allow other classes to modify the loading status
+    public static TextView sProgressStatus; // allow TMDB to modify the loading status
 
     // Playing with TMDB
-    public TMDB mTmdb;
+    public static TMDB mTmdb; // allow detail activity to access the TMDB
     public ArrayList<MovieDB> mMovies;
     public final String mPosterSize = IMAGE.SIZE.POSTER.w500;
     public String mCategory = PARAMS.CATEGORY.POPULAR;
@@ -174,28 +175,26 @@ public class MoviePostersFragment extends Fragment {
         @Override protected void onPreExecute() {
             // Check for internet connection
             // TODO: Make internet connection checks persistent while grabbing data from server
-            if (!isNetworkAvailable()) {
+            if (!Network.isNetworkAvailable(mContext)) {
                 sProgressStatus.setText(getString(R.string.status_no_internet));
+                showProgressBar();
                 mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
-                cancel(true);
+                return;
             }
+
 
             // Check if sort buttons have been clicked before results have been loaded
             if (!mLoadGuard) {
                 Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
-                cancel(true);
+                return;
             } else {
                 // Disable reloading while grid is being populated
                 mLoadGuard = false;
             }
 
-            // Stop the AsyncTask if either condition above is met
-            if (isCancelled()) {
-                return;
-            }
-
             // Otherwise, proceed with the AsyncTask
             showProgressBar();
+            sProgressStatus.setText(getString(R.string.status_loading));
             setTitle(mCategory);
         }
 
@@ -253,14 +252,6 @@ public class MoviePostersFragment extends Fragment {
                 enableDisableViewGroup((ViewGroup) view, enabled);
             }
         }
-    }
-
-    /** Checks network connection */
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
     /**
@@ -354,12 +345,19 @@ public class MoviePostersFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.poster, null);
             }
 
+            // set movie title
             AutoResizeTextView name = (AutoResizeTextView) convertView.findViewById(R.id.poster_name);
             name.setText(movies.get(position).getTitle());
 
+            // set release date
             AutoResizeTextView date = (AutoResizeTextView) convertView.findViewById(R.id.poster_date);
             date.setText(ReleaseDates.convertDateFormat(movies.get(position).getReleaseDate()));
 
+            // set ratings
+            String votesTense = getString(R.string.detail_votes);
+            if (movies.get(position).getVoteCount() != 1) {
+                votesTense += "s";
+            }
             AutoResizeTextView rating = (AutoResizeTextView) convertView.findViewById(R.id.poster_rating);
             rating.setText(
                     getString(R.string.detail_ratings)
@@ -368,11 +366,11 @@ public class MoviePostersFragment extends Fragment {
                             + " ("
                             + movies.get(position).getVoteCount()
                             + " "
-                            + getString(R.string.detail_reviews).toLowerCase()
+                            + votesTense.toLowerCase()
                             + ")");
 
+            // set poster
             ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
-
             Picasso.with(mContext)
                     .load(URL.IMAGE_BASE + mPosterSize + movies.get(position).getPosterPath())
                     .error(R.drawable.piq_76054_400x400)

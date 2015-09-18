@@ -102,12 +102,33 @@
                     android:orientation="vertical"
                     android:paddingRight="@dimen/activity_padding_margin">
 
+                    <!-- Directors -->
+                    <TextView
+                        android:id="@+id/director"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFFFF"
+                        android:text="@string/detail_directors"
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:paddingBottom="@dimen/activity_padding_margin" />
+
+                    <!-- Writers -->
+                    <TextView
+                        android:id="@+id/writer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFFFF"
+                        android:text="@string/detail_writers"
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:paddingBottom="@dimen/activity_padding_margin" />
+
                     <!-- Rating -->
                     <TextView
                         android:id="@+id/rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFFFF"
+                        android:text="@string/detail_ratings"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
 
@@ -117,6 +138,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFFFF"
+                        android:text="@string/detail_release_date"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
 
@@ -125,6 +147,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="#FFFFFFFF"
+                        android:text="@string/detail_genres"
                         android:textSize="@dimen/abc_text_size_small_material" />
 
                 </LinearLayout>
@@ -134,7 +157,8 @@
                     android:id="@+id/poster"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:layout_gravity="top" />
 
             </LinearLayout>
 
