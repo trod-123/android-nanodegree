@@ -13,7 +13,10 @@ package com.thirdarm.popularmovies.API;
 
 import com.thirdarm.popularmovies.MoviePostersFragment;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.constant.VALUES;
+import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.MovieDB;
+import com.thirdarm.popularmovies.model.MovieDBResult;
 import com.thirdarm.popularmovies.model.Results;
 
 import java.io.IOException;
@@ -34,13 +37,19 @@ public class TMDB {
     private final String LOG_TAG = "Movies/TMDB";
 
     // API information
+    public final String APPENDS_MOVIEDB =
+            VALUES.APPENDS.IMAGES +
+                    VALUES.APPENDS.RELEASES +
+                    VALUES.APPENDS.TRAILERS;
+    public final String APPENDS_CREDITS = null;
+
     private String API_KEY;
     private String LANGUAGE;
     private int PAGE;
     private APIService api;
 
     // movie results
-    private List<Results.MovieDBResult> results;
+    private List<MovieDBResult> results;
     private int[] movieIDs;
     private ArrayList<MovieDB> movies = new ArrayList<>();
 
@@ -102,7 +111,7 @@ public class TMDB {
      * @return a movie object
      */
     public MovieDB getMovieDetails(int id) {
-        Call<MovieDB> response = api.getMovieDetails(id, API_KEY, LANGUAGE, "images,releases,trailers");
+        Call<MovieDB> response = api.getBroadMovieDetails(id, API_KEY, LANGUAGE, APPENDS_MOVIEDB);
         try {
             final MovieDB movie = response.execute().body();
             if (movie != null) {
@@ -116,6 +125,27 @@ public class TMDB {
                 return movie;
             } else {
                 return getMovieDetails(id);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Generates credits for a specific movie id
+     *
+     * @param id the TMDB movie id
+     * @return a credits object
+     */
+    public Credits getMovieCredits(int id) {
+        Call<Credits> response = api.getMovieCredits(id, API_KEY, APPENDS_CREDITS);
+        try {
+            final Credits credits = response.execute().body();
+            if (credits != null) {
+                return credits;
+            } else {
+                return getMovieCredits(id);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -31,7 +31,24 @@ public class PARAMS {
         public static final String UPCOMING = "upcoming";
     }
 
-    public class DISCOVER {
+    public class INFO {
+        public static final String ACCOUNT_STATES = "account_states";
+        public static final String ALTERNATIVE_TITLES = "alternative_titles";
+        public static final String CREDITS = "credits";
+        public static final String IMAGES = "images";
+        public static final String KEYWORDS = "keywords";
+        public static final String RELEASES = "releases";
+        public static final String VIDEOS = "videos";
+        public static final String TRANSLATIONS = "translations";
+        public static final String SIMILAR = "similar";
+        public static final String REVIEWS = "reviews";
+        public static final String LISTS = "lists";
+        public static final String CHANGES = "changes";
+        public static final String RATING = "rating";
+        public static final String TRAILERS = "trailers";
+    }
+
+    public class RESULTS {
         public static final String CERTIFICATION_COUNTRY = "certification_country"; // ISO 3166-1
         public static final String CERTIFICATION = "certification";
         public static final String INCLUDE_ADULT = "include_adult"; // boolean
@@ -43,7 +60,7 @@ public class PARAMS {
         public static final String PRIMARY_RELEASE_DATE_LTE = "primary_release_date.lte";
         public static final String RELEASE_DATE_GTE = "release_date.gte";
         public static final String RELEASE_DATE_LTE = "release_date.lte";
-        public static final String SORT_BY = "sort_by"; // see DISCOVER.SORT
+        public static final String SORT_BY = "sort_by"; // see RESULTS.SORT
         public static final String VOTE_COUNT_GTE = "vote_count.gte"; // int
         public static final String VOTE_COUNT_LTE = "vote_count.lte"; // int
         public static final String VOTE_AVERAGE_GTE = "vote_average.gte"; // float
@@ -56,7 +73,7 @@ public class PARAMS {
         public static final String WITH_PEOPLE = "with_people"; // int - id of person
         public static final String YEAR = "year"; // int (year)
 
-        // Discover options for sort_by
+        // Results options for sort_by
         public class SORT {
             public static final String POPULARITY_ASC = "popularity.asc";
             public static final String POPULARITY_DESC = "popularity.desc";
@@ -76,7 +93,6 @@ public class PARAMS {
     }
 
     public class MOVIE {
-        public static final String LANGUAGE = "language";
         public static final String APPEND_TO_RESPONSE = "append_to_response";
     }
 }

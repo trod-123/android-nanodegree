@@ -1,12 +1,12 @@
 /*
- * Copyright (C) 2015 Teddy Rodriguez (TROD)
- *   email: cia.123trod@gmail.com
- *   github: TROD-123
+ *  Copyright (C) 2015 Teddy Rodriguez (TROD)
+ *    email: cia.123trod@gmail.com
+ *    github: TROD-123
  *
- * For Udacity's Android Developer Nanodegree
- * P1-2: Popular Movies
+ *  For Udacity's Android Developer Nanodegree
+ *  P1-2: Popular Movies
  *
- * Currently for educational purposes only.
+ *  Currently for educational purposes only.
  */
 
 package com.thirdarm.popularmovies.model;
@@ -14,32 +14,22 @@ package com.thirdarm.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Handles /discovery results JSON data
- *
- * POJO created using jsonschema2pojo (http://www.jsonschema2pojo.org/). May not work for all
- *  JSON data
- *
- * How it works:
- *  Expose sets the value associated with the key, specified by the name of the variable
- *  SerializedName sets the name of the key for which @Expose will pair the corresponding value
- *   (used for variable names that are different from the key that appears in JSON -
- *    the serialized name is the name of the key as it appears in JSON)
+ * Created by TROD on 20150917.
  */
-public class Results implements Parcelable {
+public class Similar implements Parcelable {
 
     @Expose
     private Integer page;
 
-    @SerializedName("results")
     @Expose
-    private List<MovieDBResult> movieDBResults = new ArrayList<>();
+    private List<MovieDBResult> results = new ArrayList<>();
 
     @SerializedName("total_pages")
     @Expose
@@ -64,17 +54,17 @@ public class Results implements Parcelable {
     }
 
     /**
-     * @return The movieDBResults
+     * @return The results
      */
-    public List<MovieDBResult> getMovieDBResults() {
-        return movieDBResults;
+    public List<MovieDBResult> getResults() {
+        return results;
     }
 
     /**
-     * @param movieDBResults The movieDBResults
+     * @param results The results
      */
-    public void setMovieDBResults(List<MovieDBResult> movieDBResults) {
-        this.movieDBResults = movieDBResults;
+    public void setResults(List<MovieDBResult> results) {
+        this.results = results;
     }
 
     /**
@@ -113,28 +103,28 @@ public class Results implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(this.page);
-        dest.writeTypedList(movieDBResults);
+        dest.writeTypedList(results);
         dest.writeValue(this.totalPages);
         dest.writeValue(this.totalResults);
     }
 
-    public Results() {
+    public Similar() {
     }
 
-    protected Results(Parcel in) {
+    protected Similar(Parcel in) {
         this.page = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.movieDBResults = in.createTypedArrayList(MovieDBResult.CREATOR);
+        this.results = in.createTypedArrayList(MovieDBResult.CREATOR);
         this.totalPages = (Integer) in.readValue(Integer.class.getClassLoader());
         this.totalResults = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Results> CREATOR = new Parcelable.Creator<Results>() {
-        public Results createFromParcel(Parcel source) {
-            return new Results(source);
+    public static final Parcelable.Creator<Similar> CREATOR = new Parcelable.Creator<Similar>() {
+        public Similar createFromParcel(Parcel source) {
+            return new Similar(source);
         }
 
-        public Results[] newArray(int size) {
-            return new Results[size];
+        public Similar[] newArray(int size) {
+            return new Similar[size];
         }
     };
 }

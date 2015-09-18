@@ -68,7 +68,7 @@ public class MoviePostersFragment extends Fragment {
     public ArrayList<MovieDB> mMovies;
     public final String mPosterSize = IMAGE.SIZE.POSTER.w500;
     public String mCategory = PARAMS.CATEGORY.POPULAR;
-    public String mSort = PARAMS.DISCOVER.SORT.POPULARITY_DESC;
+    public String mSort = PARAMS.RESULTS.SORT.POPULARITY_DESC;
     public String mLanguage = "en";
     public int mPage = 1;
     public boolean mLoadGuard = true;
@@ -199,7 +199,7 @@ public class MoviePostersFragment extends Fragment {
         }
 
         @Override protected ArrayList<MovieDB> doInBackground(String... category) {
-            if (category[0] == PARAMS.CATEGORY.DISCOVER) {
+            if (category[0].equals(PARAMS.CATEGORY.DISCOVER)) {
                 return mTmdb.discover(mSort);
             } else {
                 return mTmdb.getResults(category[0]);

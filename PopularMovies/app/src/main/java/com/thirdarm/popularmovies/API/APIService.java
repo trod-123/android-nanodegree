@@ -12,6 +12,7 @@
 package com.thirdarm.popularmovies.API;
 
 import com.thirdarm.popularmovies.constant.PARAMS;
+import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.Results;
 
@@ -41,9 +42,9 @@ public interface APIService {
      */
     @GET("discover/movie")
     Call<Results> discover(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                           @Query(PARAMS.DISCOVER.SORT_BY) String sort,
-                           @Query(PARAMS.DISCOVER.LANGUAGE) String code,
-                           @Query(PARAMS.DISCOVER.PAGE) int page);
+                           @Query(PARAMS.RESULTS.SORT_BY) String sort,
+                           @Query(PARAMS.RESULTS.LANGUAGE) String code,
+                           @Query(PARAMS.RESULTS.PAGE) int page);
 
     /**
      * Gets the latest movie (refreshes everyday)
@@ -55,7 +56,7 @@ public interface APIService {
      */
     @GET("movie/latest")
     Call<MovieDB> getLatest(@Query(PARAMS.GLOBAL.API_KEY) String key,
-                            @Query(PARAMS.DISCOVER.LANGUAGE) String code);
+                            @Query(PARAMS.RESULTS.LANGUAGE) String code);
 
     /**
      * Gets a list of results (refreshes everyday)
@@ -70,12 +71,17 @@ public interface APIService {
     @GET("movie/{category}")
     Call<Results> getResults(@Path("category") String category,
                              @Query(PARAMS.GLOBAL.API_KEY) String key,
-                             @Query(PARAMS.DISCOVER.LANGUAGE) String code,
-                             @Query(PARAMS.DISCOVER.PAGE) int page);
+                             @Query(PARAMS.RESULTS.LANGUAGE) String code,
+                             @Query(PARAMS.RESULTS.PAGE) int page);
 
     /**
      * Gets individual movie information
-     *   e.g. https://api.themoviedb.org/3/movie/550?api_key=###&append_to_response=images,releases,trailers
+     *   e.g. https://api.themoviedb.org/3/movie/550?api_key=###&append_to_response=images,releases,trailers     *
+     *
+     * Warning: Do not pass too many APPENDS as too many may overload the Intent/Binder
+     *   transactions.
+     *   VALUES.APPENDS.CREDITS particularly has too much info that can't be passed through intents,
+     *     which is why it has its own @GET method
      *
      * @param id the TMDB movie id
      * @param key the API key
@@ -84,8 +90,21 @@ public interface APIService {
      * @return the response object for TMDB fetch methods
      */
     @GET("movie/{id}")
-    Call<MovieDB> getMovieDetails(@Path("id") int id,
+    Call<MovieDB> getBroadMovieDetails(@Path("id") int id,
+                                       @Query(PARAMS.GLOBAL.API_KEY) String key,
+                                       @Query(PARAMS.RESULTS.LANGUAGE) String code,
+                                       @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
+
+    /**
+     * Gets individual movie credits information
+     *
+     * @param id the TMDB movie id
+     * @param key the API key
+     * @param appends extra data
+     * @return the response object for TMDB fetch methods
+     */
+    @GET("movie/{id}/credits")
+    Call<Credits> getMovieCredits(@Path("id") int id,
                                   @Query(PARAMS.GLOBAL.API_KEY) String key,
-                                  @Query(PARAMS.DISCOVER.LANGUAGE) String code,
                                   @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
 }

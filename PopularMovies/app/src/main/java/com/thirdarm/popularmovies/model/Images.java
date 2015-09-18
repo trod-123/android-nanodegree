@@ -25,13 +25,13 @@ import java.util.List;
  * POJO created using jsonschema2pojo (http://www.jsonschema2pojo.org/). May not work for all
  *  JSON data
  */
-public class Image implements Parcelable {
+public class Images implements Parcelable {
 
     @Expose
-    private List<Backdrop> backdrops = new ArrayList<Backdrop>();
+    private List<Backdrop> backdrops = new ArrayList<>();
 
     @Expose
-    private List<Poster> posters = new ArrayList<Poster>();
+    private List<Poster> posters = new ArrayList<>();
 
     /**
      * @return The backdrops
@@ -73,23 +73,23 @@ public class Image implements Parcelable {
         dest.writeList(this.posters);
     }
 
-    public Image() {
+    public Images() {
     }
 
-    protected Image(Parcel in) {
-        this.backdrops = new ArrayList<Backdrop>();
+    protected Images(Parcel in) {
+        this.backdrops = new ArrayList<>();
         in.readList(this.backdrops, Backdrop.class.getClassLoader());
-        this.posters = new ArrayList<Poster>();
+        this.posters = new ArrayList<>();
         in.readList(this.posters, Poster.class.getClassLoader());
     }
 
-    public static final Creator<Image> CREATOR = new Creator<Image>() {
-        public Image createFromParcel(Parcel source) {
-            return new Image(source);
+    public static final Creator<Images> CREATOR = new Creator<Images>() {
+        public Images createFromParcel(Parcel source) {
+            return new Images(source);
         }
 
-        public Image[] newArray(int size) {
-            return new Image[size];
+        public Images[] newArray(int size) {
+            return new Images[size];
         }
     };
 }

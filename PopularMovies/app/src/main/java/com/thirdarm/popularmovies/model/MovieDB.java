@@ -116,13 +116,38 @@ public class MovieDB implements Parcelable {
     @Expose
     private Integer voteCount;
 
+    @SerializedName("alternative_titles")
+    @Expose
+    private AlternativeTitles alternativeTitles;
+
+    @Expose
+    private Credits credits;
+
     @SerializedName("image")
     @Expose
-    private Image image;
+    private Images images;
+
+    @Expose
+    private KeywordsResult keywordsResult;
 
     @SerializedName("releases")
     @Expose
     private Releases releases;
+
+    @Expose
+    private Videos videos;
+
+    @Expose
+    private TranslationsResult translationsResult;
+
+    @Expose
+    private Similar similar;
+
+    @Expose
+    private ReviewsResult reviewsResult;
+
+    @Expose
+    private Lists lists;
 
     @SerializedName("trailers")
     @Expose
@@ -480,17 +505,59 @@ public class MovieDB implements Parcelable {
     }
 
     /**
-     * @return The image
+     * @return The alternativeTitles
      */
-    public Image getImage() {
-        return image;
+    public AlternativeTitles getAlternativeTitles() {
+        return alternativeTitles;
     }
 
     /**
-     * @param image The image
+     * @param alternativeTitles The alternative_titles
      */
-    public void setImage(Image image) {
-        this.image = image;
+    public void setAlternativeTitles(AlternativeTitles alternativeTitles) {
+        this.alternativeTitles = alternativeTitles;
+    }
+
+    /**
+     * @return The credits
+     */
+    public Credits getCredits() {
+        return credits;
+    }
+
+    /**
+     * @param credits The credits
+     */
+    public void setCredits(Credits credits) {
+        this.credits = credits;
+    }
+
+    /**
+     * @return The images
+     */
+    public Images getImages() {
+        return images;
+    }
+
+    /**
+     * @param images The images
+     */
+    public void setImages(Images images) {
+        this.images = images;
+    }
+
+    /**
+     * @return The keywordsResult
+     */
+    public KeywordsResult getKeywordsResult() {
+        return keywordsResult;
+    }
+
+    /**
+     * @param keywordsResult The keywordsResult
+     */
+    public void setKeywordsResult(KeywordsResult keywordsResult) {
+        this.keywordsResult = keywordsResult;
     }
 
     /**
@@ -505,6 +572,76 @@ public class MovieDB implements Parcelable {
      */
     public void setReleases(Releases releases) {
         this.releases = releases;
+    }
+
+    /**
+     * @return The videos
+     */
+    public Videos getVideos() {
+        return videos;
+    }
+
+    /**
+     * @param videos The videos
+     */
+    public void setVideos(Videos videos) {
+        this.videos = videos;
+    }
+
+    /**
+     * @return The translationsResult
+     */
+    public TranslationsResult getTranslationsResult() {
+        return translationsResult;
+    }
+
+    /**
+     * @param translationsResult The translationsResult
+     */
+    public void setTranslationsResult(TranslationsResult translationsResult) {
+        this.translationsResult = translationsResult;
+    }
+
+    /**
+     * @return The similar
+     */
+    public Similar getSimilar() {
+        return similar;
+    }
+
+    /**
+     * @param similar The similar
+     */
+    public void setSimilar(Similar similar) {
+        this.similar = similar;
+    }
+
+    /**
+     * @return The reviewsResult
+     */
+    public ReviewsResult getReviewsResult() {
+        return reviewsResult;
+    }
+
+    /**
+     * @param reviewsResult The reviewsResult
+     */
+    public void setReviewsResult(ReviewsResult reviewsResult) {
+        this.reviewsResult = reviewsResult;
+    }
+
+    /**
+     * @return The lists
+     */
+    public Lists getLists() {
+        return lists;
+    }
+
+    /**
+     * @param lists The lists
+     */
+    public void setLists(Lists lists) {
+        this.lists = lists;
     }
 
     /**
@@ -531,9 +668,9 @@ public class MovieDB implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(this.adult);
         dest.writeString(this.backdropPath);
-        dest.writeParcelable(this.belongsToCollection, flags);
+        dest.writeParcelable(this.belongsToCollection, 0);
         dest.writeValue(this.budget);
-        dest.writeList(this.genres);
+        dest.writeTypedList(genres);
         dest.writeString(this.homepage);
         dest.writeValue(this.id);
         dest.writeString(this.imdbId);
@@ -542,21 +679,29 @@ public class MovieDB implements Parcelable {
         dest.writeString(this.overview);
         dest.writeValue(this.popularity);
         dest.writeString(this.posterPath);
-        dest.writeList(this.productionCompanies);
-        dest.writeList(this.productionCountries);
+        dest.writeTypedList(productionCompanies);
+        dest.writeTypedList(productionCountries);
         dest.writeString(this.releaseDate);
         dest.writeValue(this.revenue);
         dest.writeValue(this.runtime);
-        dest.writeList(this.spokenLanguages);
+        dest.writeTypedList(spokenLanguages);
         dest.writeString(this.status);
         dest.writeString(this.tagline);
         dest.writeString(this.title);
         dest.writeValue(this.video);
         dest.writeValue(this.voteAverage);
         dest.writeValue(this.voteCount);
-        dest.writeParcelable(this.image, flags);
-        dest.writeParcelable(this.releases, flags);
-        dest.writeParcelable(this.trailers, flags);
+        dest.writeParcelable(this.alternativeTitles, flags);
+        dest.writeParcelable(this.credits, flags);
+        dest.writeParcelable(this.images, 0);
+        dest.writeParcelable(this.keywordsResult, flags);
+        dest.writeParcelable(this.releases, 0);
+        dest.writeParcelable(this.videos, flags);
+        dest.writeParcelable(this.translationsResult, flags);
+        dest.writeParcelable(this.similar, flags);
+        dest.writeParcelable(this.reviewsResult, flags);
+        dest.writeParcelable(this.lists, flags);
+        dest.writeParcelable(this.trailers, 0);
     }
 
     public MovieDB() {
@@ -567,8 +712,7 @@ public class MovieDB implements Parcelable {
         this.backdropPath = in.readString();
         this.belongsToCollection = in.readParcelable(Collection.class.getClassLoader());
         this.budget = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.genres = new ArrayList<Genre>();
-        in.readList(this.genres, Genre.class.getClassLoader());
+        this.genres = in.createTypedArrayList(Genre.CREATOR);
         this.homepage = in.readString();
         this.id = (Integer) in.readValue(Integer.class.getClassLoader());
         this.imdbId = in.readString();
@@ -577,23 +721,28 @@ public class MovieDB implements Parcelable {
         this.overview = in.readString();
         this.popularity = (Double) in.readValue(Double.class.getClassLoader());
         this.posterPath = in.readString();
-        this.productionCompanies = new ArrayList<ProductionCompany>();
-        in.readList(this.productionCompanies, ProductionCompany.class.getClassLoader());
-        this.productionCountries = new ArrayList<ProductionCountry>();
-        in.readList(this.productionCountries, ProductionCountry.class.getClassLoader());
+        this.productionCompanies = in.createTypedArrayList(ProductionCompany.CREATOR);
+        this.productionCountries = in.createTypedArrayList(ProductionCountry.CREATOR);
         this.releaseDate = in.readString();
         this.revenue = (Integer) in.readValue(Integer.class.getClassLoader());
         this.runtime = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.spokenLanguages = new ArrayList<SpokenLanguage>();
-        in.readList(this.spokenLanguages, SpokenLanguage.class.getClassLoader());
+        this.spokenLanguages = in.createTypedArrayList(SpokenLanguage.CREATOR);
         this.status = in.readString();
         this.tagline = in.readString();
         this.title = in.readString();
         this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
         this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
-        this.image = in.readParcelable(Image.class.getClassLoader());
+        this.alternativeTitles = in.readParcelable(AlternativeTitles.class.getClassLoader());
+        this.credits = in.readParcelable(Credits.class.getClassLoader());
+        this.images = in.readParcelable(Images.class.getClassLoader());
+        this.keywordsResult = in.readParcelable(KeywordsResult.class.getClassLoader());
         this.releases = in.readParcelable(Releases.class.getClassLoader());
+        this.videos = in.readParcelable(Videos.class.getClassLoader());
+        this.translationsResult = in.readParcelable(TranslationsResult.class.getClassLoader());
+        this.similar = in.readParcelable(Similar.class.getClassLoader());
+        this.reviewsResult = in.readParcelable(ReviewsResult.class.getClassLoader());
+        this.lists = in.readParcelable(Lists.class.getClassLoader());
         this.trailers = in.readParcelable(Trailers.class.getClassLoader());
     }
 
