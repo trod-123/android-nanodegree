@@ -37,6 +37,7 @@ import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.function.AutoResizeTextView;
 import com.thirdarm.popularmovies.function.ReleaseDates;
 import com.thirdarm.popularmovies.model.MovieDB;
 

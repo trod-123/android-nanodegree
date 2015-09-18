@@ -14,7 +14,7 @@
  *  0. You just DO WHAT YOU WANT TO.
  */
 
-package com.thirdarm.popularmovies;
+package com.thirdarm.popularmovies.function;
 
 import android.annotation.TargetApi;
 import android.content.Context;
