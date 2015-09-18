@@ -13,6 +13,7 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -130,10 +131,18 @@ public class MovieDetailsFragment extends Fragment {
                 ((TextView) rootView.findViewById(R.id.overview))
                         .setText(getString(R.string.error_overview));
             }
-        }
 
-        TextView url_text = (TextView) rootView.findViewById(R.id.tmdb_link);
-        url_text.setMovementMethod(LinkMovementMethod.getInstance());
+            // set copyright footer
+            TextView url_text = (TextView) rootView.findViewById(R.id.tmdb_link);
+            url_text.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    String url = URL.PUBLIC_BASE + URL.MOVIE + movie.getId();
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
+            });
+        }
 
         return rootView;
     }

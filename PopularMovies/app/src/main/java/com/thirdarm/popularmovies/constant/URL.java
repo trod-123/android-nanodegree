@@ -18,6 +18,11 @@ package com.thirdarm.popularmovies.constant;
  */
 public class URL {
 
+    // bases
     public static final String BASE = "https://api.themoviedb.org/3/";
     public static final String IMAGE_BASE = "http://image.tmdb.org/t/p/";
-}
+    public static final String PUBLIC_BASE = "http://www.themoviedb.org/";
+
+    // fragments
+    public static final String DISCOVER = "discover/";
+    public static final String MOVIE = "movie/";}
