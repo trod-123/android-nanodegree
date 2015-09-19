@@ -13,10 +13,11 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -226,14 +227,13 @@ public class MovieDetailsFragment extends Fragment {
     /** Sets the TMDB footer */
     public void setFooter() {
         TextView url_text = (TextView) mRootView.findViewById(R.id.tmdb_link);
-        url_text.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                String url = URL.PUBLIC_BASE + URL.MOVIE + mMovie.getId();
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-            }
-        });
+
+        // use LinkMovementMethod to create hyperlink redirecting to TMDB movie page
+        url_text.setClickable(true);
+        url_text.setMovementMethod(LinkMovementMethod.getInstance());
+        String url = URL.PUBLIC_BASE + URL.MOVIE + mMovie.getId();
+        String html = "<a href='" + url + "'>" + getString(R.string.footer_tmdb) + "</a>";
+        url_text.setText(Html.fromHtml(html));
     }
 
     /**
