@@ -55,7 +55,8 @@
     <GridView
         android:id="@+id/posters_grid"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:stretchMode="columnWidth"
         android:numColumns="auto_fit"
         android:gravity="center" />
 

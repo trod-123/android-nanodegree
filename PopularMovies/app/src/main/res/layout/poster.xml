@@ -15,7 +15,7 @@
     android:padding="@dimen/grid_padding_margin">
 
     <!-- Movie poster takes up whole space -->
-    <ImageView
+    <com.thirdarm.popularmovies.function.AutoResizeImageView
         android:id="@+id/poster"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
