@@ -11,6 +11,8 @@
 
 package com.thirdarm.popularmovies.API;
 
+import android.widget.ProgressBar;
+
 import com.thirdarm.popularmovies.MoviePostersFragment;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.constant.VALUES;
@@ -65,25 +67,6 @@ public class TMDB {
         api = retrofit.create(APIService.class);
     }
 
-    /** Fetches results */
-    public ArrayList<MovieDB> getResults(Call<Results> response) {
-        clear();
-        try {
-            results = response.execute().body().getMovieDBResults();
-            movieIDs = new int[results.size()];
-            for (int i = 0; i < movieIDs.length; i++) {
-                movieIDs[i] = results.get(i).getId();
-            }
-            for (int id : movieIDs) {
-                movies.add(getMovieDetails(id));
-            }
-            return movies;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     /**
      * Generates results for /discover
      *
@@ -102,6 +85,37 @@ public class TMDB {
      */
     public ArrayList<MovieDB> getResults(String category) {
         return getResults(api.getResults(category, API_KEY, LANGUAGE, PAGE));
+    }
+
+    /**
+     * Fetches results
+     *
+     * @param response Callback response from APIService
+     * @return a list of MovieDB objects
+     */
+    public ArrayList<MovieDB> getResults(Call<Results> response) {
+        clear();
+        final ProgressBar pb = MoviePostersFragment.sProgressBar;
+        try {
+            results = response.execute().body().getMovieDBResults();
+            movieIDs = new int[results.size()];
+            for (int i = 0; i < movieIDs.length; i++) {
+                movieIDs[i] = results.get(i).getId();
+            }
+            for (int id : movieIDs) {
+                pb.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        pb.incrementProgressBy(pb.getMax()/movieIDs.length);
+                    }
+                });
+                movies.add(getMovieDetails(id));
+            }
+            return movies;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

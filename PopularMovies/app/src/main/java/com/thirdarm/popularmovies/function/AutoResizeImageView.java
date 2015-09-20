@@ -22,8 +22,6 @@ import android.widget.ImageView;
  */
 public class AutoResizeImageView extends ImageView {
 
-    public static final int POSTER_RATIO = 3/2;
-
     public AutoResizeImageView(Context context)
     {
         super(context);
@@ -43,6 +41,7 @@ public class AutoResizeImageView extends ImageView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth() * POSTER_RATIO); //Snap to width
+        // TMDB poster ratios are sized at a 3:2 aspect ratio
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth() * 3/2); //Snap to width
     }
 }

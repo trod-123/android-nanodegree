@@ -25,7 +25,7 @@
         <RelativeLayout
             android:id="@+id/banner_container"
             android:layout_width="match_parent"
-            android:layout_height="192dp" >
+            android:layout_height="@dimen/detail_banner_height" >
 
             <ImageView
                 android:id="@+id/banner"

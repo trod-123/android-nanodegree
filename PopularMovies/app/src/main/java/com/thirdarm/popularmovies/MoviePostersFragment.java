@@ -27,6 +27,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,8 +63,11 @@ public class MoviePostersFragment extends Fragment {
     // views
     public View mRootView;
     public GridView mGridView;
-    public LinearLayout mProgressContainer;
-    public static TextView sProgressStatus; // allow TMDB to modify the loading status
+    public RelativeLayout mProgressContainer;
+
+    // allow TMDB to modify the loading status
+    public static TextView sProgressStatus;
+    public static ProgressBar sProgressBar;
 
     // Playing with TMDB
     public static TMDB mTmdb; // allow detail activity to access the TMDB
@@ -142,8 +147,9 @@ public class MoviePostersFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Get a reference to UI elements
         mRootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
-        mProgressContainer = (LinearLayout) mRootView.findViewById(R.id.progress_container);
+        mProgressContainer = (RelativeLayout) mRootView.findViewById(R.id.progress_container);
         sProgressStatus = (TextView) mRootView.findViewById(R.id.progress);
+        sProgressBar = (ProgressBar) mRootView.findViewById(R.id.progress_bar);
         mGridView = (GridView) mRootView.findViewById(R.id.posters_grid);
 
         // Create TMDB API
@@ -223,13 +229,17 @@ public class MoviePostersFragment extends Fragment {
         }
     }
 
-    /** Displays overlay containing loading icon and status and disables touch events */
-     public void showProgressBar() {
+    /**
+     * Displays overlay containing loading icon and status, resets horizontal progress bar, and
+     *  disables touch events.
+     */
+    public void showProgressBar() {
         // TODO: Figure out how to fade the view in and out instead of having it just appear
         //  right away
         mProgressContainer.bringToFront();
         mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
         mProgressContainer.setVisibility(View.VISIBLE);
+        sProgressBar.setProgress(0);
         enableDisableViewGroup((ViewGroup) mRootView, false);
     }
 
