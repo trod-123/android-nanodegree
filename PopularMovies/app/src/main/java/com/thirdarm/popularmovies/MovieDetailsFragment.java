@@ -13,7 +13,6 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -43,6 +42,8 @@ import java.util.Arrays;
 
 /**
  * Fragment consisting of specific movie details
+ *
+ * TODO: Change all getColor(int) methods to getColor(int, Theme) upon API 23 release
  */
 public class MovieDetailsFragment extends Fragment {
 
@@ -136,7 +137,7 @@ public class MovieDetailsFragment extends Fragment {
         TextView tv = (TextView) mRootView.findViewById(R.id.overview);
         if (mMovie.getOverview().length() != 0) {
             tv.setText(mMovie.getOverview());
-            tv.setTextColor(Color.parseColor("#FFFFFFFF"));
+            tv.setTextColor(mContext.getResources().getColor(R.color.white));
         }
     }
 
@@ -151,7 +152,7 @@ public class MovieDetailsFragment extends Fragment {
                     director += ", " + crew.getName();
                 } else {
                     director = crew.getName();
-                    tv.setTextColor(Color.parseColor("#FFFFFFFF"));
+                    tv.setTextColor(mContext.getResources().getColor(R.color.white));
                     multiple = true;
                 }
             }
@@ -173,7 +174,7 @@ public class MovieDetailsFragment extends Fragment {
                     writer += ", " + crew.getName();
                 } else {
                     writer = crew.getName();
-                    tv.setTextColor(Color.parseColor("#FFFFFFFF"));
+                    tv.setTextColor(mContext.getResources().getColor(R.color.white));
                     multiple = true;
                 }
             }
@@ -214,7 +215,7 @@ public class MovieDetailsFragment extends Fragment {
                 genres += ", " + genre.getName();
             } else {
                 genres = genre.getName();
-                tv.setTextColor(Color.parseColor("#FFFFFFFF"));
+                tv.setTextColor(mContext.getResources().getColor(R.color.white));
                 multiple = true;
             }
         }

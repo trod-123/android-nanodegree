@@ -12,6 +12,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/poster_container"
     android:layout_width="wrap_content" android:layout_height="wrap_content" >
+
     <!-- Movie poster takes up whole space -->
     <com.thirdarm.popularmovies.function.AutoResizeImageView
         android:id="@+id/poster"
@@ -19,19 +20,13 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <!-- Shadow overlay for text -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="125dp"
-        android:background="#a0424242"
-        android:layout_alignParentBottom="true"/>
-
-    <!-- For the text overlay -->
+    <!-- Text overlay casts shadow over poster -->
     <LinearLayout
         android:id="@+id/poster_details"
         android:layout_width="match_parent"
         android:layout_height="@dimen/grid_overlay_height"
         android:orientation="vertical"
+        android:background="@color/bright_foreground_disabled_material_light"
         android:layout_alignParentBottom="true"
         android:padding="@dimen/activity_padding_margin">
 
@@ -42,7 +37,7 @@
             android:layout_weight="3"
             android:gravity="bottom"
             android:textStyle="bold"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/white"
             android:maxLines="3"
             android:textSize="@dimen/abc_text_size_medium_material" />
 
@@ -51,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/white"
             android:maxLines="1"
             android:textSize="@dimen/abc_text_size_small_material"
             android:gravity="bottom" />
@@ -61,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/white"
             android:maxLines="1"
             android:textSize="@dimen/abc_text_size_small_material"
             android:gravity="bottom" />
