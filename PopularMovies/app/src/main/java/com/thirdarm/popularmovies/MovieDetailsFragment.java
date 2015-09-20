@@ -104,7 +104,7 @@ public class MovieDetailsFragment extends Fragment {
         return mRootView;
     }
 
-    /** Sets the banner with backdrop */
+    /** Sets the banner with backdrop. White field if path is null */
     public void setBanner() {
         // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
@@ -114,7 +114,7 @@ public class MovieDetailsFragment extends Fragment {
                 .into((ImageView) mRootView.findViewById(R.id.banner));
     }
 
-    /** Sets the poster */
+    /** Sets the poster. White field if path is null */
     public void setPoster() {
         // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
@@ -142,7 +142,7 @@ public class MovieDetailsFragment extends Fragment {
         }
     }
 
-    /** Sets the directors */
+    /** Sets the directors. If no director is found, text color is grey */
     public void setDirector(Credits credits) {
         TextView tv = (TextView) mRootView.findViewById(R.id.director);
         String director = getString(R.string.error_info_null);
@@ -161,7 +161,7 @@ public class MovieDetailsFragment extends Fragment {
         tv.setText(director);
     }
 
-    /** Sets the writers */
+    /** Sets the writers. If no writer is found, text color is grey */
     public void setWriter(Credits credits) {
         TextView tv = (TextView) mRootView.findViewById(R.id.writer);
         String writer = getString(R.string.error_info_null);
@@ -206,7 +206,7 @@ public class MovieDetailsFragment extends Fragment {
                 .setText(ReleaseDates.setReleaseDate(mContext, mMovie));
     }
 
-    /** Sets the genre */
+    /** Sets the genre. If no genre is found, text color is grey */
     public void setGenre() {
         TextView tv = (TextView) mRootView.findViewById(R.id.genres);
         String genres = getString(R.string.error_info_null);
