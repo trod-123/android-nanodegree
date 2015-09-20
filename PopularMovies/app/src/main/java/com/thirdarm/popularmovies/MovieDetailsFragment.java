@@ -131,14 +131,12 @@ public class MovieDetailsFragment extends Fragment {
         }
     }
 
-    /** Sets the overview */
+    /** Sets the overview. If no overview is found, text color is grey */
     public void setOverview() {
+        TextView tv = (TextView) mRootView.findViewById(R.id.overview);
         if (mMovie.getOverview().length() != 0) {
-            ((TextView) mRootView.findViewById(R.id.overview))
-                    .setText(mMovie.getOverview());
-        } else {
-            ((TextView) mRootView.findViewById(R.id.overview))
-                    .setText(getString(R.string.error_info_null));
+            tv.setText(mMovie.getOverview());
+            tv.setTextColor(Color.parseColor("#FFFFFFFF"));
         }
     }
 

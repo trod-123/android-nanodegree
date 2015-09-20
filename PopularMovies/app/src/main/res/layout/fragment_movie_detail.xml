@@ -55,7 +55,6 @@
 
             <!-- Overview -->
             <TextView
-                android:id="@+id/title_overview"
                 android:text="@string/detail_overview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,7 +66,8 @@
                 android:id="@+id/overview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFFFF"
+                android:text="@string/error_info_null"
+                android:textColor="#FF606060"
                 android:textSize="@dimen/abc_text_size_small_material" />
 
         </LinearLayout>
@@ -114,6 +114,7 @@
                         android:id="@+id/director"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/error_info_null"
                         android:textColor="#FF606060"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
@@ -130,6 +131,7 @@
                         android:id="@+id/writer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/error_info_null"
                         android:textColor="#FF606060"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
@@ -166,6 +168,7 @@
                         android:id="@+id/genres"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/error_info_null"
                         android:textColor="#FF606060"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:paddingBottom="@dimen/activity_padding_margin" />
