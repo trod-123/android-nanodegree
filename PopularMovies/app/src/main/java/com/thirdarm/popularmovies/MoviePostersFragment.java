@@ -13,8 +13,6 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -37,6 +35,7 @@ import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.function.AutoResizeImageView;
 import com.thirdarm.popularmovies.function.AutoResizeTextView;
 import com.thirdarm.popularmovies.function.Network;
 import com.thirdarm.popularmovies.function.ReleaseDates;
@@ -163,6 +162,12 @@ public class MoviePostersFragment extends Fragment {
             // Otherwise, populate with popular movies by default
             new FetchMovieResultsTask().execute(mCategory);
         }
+
+        // TODO: Create a preferences activity and load movies according to preferences. Include:
+        //  -size of posters: list of dimensions (focus on widths)
+        //  -info overlay: true or false
+        //  -language
+        //  -number of results per page (and functionality in UI to view other pages too)
 
         return mRootView;
     }
@@ -346,20 +351,19 @@ public class MoviePostersFragment extends Fragment {
             }
 
             // set movie title
-            AutoResizeTextView name = (AutoResizeTextView) convertView.findViewById(R.id.poster_name);
-            name.setText(movies.get(position).getTitle());
+            ((AutoResizeTextView) convertView.findViewById(R.id.poster_name))
+                    .setText(movies.get(position).getTitle());
 
             // set release date
-            AutoResizeTextView date = (AutoResizeTextView) convertView.findViewById(R.id.poster_date);
-            date.setText(ReleaseDates.convertDateFormat(movies.get(position).getReleaseDate()));
+            ((AutoResizeTextView) convertView.findViewById(R.id.poster_date))
+                    .setText(ReleaseDates.convertDateFormat(movies.get(position).getReleaseDate()));
 
             // set ratings
             String votesTense = getString(R.string.detail_votes);
             if (movies.get(position).getVoteCount() != 1) {
                 votesTense += "s";
             }
-            AutoResizeTextView rating = (AutoResizeTextView) convertView.findViewById(R.id.poster_rating);
-            rating.setText(
+            ((AutoResizeTextView) convertView.findViewById(R.id.poster_rating)).setText(
                     getString(R.string.detail_ratings)
                             + ": "
                             + new DecimalFormat("#.##").format(movies.get(position).getVoteAverage())
@@ -367,13 +371,16 @@ public class MoviePostersFragment extends Fragment {
                             + movies.get(position).getVoteCount()
                             + " "
                             + votesTense.toLowerCase()
-                            + ")");
+                            + ")"
+            );
 
             // set poster
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.poster);
+            // TODO: Find an appropriate placeholder image for poster paths that are null
+            AutoResizeImageView imageView =
+                    (AutoResizeImageView) convertView.findViewById(R.id.poster);
             Picasso.with(mContext)
                     .load(URL.IMAGE_BASE + mPosterSize + movies.get(position).getPosterPath())
-                    .error(R.drawable.piq_76054_400x400)
+                    .error(android.R.drawable.screen_background_light)
                     .into(imageView);
 
             return convertView;

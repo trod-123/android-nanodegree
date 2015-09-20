@@ -52,6 +52,7 @@
     </LinearLayout>
 
     <!-- Grid of posters -->
+    <!-- TODO: Needs a column size for # of columns to actually take effect. If not, default is 2 -->
     <GridView
         android:id="@+id/posters_grid"
         android:layout_width="match_parent"

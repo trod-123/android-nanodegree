@@ -13,11 +13,13 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +57,9 @@ public class MovieDetailsFragment extends Fragment {
     public String[] WRITERS = {JOBS.WRITING.AUTHOR, JOBS.WRITING.COWRITER,
             JOBS.WRITING.SCREENPLAY, JOBS.WRITING.STORY, JOBS.WRITING.WRITER};
 
+    // for holding resource ids of items that will be populated
+    public int[] resources = {R.id.director, R.id.writer};
+
     public MovieDetailsFragment() {
     }
 
@@ -85,11 +90,11 @@ public class MovieDetailsFragment extends Fragment {
             getActivity().setTitle(mMovie.getTitle());
 
             // prepare the UI
+            new FetchCreditsTask().execute(); // because credits info was not sent through intent
             setBanner();
             setPoster();
             setTagline();
             setOverview();
-            new FetchCreditsTask().execute();
             setRating();
             setReleaseInfo();
             setGenre();
@@ -101,20 +106,20 @@ public class MovieDetailsFragment extends Fragment {
 
     /** Sets the banner with backdrop */
     public void setBanner() {
-        // TODO: What to do if the backdrop_path == null?
+        // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 + mMovie.getBackdropPath())
                 .fit()
-                .error(R.drawable.piq_76054_400x400)
+                .error(android.R.drawable.screen_background_light)
                 .into((ImageView) mRootView.findViewById(R.id.banner));
     }
 
     /** Sets the poster */
     public void setPoster() {
-        // TODO: What to do if the poster_path == null?
+        // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 + mMovie.getPosterPath())
-                .error(R.drawable.sample_0)
+                .error(android.R.drawable.screen_background_light)
                 .into((ImageView) mRootView.findViewById(R.id.poster));
     }
 
@@ -139,6 +144,7 @@ public class MovieDetailsFragment extends Fragment {
 
     /** Sets the directors */
     public void setDirector(Credits credits) {
+        TextView tv = (TextView) mRootView.findViewById(R.id.director);
         String director = getString(R.string.error_info_null);
         boolean multiple = false;
         for (Crew crew : credits.getCrew()) {
@@ -147,20 +153,17 @@ public class MovieDetailsFragment extends Fragment {
                     director += ", " + crew.getName();
                 } else {
                     director = crew.getName();
+                    tv.setTextColor(Color.parseColor("#FFFFFFFF"));
                     multiple = true;
                 }
             }
         }
-        ((TextView) mRootView.findViewById(R.id.director))
-                .setText(
-                        getString(R.string.detail_directors)
-                                + ": "
-                                + director
-                );
+        tv.setText(director);
     }
 
     /** Sets the writers */
     public void setWriter(Credits credits) {
+        TextView tv = (TextView) mRootView.findViewById(R.id.writer);
         String writer = getString(R.string.error_info_null);
         boolean multiple = false;
         ArrayList<String> writers = new ArrayList<>();
@@ -172,16 +175,12 @@ public class MovieDetailsFragment extends Fragment {
                     writer += ", " + crew.getName();
                 } else {
                     writer = crew.getName();
+                    tv.setTextColor(Color.parseColor("#FFFFFFFF"));
                     multiple = true;
                 }
             }
         }
-        ((TextView) mRootView.findViewById(R.id.writer))
-                .setText(
-                        getString(R.string.detail_writers)
-                                + ": "
-                                + writer
-                );
+        tv.setText(writer);
     }
 
     /** Sets the rating */
@@ -190,17 +189,15 @@ public class MovieDetailsFragment extends Fragment {
         if (mMovie.getVoteCount() != 1) {
             votesTense += "s";
         }
-        ((TextView) mRootView.findViewById(R.id.rating))
-                .setText(
-                        getString(R.string.detail_ratings)
-                                + ": "
-                                + new DecimalFormat("#.##").format(mMovie.getVoteAverage())
-                                + " ("
-                                + mMovie.getVoteCount()
-                                + " "
-                                + votesTense.toLowerCase()
-                                + ")"
-                );
+        ((TextView) mRootView.findViewById(R.id.rating)).setText(
+                getString(R.string.detail_ratings)
+                        + new DecimalFormat("#.##").format(mMovie.getVoteAverage())
+                        + " ("
+                        + mMovie.getVoteCount()
+                        + " "
+                        + votesTense.toLowerCase()
+                        + ")"
+        );
     }
 
     /** Sets the release info */
@@ -211,17 +208,19 @@ public class MovieDetailsFragment extends Fragment {
 
     /** Sets the genre */
     public void setGenre() {
-        String genres = getString(R.string.detail_genres) + ":\n";
-        for (int i = 0; i < mMovie.getGenres().size(); i++) {
-            Genre genre = mMovie.getGenres().get(i);
-            if (i != mMovie.getGenres().size() - 1) {
-                genres += genre.getName() + ", ";
+        TextView tv = (TextView) mRootView.findViewById(R.id.genres);
+        String genres = getString(R.string.error_info_null);
+        boolean multiple = false;
+        for (Genre genre : mMovie.getGenres()) {
+            if (multiple) {
+                genres += ", " + genre.getName();
             } else {
-                genres += genre.getName();
+                genres = genre.getName();
+                tv.setTextColor(Color.parseColor("#FFFFFFFF"));
+                multiple = true;
             }
         }
-        ((TextView) mRootView.findViewById(R.id.genres))
-                .setText(genres);
+       tv.setText(genres);
     }
 
     /** Sets the TMDB footer */
@@ -245,22 +244,13 @@ public class MovieDetailsFragment extends Fragment {
             // Check for internet connection
             if (!Network.isNetworkAvailable(mContext)) {
                 // TODO: Implement a cleaner method, without code repeats
-                ((TextView) mRootView.findViewById(R.id.director))
-                        .setText(
-                                getString(R.string.detail_directors)
-                                        + ": "
-                                        + getString(R.string.error_no_internet)
-                        );
-                ((TextView) mRootView.findViewById(R.id.writer))
-                        .setText(
-                                getString(R.string.detail_writers)
-                                        + ": "
-                                        + getString(R.string.error_no_internet)
-                        );
+                for (int id : resources) {
+                    ((TextView) mRootView.findViewById(id)).setText(R.string.error_no_internet);
+                }
                 cancel(true);
             }
 
-            // Stop the AsyncTask if either condition above is met
+            // Stop the AsyncTask if there is no internet connection
             if (isCancelled()) {
                 return;
             }
