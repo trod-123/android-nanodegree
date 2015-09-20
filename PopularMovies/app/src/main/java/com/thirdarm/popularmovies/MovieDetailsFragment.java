@@ -126,7 +126,7 @@ public class MovieDetailsFragment extends Fragment {
 
     /** Sets the movie tagline if there is one. Otherwise, leave blank */
     public void setTagline() {
-        if (mMovie.getTagline().length() != 0) {
+        if (mMovie.getTagline() != null && mMovie.getTagline().length() != 0) {
             ((TextView) mRootView.findViewById(R.id.banner_title))
                     .setText("\"" + mMovie.getTagline() + "\"");
         }
@@ -135,7 +135,7 @@ public class MovieDetailsFragment extends Fragment {
     /** Sets the overview. If no overview is found, text color is grey */
     public void setOverview() {
         TextView tv = (TextView) mRootView.findViewById(R.id.overview);
-        if (mMovie.getOverview().length() != 0) {
+        if (mMovie.getOverview() != null && mMovie.getOverview().length() != 0) {
             tv.setText(mMovie.getOverview());
             tv.setTextColor(mContext.getResources().getColor(R.color.white));
         }

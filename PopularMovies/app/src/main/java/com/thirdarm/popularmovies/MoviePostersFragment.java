@@ -375,7 +375,6 @@ public class MoviePostersFragment extends Fragment {
             }
             ((AutoResizeTextView) convertView.findViewById(R.id.poster_rating)).setText(
                     getString(R.string.detail_ratings)
-                            + ": "
                             + new DecimalFormat("#.##").format(movies.get(position).getVoteAverage())
                             + " ("
                             + movies.get(position).getVoteCount()
