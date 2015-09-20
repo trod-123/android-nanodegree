@@ -21,6 +21,9 @@ import android.widget.ImageView;
  * For resizing movie poster images to standardize grid view sizes
  */
 public class AutoResizeImageView extends ImageView {
+
+    public static final int POSTER_RATIO = 3/2;
+
     public AutoResizeImageView(Context context)
     {
         super(context);
@@ -40,6 +43,6 @@ public class AutoResizeImageView extends ImageView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth() * 3/2); //Snap to width
+        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth() * POSTER_RATIO); //Snap to width
     }
 }
