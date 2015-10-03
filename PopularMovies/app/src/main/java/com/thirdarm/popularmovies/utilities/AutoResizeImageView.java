@@ -9,7 +9,7 @@
  *  Currently for educational purposes only.
  */
 
-package com.thirdarm.popularmovies.function;
+package com.thirdarm.popularmovies.utilities;
 
 import android.content.Context;
 import android.util.AttributeSet;

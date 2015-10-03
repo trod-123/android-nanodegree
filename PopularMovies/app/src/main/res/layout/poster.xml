@@ -14,7 +14,7 @@
     android:layout_width="wrap_content" android:layout_height="wrap_content" >
 
     <!-- Movie poster takes up whole space -->
-    <com.thirdarm.popularmovies.function.AutoResizeImageView
+    <com.thirdarm.popularmovies.utilities.AutoResizeImageView
         android:id="@+id/poster"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,7 +30,7 @@
         android:layout_alignParentBottom="true"
         android:padding="@dimen/activity_padding_margin">
 
-        <com.thirdarm.popularmovies.function.AutoResizeTextView
+        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
             android:id="@+id/poster_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -41,7 +41,7 @@
             android:maxLines="3"
             android:textSize="@dimen/abc_text_size_medium_material" />
 
-        <com.thirdarm.popularmovies.function.AutoResizeTextView
+        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
             android:id="@+id/poster_date"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -51,7 +51,7 @@
             android:textSize="@dimen/abc_text_size_small_material"
             android:gravity="bottom" />
 
-        <com.thirdarm.popularmovies.function.AutoResizeTextView
+        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
             android:id="@+id/poster_rating"
             android:layout_width="match_parent"
             android:layout_height="0dp"
