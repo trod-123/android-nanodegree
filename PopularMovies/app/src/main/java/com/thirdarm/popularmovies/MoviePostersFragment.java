@@ -108,23 +108,23 @@ public class MoviePostersFragment extends Fragment {
 
         switch (id) {
             case R.id.action_discover:
-                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.DISCOVER);
+                fetchMovies(mCategory = PARAMS.CATEGORY.DISCOVER);
                 return true;
 
             case R.id.action_get_playing:
-                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.PLAYING);
+                fetchMovies(mCategory = PARAMS.CATEGORY.PLAYING);
                 return true;
 
             case R.id.action_get_popular:
-                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.POPULAR);
+                fetchMovies(mCategory = PARAMS.CATEGORY.POPULAR);
                 return true;
 
             case R.id.action_get_rated:
-                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.TOP);
+                fetchMovies(mCategory = PARAMS.CATEGORY.TOP);
                 return true;
 
             case R.id.action_get_upcoming:
-                new FetchMovieResultsTask().execute(mCategory = PARAMS.CATEGORY.UPCOMING);
+                fetchMovies(mCategory = PARAMS.CATEGORY.UPCOMING);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -164,7 +164,7 @@ public class MoviePostersFragment extends Fragment {
             hideProgressBar();
         } else {
             // Otherwise, populate with popular movies by default
-            new FetchMovieResultsTask().execute(mCategory);
+            fetchMovies(mCategory);
         }
 
         // TODO: Create a preferences activity and load movies according to preferences. Include:
@@ -176,55 +176,32 @@ public class MoviePostersFragment extends Fragment {
         return mRootView;
     }
 
-    /**
-     * Collects and parses JSON data from the TMDB servers via API calls and
-     * fills the main UI with posters in a grid view.
-     */
-    public class FetchMovieResultsTask extends AsyncTask<String, Void, ArrayList<MovieDB>> {
-        @Override protected void onPreExecute() {
-            // Check for internet connection
-            // TODO: Make internet connection checks persistent while grabbing data from server
-            if (!Network.isNetworkAvailable(mContext)) {
-                sProgressStatus.setText(getString(R.string.status_no_internet));
-                showProgressBar();
-                mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
-                return;
-            }
 
-
-            // Check if sort buttons have been clicked before results have been loaded
-            if (!mLoadGuard) {
-                Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                // Disable reloading while grid is being populated
-                mLoadGuard = false;
-            }
-
-            // Otherwise, proceed with the AsyncTask
+    public void fetchMovies(String category) {
+        // Check for internet connection
+        // TODO: Make internet connection checks persistent while grabbing data from server
+        if (!Network.isNetworkAvailable(mContext)) {
+            sProgressStatus.setText(getString(R.string.status_no_internet));
             showProgressBar();
-            sProgressStatus.setText(getString(R.string.status_loading));
-            setTitle(mCategory);
+            mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
+            return;
         }
 
-        @Override protected ArrayList<MovieDB> doInBackground(String... category) {
-            if (category[0].equals(PARAMS.CATEGORY.DISCOVER)) {
-                return mTmdb.discover(mSort);
-            } else {
-                return mTmdb.getResults(category[0]);
-            }
+        // Check if sort buttons have been clicked before results have been loaded
+        if (!mLoadGuard) {
+            Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            // Disable reloading while grid is being populated
+            mLoadGuard = false;
         }
 
-        @Override protected void onPostExecute(ArrayList<MovieDB> result) {
-            // Make sure result is not null
-            if (result != null) {
-                setGridView(mMovies = result);
+        // Otherwise, proceed with the AsyncTask
+        showProgressBar();
+        sProgressStatus.setText(getString(R.string.status_loading));
+        setTitle(mCategory);
 
-                // Enable reloading and hide the progress spinner
-                mLoadGuard = true;
-                hideProgressBar();
-            }
-        }
+        new FetchMovieResultsTask(mTmdb, mSort).execute(category);
     }
 
     /**
@@ -302,7 +279,7 @@ public class MoviePostersFragment extends Fragment {
      * @param movies the list of movies
      */
     public void setGridView(final ArrayList<MovieDB> movies) {
-        mGridView.setAdapter(new PostersAdapter(mContext, movies));
+        mGridView.setAdapter(new PostersAdapter(mContext, movies, mPosterSize));
 
         // Launch a "more details" screen for the selected movie when poster is clicked
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -316,81 +293,20 @@ public class MoviePostersFragment extends Fragment {
     }
 
 
-    /**
-     * ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
-     *  to be displayed in the grid.
-     * Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
-     *  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
-     */
-    public class PostersAdapter extends BaseAdapter {
-        private Context mContext;
-        private List<MovieDB> movies;
-        private LayoutInflater inflater;
+    // TODO: Uncomment this once LoadManager has been implemented. This will re-enable loading
+    //  and hide the progress bar overlay. The movies will have been loaded into the grid view
+    //  after the null cursor has been swapped with the loaded cursor.
+//    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+//
+//            // This is going to be used in a custom adapter class
+//            // e.g. new ForecastAdapter(getActivity(), Cursor, flags)
+//            if (result != null) {
+//                setGridView(mMovies = result);
+//
+//                // Enable reloading and hide the progress spinner
+//                mLoadGuard = true;
+//                hideProgressBar();
+//            }
+//    }
 
-        public PostersAdapter(Context c, List<MovieDB> movies) {
-            mContext = c;
-            this.movies = movies;
-            inflater = LayoutInflater.from(c);
-        }
-
-        public int getCount() {
-            return movies.size();
-        }
-
-        // returns the actual object at specified position
-        public Object getItem(int position) {
-            return null;
-        }
-
-        // returns the row id of the object at specified position
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        // Creates a new view (in this case, ImageView) for each item referenced by the Adapter
-        // How it works:
-        //  - a view is passed in, which is normally a recycled object
-        //  - checks to see if that view is null
-        //     - if view is null, a view is initialized and configured with desired properties
-        //     - if view is not null, that view is then returned
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.poster, null);
-            }
-
-            // set movie title
-            ((AutoResizeTextView) convertView.findViewById(R.id.poster_name))
-                    .setText(movies.get(position).getTitle());
-
-            // set release date
-            ((AutoResizeTextView) convertView.findViewById(R.id.poster_date))
-                    .setText(ReleaseDates.convertDateFormat(movies.get(position).getReleaseDate()));
-
-            // set ratings
-            String votesTense = getString(R.string.detail_votes);
-            if (movies.get(position).getVoteCount() != 1) {
-                votesTense += "s";
-            }
-            ((AutoResizeTextView) convertView.findViewById(R.id.poster_rating)).setText(
-                    getString(R.string.detail_ratings)
-                            + new DecimalFormat("#.##").format(movies.get(position).getVoteAverage())
-                            + " ("
-                            + movies.get(position).getVoteCount()
-                            + " "
-                            + votesTense.toLowerCase()
-                            + ")"
-            );
-
-            // set poster
-            // TODO: Find an appropriate placeholder image for poster paths that are null
-            AutoResizeImageView imageView =
-                    (AutoResizeImageView) convertView.findViewById(R.id.poster);
-            Picasso.with(mContext)
-                    .load(URL.IMAGE_BASE + mPosterSize + movies.get(position).getPosterPath())
-                    .error(android.R.drawable.screen_background_light)
-                    .into(imageView);
-
-            return convertView;
-        }
-    }
 }
