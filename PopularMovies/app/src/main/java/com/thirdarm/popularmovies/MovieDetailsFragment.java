@@ -13,9 +13,13 @@ package com.thirdarm.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -24,17 +28,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.JOBS;
 import com.thirdarm.popularmovies.constant.URL;
-import com.thirdarm.popularmovies.utilities.Network;
+import com.thirdarm.popularmovies.data.MovieProjections.Details;
+import com.thirdarm.popularmovies.model.Genre;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.Crew;
-import com.thirdarm.popularmovies.model.Genre;
-import com.thirdarm.popularmovies.model.MovieDB;
 
+import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,34 +50,35 @@ import java.util.Arrays;
  *
  * TODO: Change all getColor(int) methods to getColor(int, Theme) upon API 23 release
  */
-public class MovieDetailsFragment extends Fragment {
+public class MovieDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String LOG_TAG = "Movies/Detail";
 
-    public Context mContext;
     public View mRootView;
-    public Intent mIntent;
-    public MovieDB mMovie;
+    private Cursor mData;
+
+    public Context mContext;
+    private static final int DETAILS_LOADER_ID = 0;
 
     // TODO: Get a working definition of "writer" for setWriters()
     public String[] WRITERS = {JOBS.WRITING.AUTHOR, JOBS.WRITING.COWRITER,
             JOBS.WRITING.SCREENPLAY, JOBS.WRITING.STORY, JOBS.WRITING.WRITER};
 
-    // for holding resource ids of items that will be populated
-    public int[] resources = {R.id.director, R.id.writer};
-
     public MovieDetailsFragment() {
+        setHasOptionsMenu(true);
+    }
+
+    // Prepare the loader
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(DETAILS_LOADER_ID, null, this);
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mContext = getActivity();
-
-        // get the intent from the posters activity
-        mIntent = getActivity().getIntent();
     }
 
     @Override
@@ -79,36 +86,19 @@ public class MovieDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-
-        // Make sure to first check, before loading any intent extras or anything from intents,
-        //  that the intent is not null and that the intent contains the key matching the
-        //  string ID that was loaded in the intent sent by the previous activity
-        if (mIntent != null && mIntent.hasExtra(MoviePostersFragment.INTENT_DATA)) {
-            mMovie = mIntent.getParcelableExtra(MoviePostersFragment.INTENT_DATA);
-
-            // set title of movie as title of activity
-            getActivity().setTitle(mMovie.getTitle());
-
-            // prepare the UI
-            new FetchCreditsTask().execute(); // because credits info was not sent through intent
-            setBanner();
-            setPoster();
-            setTagline();
-            setOverview();
-            setRating();
-            setReleaseInfo();
-            setGenre();
-            setFooter();
-        }
-
         return mRootView;
     }
+
+//    public void fetchCredits() {
+//        new FetchCreditsTask(getActivity(), mRootView, mData.getInt(Details.COL_MOVIE_TMDB_ID));
+//    }
 
     /** Sets the banner with backdrop. White field if path is null */
     public void setBanner() {
         // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
-                .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 + mMovie.getBackdropPath())
+                .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 +
+                        mData.getString(Details.COL_MOVIE_BACKDROP_PATH))
                 .fit()
                 .error(android.R.drawable.screen_background_light)
                 .into((ImageView) mRootView.findViewById(R.id.banner));
@@ -118,41 +108,48 @@ public class MovieDetailsFragment extends Fragment {
     public void setPoster() {
         // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
-                .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 + mMovie.getPosterPath())
+                .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 +
+                        mData.getString(Details.COL_MOVIE_POSTER_PATH))
                 .error(android.R.drawable.screen_background_light)
                 .into((ImageView) mRootView.findViewById(R.id.poster));
     }
 
     /** Sets the movie tagline if there is one. Otherwise, leave blank */
     public void setTagline() {
-        if (mMovie.getTagline() != null && mMovie.getTagline().length() != 0) {
+        String tagline = mData.getString(Details.COL_MOVIE_TAGLINE);
+        if (tagline != null && tagline.length() != 0) {
             ((TextView) mRootView.findViewById(R.id.banner_title))
-                    .setText("\"" + mMovie.getTagline() + "\"");
+                    .setText("\"" + tagline + "\"");
         }
     }
 
     /** Sets the overview. If no overview is found, text color is grey */
     public void setOverview() {
+        String overview = mData.getString(Details.COL_MOVIE_OVERVIEW);
         TextView tv = (TextView) mRootView.findViewById(R.id.overview);
-        if (mMovie.getOverview() != null && mMovie.getOverview().length() != 0) {
-            tv.setText(mMovie.getOverview());
+        if (overview != null && overview.length() != 0) {
+            tv.setText(overview);
             tv.setTextColor(mContext.getResources().getColor(R.color.white));
         }
     }
 
     /** Sets the directors. If no director is found, text color is grey */
-    public void setDirector(Credits credits) {
+    public void setDirector() {
         TextView tv = (TextView) mRootView.findViewById(R.id.director);
         String director = getString(R.string.error_info_null);
         boolean multiple = false;
-        for (Crew crew : credits.getCrew()) {
-            if (crew.getJob().equals(JOBS.DIRECTING.DIRECTOR)) {
-                if (multiple) {
-                    director += ", " + crew.getName();
-                } else {
-                    director = crew.getName();
-                    tv.setTextColor(mContext.getResources().getColor(R.color.white));
-                    multiple = true;
+        Type type = new TypeToken<Credits>() {}.getType();
+        Credits credits = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_CREDITS), type);
+        if (credits != null) {
+            for (Crew crew : credits.getCrew()) {
+                if (crew.getJob().equals(JOBS.DIRECTING.DIRECTOR)) {
+                    if (multiple) {
+                        director += ", " + crew.getName();
+                    } else {
+                        director = crew.getName();
+                        tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                        multiple = true;
+                    }
                 }
             }
         }
@@ -160,21 +157,25 @@ public class MovieDetailsFragment extends Fragment {
     }
 
     /** Sets the writers. If no writer is found, text color is grey */
-    public void setWriter(Credits credits) {
+    public void setWriter() {
         TextView tv = (TextView) mRootView.findViewById(R.id.writer);
         String writer = getString(R.string.error_info_null);
         boolean multiple = false;
-        ArrayList<String> writers = new ArrayList<>();
-        for (Crew crew : credits.getCrew()) {
-            if (Arrays.asList(WRITERS).contains(crew.getJob())
-                    && !writers.contains(crew.getName())) {
-                writers.add(crew.getName());
-                if (multiple) {
-                    writer += ", " + crew.getName();
-                } else {
-                    writer = crew.getName();
-                    tv.setTextColor(mContext.getResources().getColor(R.color.white));
-                    multiple = true;
+        Type type = new TypeToken<Credits>() {}.getType();
+        Credits credits = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_CREDITS), type);
+        if (credits != null) {
+            ArrayList<String> writers = new ArrayList<>();
+            for (Crew crew : credits.getCrew()) {
+                if (Arrays.asList(WRITERS).contains(crew.getJob())
+                        && !writers.contains(crew.getName())) {
+                    writers.add(crew.getName());
+                    if (multiple) {
+                        writer += ", " + crew.getName();
+                    } else {
+                        writer = crew.getName();
+                        tv.setTextColor(mContext.getResources().getColor(R.color.white));
+                        multiple = true;
+                    }
                 }
             }
         }
@@ -184,14 +185,14 @@ public class MovieDetailsFragment extends Fragment {
     /** Sets the rating */
     public void setRating() {
         String votesTense = getString(R.string.detail_votes);
-        if (mMovie.getVoteCount() != 1) {
+        if (mData.getInt(Details.COL_MOVIE_VOTE_COUNT) != 1) {
             votesTense += "s";
         }
         ((TextView) mRootView.findViewById(R.id.rating)).setText(
                 getString(R.string.detail_ratings)
-                        + new DecimalFormat("#.##").format(mMovie.getVoteAverage())
+                        + new DecimalFormat("#.##").format(mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE))
                         + " ("
-                        + mMovie.getVoteCount()
+                        + mData.getInt(Details.COL_MOVIE_VOTE_COUNT)
                         + " "
                         + votesTense.toLowerCase()
                         + ")"
@@ -201,7 +202,8 @@ public class MovieDetailsFragment extends Fragment {
     /** Sets the release info */
     public void setReleaseInfo() {
         ((TextView) mRootView.findViewById(R.id.release))
-                .setText(ReleaseDates.setReleaseDate(mContext, mMovie));
+                .setText(ReleaseDates.setReleaseDate(mContext,
+                        mData.getString(Details.COL_MOVIE_RELEASE_DATE)));
     }
 
     /** Sets the genre. If no genre is found, text color is grey */
@@ -209,7 +211,9 @@ public class MovieDetailsFragment extends Fragment {
         TextView tv = (TextView) mRootView.findViewById(R.id.genres);
         String genres = getString(R.string.error_info_null);
         boolean multiple = false;
-        for (Genre genre : mMovie.getGenres()) {
+        Type type = new TypeToken<ArrayList<Genre>>() {}.getType();
+        ArrayList<Genre> movieGenres = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_GENRES), type);
+        for (Genre genre : movieGenres) {
             if (multiple) {
                 genres += ", " + genre.getName();
             } else {
@@ -228,42 +232,53 @@ public class MovieDetailsFragment extends Fragment {
         // use LinkMovementMethod to create hyperlink redirecting to TMDB movie page
         url_text.setClickable(true);
         url_text.setMovementMethod(LinkMovementMethod.getInstance());
-        String url = URL.PUBLIC_BASE + URL.MOVIE + mMovie.getId();
+        String url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
         String html = "<a href='" + url + "'>" + getString(R.string.footer_tmdb) + "</a>";
         url_text.setText(Html.fromHtml(html));
     }
 
-    /**
-     * Collects and parses JSON data from the TMDB servers via API calls and
-     * fills the main UI with posters in a grid view.
+    /*
+        Loader methods
      */
-    public class FetchCreditsTask extends AsyncTask<Void, Void, Credits> {
-        @Override protected void onPreExecute() {
-            // Check for internet connection
-            if (!Network.isNetworkAvailable(mContext)) {
-                // TODO: Implement a cleaner method, without code repeats
-                for (int id : resources) {
-                    ((TextView) mRootView.findViewById(id)).setText(R.string.error_no_internet);
-                }
-                cancel(true);
-            }
 
-            // Stop the AsyncTask if there is no internet connection
-            if (isCancelled()) {
-                return;
-            }
+    @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Make sure to first check, before loading any intent extras or anything from intents,
+        //  that the intent is not null
+        Intent intent = getActivity().getIntent();
+        if (intent == null) {
+            return null;
         }
+        return new CursorLoader(mContext, intent.getData(), Details.PROJECTION,
+                null, null, null);
+    }
 
-        @Override protected Credits doInBackground(Void... params) {
-            return MoviePostersFragment.mTmdb.getMovieCredits(mMovie.getId());
-        }
 
-        @Override protected void onPostExecute(Credits result) {
-            // Make sure result is not null
-            if (result != null) {
-                setDirector(result);
-                setWriter(result);
-            }
-        }
+    // No cursor view is involved with this fragment, so just extract the data from the cursor
+    //  and pair them with the appropriate text views
+    @Override public void onLoadFinished(Loader loader, Cursor data) {
+        // Check if cursor is empty
+        if (!data.moveToFirst()) return;
+
+        mData = data;
+        //fetchCredits();
+
+        // set title of movie as title of activity
+        getActivity().setTitle(mData.getString(Details.COL_MOVIE_TITLE));
+
+        // prepare the UI
+        //new FetchCreditsTask().execute(); // because credits info was not sent through intent
+        setBanner();
+        setPoster();
+        setTagline();
+        setOverview();
+        setRating();
+        setReleaseInfo();
+        setGenre();
+        setFooter();
+        setDirector();
+        setWriter();
+    }
+
+    @Override public void onLoaderReset(Loader loader) {
     }
 }

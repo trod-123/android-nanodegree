@@ -11,11 +11,16 @@
 
 package com.thirdarm.popularmovies;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,60 +28,60 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
-import com.thirdarm.popularmovies.constant.URL;
-import com.thirdarm.popularmovies.utilities.AutoResizeImageView;
-import com.thirdarm.popularmovies.utilities.AutoResizeTextView;
-import com.thirdarm.popularmovies.utilities.Network;
+import com.thirdarm.popularmovies.data.MovieColumns;
+import com.thirdarm.popularmovies.data.MovieProvider;
+import com.thirdarm.popularmovies.data.MovieProjections.Results;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.model.MovieDB;
+import com.thirdarm.popularmovies.data.MovieProvider.Movies;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fragment consisting of a grid of movie posters
  */
-public class MoviePostersFragment extends Fragment {
+public class MoviePostersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String LOG_TAG = "MoviePostersFragment";
+
+    // For launching the movie detail activity
     public static final String INTENT_DATA = "myData";
+
+    // For saving the current activity state into a bundle
     public static final String DATA_MOVIES = "movies";
     public static final String DATA_TITLE = "title";
     public static final String DATA_POSITION = "position";
 
     public Context mContext;
+    public static final int MOVIE_LOADER_ID = 0;
 
     // views
     public View mRootView;
     public GridView mGridView;
-    public RelativeLayout mProgressContainer;
+    public PostersAdapter mPostersAdapter;
 
-    // allow TMDB to modify the loading status
-    public static TextView sProgressStatus;
-    public static ProgressBar sProgressBar;
-
-    // Playing with TMDB
+    // for loading and displaying movies
     public static TMDB mTmdb; // allow detail activity to access the TMDB
     public ArrayList<MovieDB> mMovies;
     public final String mPosterSize = IMAGE.SIZE.POSTER.w500;
     public String mCategory = PARAMS.CATEGORY.POPULAR;
     public String mSort = PARAMS.RESULTS.SORT.POPULARITY_DESC;
     public String mLanguage = "en";
-    public int mPage = 1;
-    public boolean mLoadGuard = true;
+    public static boolean mLoadGuard = true;
 
+    // thresholds
+    public int THRESHOLD_DATE_LOWER = -35;
+    public int THRESHOLD_DATE_MIDDLE = 0;
+    public int THRESHOLD_DATE_UPPER = 28;
+    public String THRESHOLD_RATING_LOWER = "7";
+    public String THRESHOLD_VOTES_LOWER = "50";
+    public String THRESHOLD_POPULARITY_LOWER = "5";
 
 
     public MoviePostersFragment() {
@@ -86,21 +91,17 @@ public class MoviePostersFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mContext = getActivity();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar
         inflater.inflate(R.menu.movie_posters_fragment, menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -140,32 +141,48 @@ public class MoviePostersFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Get a reference to UI elements
         mRootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
-        mProgressContainer = (RelativeLayout) mRootView.findViewById(R.id.progress_container);
-        sProgressStatus = (TextView) mRootView.findViewById(R.id.progress);
-        sProgressBar = (ProgressBar) mRootView.findViewById(R.id.progress_bar);
         mGridView = (GridView) mRootView.findViewById(R.id.posters_grid);
 
-        // Create TMDB API
-        mTmdb = new TMDB(getString(R.string.movie_api_key), mLanguage, mPage);
+        // Create PostersAdapter. Loaders will swap the currently null cursor once the cursor has
+        //  been loaded.
+        mPostersAdapter = new PostersAdapter(mContext, mPosterSize, null);
+        mGridView.setAdapter(mPostersAdapter);
 
-        // Recycle information from last destroy, if applicable
-        if(savedInstanceState != null &&
-                savedInstanceState.containsKey(DATA_MOVIES) &&
-                savedInstanceState.containsKey(DATA_TITLE) &&
-                savedInstanceState.containsKey(DATA_POSITION)) {
-            setGridView(mMovies = savedInstanceState.getParcelableArrayList(DATA_MOVIES));
-            setTitle(mCategory = savedInstanceState.getString(DATA_TITLE));
-            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
-            hideProgressBar();
-        } else {
-            // Otherwise, populate with popular movies by default
-            fetchMovies(mCategory);
-        }
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor != null) {
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .setData(MovieProvider.Movies.withId(cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
+                    startActivity(intent);
+                }
+            }
+        });
+
+        // Create TMDB API
+        mTmdb = new TMDB(getString(R.string.movie_api_key), mLanguage);
+
+//        // Recycle information from last destroy, if applicable
+//        if(savedInstanceState != null &&
+//                savedInstanceState.containsKey(DATA_MOVIES) &&
+//                savedInstanceState.containsKey(DATA_TITLE) &&
+//                savedInstanceState.containsKey(DATA_POSITION)) {
+//            setGridView(mMovies = savedInstanceState.getParcelableArrayList(DATA_MOVIES));
+//            setTitle(mCategory = savedInstanceState.getString(DATA_TITLE));
+//            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
+//            hideProgressBar();
+//        } else {
+//            // Otherwise, populate with popular movies by default
+//            fetchMovies(mCategory);
+//        }
+        //fetchMovies(mCategory);
+
+        // Initialize the local database upon running app for the first time
+        if (checkIfEmptyLocalMovieDb()) createMovieDb(mCategory);
 
         // TODO: Create a preferences activity and load movies according to preferences. Include:
         //  -size of posters: list of dimensions (focus on widths)
@@ -176,17 +193,48 @@ public class MoviePostersFragment extends Fragment {
         return mRootView;
     }
 
+    // TODO: Figure out what the difference is between loading the Loader here or in
+    //  onViewCreated(view, bundle) instead
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
+    }
 
+    /**
+     * Creates and fills a local database with movies
+     *
+     * @param category
+     */
+    public void createMovieDb(String category) {
+        new FetchMovieResultsTask(getActivity(), mTmdb, true, mSort, category, mRootView).execute(category);
+        mLoadGuard = false;
+    }
+
+    /**
+     * Checks to see if the local movie database is empty.
+     *
+     * @return true if the db is empty
+     */
+    private boolean checkIfEmptyLocalMovieDb() {
+        ContentResolver cr = mContext.getContentResolver();
+        Cursor cursor = cr.query(
+                Movies.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        boolean empty = !cursor.moveToFirst();
+        cursor.close();
+        return (empty);
+    }
+
+    /**
+     * Fetches the movies online
+     *
+     * @param category category of movies to fetch
+     */
     public void fetchMovies(String category) {
-        // Check for internet connection
-        // TODO: Make internet connection checks persistent while grabbing data from server
-        if (!Network.isNetworkAvailable(mContext)) {
-            sProgressStatus.setText(getString(R.string.status_no_internet));
-            showProgressBar();
-            mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.GONE);
-            return;
-        }
-
         // Check if sort buttons have been clicked before results have been loaded
         if (!mLoadGuard) {
             Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
@@ -196,117 +244,96 @@ public class MoviePostersFragment extends Fragment {
             mLoadGuard = false;
         }
 
-        // Otherwise, proceed with the AsyncTask
-        showProgressBar();
-        sProgressStatus.setText(getString(R.string.status_loading));
-        setTitle(mCategory);
-
-        new FetchMovieResultsTask(mTmdb, mSort).execute(category);
+        mGridView.smoothScrollToPosition(0);
+        new FetchMovieResultsTask(getActivity(), mTmdb, false, mSort, category, mRootView).execute(category);
+        getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
     }
 
-    /**
-     * Displays overlay containing loading icon and status, resets horizontal progress bar, and
-     *  disables touch events.
+
+    /*
+        Loader methods
      */
-    public void showProgressBar() {
-        // TODO: Figure out how to fade the view in and out instead of having it just appear
-        //  right away
-        mProgressContainer.bringToFront();
-        mProgressContainer.findViewById(R.id.progress_spinner).setVisibility(View.VISIBLE);
-        mProgressContainer.setVisibility(View.VISIBLE);
-        sProgressBar.setProgress(0);
-        enableDisableViewGroup((ViewGroup) mRootView, false);
-    }
 
-    /** Hides overlay and enables touch events */
-    public void hideProgressBar() {
-        mProgressContainer.setVisibility(View.GONE);
-        mRootView.setClickable(true);
-        enableDisableViewGroup((ViewGroup) mRootView, true);
-    }
+    @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-    /**
-     * Enables/Disables all child views in a view group.
-     * From http://stackoverflow.com/questions/5418510/disable-the-touch-events-for-all-the-views
-     *
-     * @param viewGroup the view group
-     * @param enabled <code>true</code> to enable, <code>false</code> to disable
-     * the views.
-     */
-    public void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled) {
-        int childCount = viewGroup.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View view = viewGroup.getChildAt(i);
-            view.setEnabled(enabled);
-            if (view instanceof ViewGroup) {
-                enableDisableViewGroup((ViewGroup) view, enabled);
-            }
-        }
-    }
+        // Declare fields which would be used in querying the cursor
+        String selection = null;
+        String[] selectionArgs = null;
+        String sortOrder = null;
 
-    /**
-     * Sets the title of the activity based on sort category
-     *
-     * @param category the category used to sort movies
-     */
-    public void setTitle(String category) {
-        switch (category) {
+        // For defining thresholds for NOW_PLAYING and UPCOMING search queries
+        String dateRange[];
+
+        // Check to see the current category which would be used to query the appropriate movies
+        //  by setting the above fields
+        // TODO: The issue with ordering solely by sortOrder is that the movies that would
+        //  be sorted are those that are already in the local db, not accounting for
+        //  movies that are in other pages of the actual {category} api query
+        // WHAT ABOUT: In the background, the app queries and holds onto the next page of results
+        //  such that, when the user is on page X, in the background the app loads up page X+1 so
+        //  that the next page of results will always be ready for when the user needs it.
+        switch (mCategory) {
             case PARAMS.CATEGORY.DISCOVER:
-                getActivity().setTitle(getString(R.string.title_discover));
                 break;
 
             case PARAMS.CATEGORY.PLAYING:
-                getActivity().setTitle(getString(R.string.title_playing));
+                // The threshold for now playing movies should be between:
+                //  (CURRENT DATE - 35 days, CURRENT DATE + 7 days)
+                //  e.g. current: 2015-10-07, minimum: 2015-09-02, maximum: 2015-10-14
+               dateRange = ReleaseDates.getDateRangeFromToday(
+                        THRESHOLD_DATE_LOWER, THRESHOLD_DATE_MIDDLE
+                );
+                selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
+                selectionArgs = new String[] {dateRange[0], dateRange[1]};
+                sortOrder = MovieColumns.RELEASE_DATE + " DESC";
                 break;
 
             case PARAMS.CATEGORY.POPULAR:
-                getActivity().setTitle(getString(R.string.title_popular));
+                selection = MovieColumns.POPULARITY + " >= ?";
+                selectionArgs = new String[] {THRESHOLD_POPULARITY_LOWER};
+                sortOrder = MovieColumns.POPULARITY + " DESC";
                 break;
 
             case PARAMS.CATEGORY.TOP:
-                getActivity().setTitle(getString(R.string.title_top_rated));
+                selection = MovieColumns.VOTE_AVERAGE + " >= ? AND " +
+                        MovieColumns.VOTE_COUNT + " >= ?";
+                selectionArgs = new String[] {THRESHOLD_RATING_LOWER, THRESHOLD_VOTES_LOWER};
+                sortOrder = MovieColumns.VOTE_AVERAGE + " DESC";
                 break;
 
             case PARAMS.CATEGORY.UPCOMING:
-                getActivity().setTitle(getString(R.string.title_upcoming));
+                // The threshold for upcoming movies should be between:
+                //  (CURRENT DATE + 7 days, CURRENT DATE + 28 days)
+                //  e.g. current: 2015-10-07, minimum: 2015-10-14, maximum: 2015-11-04
+                dateRange = ReleaseDates.getDateRangeFromToday(
+                        THRESHOLD_DATE_MIDDLE + 1, THRESHOLD_DATE_UPPER
+                );
+                selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
+                selectionArgs = new String[] {dateRange[0], dateRange[1]};
+                sortOrder = MovieColumns.RELEASE_DATE + " ASC";
                 break;
         }
+
+        // Create a cursor pointing to the table containing the columns as specified in the
+        //  PROJECTION
+        return new CursorLoader(mContext, Movies.CONTENT_URI, Results.PROJECTION,
+                selection, selectionArgs, sortOrder);
     }
 
-    /**
-     * Populates the grid view with posters
-     *
-     * @param movies the list of movies
-     */
-    public void setGridView(final ArrayList<MovieDB> movies) {
-        mGridView.setAdapter(new PostersAdapter(mContext, movies, mPosterSize));
+    @Override public void onLoadFinished(Loader loader, Cursor data) {
+        // Create a new adapter only if the adapter is null. Otherwise, use the data that's already
+        //  available in the cursor
+        // The issue with this is that the cursor gets loaded first before all the movies have
+        //  finished downloading. So we can't hide and progress bar here.
 
-        // Launch a "more details" screen for the selected movie when poster is clicked
-        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                MovieDB dataToSend = movies.get(position);
-                Intent intent = new Intent(mContext, DetailActivity.class);
-                intent.putExtra(INTENT_DATA, dataToSend);
-                startActivity(intent);
-            }
-        });
+        // Another issue of this is that each time an entry in the cursored database is updated,
+        //  the cursor gets re-loaded and this method is called each time
+        mPostersAdapter.swapCursor(data);
+        Log.d(LOG_TAG, "onLoadFinished");
     }
 
-
-    // TODO: Uncomment this once LoadManager has been implemented. This will re-enable loading
-    //  and hide the progress bar overlay. The movies will have been loaded into the grid view
-    //  after the null cursor has been swapped with the loaded cursor.
-//    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-//
-//            // This is going to be used in a custom adapter class
-//            // e.g. new ForecastAdapter(getActivity(), Cursor, flags)
-//            if (result != null) {
-//                setGridView(mMovies = result);
-//
-//                // Enable reloading and hide the progress spinner
-//                mLoadGuard = true;
-//                hideProgressBar();
-//            }
-//    }
+    @Override public void onLoaderReset(Loader loader) {
+        mPostersAdapter.swapCursor(null);
+    }
 
 }

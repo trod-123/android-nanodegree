@@ -12,13 +12,14 @@
 package com.thirdarm.popularmovies.utilities;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.thirdarm.popularmovies.R;
-import com.thirdarm.popularmovies.model.MovieDB;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -29,18 +30,20 @@ import java.util.Locale;
  */
 public class ReleaseDates {
 
+    private static final String LOG_TAG = "Utilities/ReleaseDates";
+
     /**
      * Sets movie release date
      *
      * @param c the activity context
-     * @param movie the movie
+     * @param date the release date
      * @return the release date prepended with the correct tense of "release"
      */
-    public static String setReleaseDate(Context c, MovieDB movie) {
+    public static String setReleaseDate(Context c, String date) {
         Date releaseDate;
         String releaseTense = c.getString(R.string.detail_release_date);
         try {
-            releaseDate = (new SimpleDateFormat("yyyy-MM-dd")).parse(movie.getReleaseDate());
+            releaseDate = (new SimpleDateFormat("yyyy-MM-dd")).parse(date);
             if(new Date().before(releaseDate)) {
                 releaseTense += "s on: ";
             } else {
@@ -49,7 +52,7 @@ public class ReleaseDates {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return releaseTense + convertDateFormat(movie.getReleaseDate());
+        return releaseTense + convertDateFormat(date);
     }
 
     /**
@@ -69,5 +72,33 @@ public class ReleaseDates {
             return null;
         }
         return targetFormat.format(oldDate);
+    }
+
+    /**
+     * Calculates a minimum and maximum date, specifying a range of dates relative to the
+     *  current date.
+     *
+     * @param minimum_threshold the minimum number of days from the current date (lower bound)
+     *                          can be negative
+     * @param maximum_threshold the maximum number of days from the current date (upper bound)
+     *                          can be negative
+     * @return a string array containing the minimum and maximum dates
+     */
+    public static String[] getDateRangeFromToday(int minimum_threshold, int maximum_threshold) {
+        String minimum, maximum;
+
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, minimum_threshold - 1);
+        minimum = c.get(Calendar.YEAR) + "-" +
+                String.format("%02d", (c.get(Calendar.MONTH) + 1)) + "-" +
+                String.format("%02d", (c.get(Calendar.DAY_OF_MONTH)));
+
+        c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_MONTH, maximum_threshold - 1);
+        maximum = c.get(Calendar.YEAR) + "-" +
+                String.format("%02d", (c.get(Calendar.MONTH) + 1)) + "-" +
+                String.format("%02d", (c.get(Calendar.DAY_OF_MONTH)));
+
+        return new String[] {minimum, maximum};
     }
 }

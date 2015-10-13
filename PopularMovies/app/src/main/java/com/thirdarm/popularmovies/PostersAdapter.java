@@ -13,99 +13,93 @@ package com.thirdarm.popularmovies;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.URL;
-import com.thirdarm.popularmovies.model.MovieDB;
+import com.thirdarm.popularmovies.data.MovieProjections.Results;
 import com.thirdarm.popularmovies.utilities.AutoResizeImageView;
 import com.thirdarm.popularmovies.utilities.AutoResizeTextView;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
 
 import java.text.DecimalFormat;
-import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
- * ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
- *  to be displayed in the grid.
- * Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
- *  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
- *
- *  TODO: Turn this into a CursorAdapter so that it will fill the grid based on cursors
+ * CursorAdapter that fills the grid based on cursors
  */
-public class PostersAdapter extends BaseAdapter {
+public class PostersAdapter extends CursorAdapter {
+
+    public static final String LOG_TAG = "PostersAdapter";
+
     private Context mContext;
-    private List<MovieDB> mMovies;
-    private LayoutInflater inflater;
     private String mPosterSize;
 
-    public PostersAdapter(Context c, List<MovieDB> movies, String posterSize) {
-        mContext = c;
-        mMovies = movies;
+
+    public PostersAdapter(Context context, String posterSize, Cursor cursor) {
+        super(context, cursor, 0);
+        mContext = context;
         mPosterSize = posterSize;
-        inflater = LayoutInflater.from(c);
     }
 
-    public int getCount() {
-        return mMovies.size();
+    @Override public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View v = LayoutInflater.from(context).inflate(R.layout.poster, parent, false);
+        // This is for the bindView() method below, so that it can refer to each of these views and
+        //  its place in the Adapter
+        v.setTag(new ViewHolder(v));
+        return v;
     }
 
-    // returns the actual object at specified position
-    public Object getItem(int position) {
-        return null;
-    }
-
-    // returns the row id of the object at specified position
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    // Creates a new view (in this case, ImageView) for each item referenced by the Adapter
-    // How it works:
-    //  - a view is passed in, which is normally a recycled object
-    //  - checks to see if that view is null
-    //     - if view is null, a view is initialized and configured with desired properties
-    //     - if view is not null, that view is then returned
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.poster, null);
-        }
-
+    @Override public void bindView(View view, Context context, Cursor cursor) {
+        // Gets the tag of the view as done in newView() above
+        ViewHolder vh = (ViewHolder) view.getTag();
         // set movie title
-        ((AutoResizeTextView) convertView.findViewById(R.id.poster_name))
-                .setText(mMovies.get(position).getTitle());
-
+        vh.poster_name.setText(cursor.getString(Results.COL_MOVIE_TITLE));
         // set release date
-        ((AutoResizeTextView) convertView.findViewById(R.id.poster_date))
-                .setText(ReleaseDates.convertDateFormat(mMovies.get(position).getReleaseDate()));
-
+        vh.poster_date.setText(ReleaseDates.convertDateFormat(
+                        cursor.getString(Results.COL_MOVIE_RELEASE_DATE))
+        );
         // set ratings
+        int number_votes = cursor.getInt(Results.COL_MOVIE_VOTE_COUNT);
+        double vote_average = cursor.getDouble(Results.COL_MOVIE_VOTE_AVERAGE);
         String votesTense = mContext.getResources().getString(R.string.detail_votes);
-        if (mMovies.get(position).getVoteCount() != 1) {
+        if (number_votes != 1) {
             votesTense += "s";
         }
-        ((AutoResizeTextView) convertView.findViewById(R.id.poster_rating)).setText(
-                mContext.getResources().getString(R.string.detail_ratings)
-                        + new DecimalFormat("#.##").format(mMovies.get(position).getVoteAverage())
-                        + " ("
-                        + mMovies.get(position).getVoteCount()
-                        + " "
-                        + votesTense.toLowerCase()
-                        + ")"
-        );
-
+        String movie_rating = mContext.getResources().getString(R.string.detail_ratings)
+                + new DecimalFormat("#.##").format(vote_average)
+                + " ("
+                + number_votes
+                + " "
+                + votesTense.toLowerCase()
+                + ")";
+        vh.poster_rating.setText(movie_rating);
         // set poster
         // TODO: Find an appropriate placeholder image for poster paths that are null
-        AutoResizeImageView imageView =
-                (AutoResizeImageView) convertView.findViewById(R.id.poster);
         Picasso.with(mContext)
-                .load(URL.IMAGE_BASE + mPosterSize + mMovies.get(position).getPosterPath())
+                .load(URL.IMAGE_BASE + mPosterSize +
+                        cursor.getString(Results.COL_MOVIE_POSTER_PATH))
                 .error(android.R.drawable.screen_background_light)
-                .into(imageView);
+                .into(vh.poster);
+    }
 
-        return convertView;
+
+    // For butterknife to bind the resource views into a view holder which would be used in
+    //  referencing and setting the fields for each view inflated from the poster layout
+    static class ViewHolder {
+        @Bind(R.id.poster) AutoResizeImageView poster;
+        @Bind(R.id.poster_name) AutoResizeTextView poster_name;
+        @Bind(R.id.poster_date) AutoResizeTextView poster_date;
+        @Bind(R.id.poster_rating) AutoResizeTextView poster_rating;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 }
