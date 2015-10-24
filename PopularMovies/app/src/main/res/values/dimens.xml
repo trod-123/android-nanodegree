@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright (C) 2015 Teddy Rodriguez (TROD)
     email: cia.123trod@gmail.com
@@ -10,8 +11,15 @@
 -->
 
 <resources>
+
+    <!-- Padding values -->
     <dimen name="activity_padding_margin">16dp</dimen>
-    <dimen name="grid_padding_margin">2dp</dimen>
+    <dimen name="grid_padding_margin">8dp</dimen>
+    <dimen name="grid_card_corner_radius">4dp</dimen>
+    <dimen name="grid_card_elevation">8dp</dimen>
+
+    <!-- For the poster overlay and the banner -->
     <dimen name="detail_banner_height">192dp</dimen>
     <dimen name="grid_overlay_height">128dp</dimen>
+
 </resources>

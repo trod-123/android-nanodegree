@@ -9,7 +9,8 @@
   Currently for educational purposes only.
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
@@ -72,9 +73,11 @@
     <!-- TODO: Needs a column size for # of columns to actually take effect. If not, default is 2 -->
     <GridView
         android:id="@+id/posters_grid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent" android:layout_height="match_parent"
         android:stretchMode="columnWidth"
+        android:padding="@dimen/grid_padding_margin"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideInset"
         android:numColumns="auto_fit"
         android:gravity="center"
         android:horizontalSpacing="@dimen/grid_padding_margin"

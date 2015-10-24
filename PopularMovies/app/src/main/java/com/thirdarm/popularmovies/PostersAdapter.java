@@ -18,6 +18,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.URL;
@@ -72,14 +73,14 @@ public class PostersAdapter extends CursorAdapter {
         if (number_votes != 1) {
             votesTense += "s";
         }
-        String movie_rating = mContext.getResources().getString(R.string.detail_ratings)
-                + new DecimalFormat("#.##").format(vote_average)
-                + " ("
-                + number_votes
-                + " "
-                + votesTense.toLowerCase()
-                + ")";
+        String movie_rating = new DecimalFormat("#.##").format(vote_average);
         vh.poster_rating.setText(movie_rating);
+        String movie_votes = "("
+                + number_votes
+//                + " "
+//                + votesTense.toLowerCase()
+                + ")";
+        vh.poster_votes.setText(movie_votes);
         // set poster
         // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
@@ -96,7 +97,8 @@ public class PostersAdapter extends CursorAdapter {
         @Bind(R.id.poster) AutoResizeImageView poster;
         @Bind(R.id.poster_name) AutoResizeTextView poster_name;
         @Bind(R.id.poster_date) AutoResizeTextView poster_date;
-        @Bind(R.id.poster_rating) AutoResizeTextView poster_rating;
+        @Bind(R.id.poster_rating) TextView poster_rating;
+        @Bind(R.id.poster_votes) TextView poster_votes;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);

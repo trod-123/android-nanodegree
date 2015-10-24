@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--
-    Google Material Design Color Palette for Android http://www.google.com/design/spec/style/color.html#color-ui-color-palette 
-    Spreadsheet used to create this reosurce - http://bit.ly/mdcolor_spreadsheet 
-    Link to this colors.xml resource file - http://bit.ly/mdcolorsxml
-    
-    Harshad Kale 
-    https://github.com/kalehv
-    harshad.kale@gmail.com
--->
-
-
 <resources>
+
+    <!--
+        Google Material Design Color Palette for Android http://www.google.com/design/spec/style/color.html#color-ui-color-palette
+        Spreadsheet used to create this reosurce - http://bit.ly/mdcolor_spreadsheet
+        Link to this colors.xml resource file - http://bit.ly/mdcolorsxml
+
+        Harshad Kale
+        https://github.com/kalehv
+        harshad.kale@gmail.com
+    -->
 
     <color name="red_50">#FFEBEE</color>
     <color name="red_100">#FFCDD2</color>
@@ -293,5 +292,14 @@
     <color name="primary">@color/indigo_500</color>
     <color name="primary_dark">@color/indigo_700</color>
     <color name="accent">@color/pink_A200</color>
+
+
+
+    <!--
+          My defined color values
+    -->
+    <color name="poster_info_overlay">#a0000000</color>
+
+
 
 </resources>

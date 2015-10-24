@@ -8,59 +8,94 @@
 
   Currently for educational purposes only.
 -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/poster_container"
-    android:layout_width="wrap_content" android:layout_height="wrap_content" >
+    android:layout_gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="@dimen/grid_card_corner_radius"
+    card_view:cardElevation="@dimen/grid_card_elevation">
 
-    <!-- Movie poster takes up whole space -->
-    <com.thirdarm.popularmovies.utilities.AutoResizeImageView
-        android:id="@+id/poster"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+    <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
-    <!-- Text overlay casts shadow over poster -->
-    <LinearLayout
-        android:id="@+id/poster_details"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/grid_overlay_height"
-        android:orientation="vertical"
-        android:background="@color/bright_foreground_disabled_material_light"
-        android:layout_alignParentBottom="true"
-        android:padding="@dimen/activity_padding_margin">
-
-        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
-            android:id="@+id/poster_name"
+        <!-- Movie poster takes up whole space -->
+        <com.thirdarm.popularmovies.utilities.AutoResizeImageView
+            android:id="@+id/poster"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="bottom"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:maxLines="3"
-            android:textSize="@dimen/abc_text_size_medium_material" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
-        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
-            android:id="@+id/poster_date"
+        <!-- Text overlay casts shadow over poster -->
+        <LinearLayout
+            android:id="@+id/poster_details"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textColor="@color/white"
-            android:maxLines="1"
-            android:textSize="@dimen/abc_text_size_small_material"
-            android:gravity="bottom" />
+            android:layout_height="@dimen/grid_overlay_height"
+            android:orientation="vertical"
+            android:background="@drawable/poster_overlay_gradient"
+            android:layout_alignParentBottom="true"
+            android:padding="@dimen/activity_padding_margin">
 
-        <com.thirdarm.popularmovies.utilities.AutoResizeTextView
-            android:id="@+id/poster_rating"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textColor="@color/white"
-            android:maxLines="1"
-            android:textSize="@dimen/abc_text_size_small_material"
-            android:gravity="bottom" />
+            <com.thirdarm.popularmovies.utilities.AutoResizeTextView
+                android:id="@+id/poster_name"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:gravity="bottom"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:maxLines="3"
+                android:textSize="@dimen/abc_text_size_medium_material" />
 
-    </LinearLayout>
+            <com.thirdarm.popularmovies.utilities.AutoResizeTextView
+                android:id="@+id/poster_date"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:maxLines="1"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:gravity="bottom" />
 
-</RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="bottom">
+
+                <!-- Rating -->
+                <TextView
+                    android:id="@+id/poster_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:gravity="center_vertical" />
+
+                <!-- Star icon -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@android:drawable/btn_star_big_on"
+                    android:gravity="center_vertical"/>
+
+                <!-- Number of ratings -->
+                <TextView
+                    android:id="@+id/poster_votes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_small_material"
+                    android:gravity="center_vertical" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
