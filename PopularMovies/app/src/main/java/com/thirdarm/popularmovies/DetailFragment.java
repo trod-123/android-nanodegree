@@ -14,7 +14,7 @@ package com.thirdarm.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -50,21 +50,23 @@ import java.util.Arrays;
  *
  * TODO: Change all getColor(int) methods to getColor(int, Theme) upon API 23 release
  */
-public class MovieDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String LOG_TAG = "Movies/Detail";
+    private static final String LOG_TAG = "Movies/Detail";
+    public static final String MOVIE_URI = "movieUri";
 
-    public View mRootView;
+    private View mRootView;
+    private Uri mUri;
     private Cursor mData;
 
-    public Context mContext;
+    private Context mContext;
     private static final int DETAILS_LOADER_ID = 0;
 
     // TODO: Get a working definition of "writer" for setWriters()
     public String[] WRITERS = {JOBS.WRITING.AUTHOR, JOBS.WRITING.COWRITER,
             JOBS.WRITING.SCREENPLAY, JOBS.WRITING.STORY, JOBS.WRITING.WRITER};
 
-    public MovieDetailsFragment() {
+    public DetailFragment() {
         setHasOptionsMenu(true);
     }
 
@@ -73,7 +75,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(DETAILS_LOADER_ID, null, this);
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,8 +85,13 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Get uri from bundle
+        Bundle args = getArguments();
+        if (args != null) {
+            mUri = args.getParcelable(DetailFragment.MOVIE_URI);
+        }
 
-        mRootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
         return mRootView;
     }
 
@@ -242,14 +248,20 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
      */
 
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Make sure to first check, before loading any intent extras or anything from intents,
-        //  that the intent is not null
-        Intent intent = getActivity().getIntent();
-        if (intent == null) {
-            return null;
+//        // Make sure to first check, before loading any intent extras or anything from intents,
+//        //  that the intent is not null
+//        // UPDATE: Intent is no longer necessary since we have bounded the movie uri data to the
+//        //  fragment upon its instantiation.
+//        Intent intent = getActivity().getIntent();
+//        if (intent == null) {
+//            return null;
+//        }
+
+        if (mUri != null) {
+            return new CursorLoader(mContext, mUri, Details.PROJECTION,
+                    null, null, null);
         }
-        return new CursorLoader(mContext, intent.getData(), Details.PROJECTION,
-                null, null, null);
+        return null;
     }
 
 

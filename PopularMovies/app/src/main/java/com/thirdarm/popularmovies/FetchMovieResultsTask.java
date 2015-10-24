@@ -34,8 +34,6 @@ import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
 import com.thirdarm.popularmovies.utilities.Network;
 
-import java.util.ArrayList;
-
 /**
  * Collects and parses JSON data from the TMDB servers via API calls and
  * fills the main UI with posters in a grid view.
@@ -51,7 +49,7 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
     private String mSort;
     private String mCategory;
 
-    // references to MoviePostersFragment views
+    // references to PostersFragment views
     private RelativeLayout mProgressContainer;
     private View mRootView;
 
@@ -304,7 +302,7 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
     }
 
     @Override protected void onPostExecute(Void result) {
-        MoviePostersFragment.mLoadGuard = true;
+        PostersFragment.mLoadGuard = true;
         hideProgressBar();
     }
 }

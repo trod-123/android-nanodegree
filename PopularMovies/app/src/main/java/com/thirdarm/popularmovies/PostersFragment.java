@@ -11,10 +11,12 @@
 
 package com.thirdarm.popularmovies;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -46,54 +48,70 @@ import java.util.ArrayList;
 /**
  * Fragment consisting of a grid of movie posters
  */
-public class MoviePostersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PostersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String LOG_TAG = "MoviePostersFragment";
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections. How this works is that whenever the method is called here, it is
+     * also called in activities that implement the method, e.g. MainActivity. That is, the
+     * method in MainActivity is called THROUGH here.
+     */
+    public interface Callback {
+        void onItemSelected(Uri movieUri);
+    }
+
+    private static final String LOG_TAG = "PostersFragment";
 
     // For launching the movie detail activity
-    public static final String INTENT_DATA = "myData";
+    private static final String INTENT_DATA = "myData";
 
     // For saving the current activity state into a bundle
-    public static final String DATA_MOVIES = "movies";
-    public static final String DATA_TITLE = "title";
-    public static final String DATA_POSITION = "position";
+    private static final String DATA_MOVIES = "movies";
+    private static final String DATA_TITLE = "title";
+    private static final String DATA_POSITION = "position";
 
-    public Context mContext;
-    public static final int MOVIE_LOADER_ID = 0;
+    private Context mContext;
+    private Callback mCallback;
+    private static final int MOVIE_LOADER_ID = 0;
 
     // views
-    public View mRootView;
-    public GridView mGridView;
-    public PostersAdapter mPostersAdapter;
+    private View mRootView;
+    private GridView mGridView;
+    private PostersAdapter mPostersAdapter;
 
     // for loading and displaying movies
     public static TMDB mTmdb; // allow detail activity to access the TMDB
-    public ArrayList<MovieDB> mMovies;
-    public final String mPosterSize = IMAGE.SIZE.POSTER.w500;
-    public String mCategory = PARAMS.CATEGORY.POPULAR;
-    public String mSort = PARAMS.RESULTS.SORT.POPULARITY_DESC;
-    public String mLanguage = "en";
-    public static boolean mLoadGuard = true;
+    private ArrayList<MovieDB> mMovies;
+    private final String mPosterSize = IMAGE.SIZE.POSTER.w500;
+    private String mCategory = PARAMS.CATEGORY.POPULAR;
+    private String mSort = PARAMS.RESULTS.SORT.POPULARITY_DESC;
+    private String mLanguage = "en";
+    public static boolean mLoadGuard = true; // allow FetchMovieResultsTask to read guard
+    private int mPosition;
 
     // thresholds
-    public int THRESHOLD_DATE_LOWER = -35;
-    public int THRESHOLD_DATE_MIDDLE = 0;
-    public int THRESHOLD_DATE_UPPER = 28;
-    public String THRESHOLD_RATING_LOWER = "7";
-    public String THRESHOLD_VOTES_LOWER = "50";
-    public String THRESHOLD_POPULARITY_LOWER = "5";
+    private int THRESHOLD_DATE_LOWER = -35;
+    private int THRESHOLD_DATE_MIDDLE = 0;
+    private int THRESHOLD_DATE_UPPER = 28;
+    private String THRESHOLD_RATING_LOWER = "7";
+    private String THRESHOLD_VOTES_LOWER = "50";
+    private String THRESHOLD_POPULARITY_LOWER = "5";
 
 
-    public MoviePostersFragment() {
-        // TODO: Figure out whether it would be preferred to allow activities or fragments to handle menu events
-        // This line allows fragment to handle menu events
-        // Note this can also be called in the onCreate() method instead
-        setHasOptionsMenu(true);
+    public PostersFragment() {
+    }
+
+    @Override public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // For attaching the activity to the Callback
+        mCallback = (Callback) activity;
     }
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+        setHasOptionsMenu(true);
     }
 
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -144,22 +162,26 @@ public class MoviePostersFragment extends Fragment implements LoaderManager.Load
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Get a reference to UI elements
-        mRootView = inflater.inflate(R.layout.fragment_movie_posters, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_posters, container, false);
         mGridView = (GridView) mRootView.findViewById(R.id.posters_grid);
 
         // Create PostersAdapter. Loaders will swap the currently null cursor once the cursor has
         //  been loaded.
         mPostersAdapter = new PostersAdapter(mContext, mPosterSize, null);
         mGridView.setAdapter(mPostersAdapter);
-
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView adapterView, View view, int position, long l) {
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(MovieProvider.Movies.withId(cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
-                    startActivity(intent);
+                    mCallback.onItemSelected(MovieProvider.Movies.withId(
+                                    cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
+//                    // UPDATE: Now, if ui is single-pane, detail activity will be launched through
+//                    //  the main activity
+//                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+//                            .setData(MovieProvider.Movies.withId(cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
+//                    startActivity(intent);
                 }
+                mPosition = position;
             }
         });
 

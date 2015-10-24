@@ -16,6 +16,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * This activity is only used in single-pane mode, for handsets. It is not loaded in dual-pane
+ *  mode, for larger screen devices such as tablets.
+ */
 public class DetailActivity extends AppCompatActivity {
 
     @Override
@@ -24,12 +28,26 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if (savedInstanceState == null) {
+            // Create detail fragment
+            Bundle arguments = new Bundle();
+            // Load intent data into parcelable
+            arguments.putParcelable(DetailFragment.MOVIE_URI, getIntent().getData());
+            // Create fragment
+            DetailFragment fragment = new DetailFragment();
+            // Bind data into fragment
+            fragment.setArguments(arguments);
+            // Add fragment
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MovieDetailsFragment())
+                    .add(R.id.container_movie_detail, fragment)
                     .commit();
+
+//            // UPDATE: Now that detail activity was launched through main activity and that movie
+//            //  uri data has been attached to the fragment, this is outdated
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.container_movie_detail, new DetailFragment())
+//                    .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
