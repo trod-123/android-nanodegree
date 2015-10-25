@@ -52,6 +52,7 @@ public interface MovieProjections {
                 MovieColumns.VOTE_COUNT,
                 MovieColumns.TAGLINE,
                 MovieColumns.OVERVIEW,
+                MovieColumns.RUNTIME,
                 MovieColumns.HOMEPAGE,
                 MovieColumns.BACKDROP_PATH,
                 MovieColumns.POSTER_PATH,
@@ -73,15 +74,16 @@ public interface MovieProjections {
         public static final int COL_MOVIE_VOTE_COUNT = 5;
         public static final int COL_MOVIE_TAGLINE = 6;
         public static final int COL_MOVIE_OVERVIEW = 7;
-        public static final int COL_MOVIE_HOMEPAGE = 8;
-        public static final int COL_MOVIE_BACKDROP_PATH = 9;
-        public static final int COL_MOVIE_POSTER_PATH = 10;
-        public static final int COL_MOVIE_BUDGET = 11;
-        public static final int COL_MOVIE_REVENUE = 12;
-        public static final int COL_MOVIE_GENRES = 13;
-        public static final int COL_MOVIE_PRODUCTION_COMPANIES = 14;
-        public static final int COL_MOVIE_PRODUCTION_COUNTRIES = 15;
-        public static final int COL_MOVIE_SPOKEN_LANGUAGES = 16;
-        public static final int COL_MOVIE_CREDITS = 17;
+        public static final int COL_MOVIE_RUNTIME = 8;
+        public static final int COL_MOVIE_HOMEPAGE = 9;
+        public static final int COL_MOVIE_BACKDROP_PATH = 10;
+        public static final int COL_MOVIE_POSTER_PATH = 11;
+        public static final int COL_MOVIE_BUDGET = 12;
+        public static final int COL_MOVIE_REVENUE = 13;
+        public static final int COL_MOVIE_GENRES = 14;
+        public static final int COL_MOVIE_PRODUCTION_COMPANIES = 15;
+        public static final int COL_MOVIE_PRODUCTION_COUNTRIES = 16;
+        public static final int COL_MOVIE_SPOKEN_LANGUAGES = 17;
+        public static final int COL_MOVIE_CREDITS = 18;
     }
 }

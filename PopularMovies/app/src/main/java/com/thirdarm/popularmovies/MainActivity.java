@@ -44,11 +44,11 @@ public class MainActivity extends AppCompatActivity
 //        }
 
         // Check if single- or dual-pane layout. If dual, load up DetailFragment on right pane
-        if (findViewById(R.id.container_movie_detail) != null) {
+        if (findViewById(R.id.container_fragment_movie_detail) != null) {
             mTwoPane = true;
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container_movie_detail, new DetailFragment(),
+                        .replace(R.id.container_fragment_movie_detail, new DetailFragment(),
                                 DETAILFRAGMENT_TAG)
                         .commit();
             }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
             // Add the fragment and tag fragment (only done so if fragment is created through main
             //  activity so it can communicate with the fragment
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_movie_detail, fragment, DETAILFRAGMENT_TAG)
+                    .replace(R.id.container_fragment_movie_detail, fragment, DETAILFRAGMENT_TAG)
                     .commit();
         } else {
             // Launch detail activity and add fragment there instead

@@ -94,7 +94,7 @@ public class PostersAdapter extends CursorAdapter {
     // For butterknife to bind the resource views into a view holder which would be used in
     //  referencing and setting the fields for each view inflated from the poster layout
     static class ViewHolder {
-        @Bind(R.id.poster) AutoResizeImageView poster;
+        @Bind(R.id.container_detail_poster) AutoResizeImageView poster;
         @Bind(R.id.poster_name) AutoResizeTextView poster_name;
         @Bind(R.id.poster_date) AutoResizeTextView poster_date;
         @Bind(R.id.poster_rating) TextView poster_rating;

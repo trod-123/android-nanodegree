@@ -30,7 +30,7 @@
 
             <!-- Movie poster takes up whole space -->
             <com.thirdarm.popularmovies.utilities.AutoResizeImageView
-                android:id="@+id/poster"
+                android:id="@+id/container_detail_poster"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/grid_overlay_height"
                 android:orientation="vertical"
-                android:background="@drawable/poster_overlay_gradient"
+                android:background="@drawable/overlay_gradient_transparent_dark"
                 android:layout_alignParentBottom="true"
                 android:padding="@dimen/activity_padding_margin">
 

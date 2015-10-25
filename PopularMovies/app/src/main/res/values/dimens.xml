@@ -20,6 +20,8 @@
 
     <!-- For the poster overlay and the banner -->
     <dimen name="detail_banner_height">192dp</dimen>
+    <dimen name="detail_banner_height_quarter_1">48dp</dimen>
+    <dimen name="detail_banner_height_quarter_3">144dp</dimen>
     <dimen name="grid_overlay_height">128dp</dimen>
 
 </resources>

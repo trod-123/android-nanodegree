@@ -40,6 +40,7 @@ public interface MovieColumns {
     @DataType(REAL) String POPULARITY = "popularity";
     @DataType(TEXT) String TAGLINE = "tagline";
     @DataType(TEXT) String OVERVIEW = "overview";
+    @DataType(INTEGER) String RUNTIME = "runtime";
     @DataType(TEXT) String HOMEPAGE = "homepage";
     @DataType(TEXT) String BACKDROP_PATH = "backdrop_path";
     @DataType(TEXT) String POSTER_PATH = "poster_path";
@@ -51,7 +52,6 @@ public interface MovieColumns {
     @DataType(TEXT) String PRODUCTION_COUNTRIES = "production_countries";
     @DataType(TEXT) String SPOKEN_LANGUAGES = "spoken_languages";
     @DataType(BLOB) String CREDITS = "credits";
-
 
 
 }

@@ -38,7 +38,7 @@ public class DetailActivity extends AppCompatActivity {
             fragment.setArguments(arguments);
             // Add fragment
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_movie_detail, fragment)
+                    .add(R.id.container_fragment_movie_detail, fragment)
                     .commit();
 
 //            // UPDATE: Now that detail activity was launched through main activity and that movie

@@ -12,7 +12,6 @@
 package com.thirdarm.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -22,10 +21,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -36,12 +37,11 @@ import com.thirdarm.popularmovies.constant.JOBS;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.data.MovieProjections.Details;
 import com.thirdarm.popularmovies.model.Genre;
-import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.Crew;
+import com.thirdarm.popularmovies.utilities.ReleaseDates;
 
 import java.lang.reflect.Type;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -92,6 +92,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
         return mRootView;
     }
 
@@ -117,22 +118,29 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 +
                         mData.getString(Details.COL_MOVIE_POSTER_PATH))
                 .error(android.R.drawable.screen_background_light)
-                .into((ImageView) mRootView.findViewById(R.id.poster));
+                .into((ImageView) mRootView.findViewById(R.id.container_detail_poster));
     }
 
     /** Sets the movie tagline if there is one. Otherwise, leave blank */
     public void setTagline() {
         String tagline = mData.getString(Details.COL_MOVIE_TAGLINE);
         if (tagline != null && tagline.length() != 0) {
-            ((TextView) mRootView.findViewById(R.id.banner_title))
+            ((TextView) mRootView.findViewById(R.id.textview_detail_tagline))
                     .setText("\"" + tagline + "\"");
         }
+    }
+
+    /** Sets the title */
+    public void setTitle() {
+        String title = mData.getString(Details.COL_MOVIE_TITLE);
+        TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_title);
+        tv.setText(title);
     }
 
     /** Sets the overview. If no overview is found, text color is grey */
     public void setOverview() {
         String overview = mData.getString(Details.COL_MOVIE_OVERVIEW);
-        TextView tv = (TextView) mRootView.findViewById(R.id.overview);
+        TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_overview);
         if (overview != null && overview.length() != 0) {
             tv.setText(overview);
             tv.setTextColor(mContext.getResources().getColor(R.color.white));
@@ -141,7 +149,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     /** Sets the directors. If no director is found, text color is grey */
     public void setDirector() {
-        TextView tv = (TextView) mRootView.findViewById(R.id.director);
+        TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_directors);
         String director = getString(R.string.error_info_null);
         boolean multiple = false;
         Type type = new TypeToken<Credits>() {}.getType();
@@ -164,7 +172,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     /** Sets the writers. If no writer is found, text color is grey */
     public void setWriter() {
-        TextView tv = (TextView) mRootView.findViewById(R.id.writer);
+        TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_writers);
         String writer = getString(R.string.error_info_null);
         boolean multiple = false;
         Type type = new TypeToken<Credits>() {}.getType();
@@ -194,27 +202,31 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         if (mData.getInt(Details.COL_MOVIE_VOTE_COUNT) != 1) {
             votesTense += "s";
         }
-        ((TextView) mRootView.findViewById(R.id.rating)).setText(
-                getString(R.string.detail_ratings)
-                        + new DecimalFormat("#.##").format(mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE))
-                        + " ("
+        ((TextView) mRootView.findViewById(R.id.textview_detail_rating)).setText(
+//                getString(R.string.detail_ratings)
+//                        + new DecimalFormat("#.##").format(mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE))
+                        "("
                         + mData.getInt(Details.COL_MOVIE_VOTE_COUNT)
-                        + " "
-                        + votesTense.toLowerCase()
+//                        + " "
+//                        + votesTense.toLowerCase()
                         + ")"
         );
+        RatingBar bar = (RatingBar) mRootView.findViewById(R.id.ratingbar_detail);
+        bar.setRating((float) mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE) / 2);
     }
 
     /** Sets the release info */
     public void setReleaseInfo() {
-        ((TextView) mRootView.findViewById(R.id.release))
-                .setText(ReleaseDates.setReleaseDate(mContext,
-                        mData.getString(Details.COL_MOVIE_RELEASE_DATE)));
+        Log.d(LOG_TAG, "" + mData.getInt(Details.COL_MOVIE_RUNTIME));
+        String release_duration = ReleaseDates.convertDateFormat(mData.getString(Details.COL_MOVIE_RELEASE_DATE)) + " | " +
+                mData.getInt(Details.COL_MOVIE_RUNTIME) + " min";
+        ((TextView) mRootView.findViewById(R.id.textview_detail_release_duration_mpaaRating))
+                .setText(release_duration);
     }
 
     /** Sets the genre. If no genre is found, text color is grey */
     public void setGenre() {
-        TextView tv = (TextView) mRootView.findViewById(R.id.genres);
+        TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_genres);
         String genres = getString(R.string.error_info_null);
         boolean multiple = false;
         Type type = new TypeToken<ArrayList<Genre>>() {}.getType();
@@ -282,6 +294,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         setBanner();
         setPoster();
         setTagline();
+        setTitle();
         setOverview();
         setRating();
         setReleaseInfo();

@@ -13,7 +13,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <gradient
-        android:startColor="@color/poster_info_overlay"
+        android:startColor="@color/overlay_dark"
         android:endColor="#00000000"
         android:angle="90"/>
 

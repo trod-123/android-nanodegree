@@ -21,6 +21,20 @@
 
     </style>
 
+    <style name="DetailTheme" parent="Theme.AppCompat.Light">
+        <item name="android:actionBarStyle">@style/DetailActionBar</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/DetailActionBar</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+
+    <style name="DetailActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="android:background">@null</item>
+        <!-- Support library compatibility -->
+        <item name="background">@null</item>
+    </style>
+
     <!-- For adding shadows below text. Main text is white. Shadow is black.
         Taken from the source code for Ringdroid -->
     <style name="ShadowText">

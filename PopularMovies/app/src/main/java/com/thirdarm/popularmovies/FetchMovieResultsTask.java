@@ -174,6 +174,7 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
         movieValues.put(MovieColumns.POPULARITY, movie.getPopularity());
         movieValues.put(MovieColumns.TAGLINE, movie.getTagline());
         movieValues.put(MovieColumns.OVERVIEW, movie.getOverview());
+        movieValues.put(MovieColumns.RUNTIME, movie.getRuntime());
         movieValues.put(MovieColumns.HOMEPAGE, movie.getHomepage());
         movieValues.put(MovieColumns.BACKDROP_PATH, movie.getBackdropPath());
         movieValues.put(MovieColumns.POSTER_PATH, movie.getPosterPath());
