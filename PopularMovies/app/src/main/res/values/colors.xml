@@ -298,7 +298,7 @@
     <!--
           My defined color values
     -->
-    <color name="poster_info_overlay">#a0000000</color>
+    <color name="poster_info_overlay">#f0000000</color>
 
 
 
