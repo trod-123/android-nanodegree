@@ -15,7 +15,10 @@
     tools:context=".MainActivity$MovieDetailsFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/DetailTheme">
+    android:theme="@style/DetailTheme"
+    android:focusableInTouchMode="true"> <!-- This line effectively prevents android from starting
+                                                activity scrolled partially down:
+                                                link here: http://stackoverflow.com/questions/9690246/why-does-my-android-activity-always-start-scrolled-to-the-bottom -->
 
     <!-- For the trailer/backdrop. This is just in the background layer -->
     <RelativeLayout
@@ -28,11 +31,6 @@
             android:id="@+id/banner"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/detail_banner_height_quarter_1"
-            android:background="@drawable/overlay_gradient_dark_transparent"/>
 
     </RelativeLayout>
 
@@ -132,8 +130,8 @@
                             android:id="@+id/textview_detail_release_duration_mpaaRating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:text="@string/detail_release_date"
+                            android:textColor="@color/grey_500"
+                            android:text="@string/error_info_null"
                             android:textSize="@dimen/abc_text_size_small_material"/>
 
                         <!-- Rating score -->
@@ -283,12 +281,21 @@
                     android:textSize="@dimen/abc_text_size_medium_material"
                     android:padding="@dimen/activity_padding_margin"/>
 
-                <ListView
-                    android:id="@+id/listview_detail_backdrops"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_detail_status_backdrops"
+                    android:text="@string/error_no_backdrops"
+                    android:textColor="@color/grey_500"
+                    android:textSize="@dimen/abc_text_size_small_material"/>
 
-                </ListView>
+                <org.lucasr.twowayview.TwoWayView
+                    android:id="@+id/listview_detail_backdrops"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:scrollbars="horizontal"
+                    android:scrollbarSize="@dimen/scrollbar_size"
+                    android:requiresFadingEdge="horizontal"/>
 
                 <!-- Trailers -->
                 <TextView
@@ -300,12 +307,21 @@
                     android:textSize="@dimen/abc_text_size_medium_material"
                     android:padding="@dimen/activity_padding_margin"/>
 
-                <ListView
-                    android:id="@+id/listview_detail_trailers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textview_detail_status_trailers"
+                    android:text="@string/error_no_trailers"
+                    android:textColor="@color/grey_500"
+                    android:textSize="@dimen/abc_text_size_small_material"/>
 
-                </ListView>
+                <org.lucasr.twowayview.TwoWayView
+                    android:id="@+id/listview_detail_trailers"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:scrollbars="horizontal"
+                    android:scrollbarSize="@dimen/scrollbar_size"
+                    android:requiresFadingEdge="horizontal"/>
 
                 <!--
                     Reviews
@@ -334,8 +350,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:textSize="32dp"
-                        android:text="8.3"/>
+                        android:textSize="32dp"/>
 
                     <!-- Stars and number of ratings -->
                     <LinearLayout
@@ -351,16 +366,14 @@
                             android:layout_height="wrap_content"
                             style="?android:ratingBarStyleIndicator"
                             android:isIndicator="true"
-                            android:max="5"
-                            android:rating="4"/>
+                            android:max="5"/>
 
                         <TextView
                             android:id="@+id/textview_detail_rating_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/abc_text_size_small_material"
-                            android:text="1532 ratings"/>
+                            android:textSize="@dimen/abc_text_size_small_material"/>
 
                     </LinearLayout>
 
@@ -368,21 +381,20 @@
 
                 <!-- reviews counts -->
                 <TextView
-                    android:id="@+id/textview_detail_review_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:id="@+id/textview_detail_status_reviews"
+                    android:text="@string/error_no_reviews"
+                    android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin"
-                    android:text="12 reviews"/>
+                    android:paddingBottom="@dimen/activity_padding_margin"/>
 
                 <!-- reviews list -->
-                <ListView
+                <com.thirdarm.popularmovies.utilities.NonScrollListView
                     android:id="@+id/listview_detail_reviews"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                </ListView>
+                    android:layout_height="wrap_content"
+                    android:dividerHeight="@dimen/activity_padding_margin"/>
 
                 <!-- Credits and copyright -->
                 <LinearLayout

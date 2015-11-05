@@ -12,9 +12,7 @@
 package com.thirdarm.popularmovies;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -31,19 +29,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
-import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.data.MovieColumns;
 import com.thirdarm.popularmovies.data.MovieProvider;
 import com.thirdarm.popularmovies.data.MovieProjections.Results;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
-import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
 
-import java.util.ArrayList;
 
 /**
  * Fragment consisting of a grid of movie posters
@@ -63,15 +57,13 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
     private static final String LOG_TAG = "PostersFragment";
 
-    // For launching the movie detail activity
-    private static final String INTENT_DATA = "myData";
-
     // For saving the current activity state into a bundle
-    private static final String DATA_MOVIES = "movies";
-    private static final String DATA_TITLE = "title";
+    private static final String DATA_CATEGORY = "category";
     private static final String DATA_POSITION = "position";
 
     private Context mContext;
+
+    // data
     private Callback mCallback;
     private static final int MOVIE_LOADER_ID = 0;
 
@@ -81,13 +73,8 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     private PostersAdapter mPostersAdapter;
 
     // for loading and displaying movies
-    public static TMDB mTmdb; // allow detail activity to access the TMDB
-    private ArrayList<MovieDB> mMovies;
     private final String mPosterSize = IMAGE.SIZE.POSTER.w500;
     private String mCategory = PARAMS.CATEGORY.POPULAR;
-    private String mSort = PARAMS.RESULTS.SORT.POPULARITY_DESC;
-    private String mLanguage = "en";
-    public static boolean mLoadGuard = true; // allow FetchMovieResultsTask to read guard
     private int mPosition;
 
     // thresholds
@@ -151,11 +138,8 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override public void onSaveInstanceState(Bundle outState) {
         // Save and reuse information upon activity destroy
-        if (mLoadGuard && mMovies != null) {
-            outState.putParcelableArrayList(DATA_MOVIES, mMovies);
-            outState.putString(DATA_TITLE, mCategory);
-            outState.putInt(DATA_POSITION, mGridView.getFirstVisiblePosition());
-        }
+        outState.putString(DATA_CATEGORY, mCategory);
+        outState.putInt(DATA_POSITION, mGridView.getFirstVisiblePosition());
         super.onSaveInstanceState(outState);
     }
 
@@ -174,37 +158,20 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     mCallback.onItemSelected(MovieProvider.Movies.withId(
-                                    cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
-//                    // UPDATE: Now, if ui is single-pane, detail activity will be launched through
-//                    //  the main activity
-//                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-//                            .setData(MovieProvider.Movies.withId(cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID))));
-//                    startActivity(intent);
+                                    cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID)))
+                    );
                 }
                 mPosition = position;
             }
         });
 
-        // Create TMDB API
-        mTmdb = new TMDB(getString(R.string.movie_api_key), mLanguage);
-
-//        // Recycle information from last destroy, if applicable
-//        if(savedInstanceState != null &&
-//                savedInstanceState.containsKey(DATA_MOVIES) &&
-//                savedInstanceState.containsKey(DATA_TITLE) &&
-//                savedInstanceState.containsKey(DATA_POSITION)) {
-//            setGridView(mMovies = savedInstanceState.getParcelableArrayList(DATA_MOVIES));
-//            setTitle(mCategory = savedInstanceState.getString(DATA_TITLE));
-//            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
-//            hideProgressBar();
-//        } else {
-//            // Otherwise, populate with popular movies by default
-//            fetchMovies(mCategory);
-//        }
-        //fetchMovies(mCategory);
-
-        // Initialize the local database upon running app for the first time
-        if (checkIfEmptyLocalMovieDb()) createMovieDb(mCategory);
+        // Recycle information from last destroy, if applicable
+        if(savedInstanceState != null &&
+                savedInstanceState.containsKey(DATA_CATEGORY) &&
+                savedInstanceState.containsKey(DATA_POSITION)) {
+            setTitle(mCategory = savedInstanceState.getString(DATA_CATEGORY));
+            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
+        }
 
         // TODO: Create a preferences activity and load movies according to preferences. Include:
         //  -size of posters: list of dimensions (focus on widths)
@@ -223,52 +190,43 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     /**
-     * Creates and fills a local database with movies
-     *
-     * @param category
-     */
-    public void createMovieDb(String category) {
-        new FetchMovieResultsTask(getActivity(), mTmdb, true, mSort, category, mRootView).execute(category);
-        mLoadGuard = false;
-    }
-
-    /**
-     * Checks to see if the local movie database is empty.
-     *
-     * @return true if the db is empty
-     */
-    private boolean checkIfEmptyLocalMovieDb() {
-        ContentResolver cr = mContext.getContentResolver();
-        Cursor cursor = cr.query(
-                Movies.CONTENT_URI,
-                null,
-                null,
-                null,
-                null
-        );
-        boolean empty = !cursor.moveToFirst();
-        cursor.close();
-        return (empty);
-    }
-
-    /**
      * Fetches the movies online
      *
      * @param category category of movies to fetch
      */
     public void fetchMovies(String category) {
-        // Check if sort buttons have been clicked before results have been loaded
-        if (!mLoadGuard) {
-            Toast.makeText(mContext, getString(R.string.status_still_loading), Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            // Disable reloading while grid is being populated
-            mLoadGuard = false;
-        }
-
         mGridView.smoothScrollToPosition(0);
-        new FetchMovieResultsTask(getActivity(), mTmdb, false, mSort, category, mRootView).execute(category);
+        mCategory = category;
         getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+    }
+
+    /**
+     * Sets the title of the activity based on sort category
+     *
+     * @param category the category used to sort movies
+     */
+    public void setTitle(String category) {
+        switch (category) {
+            case PARAMS.CATEGORY.DISCOVER:
+                getActivity().setTitle(getString(R.string.title_discover));
+                break;
+
+            case PARAMS.CATEGORY.PLAYING:
+                getActivity().setTitle(getString(R.string.title_playing));
+                break;
+
+            case PARAMS.CATEGORY.POPULAR:
+                getActivity().setTitle(getString(R.string.title_popular));
+                break;
+
+            case PARAMS.CATEGORY.TOP:
+                getActivity().setTitle(getString(R.string.title_top_rated));
+                break;
+
+            case PARAMS.CATEGORY.UPCOMING:
+                getActivity().setTitle(getString(R.string.title_upcoming));
+                break;
+        }
     }
 
 
@@ -276,6 +234,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         Loader methods
      */
 
+    // Note: This method does not seem to be called when activity is recreated after rotating device
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         // Declare fields which would be used in querying the cursor
@@ -296,6 +255,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         //  that the next page of results will always be ready for when the user needs it.
         switch (mCategory) {
             case PARAMS.CATEGORY.DISCOVER:
+                getActivity().setTitle(getActivity().getString(R.string.title_discover));
                 break;
 
             case PARAMS.CATEGORY.PLAYING:
@@ -308,12 +268,14 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
                 selectionArgs = new String[] {dateRange[0], dateRange[1]};
                 sortOrder = MovieColumns.RELEASE_DATE + " DESC";
+                getActivity().setTitle(getActivity().getString(R.string.title_playing));
                 break;
 
             case PARAMS.CATEGORY.POPULAR:
                 selection = MovieColumns.POPULARITY + " >= ?";
                 selectionArgs = new String[] {THRESHOLD_POPULARITY_LOWER};
                 sortOrder = MovieColumns.POPULARITY + " DESC";
+                getActivity().setTitle(getActivity().getString(R.string.title_popular));
                 break;
 
             case PARAMS.CATEGORY.TOP:
@@ -321,6 +283,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                         MovieColumns.VOTE_COUNT + " >= ?";
                 selectionArgs = new String[] {THRESHOLD_RATING_LOWER, THRESHOLD_VOTES_LOWER};
                 sortOrder = MovieColumns.VOTE_AVERAGE + " DESC";
+                getActivity().setTitle(getActivity().getString(R.string.title_top_rated));
                 break;
 
             case PARAMS.CATEGORY.UPCOMING:
@@ -333,6 +296,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
                 selectionArgs = new String[] {dateRange[0], dateRange[1]};
                 sortOrder = MovieColumns.RELEASE_DATE + " ASC";
+                getActivity().setTitle(getActivity().getString(R.string.title_upcoming));
                 break;
         }
 

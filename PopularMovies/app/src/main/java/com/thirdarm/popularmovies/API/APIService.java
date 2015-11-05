@@ -12,9 +12,10 @@
 package com.thirdarm.popularmovies.API;
 
 import com.thirdarm.popularmovies.constant.PARAMS;
-import com.thirdarm.popularmovies.model.Credits;
+import com.thirdarm.popularmovies.model.Images;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.Results;
+import com.thirdarm.popularmovies.model.ReviewsResult;
 
 import retrofit.Call;
 import retrofit.http.GET;
@@ -80,31 +81,39 @@ public interface APIService {
      *
      * Warning: Do not pass too many APPENDS as too many may overload the Intent/Binder
      *   transactions.
-     *   VALUES.APPENDS.CREDITS particularly has too much info that can't be passed through intents,
-     *     which is why it has its own @GET method
      *
      * @param id the TMDB movie id
      * @param key the API key
-     * @param code the ISO 639-1 language code
      * @param appends extra data
      * @return the response object for TMDB fetch methods
      */
     @GET("movie/{id}")
-    Call<MovieDB> getBroadMovieDetails(@Path("id") int id,
-                                       @Query(PARAMS.GLOBAL.API_KEY) String key,
-                                       @Query(PARAMS.RESULTS.LANGUAGE) String code,
-                                       @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
+    Call<MovieDB> getMovieDetails(@Path("id") int id,
+                                  @Query(PARAMS.GLOBAL.API_KEY) String key,
+                                  @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
 
     /**
-     * Gets individual movie credits information
+     * Gets individual movie images
+     *   e.g. https://api.themoviedb.org/3/movie/550/images?api_key=###
      *
      * @param id the TMDB movie id
      * @param key the API key
-     * @param appends extra data
+     * @return the response object for TMDB fetch metods
+     */
+    @GET("movie/{id}/images")
+    Call<Images> getMovieImages(@Path("id") int id,
+                                @Query(PARAMS.GLOBAL.API_KEY) String key);
+
+    /**
+     * Gets individual movie reviews
+     *   e.g. https://api.themoviedb.org/3/movie/550/reviews?api_key=###
+     *
+     * @param id the TMDB movie id
+     * @param key the API key
      * @return the response object for TMDB fetch methods
      */
-    @GET("movie/{id}/credits")
-    Call<Credits> getMovieCredits(@Path("id") int id,
-                                  @Query(PARAMS.GLOBAL.API_KEY) String key,
-                                  @Query(PARAMS.MOVIE.APPEND_TO_RESPONSE) String appends);
+    @GET("movie/{id}/reviews")
+    Call<ReviewsResult> getMovieReviews(@Path("id") int id,
+                                        @Query(PARAMS.GLOBAL.API_KEY) String key);
+
 }

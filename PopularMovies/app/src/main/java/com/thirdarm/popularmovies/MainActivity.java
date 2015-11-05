@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.thirdarm.popularmovies.sync.MoviesSyncAdapter;
+
 public class MainActivity extends AppCompatActivity
         implements PostersFragment.Callback {
 
@@ -35,14 +37,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        // UPDATE: The movie posters fragment does not need to be added programatically anymore
-//        //  since it has been statically added via xml
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container_movie_detail, new PostersFragment())
-//                    .commit();
-//        }
-
         // Check if single- or dual-pane layout. If dual, load up DetailFragment on right pane
         if (findViewById(R.id.container_fragment_movie_detail) != null) {
             mTwoPane = true;
@@ -55,6 +49,8 @@ public class MainActivity extends AppCompatActivity
         } else {
             mTwoPane = false;
         }
+
+        MoviesSyncAdapter.initializeSyncAdapter(this);
     }
 
 

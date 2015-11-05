@@ -63,24 +63,20 @@ public class PostersAdapter extends CursorAdapter {
         // set movie title
         vh.poster_name.setText(cursor.getString(Results.COL_MOVIE_TITLE));
         // set release date
-        vh.poster_date.setText(ReleaseDates.convertDateFormat(
-                        cursor.getString(Results.COL_MOVIE_RELEASE_DATE))
+        vh.poster_date.setText(mContext.getString(
+                        R.string.format_detail_release,
+                        ReleaseDates.convertDateFormat(
+                                cursor.getString(Results.COL_MOVIE_RELEASE_DATE)
+                        )
+                )
         );
         // set ratings
-        int number_votes = cursor.getInt(Results.COL_MOVIE_VOTE_COUNT);
-        double vote_average = cursor.getDouble(Results.COL_MOVIE_VOTE_AVERAGE);
-        String votesTense = mContext.getResources().getString(R.string.detail_votes);
-        if (number_votes != 1) {
-            votesTense += "s";
-        }
-        String movie_rating = new DecimalFormat("#.##").format(vote_average);
-        vh.poster_rating.setText(movie_rating);
-        String movie_votes = "("
-                + number_votes
-//                + " "
-//                + votesTense.toLowerCase()
-                + ")";
-        vh.poster_votes.setText(movie_votes);
+        vh.poster_rating.setText(new DecimalFormat("#0.0").format(
+                cursor.getDouble(Results.COL_MOVIE_VOTE_AVERAGE))
+        );
+        vh.poster_votes.setText(mContext.getString(
+                R.string.format_detail_rating, cursor.getInt(Results.COL_MOVIE_VOTE_COUNT))
+        );
         // set poster
         // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)

@@ -14,11 +14,12 @@ package com.thirdarm.popularmovies.API;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.constant.URL;
 import com.thirdarm.popularmovies.constant.VALUES;
-import com.thirdarm.popularmovies.model.Credits;
+import com.thirdarm.popularmovies.model.Images;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.model.MovieDBResult;
 import com.thirdarm.popularmovies.model.Results;
-import com.thirdarm.popularmovies.utilities.Conversions;
+import com.thirdarm.popularmovies.model.Reviews;
+import com.thirdarm.popularmovies.model.ReviewsResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,26 +52,18 @@ public class TMDB {
 
     // API information
     public final String APPENDS_MOVIEDB =
-            VALUES.APPENDS.IMAGES +
-                    VALUES.APPENDS.RELEASES +
-                    VALUES.APPENDS.TRAILERS;
-    public final String APPENDS_CREDITS = null;
+            VALUES.APPENDS.RELEASES +
+                    VALUES.APPENDS.TRAILERS +
+                    VALUES.APPENDS.CREDITS;
 
-    private String API_KEY;
-    private String LANGUAGE;
-    private int PAGE = 1;
-    private int NUMBER_MOVIES_PER_CATEGORY = 20;
+    private String mApiKey;
+    private String mLanguage;
+    private static final int NUMBER_MOVIES_PER_CATEGORY = 20;
     private APIService api;
 
-    // movie results
-    //private List<MovieDBResult> results;
-    //private int[] movieIDs;
-    //private ArrayList<MovieDB> movies = new ArrayList<>();
-
-
     public TMDB(String key, String language_code) {
-        API_KEY = key;
-        LANGUAGE = language_code;
+        mApiKey = key;
+        mLanguage = language_code;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL.BASE)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -89,64 +82,51 @@ public class TMDB {
      *
      * FIX: STANDARDIZE THE NUMBER OF MOVIES SHOWN THROUGH THE DB.QUERY()FUNCTION!
      *
-     * @return a long list of MovieDB ids encompassing all of the categories
+     * @return a long list of MovieDBResult objects encompassing all of the categories
      */
-    public int[] initialize() {
-        // Use an ArrayList so ids can continue to be added when needed
-        ArrayList<Integer> movieIds = new ArrayList<>();
+    public ArrayList<MovieDBResult> initialize() {
+        // Use an ArrayList so results can continue to be added when needed
+        ArrayList<MovieDBResult> movieDBResults = new ArrayList<>();
         String[] categories = new String[] {PARAMS.CATEGORY.POPULAR, PARAMS.CATEGORY.PLAYING,
                 PARAMS.CATEGORY.TOP, PARAMS.CATEGORY.UPCOMING};
         for (int i = 0; i < categories.length; i++) {
-            for (int j = 1; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY * (i+1); j++) {
-                setPage(j);
-                int[] results = getResults(categories[i]);
-                for (int k = 0; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY * (i+1) && k < results.length; k++) {
-                    if (!movieIds.contains(results[k]))
-                        movieIds.add(results[k]);
+            for (int j = 1; movieDBResults.size() < NUMBER_MOVIES_PER_CATEGORY * (i+1); j++) {
+                List<MovieDBResult> results = getResults(categories[i], j);
+                for (int k = 0; movieDBResults.size() < NUMBER_MOVIES_PER_CATEGORY * (i+1) && k < results.size(); k++) {
+                    if (!movieDBResults.contains(results.get(k)))
+                        movieDBResults.add(results.get(k));
                 }
             }
         }
-        // set page back to 1
-        setPage(1);
-
-        return Conversions.convertIntegers(movieIds);
+        return movieDBResults;
     }
 
-    /**
-     * Preserve this method for gathering movie id lists for single categories. This method would
-     *  be called by initialize() x number of times, where x is the number of categories for which
-     *  to search.
-     *
-     * BUG: This will not account for movies that belong in multiple categories.
-     *
-     * @param category category of movies for which to retrieve
-     * @return list of movie ids
-     */
-    public int[] refresh(String category) {
-        // Use an ArrayList so ids can continue to be added when needed
-        ArrayList<Integer> movieIds = new ArrayList<>();
-        for (int i = 1; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY; i++) {
-            setPage(i);
-            int[] results = getResults(category);
-            for (int j = 0; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY && j < results.length; j++) {
-                if (!movieIds.contains(results[j]))
-                    movieIds.add(results[j]);
-            }
-        }
-        // set page back to 1
-        setPage(1);
-
-        return Conversions.convertIntegers(movieIds);
-    }
-
-    /**
-     * Sets the page of results to return
-     *
-     * @param page
-     */
-    public void setPage(int page) {
-        PAGE = page;
-    }
+//    /**
+//     * Preserve this method for gathering movie id lists for single categories. This method would
+//     *  be called by initialize() x number of times, where x is the number of categories for which
+//     *  to search.
+//     *
+//     * BUG: This will not account for movies that belong in multiple categories.
+//     *
+//     * @param category category of movies for which to retrieve
+//     * @return list of movie ids
+//     */
+//    public int[] refresh(String category) {
+//        // Use an ArrayList so ids can continue to be added when needed
+//        ArrayList<Integer> movieIds = new ArrayList<>();
+//        for (int i = 1; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY; i++) {
+//            setPage(i);
+//            int[] results = getResults(category);
+//            for (int j = 0; movieIds.size() < NUMBER_MOVIES_PER_CATEGORY && j < results.length; j++) {
+//                if (!movieIds.contains(results[j]))
+//                    movieIds.add(results[j]);
+//            }
+//        }
+//        // set page back to 1
+//        setPage(1);
+//
+//        return Conversions.convertIntegers(movieIds);
+//    }
 
     /**
      * Generates results for /discover
@@ -154,8 +134,8 @@ public class TMDB {
      * @param sort method to sort discover results
      * @return list of movies
      */
-    public int[] discover(String sort) {
-        return getResults(api.discover(API_KEY, sort, LANGUAGE, PAGE));
+    public List<MovieDBResult> discover(String sort, int page) {
+        return getResults(api.discover(mApiKey, sort, mLanguage, page));
     }
 
     /**
@@ -164,42 +144,29 @@ public class TMDB {
      * @param category the category of movies to display
      * @return a list of MovieDB ids
      */
-    public int[] getResults(String category) {
-        return getResults(api.getResults(category, API_KEY, LANGUAGE, PAGE));
+    public List<MovieDBResult> getResults(String category, int page) {
+        return getResults(api.getResults(category, mApiKey, mLanguage, page));
     }
 
     /**
-     * Fetches results
+     * Fetches results whose original language is mLanguage.
      *
      * @param response Callback response from APIService
      * @return a list of MovieDB ids
      */
-    public int[] getResults(Call<Results> response) {
-//        clear();
+    public List<MovieDBResult> getResults(Call<Results> response) {
         try {
             List<MovieDBResult> results = response.execute().body().getMovieDBResults();
 
-            // Only include movies whose original language is LANGUAGE. Otherwise, drop movies
-            //  from the results list
+            // Drop movies from the results list whose original language isn't mLanguage
             Iterator<MovieDBResult> iterator = results.iterator();
             while (iterator.hasNext()) {
                 MovieDBResult current = iterator.next();
-                if (!current.getOriginalLanguage().equals(LANGUAGE)) {
+                if (!current.getOriginalLanguage().equals(mLanguage)) {
                     iterator.remove();
                 }
             }
-
-            // Get individual movie ids and add to list
-            int[] movieIDs = new int[results.size()];
-            for (int i = 0; i < movieIDs.length; i++) {
-                movieIDs[i] = results.get(i).getId();
-            }
-            return movieIDs;
-
-//            for (int id : movieIDs) {
-//                movies.add(getMovieDetails(id));
-//            }
-//            return movies;
+            return results;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -213,12 +180,13 @@ public class TMDB {
      * @return a movie object
      */
     public MovieDB getMovieDetails(int id) {
-        Call<MovieDB> response = api.getBroadMovieDetails(id, API_KEY, LANGUAGE, APPENDS_MOVIEDB);
+        Call<MovieDB> response = api.getMovieDetails(id, mApiKey, APPENDS_MOVIEDB);
         try {
-            final MovieDB movie = response.execute().body();
+            MovieDB movie = response.execute().body();
             if (movie != null) {
                 return movie;
             } else {
+                // Re-run method until movie object is received
                 return getMovieDetails(id);
             }
         } catch (IOException e) {
@@ -227,20 +195,14 @@ public class TMDB {
         }
     }
 
-    /**
-     * Generates credits for a specific movie id
-     *
-     * @param id the TMDB movie id
-     * @return a credits object
-     */
-    public Credits getMovieCredits(int id) {
-        Call<Credits> response = api.getMovieCredits(id, API_KEY, APPENDS_CREDITS);
+    public Images getMovieImages(int id) {
+        Call<Images> response = api.getMovieImages(id, mApiKey);
         try {
-            final Credits credits = response.execute().body();
-            if (credits != null) {
-                return credits;
+            Images images = response.execute().body();
+            if (images != null) {
+                return images;
             } else {
-                return getMovieCredits(id);
+                return getMovieImages(id);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -248,12 +210,18 @@ public class TMDB {
         }
     }
 
-//    /** Clears results and movies lists before reloading grid view */
-//    public void clear() {
-//        if (results != null && movies != null && movieIDs != null){
-//            results = null;
-//            movies = new ArrayList<>();
-//            movieIDs = null;
-//        }
-//    }
+    public List<Reviews> getMovieReviews(int id) {
+        Call<ReviewsResult> response = api.getMovieReviews(id, mApiKey);
+        try {
+            ReviewsResult reviewsResult = response.execute().body();
+            if (reviewsResult != null) {
+                return reviewsResult.getResults();
+            } else {
+                return getMovieReviews(id);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

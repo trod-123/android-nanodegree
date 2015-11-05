@@ -28,7 +28,9 @@ public interface MovieProjections {
                 MovieColumns.RELEASE_DATE,
                 MovieColumns.VOTE_AVERAGE,
                 MovieColumns.VOTE_COUNT,
-                MovieColumns.POSTER_PATH
+                MovieColumns.POPULARITY,
+                MovieColumns.POSTER_PATH,
+                MovieColumns.FAVORITE
         };
 
         // These indices are tied to PROJECTION. If PROJECTION changes, these must change.
@@ -38,7 +40,9 @@ public interface MovieProjections {
         public static final int COL_MOVIE_RELEASE_DATE = 3;
         public static final int COL_MOVIE_VOTE_AVERAGE = 4;
         public static final int COL_MOVIE_VOTE_COUNT = 5;
-        public static final int COL_MOVIE_POSTER_PATH = 6;
+        public static final int COL_MOVIE_POPULARITY = 6;
+        public static final int COL_MOVIE_POSTER_PATH = 7;
+        public static final int COL_MOVIE_FAVORITE = 8;
     }
 
     // For the movie details activity
@@ -50,19 +54,26 @@ public interface MovieProjections {
                 MovieColumns.RELEASE_DATE,
                 MovieColumns.VOTE_AVERAGE,
                 MovieColumns.VOTE_COUNT,
-                MovieColumns.TAGLINE,
                 MovieColumns.OVERVIEW,
-                MovieColumns.RUNTIME,
-                MovieColumns.HOMEPAGE,
                 MovieColumns.BACKDROP_PATH,
                 MovieColumns.POSTER_PATH,
+                MovieColumns.IMDB_ID,
+                MovieColumns.COLLECTION,
+                MovieColumns.RUNTIME,
+                MovieColumns.GENRES,
+                MovieColumns.TAGLINE,
+                MovieColumns.HOMEPAGE,
                 MovieColumns.BUDGET,
                 MovieColumns.REVENUE,
-                MovieColumns.GENRES,
                 MovieColumns.PRODUCTION_COMPANIES,
                 MovieColumns.PRODUCTION_COUNTRIES,
                 MovieColumns.SPOKEN_LANGUAGES,
-                MovieColumns.CREDITS
+                MovieColumns.IMAGES,
+                MovieColumns.RELEASES,
+                MovieColumns.TRAILERS,
+                MovieColumns.REVIEWS,
+                MovieColumns.CREDITS,
+                MovieColumns.FAVORITE
         };
 
         // These indices are tied to PROJECTION. If PROJECTION changes, these must change.
@@ -72,18 +83,25 @@ public interface MovieProjections {
         public static final int COL_MOVIE_RELEASE_DATE = 3;
         public static final int COL_MOVIE_VOTE_AVERAGE = 4;
         public static final int COL_MOVIE_VOTE_COUNT = 5;
-        public static final int COL_MOVIE_TAGLINE = 6;
-        public static final int COL_MOVIE_OVERVIEW = 7;
-        public static final int COL_MOVIE_RUNTIME = 8;
-        public static final int COL_MOVIE_HOMEPAGE = 9;
-        public static final int COL_MOVIE_BACKDROP_PATH = 10;
-        public static final int COL_MOVIE_POSTER_PATH = 11;
-        public static final int COL_MOVIE_BUDGET = 12;
-        public static final int COL_MOVIE_REVENUE = 13;
-        public static final int COL_MOVIE_GENRES = 14;
-        public static final int COL_MOVIE_PRODUCTION_COMPANIES = 15;
-        public static final int COL_MOVIE_PRODUCTION_COUNTRIES = 16;
-        public static final int COL_MOVIE_SPOKEN_LANGUAGES = 17;
-        public static final int COL_MOVIE_CREDITS = 18;
+        public static final int COL_MOVIE_OVERVIEW = 6;
+        public static final int COL_MOVIE_BACKDROP_PATH = 7;
+        public static final int COL_MOVIE_POSTER_PATH = 8;
+        public static final int COL_MOVIE_IMDB_ID = 9;
+        public static final int COL_MOVIE_COLLECTION = 10;
+        public static final int COL_MOVIE_RUNTIME = 11;
+        public static final int COL_MOVIE_GENRES = 12;
+        public static final int COL_MOVIE_TAGLINE = 13;
+        public static final int COL_MOVIE_HOMEPAGE = 14;
+        public static final int COL_MOVIE_BUDGET = 15;
+        public static final int COL_MOVIE_REVENUE = 16;
+        public static final int COL_MOVIE_PRODUCTION_COMPANIES = 17;
+        public static final int COL_MOVIE_PRODUCTION_COUNTRIES = 18;
+        public static final int COL_MOVIE_SPOKEN_LANGUAGES = 19;
+        public static final int COL_MOVIE_IMAGES = 20;
+        public static final int COL_MOVIE_RELEASES = 21;
+        public static final int COL_MOVIE_TRAILERS = 22;
+        public static final int COL_MOVIE_REVIEWS = 23;
+        public static final int COL_MOVIE_CREDITS = 24;
+        public static final int COL_MOVIE_FAVORITE = 25;
     }
 }

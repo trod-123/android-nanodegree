@@ -9,7 +9,8 @@
   Currently for educational purposes only.
 -->
 
-<resources>
+<resources
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Activity names -->
     <string name="app_name">Movies</string>
@@ -28,12 +29,18 @@
     <string name="action_sort_rated">Top rated</string>
     <string name="action_sort_upcoming">Upcoming</string>
 
+    <!-- Content provider authority -->
+    <string name="content_authority">com.thirdarm.popularmovies</string>
+
+    <!-- Account type (for sync-adapter authenticator) -->
+    <string name="sync_account_type">popularmovies.thirdarm.com</string>
+
     <!-- Progress statuses -->
     <string name="status_loading">Loading...</string>
     <string name="status_still_loading">Still loading data. Please wait...</string>
     <string name="status_no_internet">There is no internet connection. Please try again.</string>
 
-    <!-- Movies detail headers -->
+    <!-- Movie details -->
     <string name="detail_overview">Overview</string>
     <string name="detail_credits">Cast and credits</string>
     <string name="detail_actors">Actors</string>
@@ -42,8 +49,9 @@
     <string name="detail_backdrops">Backdrops</string>
     <string name="detail_trailers">Trailers</string>
     <string name="detail_reviews">Reviews</string>
+    <string name="detail_reviews_tense">Review</string>
     <string name="detail_ratings">"Rating: "</string>
-    <string name="detail_votes">Vote</string>
+    <string name="detail_votes_tense">Vote</string>
     <string name="detail_release_date">Release</string>
     <string name="detail_release_info">Release info</string>
     <string name="detail_genres">Genres:</string>
@@ -51,10 +59,70 @@
     <!-- Loading error messages -->
     <string name="error_info_null">Info not available.</string>
     <string name="error_no_internet">Info can\'t be found.</string>
+    <string name="error_no_backdrops">No backdrops found.</string>
+    <string name="error_no_trailers">No trailers found.</string>
+    <string name="error_no_reviews">No reviews found.</string>
 
     <!-- Footers: copyright, credits, version -->
     <string name="footer_tmdb_prefix">"All info and images from "</string>
     <string name="footer_tmdb">The Movie Database</string>
 
+
+    <!-- Strings for formatting movie detail data -->
+
+    <!-- Tagline -->
+    <string name="format_detail_tagline">
+        <xliff:g id="tagline">\u0022%1$s\u0022</xliff:g>
+    </string>
+
+    <!-- Rating, for glance info -->
+    <string name="format_detail_rating">
+        (<xliff:g id="vote_count">%1$s</xliff:g>)
+    </string>
+
+    <!-- Release and duration -->
+    <string name="format_detail_release">
+        <xliff:g id="release_date">%1$s</xliff:g>
+    </string>
+
+    <string name="format_detail_release_runtime">
+        <xliff:g id="release_date">%1$s</xliff:g> | <xliff:g id="runtime">%2$s</xliff:g> min
+    </string>
+
+    <!-- Actors -->
+    <string name="format_detail_actors">
+        <xliff:g id="actor_name">%1$s</xliff:g> (<xliff:g id="character_name">%2$s</xliff:g>)
+    </string>
+
+    <!-- Directors -->
+    <string name="format_detail_directors">
+        <xliff:g id="director_name">%1$s</xliff:g> (<xliff:g id="director_department">%2$s</xliff:g>)
+    </string>
+
+    <!-- Writers -->
+    <string name="format_detail_writers">
+        <xliff:g id="writer_name">%1$s</xliff:g> (<xliff:g id="writer_department">%2$s</xliff:g>)
+    </string>
+
+    <!-- Genres -->
+    <string name="format_detail_genres">
+        <xliff:g id="genre">%1$s</xliff:g>
+    </string>
+
+    <!-- Footer -->
+    <string name="format_detail_footer">
+        <xliff:g id="tmdb_url">\u003ca href\u003d\u0027%1$s\u0027\u003e</xliff:g>
+        The Movie Database<xliff:g id="url_end">\u003c\u002fa\u003e</xliff:g>
+    </string>
+
+    <!-- Rating, for reviews -->
+    <string name="format_detail_reviews_rating">
+        <xliff:g id="vote_count">%1$s</xliff:g> <xliff:g id="votes_tense">%2$s</xliff:g>
+    </string>
+
+    <!-- Reviews -->
+    <string name="format_detail_reviews">
+        <xliff:g id="reviews_count">%1$s</xliff:g> <xliff:g id="reviews_tense">%2$s</xliff:g>
+    </string>
 
 </resources>

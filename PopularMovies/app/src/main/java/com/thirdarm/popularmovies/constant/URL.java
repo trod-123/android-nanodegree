@@ -22,6 +22,8 @@ public class URL {
     public static final String BASE = "https://api.themoviedb.org/3/";
     public static final String IMAGE_BASE = "http://image.tmdb.org/t/p/";
     public static final String PUBLIC_BASE = "http://www.themoviedb.org/";
+    public static final String YOUTUBE_BASE = "http://www.youtube.com/watch?v=";
+    public static final String YOUTUBE_THUMBNAIL_BASE = "http://img.youtube.com/vi/";
 
     // fragments
     public static final String DISCOVER = "discover/";

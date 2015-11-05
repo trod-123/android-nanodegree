@@ -19,8 +19,6 @@ import net.simonvt.schematic.annotation.PrimaryKey;
 import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
 import static net.simonvt.schematic.annotation.DataType.Type.REAL;
 import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
-import static net.simonvt.schematic.annotation.DataType.Type.BLOB;
-
 
 /**
  * Created by TROD on 20151005.
@@ -29,8 +27,7 @@ import static net.simonvt.schematic.annotation.DataType.Type.BLOB;
  */
 public interface MovieColumns {
 
-    // TODO: Make a small version of a database table containing only primitive and String objects
-    //
+    // Columns loaded from broad movie results
     @DataType(INTEGER) @PrimaryKey @AutoIncrement String _ID = "_id";
     @DataType(INTEGER) @NotNull String TMDB_ID = "tmdb_id";
     @DataType(TEXT) String TITLE = "title";
@@ -38,20 +35,32 @@ public interface MovieColumns {
     @DataType(REAL) String VOTE_AVERAGE = "vote_average";
     @DataType(INTEGER) String VOTE_COUNT = "vote_count";
     @DataType(REAL) String POPULARITY = "popularity";
-    @DataType(TEXT) String TAGLINE = "tagline";
     @DataType(TEXT) String OVERVIEW = "overview";
-    @DataType(INTEGER) String RUNTIME = "runtime";
-    @DataType(TEXT) String HOMEPAGE = "homepage";
     @DataType(TEXT) String BACKDROP_PATH = "backdrop_path";
     @DataType(TEXT) String POSTER_PATH = "poster_path";
 
+    // Columns loaded from specific movie details (no appends)
+    @DataType(TEXT) String IMDB_ID = "imdb_id";
+    @DataType(TEXT) String COLLECTION = "collection"; // gson
+    @DataType(INTEGER) String RUNTIME = "runtime";
+    @DataType(TEXT) String GENRES = "genres"; // gson
+    @DataType(TEXT) String TAGLINE = "tagline";
+    @DataType(TEXT) String HOMEPAGE = "homepage";
     @DataType(INTEGER) String BUDGET = "budget";
     @DataType(INTEGER) String REVENUE = "revenue";
-    @DataType(TEXT) String GENRES = "genres";
-    @DataType(TEXT) String PRODUCTION_COMPANIES = "production_companies";
-    @DataType(TEXT) String PRODUCTION_COUNTRIES = "production_countries";
-    @DataType(TEXT) String SPOKEN_LANGUAGES = "spoken_languages";
-    @DataType(BLOB) String CREDITS = "credits";
+    @DataType(TEXT) String PRODUCTION_COMPANIES = "production_companies"; // gson
+    @DataType(TEXT) String PRODUCTION_COUNTRIES = "production_countries"; // gson
+    @DataType(TEXT) String SPOKEN_LANGUAGES = "spoken_languages"; // gson
+
+    // Columns loaded from appends (all stored as gson in db)
+    @DataType(TEXT) String IMAGES = "images";
+    @DataType(TEXT) String RELEASES = "releases";
+    @DataType(TEXT) String TRAILERS = "trailers";
+    @DataType(TEXT) String REVIEWS = "reviews";
+    @DataType(TEXT) String CREDITS = "credits";
+
+    // Favorites column
+    @DataType(INTEGER) String FAVORITE = "favorite";
 
 
 }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content"
+    android:padding="@dimen/grid_padding_margin">
+
+    <!-- Play and share buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/container_detail_trailer_buttons"
+        android:background="@color/dim_foreground_disabled_material_light">
+
+        <ImageView
+            android:layout_width="0dp" android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="@dimen/activity_padding_margin"
+            android:id="@+id/imageview_video_play_button"
+            android:src="@drawable/ic_play_circle_outline_white_48dp"/>
+
+        <ImageView
+            android:layout_width="0dp" android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="@dimen/activity_padding_margin"
+            android:id="@+id/imageview_video_share_button"
+            android:src="@drawable/ic_share_white_48dp"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/container_detail_trailer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</FrameLayout>

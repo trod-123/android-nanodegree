@@ -29,15 +29,18 @@ import com.google.gson.Gson;
 import com.thirdarm.popularmovies.API.TMDB;
 import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.data.*;
-import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.MovieDB;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
+import com.thirdarm.popularmovies.model.MovieDBResult;
 import com.thirdarm.popularmovies.utilities.Network;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Collects and parses JSON data from the TMDB servers via API calls and
- * fills the main UI with posters in a grid view.
- *
+ * fills the main UI with posters in a grid view while storing broad movie details (gathered from
+ * MovieResults) into the local database.
  */
 public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
 
@@ -145,26 +148,25 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
     /**
      * Adds a movie to the local database
      *
-     * BUG: Currently includes grabbing and storing credits objects, which makes this process really
-     *  slow.
-     *
      * @param movie the movie to be added
      * @return the long value of the row where the movie was inserted
      */
-    private long addMovie(final MovieDB movie) {
+    private long addMovie(final MovieDBResult movie) {
         ContentResolver cr = mActivity.getContentResolver();
         long locationId;
 
         Cursor cursor = cr.query(
                 Movies.CONTENT_URI,
-                new String[] {MovieColumns.TMDB_ID},
+                new String[]{MovieColumns.TMDB_ID},
                 MovieColumns.TMDB_ID + " = ? ",
-                new String[] {Integer.toString(movie.getId())},
+                new String[]{Integer.toString(movie.getId())},
                 null
         );
 
-        Credits credits = mTmdb.getMovieCredits(movie.getId());
+        //Credits credits = mTmdb.getMovieCredits(movie.getId());
 
+        // Store movie info from results object into db, fill in remaining fields not in
+        //  results with null to create column, and initially set "false" (0) for favorites
         ContentValues movieValues = new ContentValues();
         movieValues.put(MovieColumns.TMDB_ID, movie.getId());
         movieValues.put(MovieColumns.TITLE, movie.getTitle());
@@ -172,34 +174,28 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
         movieValues.put(MovieColumns.VOTE_AVERAGE, movie.getVoteAverage());
         movieValues.put(MovieColumns.VOTE_COUNT, movie.getVoteCount());
         movieValues.put(MovieColumns.POPULARITY, movie.getPopularity());
-        movieValues.put(MovieColumns.TAGLINE, movie.getTagline());
         movieValues.put(MovieColumns.OVERVIEW, movie.getOverview());
-        movieValues.put(MovieColumns.RUNTIME, movie.getRuntime());
-        movieValues.put(MovieColumns.HOMEPAGE, movie.getHomepage());
         movieValues.put(MovieColumns.BACKDROP_PATH, movie.getBackdropPath());
         movieValues.put(MovieColumns.POSTER_PATH, movie.getPosterPath());
 
-        movieValues.put(MovieColumns.BUDGET, movie.getBudget());
-        movieValues.put(MovieColumns.REVENUE, movie.getRevenue());
+        movieValues.putNull(MovieColumns.IMDB_ID);
+        movieValues.putNull(MovieColumns.COLLECTION);
+        movieValues.putNull(MovieColumns.RUNTIME);
+        movieValues.putNull(MovieColumns.GENRES);
+        movieValues.putNull(MovieColumns.TAGLINE);
+        movieValues.putNull(MovieColumns.HOMEPAGE);
+        movieValues.putNull(MovieColumns.BUDGET);
+        movieValues.putNull(MovieColumns.REVENUE);
+        movieValues.putNull(MovieColumns.PRODUCTION_COMPANIES);
+        movieValues.putNull(MovieColumns.PRODUCTION_COUNTRIES);
+        movieValues.putNull(MovieColumns.SPOKEN_LANGUAGES);
+        movieValues.putNull(MovieColumns.IMAGES);
+        movieValues.putNull(MovieColumns.RELEASES);
+        movieValues.putNull(MovieColumns.TRAILERS);
+        movieValues.putNull(MovieColumns.REVIEWS);
+        movieValues.putNull(MovieColumns.CREDITS);
 
-        // Method of storing and retrieving objects attributed to user3208981 from SO
-        //  link: http://stackoverflow.com/questions/3142285/saving-arraylist-in-sqlite-database-in-android
-        Gson gson = new Gson();
-        String genres = gson.toJson(movie.getGenres());
-        movieValues.put(MovieColumns.GENRES, genres);
-
-        String productionCompanies = gson.toJson(movie.getProductionCompanies());
-        movieValues.put(MovieColumns.PRODUCTION_COMPANIES, productionCompanies);
-
-        String productionCountries = gson.toJson(movie.getProductionCountries());
-        movieValues.put(MovieColumns.PRODUCTION_COUNTRIES, productionCountries);
-
-        String spokenLanguages = gson.toJson(movie.getSpokenLanguages());
-        movieValues.put(MovieColumns.SPOKEN_LANGUAGES, spokenLanguages);
-
-        String outCredits = gson.toJson(credits);
-        movieValues.put(MovieColumns.CREDITS, outCredits);
-
+        movieValues.put(MovieColumns.FAVORITE, 0);
 
         if (cursor.moveToFirst()) {
             // Update movie information if it already exists in local db
@@ -236,24 +232,24 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
      *
      * Currently, initialization of
      *
-     * @param movieIds list of movie ids
+     * @param movieDBResults list of movie ids
      */
-    private void addMovies(final int[] movieIds) {
-        Log.d(LOG_TAG, "There are " + movieIds.length + " movies in the list.");
+    private void addMovies(final List<MovieDBResult> movieDBResults) {
+        Log.d(LOG_TAG, "There are " + movieDBResults.size() + " movies in the list.");
         long start = System.currentTimeMillis();
-        for (final int id : movieIds) {
-            addMovie(mTmdb.getMovieDetails(id));
+        for (final MovieDBResult result : movieDBResults) {
+            addMovie(result);
             sProgressStatus.post(new Runnable() {
                 @Override
                 public void run() {
-                    sProgressBar.incrementProgressBy(sProgressBar.getMax() / (movieIds.length));
+                    sProgressBar.incrementProgressBy(sProgressBar.getMax() / (movieDBResults.size()));
                 }
             });
         }
         Log.d(LOG_TAG, "Finished loading movies.");
         long now = System.currentTimeMillis();
-        Log.d(LOG_TAG, "Elapsed time: " + movieIds.length + " movies in " + ((now - start) / 1000.0) + " seconds.");
-        Log.d(LOG_TAG, "That is around " + ((now - start) / 1000.0)/movieIds.length + " seconds per movie.");
+        Log.d(LOG_TAG, "Elapsed time: " + movieDBResults.size() + " movies in " + ((now - start) / 1000.0) + " seconds.");
+        Log.d(LOG_TAG, "That is around " + ((now - start) / 1000.0)/movieDBResults.size() + " seconds per movie.");
     }
 
 
@@ -287,23 +283,22 @@ public class FetchMovieResultsTask extends AsyncTask<String, Void, Void> {
         // Get the movies. All movies are first fetched from TMDB and stored in an ArrayList, then
         //  are inserted into the local database via a quasi bulk insert after all the movies are
         //  fetched
-        int[] results;
-        if (mInitialize) {
-            results = mTmdb.initialize();
-        } else {
-            if (category[0].equals(PARAMS.CATEGORY.DISCOVER)) {
-                results = mTmdb.discover(mSort);
-            } else {
-                results = mTmdb.getResults(category[0]);
-            }
-        }
-        addMovies(results);
+//        List<MovieDBResult> results;
+//        if (mInitialize) {
+//            results = mTmdb.initialize();
+//        } else {
+//            if (category[0].equals(PARAMS.CATEGORY.DISCOVER)) {
+////                results = mTmdb.discover(mSort);
+//            } else {
+//                results = mTmdb.getResults(category[0]);
+//            }
+//        }
+//        addMovies(results);
 
         return null;
     }
 
     @Override protected void onPostExecute(Void result) {
-        PostersFragment.mLoadGuard = true;
         hideProgressBar();
     }
 }
