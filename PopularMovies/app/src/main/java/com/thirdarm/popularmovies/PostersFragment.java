@@ -35,6 +35,7 @@ import com.thirdarm.popularmovies.constant.PARAMS;
 import com.thirdarm.popularmovies.data.MovieColumns;
 import com.thirdarm.popularmovies.data.MovieProvider;
 import com.thirdarm.popularmovies.data.MovieProjections.Results;
+import com.thirdarm.popularmovies.sync.MoviesSyncAdapter;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
 
@@ -103,7 +104,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar
-        inflater.inflate(R.menu.movie_posters_fragment, menu);
+        inflater.inflate(R.menu.menu_fragment_posters, menu);
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -113,9 +114,13 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_discover:
-                fetchMovies(mCategory = PARAMS.CATEGORY.DISCOVER);
+            case R.id.action_refresh:
+                refreshMovies();
                 return true;
+
+//            case R.id.action_discover:
+//                fetchMovies(mCategory = PARAMS.CATEGORY.DISCOVER);
+//                return true;
 
             case R.id.action_get_playing:
                 fetchMovies(mCategory = PARAMS.CATEGORY.PLAYING);
@@ -132,6 +137,10 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
             case R.id.action_get_upcoming:
                 fetchMovies(mCategory = PARAMS.CATEGORY.UPCOMING);
                 return true;
+
+            case R.id.action_get_favorites:
+                fetchMovies(mCategory = PARAMS.CATEGORY.FAVORITES);
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -158,7 +167,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     mCallback.onItemSelected(MovieProvider.Movies.withId(
-                                    cursor.getInt(cursor.getColumnIndex(MovieColumns.TMDB_ID)))
+                                    cursor.getInt(Results.COL_MOVIE_TMDB_ID))
                     );
                 }
                 mPosition = position;
@@ -190,6 +199,15 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     /**
+     * Refreshes/resyncs the movies online
+     */
+    private void refreshMovies() {
+        mGridView.smoothScrollToPosition(0);
+        MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
+        getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+    }
+
+    /**
      * Fetches the movies online
      *
      * @param category category of movies to fetch
@@ -199,6 +217,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         mCategory = category;
         getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
     }
+
 
     /**
      * Sets the title of the activity based on sort category
@@ -225,6 +244,10 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
             case PARAMS.CATEGORY.UPCOMING:
                 getActivity().setTitle(getString(R.string.title_upcoming));
+                break;
+
+            case PARAMS.CATEGORY.FAVORITES:
+                getActivity().setTitle(getString(R.string.title_favorites));
                 break;
         }
     }
@@ -297,6 +320,12 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 selectionArgs = new String[] {dateRange[0], dateRange[1]};
                 sortOrder = MovieColumns.RELEASE_DATE + " ASC";
                 getActivity().setTitle(getActivity().getString(R.string.title_upcoming));
+                break;
+
+            case PARAMS.CATEGORY.FAVORITES:
+                selection = MovieColumns.FAVORITE + " == ? ";
+                selectionArgs = new String[] {"1"};
+                getActivity().setTitle(getString(R.string.title_favorites));
                 break;
         }
 

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.data.MovieProjections;
 import com.thirdarm.popularmovies.model.Backdrop;
 import com.thirdarm.popularmovies.model.Reviews;
 
@@ -41,13 +42,27 @@ public class ReviewsAdapter extends BaseAdapter {
     private static final String LOG_TAG = "ReviewsAdapter";
 
     private Context mContext;
+    private String mTitle;
     private List<Reviews> mReviews;
     private LayoutInflater inflater;
 
-    public ReviewsAdapter(Context c, List<Reviews> reviews) {
+    public ReviewsAdapter(Context c, String title, List<Reviews> reviews) {
         mContext = c;
+        mTitle = title;
         mReviews = reviews;
         inflater = LayoutInflater.from(c);
+    }
+
+    /** Shares the review with friends */
+    private void shareReview(int position) {
+        String url = mReviews.get(position).getUrl();
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                mContext.getString(R.string.format_share_review, mTitle,
+                        mReviews.get(position).getAuthor(), url)
+        );
+        mContext.startActivity(shareIntent);
     }
 
     public int getCount() {
@@ -84,24 +99,23 @@ public class ReviewsAdapter extends BaseAdapter {
 
         // Handle button click events
         ImageButton shareButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_share);
-        ImageButton reportButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_report);
+//        ImageButton reportButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_report);
         ImageButton urlButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_url);
 
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Share intent here
-                Toast.makeText(mContext, "Share button clicked.", Toast.LENGTH_SHORT).show();
+                shareReview(position);
             }
         });
 
-        reportButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Report url intent here
-                Toast.makeText(mContext, "Report button clicked.", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        reportButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Report url intent here
+//                Toast.makeText(mContext, "Report button clicked.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         urlButton.setOnClickListener(new View.OnClickListener() {
             @Override

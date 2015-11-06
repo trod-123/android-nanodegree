@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             // Launch detail activity and add fragment there instead
             Intent intent = new Intent(this, DetailActivity.class)
-                    .setData(movieUri);
+                    .putExtra(DetailFragment.MOVIE_URI, movieUri);
             startActivity(intent);
         }
     }

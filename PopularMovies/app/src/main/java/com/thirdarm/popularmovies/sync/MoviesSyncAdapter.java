@@ -154,25 +154,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         movieValues.put(MovieColumns.BACKDROP_PATH, movie.getBackdropPath());
         movieValues.put(MovieColumns.POSTER_PATH, movie.getPosterPath());
 
-        movieValues.putNull(MovieColumns.IMDB_ID);
-        movieValues.putNull(MovieColumns.COLLECTION);
-        movieValues.putNull(MovieColumns.RUNTIME);
-        movieValues.putNull(MovieColumns.GENRES);
-        movieValues.putNull(MovieColumns.TAGLINE);
-        movieValues.putNull(MovieColumns.HOMEPAGE);
-        movieValues.putNull(MovieColumns.BUDGET);
-        movieValues.putNull(MovieColumns.REVENUE);
-        movieValues.putNull(MovieColumns.PRODUCTION_COMPANIES);
-        movieValues.putNull(MovieColumns.PRODUCTION_COUNTRIES);
-        movieValues.putNull(MovieColumns.SPOKEN_LANGUAGES);
-        movieValues.putNull(MovieColumns.IMAGES);
-        movieValues.putNull(MovieColumns.RELEASES);
-        movieValues.putNull(MovieColumns.TRAILERS);
-        movieValues.putNull(MovieColumns.REVIEWS);
-        movieValues.putNull(MovieColumns.CREDITS);
-
-        movieValues.put(MovieColumns.FAVORITE, 0);
-
         if (cursor.moveToFirst()) {
             // Update movie information if it already exists in local db
             locationId = cr.update(MovieProvider.Movies.CONTENT_URI,
@@ -188,7 +169,26 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 //                }
 //            });
         } else {
-            // Otherwise add the new movie
+            // Otherwise add the new movie, nullifying out detail fields
+            movieValues.putNull(MovieColumns.IMDB_ID);
+            movieValues.putNull(MovieColumns.COLLECTION);
+            movieValues.putNull(MovieColumns.RUNTIME);
+            movieValues.putNull(MovieColumns.GENRES);
+            movieValues.putNull(MovieColumns.TAGLINE);
+            movieValues.putNull(MovieColumns.HOMEPAGE);
+            movieValues.putNull(MovieColumns.BUDGET);
+            movieValues.putNull(MovieColumns.REVENUE);
+            movieValues.putNull(MovieColumns.PRODUCTION_COMPANIES);
+            movieValues.putNull(MovieColumns.PRODUCTION_COUNTRIES);
+            movieValues.putNull(MovieColumns.SPOKEN_LANGUAGES);
+            movieValues.putNull(MovieColumns.IMAGES);
+            movieValues.putNull(MovieColumns.RELEASES);
+            movieValues.putNull(MovieColumns.TRAILERS);
+            movieValues.putNull(MovieColumns.REVIEWS);
+            movieValues.putNull(MovieColumns.CREDITS);
+
+            movieValues.put(MovieColumns.FAVORITE, 0);
+
             Uri contentUri = cr.insert(MovieProvider.Movies.CONTENT_URI, movieValues);
             locationId = ContentUris.parseId(contentUri);
             Log.d(LOG_TAG, "Movie added to database");
@@ -209,8 +209,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Helper method to handle insertion of list of movies in the local movie db
-     *
-     * Currently, initialization of
      *
      * @param movieDBResults list of movie ids
      */
@@ -296,7 +294,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         Picasso.with(getContext())
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 + imagePath)
                 .fetch();
-        Log.d(LOG_TAG, "Backdrop pre-fetched");
     }
 
     private void preloadPicassoPoster(String imagePath) {
@@ -305,7 +302,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     .load(URL.IMAGE_BASE + size + imagePath)
                     .fetch();
         }
-        Log.d(LOG_TAG, "Poster pre-fetched");
     }
 
     /**

@@ -14,20 +14,26 @@
 
     <!-- Activity names -->
     <string name="app_name">Movies</string>
-    <string name="title_activity_detail">Movie details</string>
+    <string name="title_settings">Preferences</string>
+    <string name="title_activity_detail"> </string>
     <string name="title_discover">Discover</string>
     <string name="title_playing">Now playing</string>
-    <string name="title_popular">Popular movies</string>
+    <string name="title_popular">Popular</string>
     <string name="title_top_rated">Top rated</string>
-    <string name="title_upcoming">Upcoming movies</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_favorites">Favorites</string>
 
     <!-- App Bar buttons -->
+    <string name="action_refresh">Refresh</string>
     <string name="action_settings">Preferences</string>
     <string name="action_discover">Discover</string>
     <string name="action_sort_playing">Now playing</string>
     <string name="action_sort_popular">Popular</string>
     <string name="action_sort_rated">Top rated</string>
     <string name="action_sort_upcoming">Upcoming</string>
+    <string name="action_favorite">Favorites</string>
+    <string name="action_share">Share</string>
+    <string name="action_launch_tmdb_page">Launch movie page</string>
 
     <!-- Content provider authority -->
     <string name="content_authority">com.thirdarm.popularmovies</string>
@@ -123,6 +129,24 @@
     <!-- Reviews -->
     <string name="format_detail_reviews">
         <xliff:g id="reviews_count">%1$s</xliff:g> <xliff:g id="reviews_tense">%2$s</xliff:g>
+    </string>
+
+    <!-- Sharing messages -->
+    <string name="format_share_movie">
+        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g>. It is a good movie. More details
+        here from The Movie Database: <xliff:g id="tmdb_url">%2$s</xliff:g>. Homepage of the movie
+        here: <xliff:g id="homepage_url">%3$s</xliff:g>.
+    </string>
+
+    <string name="format_share_review">
+        Review for <xliff:g id="movie_title">%1$s</xliff:g> by
+        <xliff:g id="movie_review_author">%2$s</xliff:g>:
+        <xliff:g id="movie_review_url">%3$s</xliff:g> (from The Movie Database).
+    </string>
+
+    <string name="format_share_trailer">
+        Trailer for <xliff:g id="movie_title">%1$s</xliff:g>:
+        <xliff:g id="movie_review_url">%2$s</xliff:g>
     </string>
 
 </resources>

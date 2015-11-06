@@ -12,6 +12,8 @@
 package com.thirdarm.popularmovies;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -22,15 +24,21 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,7 +46,9 @@ import com.squareup.picasso.Picasso;
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.JOBS;
 import com.thirdarm.popularmovies.constant.URL;
+import com.thirdarm.popularmovies.data.*;
 import com.thirdarm.popularmovies.data.MovieProjections.Details;
+import com.thirdarm.popularmovies.data.MovieProvider;
 import com.thirdarm.popularmovies.model.Backdrop;
 import com.thirdarm.popularmovies.model.Cast;
 import com.thirdarm.popularmovies.model.Genre;
@@ -72,6 +82,8 @@ public class DetailFragment extends Fragment
     public static final String MOVIE_URI = "movieUri";
 
     private Context mContext;
+//    private ShareActionProvider mShareActionProvider;
+    private Menu mOptionsMenu;
 
     // ui components
     private View mRootView;
@@ -80,6 +92,7 @@ public class DetailFragment extends Fragment
     private ReviewsAdapter mReviewsAdapter;
     private Trailers mTrailers;
     private List<Reviews> mReviews;
+    private int mFavorited;
 
     // data components
     private static final int DETAILS_LOADER_ID = 0;
@@ -107,6 +120,44 @@ public class DetailFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
+    }
+
+    @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // make sure this is called first
+        inflater.inflate(R.menu.menu_fragment_details, menu);
+
+        // Inflate the menu; this adds items to the action bar
+        mOptionsMenu = menu;
+
+//        // Retrieve the share menu item
+//        MenuItem menuItem = menu.findItem(R.id.action_share);
+//        // Get the provider and hold onto it to set/change the share intent.
+//        mShareActionProvider =
+//                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_favorite:
+                favorite();
+                return true;
+
+//            case R.id.action_share:
+//                return true;
+
+            case R.id.action_launch_tmdb_page:
+                String url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
+                Intent intent = new Intent(Intent.ACTION_VIEW)
+                        .setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /*
@@ -137,7 +188,6 @@ public class DetailFragment extends Fragment
     };
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -158,8 +208,114 @@ public class DetailFragment extends Fragment
 //        new FetchMovieDetailsTask(getActivity(), PostersFragment.mTmdb, movieId, mRootView);
 //    }
 
+    /*
+        App bar action methods
+     */
+
+    /**
+     * Loads the favorite icon
+     *
+     * @param swap True if user affected favorites field.
+     *             For dealing with non-instantaneous updating of db when swapping favorites values
+     */
+    private void loadFavorite(boolean swap) {
+        // preliminary check if movie is favorited
+        int swapTruth = swap ? 0 : 1;
+        boolean inFavorites = mData.getInt(Details.COL_MOVIE_FAVORITE) == swapTruth;
+        // load proper icon
+        final int iconRes;
+        if (inFavorites) {
+            iconRes = R.drawable.ic_favorite_white_24dp;
+        } else {
+            iconRes = R.drawable.ic_favorite_border_white_24dp;
+        }
+        // wait until onCreateOptionsMenu() has been called and mOptionMenu initialized or else app
+        //  will crash upon loading detail fragment
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (mOptionsMenu == null) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mRootView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mOptionsMenu.findItem(R.id.action_favorite).setIcon(iconRes);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    /**
+     * Favorites the movie if unfavorited, vice versa
+     *
+     * @return the long value of the row where the movie was inserted
+     */
+    private long favorite() {
+        int movieId = mData.getInt(Details.COL_MOVIE_TMDB_ID);
+        // preliminary check if movie is favorited
+        boolean inFavorites = mData.getInt(Details.COL_MOVIE_FAVORITE) == 1;
+        int swapFavorites = inFavorites ? 0 : 1;
+
+        // prepare content resolver
+        ContentResolver cr = mContext.getContentResolver();
+        long locationId = -1;
+
+        Cursor cursor = cr.query(
+                com.thirdarm.popularmovies.data.MovieProvider.Movies.CONTENT_URI,
+                new String[]{MovieColumns.TMDB_ID},
+                MovieColumns.TMDB_ID + " = ? ",
+                new String[]{Integer.toString(movieId)},
+                null
+        );
+
+        // store favorite value in db
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieColumns.FAVORITE, swapFavorites);
+
+        if (cursor.moveToFirst()) {
+            // Update movie information if it already exists in local db. Otherwise, do nothing.
+            //  The movie should already be in the db
+            locationId = cr.update(MovieProvider.Movies.CONTENT_URI,
+                    movieValues,
+                    MovieColumns.TMDB_ID + " = ? ",
+                    new String[]{Integer.toString(movieId)}
+            );
+        }
+        cursor.close();
+
+        // swap app bar icon
+        loadFavorite(true);
+
+        return locationId;
+    }
+
+    /** Shares the movie with friends */
+    private Intent shareMovie() {
+        String url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                getString(R.string.format_share_movie,
+                        mData.getString(Details.COL_MOVIE_TITLE),
+                        url,
+                        mData.getString(Details.COL_MOVIE_HOMEPAGE)
+                )
+        );
+        return shareIntent;
+    }
+
+    /*
+        UI setter methods
+     */
+
     /** Sets the banner with backdrop. White field if path is null */
-    public void setBanner() {
+    private void setBanner() {
         // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 +
@@ -170,7 +326,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the poster. White field if path is null */
-    public void setPoster() {
+    private void setPoster() {
         // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 +
@@ -180,7 +336,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the movie tagline if there is one. Otherwise, leave blank */
-    public void setTagline() {
+    private void setTagline() {
         String tagline = mData.getString(Details.COL_MOVIE_TAGLINE);
         TextView taglineTextView = (TextView) mRootView.findViewById(R.id.textview_detail_tagline);
         if (tagline != null && tagline.length() != 0) {
@@ -193,14 +349,14 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the title */
-    public void setTitle() {
+    private void setTitle() {
         String title = mData.getString(Details.COL_MOVIE_TITLE);
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_title);
         tv.setText(title);
     }
 
     /** Sets the overview. If no overview is found, text color is grey */
-    public void setOverview() {
+    private void setOverview() {
         String overview = mData.getString(Details.COL_MOVIE_OVERVIEW);
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_overview);
         if (overview != null && overview.length() != 0) {
@@ -210,7 +366,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the main actors, in order of prominence. If no actor is found, text color is grey */
-    public void setActors() {
+    private void setActors() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_actors);
         String actors = getString(R.string.error_info_null);
         boolean multiple = false;
@@ -235,7 +391,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the directors. If no director is found, text color is grey */
-    public void setDirectors() {
+    private void setDirectors() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_directors);
         String director = getString(R.string.error_info_null);
         boolean multiple = false;
@@ -258,7 +414,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the writers. If no writer is found, text color is grey */
-    public void setWriters() {
+    private void setWriters() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_writers);
         String writer = getString(R.string.error_info_null);
         boolean multiple = false;
@@ -284,7 +440,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the rating */
-    public void setRating() {
+    private void setRating() {
         TextView ratingTextView = (TextView) mRootView.findViewById(R.id.textview_detail_rating);
         ratingTextView.setText(getString(R.string.format_detail_rating, mData.getInt(Details.COL_MOVIE_VOTE_COUNT)));
         RatingBar bar = (RatingBar) mRootView.findViewById(R.id.ratingbar_detail);
@@ -292,7 +448,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the release info and runtime */
-    public void setReleaseInfoRuntime() {
+    private void setReleaseInfoRuntime() {
         int runtime = mData.getInt(Details.COL_MOVIE_RUNTIME);
         String release_date = ReleaseDates.convertDateFormat(mData.getString(Details.COL_MOVIE_RELEASE_DATE));
         String release_duration;
@@ -308,7 +464,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the genres. If no genre is found, text color is grey */
-    public void setGenres() {
+    private void setGenres() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_genres);
         String genres = getString(R.string.error_info_null);
         boolean multiple = false;
@@ -329,7 +485,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the TMDB footer */
-    public void setFooter() {
+    private void setFooter() {
         TextView url_text = (TextView) mRootView.findViewById(R.id.tmdb_link);
 
         // use LinkMovementMethod to create hyperlink redirecting to TMDB movie page
@@ -340,8 +496,9 @@ public class DetailFragment extends Fragment
         url_text.setText(Html.fromHtml(html));
     }
 
+
     /** Sets the backdrops **/
-    public void setBackdrops() {
+    private void setBackdrops() {
         // Create a BackdropsAdapter if haven't already
         if (mBackdropsAdapter == null) {
             Log.d(LOG_TAG, "BACKDROPS ADAPTER IS NULL");
@@ -365,14 +522,14 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the trailers **/
-    public void setTrailers() {
+    private void setTrailers() {
         // Create a TrailersAdapter if haven't already
         if (mTrailersAdapter == null) {
             Type type = new TypeToken<Trailers>() {}.getType();
             mTrailers = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_TRAILERS), type);
             if (mTrailers != null) {
                 List<Youtube> videos = mTrailers.getYoutube();
-                mTrailersAdapter = new TrailersAdapter(mContext, videos);
+                mTrailersAdapter = new TrailersAdapter(mContext, mData.getString(Details.COL_MOVIE_TITLE), videos);
                 // Get rid of the null trailers text
                 TextView trailersStatusTextView = (TextView) mRootView.findViewById(R.id.textview_detail_status_trailers);
                 if (videos.size() != 0) {
@@ -389,7 +546,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the ratings for reviews **/
-    public void setDetailedRating() {
+    private void setDetailedRating() {
         String votesTense = getString(R.string.detail_votes_tense);
         if (mData.getInt(Details.COL_MOVIE_VOTE_COUNT) != 1) {
             votesTense += "s";
@@ -408,13 +565,13 @@ public class DetailFragment extends Fragment
     }
 
     /** Sets the reviews **/
-    public void setReviews() {
+    private void setReviews() {
         // Create a ReviewsAdapter if haven't already
         if (mReviewsAdapter == null) {
             Type type = new TypeToken<List<Reviews>>() {}.getType();
             mReviews = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_REVIEWS), type);
             if (mReviews != null) {
-                mReviewsAdapter = new ReviewsAdapter(mContext, mReviews);
+                mReviewsAdapter = new ReviewsAdapter(mContext, mData.getString(Details.COL_MOVIE_TITLE), mReviews);
                 // Get rid of the null trailers text
                 TextView reviewsStatusTextView = (TextView) mRootView.findViewById(R.id.textview_detail_status_reviews);
                 if (mReviews.size() != 0) {
@@ -433,9 +590,13 @@ public class DetailFragment extends Fragment
         reviewsView.setAdapter(mReviewsAdapter);
     }
 
-    /** Helper method for setting all basic ui fields **/
-    public void setInitialFields() {
+    /** Helper method for setting app bar buttons and all basic ui fields **/
+    private void setInitialFields() {
         if (!mLoaded) {
+            // app bar buttons
+            loadFavorite(false);
+
+            // ui fields
             setBanner();
             setPoster();
             setTitle();
@@ -446,7 +607,7 @@ public class DetailFragment extends Fragment
     }
 
     /** Helpe rmethod for setting all detailed ui fields **/
-    public void setDetailedFields() {
+    private void setDetailedFields() {
         if (!mLoaded) {
             setTagline();
             setReleaseInfoRuntime();
@@ -459,7 +620,6 @@ public class DetailFragment extends Fragment
             setTrailers();
             setReviews();
             mLoaded = true;
-            Log.d(LOG_TAG, "setDetailedFields()");
         }
     }
 
@@ -484,6 +644,18 @@ public class DetailFragment extends Fragment
         if (!data.moveToFirst()) return;
 
         mData = data;
+
+//        Toast.makeText(mContext,
+//                "Movie in favorites? " + (mData.getInt(Details.COL_MOVIE_FAVORITE)),
+//                Toast.LENGTH_SHORT).show();
+
+//        // Attach an intent to this ShareActionProvider.  You can update this at any time,
+//        // like when the user selects a new piece of data they might like to share.
+//        if (mShareActionProvider != null ) {
+//            mShareActionProvider.setShareIntent(shareMovie());
+//        } else {
+//            Log.d(LOG_TAG, "Share Action Provider is null?");
+//        }
 
         // set title of movie as title of activity
         getActivity().setTitle(mData.getString(Details.COL_MOVIE_TITLE));

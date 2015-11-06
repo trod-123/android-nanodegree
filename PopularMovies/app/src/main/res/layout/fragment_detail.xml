@@ -154,7 +154,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:textColor="@color/white"
-                                android:text="@string/detail_ratings"
                                 android:textSize="@dimen/abc_text_size_small_material"/>
 
                         </LinearLayout>

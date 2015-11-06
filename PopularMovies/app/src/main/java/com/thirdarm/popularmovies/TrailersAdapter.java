@@ -46,14 +46,27 @@ public class TrailersAdapter extends BaseAdapter {
     private static final String LOG_TAG = "TrailersAdapter";
 
     private Context mContext;
+    private String mTitle;
     private List<Youtube> mThumbnails;
     private LayoutInflater inflater;
     private String mThumbnailSize = "/0.jpg";
 
-    public TrailersAdapter(Context c, List<Youtube> videos) {
+    public TrailersAdapter(Context c, String title, List<Youtube> videos) {
         mContext = c;
+        mTitle = title;
         mThumbnails = videos;
         inflater = LayoutInflater.from(c);
+    }
+
+    /** Shares the review with friends */
+    private void shareTrailer(int position) {
+        String url = URL.YOUTUBE_BASE + mThumbnails.get(position).getSource();
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                mContext.getString(R.string.format_share_trailer, mTitle, url)
+        );
+        mContext.startActivity(shareIntent);
     }
 
     public int getCount() {
@@ -144,7 +157,7 @@ public class TrailersAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // Set share intent
-                Toast.makeText(mContext, "Share button clicked.", Toast.LENGTH_SHORT).show();
+                shareTrailer(position);
             }
         });
 

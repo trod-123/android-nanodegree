@@ -9,12 +9,17 @@
   Currently for educational purposes only.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
 
-    <item android:id="@+id/action_discover" android:title="@string/action_discover"
-        android:orderInCategory="1" app:showAsAction="never" />
+    <item android:id="@+id/action_refresh" android:title="@string/action_refresh"
+          android:orderInCategory="0" app:showAsAction="ifRoom"
+          android:icon="@drawable/ic_autorenew_white_24dp" />
+
+    <!--<item android:id="@+id/action_discover" android:title="@string/action_discover"-->
+        <!--android:orderInCategory="1" app:showAsAction="never" />-->
 
     <item android:id="@+id/action_get_playing" android:title="@string/action_sort_playing"
         android:orderInCategory="2" app:showAsAction="never" />
@@ -27,5 +32,8 @@
 
     <item android:id="@+id/action_get_upcoming" android:title="@string/action_sort_upcoming"
         android:orderInCategory="5" app:showAsAction="never" />
+
+    <item android:id="@+id/action_get_favorites" android:title="@string/action_favorite"
+          android:orderInCategory="6" app:showAsAction="never" />
 
 </menu>
