@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         if (Network.isNetworkAvailable(this)) {
             MoviesSyncAdapter.initializeSyncAdapter(this);
         } else {
-            Toast.makeText(this, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
         }
     }
 

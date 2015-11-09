@@ -209,7 +209,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
             MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
             getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
         } else {
-            Toast.makeText(mContext, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
         }
     }
 

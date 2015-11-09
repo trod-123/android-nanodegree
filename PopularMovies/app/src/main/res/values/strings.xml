@@ -161,9 +161,8 @@
 
     <!-- Sharing messages -->
     <string name="format_share_movie_no_trailer">
-        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g>:
-        <xliff:g id="tmdb_url">%2$s</xliff:g>. Movie homepage:
-        <xliff:g id="homepage_url">%3$s</xliff:g>
+        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g> at The Movie Database:
+        <xliff:g id="tmdb_url">%2$s</xliff:g>
     </string>
 
     <string name="format_share_movie_with_trailer">

@@ -342,8 +342,7 @@ public class DetailFragment extends Fragment
             url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
             shareMessage = getString(R.string.format_share_movie_no_trailer,
                     mData.getString(Details.COL_MOVIE_TITLE),
-                    url,
-                    mData.getString(Details.COL_MOVIE_HOMEPAGE)
+                    url
             );
         } else {
             // If a trailer exists, refer to the trailer
