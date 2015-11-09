@@ -78,11 +78,11 @@ public class BackdropsAdapter extends BaseAdapter {
         Log.d(LOG_TAG, "Backdrop path: " + mBackdrops.get(position).getFilePath());
 
         // set backdrop
-        // TODO: Find an appropriate placeholder image for backdrop paths that are null
+        // TODO: Implement expanded/full screen view upon backdrop selection
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + mBackdropSize +
                         mBackdrops.get(position).getFilePath())
-                .error(android.R.drawable.screen_background_light)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .into(imageView);
 
         return convertView;

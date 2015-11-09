@@ -46,9 +46,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Detail activity (only for large screen devices) -->
+        <!-- Detail activity (only for small screen devices) -->
         <activity
             android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity"
             android:label="@string/title_activity_detail">
         </activity>
 

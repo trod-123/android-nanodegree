@@ -78,7 +78,7 @@
         android:padding="@dimen/grid_padding_margin"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideInset"
-        android:numColumns="3"
+        android:numColumns="2"
         android:gravity="center"
         android:horizontalSpacing="@dimen/grid_padding_margin"
         android:verticalSpacing="@dimen/grid_padding_margin"

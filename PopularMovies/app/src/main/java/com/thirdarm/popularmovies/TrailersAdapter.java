@@ -99,6 +99,7 @@ public class TrailersAdapter extends BaseAdapter {
         final ImageView playButtonView = (ImageView) convertView.findViewById(R.id.imageview_video_play_button);
         final ImageView shareButtonView = (ImageView) convertView.findViewById(R.id.imageview_video_share_button);
 
+        // TODO: Figure out why trailer thumbnails fail to appear in some instances
         Target trailerTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -136,11 +137,10 @@ public class TrailersAdapter extends BaseAdapter {
         };
 
         // set backdrop
-        // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
                 .load(URL.YOUTUBE_THUMBNAIL_BASE +
                         mThumbnails.get(position).getSource() + mThumbnailSize)
-                .error(android.R.drawable.screen_background_light)
+                .error(R.drawable.ic_wallpaper_black_48dp)
                 .into(trailerTarget);
 
         // Set button click listeners

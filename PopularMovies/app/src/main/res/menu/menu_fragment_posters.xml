@@ -18,6 +18,7 @@
           android:orderInCategory="0" app:showAsAction="ifRoom"
           android:icon="@drawable/ic_autorenew_white_24dp" />
 
+    <!-- TODO: Hide discover for now -->
     <!--<item android:id="@+id/action_discover" android:title="@string/action_discover"-->
         <!--android:orderInCategory="1" app:showAsAction="never" />-->
 
@@ -33,7 +34,7 @@
     <item android:id="@+id/action_get_upcoming" android:title="@string/action_sort_upcoming"
         android:orderInCategory="5" app:showAsAction="never" />
 
-    <item android:id="@+id/action_get_favorites" android:title="@string/action_favorite"
+    <item android:id="@+id/action_get_favorites" android:title="@string/action_display_favorites"
           android:orderInCategory="6" app:showAsAction="never" />
 
 </menu>

@@ -159,7 +159,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     @Override public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Get a reference to UI elements
-        mRootView = inflater.inflate(R.layout.fragment_posters, container, false);
+        mRootView = inflater.inflate(R.layout.layout_posters, container, false);
         ButterKnife.bind(this, mRootView);
 
         // Create PostersAdapter. Loaders will swap the currently null cursor once the cursor has

@@ -23,7 +23,7 @@
 
         <ImageView
             android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:id="@+id/imageview_empty_details"
+            android:id="@+id/imageview_detail_empty_details"
             android:src="@drawable/ic_movie_white"
             android:tint="@color/grey_300"
             android:layout_centerHorizontal="true"/>
@@ -32,9 +32,9 @@
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:text="@string/greeting_movies"
             android:textColor="@color/white"
-            android:id="@+id/textView"
+            android:id="@+id/textview_detail_empty_greeting"
             android:textSize="@dimen/abc_text_size_display_1_material"
-            android:layout_below="@+id/imageview_empty_details"
+            android:layout_below="@+id/imageview_detail_empty_details"
             android:layout_centerHorizontal="true"
             android:paddingBottom="@dimen/detail_content_divider_margin"/>
 
@@ -44,7 +44,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/abc_text_size_headline_material"
             android:gravity="center"
-            android:layout_below="@+id/textView"
+            android:layout_below="@+id/textview_detail_empty_greeting"
             android:layout_centerHorizontal="true"/>
 
     </RelativeLayout>

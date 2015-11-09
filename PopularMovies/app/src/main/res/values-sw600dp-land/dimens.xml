@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (C) 2015 Teddy Rodriguez (TROD)
-    email: cia.123trod@gmail.com
-    github: TROD-123
-
-  For Udacity's Android Developer Nanodegree
-  P1-2: Popular Movies
-
-  Currently for educational purposes only.
--->
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
 
 <resources>
 
     <!-- Padding values -->
-    <dimen name="activity_padding_margin">16dp</dimen>
-    <dimen name="grid_padding_margin">2dp</dimen>
-    <dimen name="grid_overlay_padding_margin">8dp</dimen>
-    <dimen name="detail_content_padding_vertical_margin">16dp</dimen>
-    <dimen name="detail_content_padding_horizontal_margin">16dp</dimen>
+    <dimen name="activity_padding_margin">32dp</dimen>
+    <dimen name="grid_padding_margin">4dp</dimen>
+    <dimen name="grid_overlay_padding_margin">16dp</dimen>
+    <dimen name="detail_content_padding_vertical_margin">32dp</dimen>
+    <dimen name="detail_content_padding_horizontal_margin">128dp</dimen>
     <dimen name="detail_content_divider_margin">16dp</dimen>
     <dimen name="grid_card_padding_margin">4dp</dimen>
     <dimen name="grid_card_corner_radius">4dp</dimen>

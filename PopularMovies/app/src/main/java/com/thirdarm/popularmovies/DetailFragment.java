@@ -98,6 +98,7 @@ public class DetailFragment extends Fragment
     private ReviewsAdapter mReviewsAdapter;
     private Trailers mTrailers;
     private List<Reviews> mReviews;
+    private String mPosterSize;
     private int mFavorited;
 
     // data components
@@ -212,6 +213,8 @@ public class DetailFragment extends Fragment
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
         mProgressContainer = (RelativeLayout) mRootView.findViewById(R.id.container_detail_progress);
         swapViewContainers();
+
+        mPosterSize = getString(R.string.poster_width);
 
         // Get uri from bundle
         Bundle args = getArguments();
@@ -374,8 +377,9 @@ public class DetailFragment extends Fragment
     /** Sets the poster. White field if path is null */
     private void setPoster() {
         // TODO: Find an appropriate placeholder image for poster paths that are null
+        Log.d(LOG_TAG, "Poster size: " + mPosterSize);
         Picasso.with(mContext)
-                .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 +
+                .load(URL.IMAGE_BASE + mPosterSize +
                         mData.getString(Details.COL_MOVIE_POSTER_PATH))
                 .error(R.drawable.ic_wallpaper_black_48dp)
                 .into((ImageView) mRootView.findViewById(R.id.imageview_detail_poster));

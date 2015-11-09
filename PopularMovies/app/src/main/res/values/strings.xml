@@ -31,6 +31,7 @@
     <string name="action_sort_popular">Popular</string>
     <string name="action_sort_rated">Top rated</string>
     <string name="action_sort_upcoming">Upcoming</string>
+    <string name="action_display_favorites">Favorites</string>
     <string name="action_favorite">Favorite</string>
     <string name="action_share">Share</string>
     <string name="action_launch_tmdb_page">Launch movie page</string>
