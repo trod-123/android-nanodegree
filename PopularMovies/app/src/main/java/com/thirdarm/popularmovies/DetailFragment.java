@@ -337,7 +337,7 @@ public class DetailFragment extends Fragment
         }
         String url;
         String shareMessage;
-        if (path == "") {
+        if (path.equals("")) {
             // If there are no trailers, refer to the tmdb homepage of the movie
             url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
             shareMessage = getString(R.string.format_share_movie_no_trailer,
@@ -363,7 +363,9 @@ public class DetailFragment extends Fragment
         UI setter methods
      */
 
-    /** Sets the banner with backdrop. White field if path is null */
+    /**
+     * Sets the banner with backdrop. White field if path is null
+     */
     private void setBanner() {
         // TODO: Find an appropriate placeholder image for backdrop paths that are null
         Picasso.with(mContext)
@@ -374,10 +376,11 @@ public class DetailFragment extends Fragment
                 .into((ImageView) mRootView.findViewById(R.id.imageview_banner));
     }
 
-    /** Sets the poster. White field if path is null */
+    /**
+     * Sets the poster. White field if path is null
+     */
     private void setPoster() {
         // TODO: Find an appropriate placeholder image for poster paths that are null
-        Log.d(LOG_TAG, "Poster size: " + mPosterSize);
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + mPosterSize +
                         mData.getString(Details.COL_MOVIE_POSTER_PATH))
@@ -385,7 +388,9 @@ public class DetailFragment extends Fragment
                 .into((ImageView) mRootView.findViewById(R.id.imageview_detail_poster));
     }
 
-    /** Sets the movie tagline if there is one. Otherwise, leave blank */
+    /**
+     * Sets the movie tagline if there is one. Otherwise, leave blank
+     */
     private void setTagline() {
         String tagline = mData.getString(Details.COL_MOVIE_TAGLINE);
         TextView taglineTextView = (TextView) mRootView.findViewById(R.id.textview_detail_tagline);
@@ -398,7 +403,9 @@ public class DetailFragment extends Fragment
         }
     }
 
-    /** Sets the title */
+    /**
+     * Sets the title
+     */
     private void setTitle() {
         String title = mData.getString(Details.COL_MOVIE_TITLE);
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_title);
@@ -415,7 +422,9 @@ public class DetailFragment extends Fragment
         }
     }
 
-    /** Sets the main actors, in order of prominence. If no actor is found, text color is grey */
+    /**
+     * Sets the main actors, in order of prominence. If no actor is found, text color is grey
+     */
     private void setActors() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_actors);
         String actors = getString(R.string.error_info_null);
@@ -428,7 +437,7 @@ public class DetailFragment extends Fragment
                 if (actorsList.size() < ACTORS_MAX) {
                     actorsList.add(cast.getName());
                     String actor;
-                    if (cast.getCharacter() != "") {
+                    if (!cast.getCharacter().equals("")) {
                         actor = getString(R.string.format_detail_actors, cast.getName(), cast.getCharacter());
                     } else {
                         actor = cast.getName();
@@ -446,7 +455,9 @@ public class DetailFragment extends Fragment
         tv.setText(actors);
     }
 
-    /** Sets the directors. If no director is found, text color is grey */
+    /**
+     * Sets the directors. If no director is found, text color is grey
+     */
     private void setDirectors() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_directors);
         String directors = getString(R.string.error_info_null);
@@ -469,7 +480,9 @@ public class DetailFragment extends Fragment
         tv.setText(directors);
     }
 
-    /** Sets the writers. If no writer is found, text color is grey */
+    /**
+     * Sets the writers. If no writer is found, text color is grey
+     */
     private void setWriters() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_writers);
         String writer = getString(R.string.error_info_null);
@@ -495,7 +508,9 @@ public class DetailFragment extends Fragment
         tv.setText(writer);
     }
 
-    /** Sets the rating */
+    /**
+     * Sets the rating
+     */
     private void setRating() {
         TextView ratingTextView = (TextView) mRootView.findViewById(R.id.textview_detail_rating);
         ratingTextView.setText(getString(R.string.format_detail_rating, mData.getInt(Details.COL_MOVIE_VOTE_COUNT)));
@@ -521,13 +536,13 @@ public class DetailFragment extends Fragment
             }
         }
         String release_duration_mpaa;
-        if (runtime == 0 && mpaa_rating == "") {
+        if (runtime == 0 && mpaa_rating.equals("")) {
             // if unknown runtime, just include release date
             release_duration_mpaa = release_date;
-        } else if (runtime != 0 && mpaa_rating == "") {
+        } else if (runtime != 0 && mpaa_rating.equals("")) {
             // if unknown mpaa rating but known runtime, just include release date and runtime
             release_duration_mpaa = getString(R.string.format_detail_release_runtime, release_date, runtime);
-        } else if (runtime == 0 && mpaa_rating != "") {
+        } else if (runtime == 0 && mpaa_rating.equals("")) {
             // if unknown runtime but known mpaa rating, just include release date and mpaa rating
             release_duration_mpaa = getString(R.string.format_detail_release_mpaa, release_date, mpaa_rating);
         } else {
@@ -539,7 +554,9 @@ public class DetailFragment extends Fragment
         releaseInfoRuntimeTextView.setTextColor(getResources().getColor(R.color.white));
     }
 
-    /** Sets the genres. If no genre is found, text color is grey */
+    /**
+     * Sets the genres. If no genre is found, text color is grey
+     */
     private void setGenres() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_genres);
         String genres = getString(R.string.error_info_null);
@@ -560,7 +577,9 @@ public class DetailFragment extends Fragment
        tv.setText(genres);
     }
 
-    /** Sets the TMDB footer */
+    /**
+     * Sets the TMDB footer
+     */
     private void setFooter() {
         TextView url_text = (TextView) mRootView.findViewById(R.id.tmdb_link);
 
@@ -573,7 +592,9 @@ public class DetailFragment extends Fragment
     }
 
 
-    /** Sets the backdrops **/
+    /**
+     * Sets the backdrops
+     */
     private void setBackdrops() {
         // Create a BackdropsAdapter if haven't already
         if (mBackdropsAdapter == null) {
@@ -619,7 +640,9 @@ public class DetailFragment extends Fragment
         trailerView.setAdapter(mTrailersAdapter);
     }
 
-    /** Sets the ratings for reviews **/
+    /**
+     * Sets the ratings for reviews
+     */
     private void setDetailedRating() {
         String votesTense = getString(R.string.detail_votes_tense);
         if (mData.getInt(Details.COL_MOVIE_VOTE_COUNT) != 1) {
@@ -638,7 +661,9 @@ public class DetailFragment extends Fragment
         bar.setRating((float) mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE) / 2);
     }
 
-    /** Sets the reviews **/
+    /**
+     * Sets the reviews
+     */
     private void setReviews() {
         // Create a ReviewsAdapter if haven't already
         if (mReviewsAdapter == null) {
@@ -664,7 +689,9 @@ public class DetailFragment extends Fragment
         reviewsView.setAdapter(mReviewsAdapter);
     }
 
-    /** Helper method for setting app bar buttons and all basic ui fields **/
+    /**
+     * Helper method for setting app bar buttons and all basic ui fields
+     */
     private void setInitialFields() {
         if (!mLoaded) {
             // app bar buttons
@@ -682,7 +709,9 @@ public class DetailFragment extends Fragment
         }
     }
 
-    /** Helpe rmethod for setting all detailed ui fields **/
+    /**
+     * Helper method for setting all detailed ui fields
+     */
     private void setDetailedFields() {
         if (!mLoaded) {
             setTagline();
@@ -699,6 +728,9 @@ public class DetailFragment extends Fragment
         }
     }
 
+    /**
+     * Swaps progress container in and out of the view as needed
+     */
     private void swapViewContainers() {
         if (mData == null) {
             SwapViewContainers.showViewContainer(mProgressContainer, mRootView);

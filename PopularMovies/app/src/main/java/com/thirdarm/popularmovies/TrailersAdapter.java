@@ -36,10 +36,7 @@ import com.thirdarm.popularmovies.model.Youtube;
 import java.util.List;
 
 /**
- * ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
- *  to be displayed in the grid.
- * Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
- *  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
+ * Adapter for holding trailers
  */
 public class TrailersAdapter extends BaseAdapter {
 

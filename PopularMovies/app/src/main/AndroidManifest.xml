@@ -13,7 +13,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.thirdarm.popularmovies" >
-
+    
     <!-- Internet permissions -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -22,6 +22,10 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+    <!-- Screens supported -->
+    <supports-screens android:largeScreens="true" />
+    <supports-screens android:xlargeScreens="true"/>
 
     <application
         android:allowBackup="true"

@@ -131,6 +131,8 @@ public class TMDB {
     /**
      * Generates results for /discover
      *
+     * TODO: Implement this feature later.
+     *
      * @param sort method to sort discover results
      * @return list of movies
      */
@@ -195,6 +197,12 @@ public class TMDB {
         }
     }
 
+    /**
+     * Generates images for a specific movie id
+     *
+     * @param id the TMDB movie id
+     * @return an images object
+     */
     public Images getMovieImages(int id) {
         Call<Images> response = api.getMovieImages(id, mApiKey);
         try {
@@ -210,6 +218,12 @@ public class TMDB {
         }
     }
 
+    /**
+     * Generates reviews for a specific movie id
+     *
+     * @param id the TMDB movie id
+     * @return a list of reviews
+     */
     public List<Reviews> getMovieReviews(int id) {
         Call<ReviewsResult> response = api.getMovieReviews(id, mApiKey);
         try {

@@ -80,7 +80,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "On perform sync");
         // Create TMDB object
         String language = "en"; // TODO: Change this to fetch value from SharedPreferences
         TMDB tmdb = new TMDB(getContext().getString(R.string.movie_api_key), language);
@@ -95,6 +94,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 results = tmdb.initialize();
                 sInitialize = false;
             } else {
+                // TODO: Implement discover feature later.
                 // Otherwise grab the movies
 //            if (sCategory.equals(PARAMS.CATEGORY.DISCOVER)) {
 //                results = tmdb.discover(mSort);
@@ -139,8 +139,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                 null
         );
 
-        //Credits credits = mTmdb.getMovieCredits(movie.getId());
-
         // Store movie info from results object into db, fill in remaining fields not in
         //  results with null to create column, and initially set "false" (0) for favorites
         ContentValues movieValues = new ContentValues();
@@ -161,13 +159,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     MovieColumns.TMDB_ID + " = ? ",
                     new String[] {Integer.toString(movie.getId())}
             );
-            Log.d(LOG_TAG, "Movie already in database. Updated.");
-//            sProgressStatus.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    sProgressStatus.setText("Updated " + movie.getTitle());
-//                }
-//            });
         } else {
             // Otherwise add the new movie, nullifying out detail fields
             movieValues.putNull(MovieColumns.IMDB_ID);
@@ -191,13 +182,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 
             Uri contentUri = cr.insert(MovieProvider.Movies.CONTENT_URI, movieValues);
             locationId = ContentUris.parseId(contentUri);
-            Log.d(LOG_TAG, "Movie added to database");
-//            sProgressStatus.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    sProgressStatus.setText("Added " + movie.getTitle());
-//                }
-//            });
         }
         // Prefetch the images
         preloadPicassoBackdrop(movie.getBackdropPath());
@@ -213,21 +197,15 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param movieDBResults list of movie ids
      */
     private void addMovieList(final List<MovieDBResult> movieDBResults) {
-        Log.d(LOG_TAG, "There are " + movieDBResults.size() + " movies in the list.");
+//        Log.d(LOG_TAG, "There are " + movieDBResults.size() + " movies in the list.");
         long start = System.currentTimeMillis();
         for (final MovieDBResult result : movieDBResults) {
             addMovie(result);
-//            sProgressStatus.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    sProgressBar.incrementProgressBy(sProgressBar.getMax() / (movieDBResults.size()));
-//                }
-//            });
         }
-        Log.d(LOG_TAG, "Finished loading movies.");
+//        Log.d(LOG_TAG, "Finished loading movies.");
         long now = System.currentTimeMillis();
-        Log.d(LOG_TAG, "Elapsed time: " + movieDBResults.size() + " movies in " + ((now - start) / 1000.0) + " seconds.");
-        Log.d(LOG_TAG, "That is around " + ((now - start) / 1000.0) / movieDBResults.size() + " seconds per movie.");
+//        Log.d(LOG_TAG, "Elapsed time: " + movieDBResults.size() + " movies in " + ((now - start) / 1000.0) + " seconds.");
+//        Log.d(LOG_TAG, "That is around " + ((now - start) / 1000.0) / movieDBResults.size() + " seconds per movie.");
     }
 
     /**
@@ -279,7 +257,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
                     MovieColumns.TMDB_ID + " = ? ",
                     new String[]{Integer.toString(movie.getId())}
             );
-            Log.d(LOG_TAG, "Movie info updated.");
             // Notify main UI movie details have been added to db
             Intent intent = new Intent(MOVIE_DETAILS_ADDED)
                     .putExtra(INTENT_EXTRA_MOVIE_ID, movie.getId())
@@ -290,12 +267,22 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
         return locationId;
     }
 
+    /**
+     * Prefetches main movie backdrop
+     *
+     * @param imagePath path to the backdrop
+     */
     private void preloadPicassoBackdrop(String imagePath) {
         Picasso.with(getContext())
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 + imagePath)
                 .fetch();
     }
 
+    /**
+     * Prefetches main movie poster
+     *
+     * @param imagePath path to the poster
+     */
     private void preloadPicassoPoster(String imagePath) {
         for (String size : new String[] {IMAGE.SIZE.POSTER.w342, IMAGE.SIZE.POSTER.w500}) {
             Picasso.with(getContext())

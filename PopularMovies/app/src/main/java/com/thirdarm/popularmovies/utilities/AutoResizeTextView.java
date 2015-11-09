@@ -41,7 +41,7 @@ public class AutoResizeTextView extends TextView {
          *         text, it takes less space than {@code availableSpace}, > 0
          *         otherwise
          */
-        public int onTestSize(int suggestedSize, RectF availableSpace);
+        int onTestSize(int suggestedSize, RectF availableSpace);
     }
 
     private RectF mTextRect = new RectF();
@@ -66,7 +66,7 @@ public class AutoResizeTextView extends TextView {
     private int mMaxLines;
 
     private boolean mEnableSizeCache = true;
-    private boolean mInitiallized;
+    private boolean mInitialized;
 
     public AutoResizeTextView(Context context) {
         super(context);
@@ -92,7 +92,7 @@ public class AutoResizeTextView extends TextView {
             // no value was assigned during construction
             mMaxLines = NO_LINE_LIMIT;
         }
-        mInitiallized = true;
+        mInitialized = true;
     }
 
     @Override
@@ -181,7 +181,7 @@ public class AutoResizeTextView extends TextView {
     }
 
     private void adjustTextSize(String string) {
-        if (!mInitiallized) {
+        if (!mInitialized) {
             return;
         }
         int startSize = (int) mMinTextSize;

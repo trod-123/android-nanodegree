@@ -13,6 +13,8 @@ package com.thirdarm.popularmovies.constant;
 
 /**
  * Created by TROD on 20150917.
+ *
+ * Class of departments and jobs for Crew objects.
  */
 public class JOBS {
 

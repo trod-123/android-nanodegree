@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // TODO: Implement preferences activity later.
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {

@@ -85,6 +85,7 @@ public class PostersAdapter extends CursorAdapter {
                 )
         );
 
+        // TODO: Fix up poster placeholder image so that it appears properly and not all zoomed in
 //        Target bitmapTarget = new Target() {
 //            @Override
 //            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -109,7 +110,6 @@ public class PostersAdapter extends CursorAdapter {
 //        };
 
         // set poster
-        // TODO: Find an appropriate placeholder image for poster paths that are null
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + mPosterSize +
                         cursor.getString(Results.COL_MOVIE_POSTER_PATH))

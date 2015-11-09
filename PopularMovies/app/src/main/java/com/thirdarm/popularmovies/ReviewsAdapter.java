@@ -35,7 +35,7 @@ import com.thirdarm.popularmovies.model.Reviews;
 import java.util.List;
 
 /**
- * Created by TROD on 20151102.
+ * Adapter for holding reviews
  */
 public class ReviewsAdapter extends BaseAdapter {
 
@@ -99,7 +99,6 @@ public class ReviewsAdapter extends BaseAdapter {
 
         // Handle button click events
         ImageButton shareButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_share);
-//        ImageButton reportButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_report);
         ImageButton urlButton = (ImageButton) convertView.findViewById(R.id.imagebutton_detail_reviews_url);
 
         shareButton.setOnClickListener(new View.OnClickListener() {
@@ -108,14 +107,6 @@ public class ReviewsAdapter extends BaseAdapter {
                 shareReview(position);
             }
         });
-
-//        reportButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Report url intent here
-//                Toast.makeText(mContext, "Report button clicked.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
 
         urlButton.setOnClickListener(new View.OnClickListener() {
             @Override

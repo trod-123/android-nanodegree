@@ -29,10 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ArrayAdapter for holding the movie posters. Custom adapter will be the source for all items
- *  to be displayed in the grid.
- * Closely follows BaseAdapter template as outlined in the DAC GridView tutorial
- *  Link here: http://developer.android.com/guide/topics/ui/layout/gridview.html
+ * Adapter for holding backdrops
  */
 public class BackdropsAdapter extends BaseAdapter {
 
@@ -75,7 +72,6 @@ public class BackdropsAdapter extends BaseAdapter {
         }
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.container_detail_backdrop);
-        Log.d(LOG_TAG, "Backdrop path: " + mBackdrops.get(position).getFilePath());
 
         // set backdrop
         // TODO: Implement expanded/full screen view upon backdrop selection

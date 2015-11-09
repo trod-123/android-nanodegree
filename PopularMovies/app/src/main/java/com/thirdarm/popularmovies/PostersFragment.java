@@ -195,8 +195,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         return mRootView;
     }
 
-    // TODO: Figure out what the difference is between loading the Loader here or in
-    //  onViewCreated(view, bundle) instead
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(MOVIE_LOADER_ID, null, this);
@@ -211,7 +209,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
             MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
             getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
         } else {
-            Toast.makeText(mContext, "There is no internet connection. Did not go through sync.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, getString(R.string.error_no_internet), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -260,9 +258,12 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
+    /**
+     * Swap empty favorites and movies containers in and out of view as neede
+     */
     private void swapViewContainers() {
         if (mPostersAdapter.getCount() == 0) {
-            if (mCategory == PARAMS.CATEGORY.FAVORITES) {
+            if (mCategory.equals(PARAMS.CATEGORY.FAVORITES)) {
                 SwapViewContainers.showViewContainer(mEmptyFavoritesContainer, mRootView);
                 SwapViewContainers.hideViewContainer(mEmptyMoviesContainer, mRootView);
             } else {
@@ -373,8 +374,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         //  the cursor gets re-loaded and this method is called each time
         mPostersAdapter.swapCursor(data);
         swapViewContainers();
-
-        Log.d(LOG_TAG, "onLoadFinished");
     }
 
     @Override public void onLoaderReset(Loader loader) {
