@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,16 +52,19 @@ import com.thirdarm.popularmovies.data.MovieProjections.Details;
 import com.thirdarm.popularmovies.data.MovieProvider;
 import com.thirdarm.popularmovies.model.Backdrop;
 import com.thirdarm.popularmovies.model.Cast;
+import com.thirdarm.popularmovies.model.Country;
 import com.thirdarm.popularmovies.model.Genre;
 import com.thirdarm.popularmovies.model.Credits;
 import com.thirdarm.popularmovies.model.Crew;
 import com.thirdarm.popularmovies.model.Images;
+import com.thirdarm.popularmovies.model.Releases;
 import com.thirdarm.popularmovies.model.Reviews;
 import com.thirdarm.popularmovies.model.Trailers;
 import com.thirdarm.popularmovies.model.Youtube;
 import com.thirdarm.popularmovies.sync.MoviesSyncAdapter;
 import com.thirdarm.popularmovies.utilities.NonScrollListView;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
+import com.thirdarm.popularmovies.utilities.SwapViewContainers;
 
 import org.lucasr.twowayview.TwoWayView;
 
@@ -69,6 +73,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment consisting of specific movie details
@@ -82,11 +87,12 @@ public class DetailFragment extends Fragment
     public static final String MOVIE_URI = "movieUri";
 
     private Context mContext;
-//    private ShareActionProvider mShareActionProvider;
+    private ShareActionProvider mShareActionProvider;
     private Menu mOptionsMenu;
 
     // ui components
     private View mRootView;
+    private RelativeLayout mProgressContainer;
     private BackdropsAdapter mBackdropsAdapter;
     private TrailersAdapter mTrailersAdapter;
     private ReviewsAdapter mReviewsAdapter;
@@ -129,11 +135,24 @@ public class DetailFragment extends Fragment
         // Inflate the menu; this adds items to the action bar
         mOptionsMenu = menu;
 
-//        // Retrieve the share menu item
-//        MenuItem menuItem = menu.findItem(R.id.action_share);
-//        // Get the provider and hold onto it to set/change the share intent.
-//        mShareActionProvider =
-//                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        // Retrieve the share menu item
+        final MenuItem menuItem = menu.findItem(R.id.action_share);
+        // Get the provider and hold onto it to set/change the share intent.
+        // Use new thread to loop until the provider has been set
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (mShareActionProvider == null) {
+                    try {
+                        mShareActionProvider =
+                                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
@@ -147,8 +166,8 @@ public class DetailFragment extends Fragment
                 favorite();
                 return true;
 
-//            case R.id.action_share:
-//                return true;
+            case R.id.action_share:
+                return true;
 
             case R.id.action_launch_tmdb_page:
                 String url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
@@ -181,8 +200,6 @@ public class DetailFragment extends Fragment
                     intent.getIntExtra(MoviesSyncAdapter.INTENT_EXTRA_MOVIE_ID, -1) == mData.getInt(Details.COL_MOVIE_TMDB_ID) &&
                     !mData.isNull(Details.COL_MOVIE_CREDITS)) {
                 setDetailedFields();
-            } else if (mData == null) {
-                Log.d(LOG_TAG, "There was a problem with receiving the broadcasted intent");
             }
         }
     };
@@ -193,20 +210,17 @@ public class DetailFragment extends Fragment
                              Bundle savedInstanceState) {
 
         mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        mProgressContainer = (RelativeLayout) mRootView.findViewById(R.id.container_detail_progress);
+        swapViewContainers();
 
         // Get uri from bundle
         Bundle args = getArguments();
         if (args != null) {
             mUri = args.getParcelable(DetailFragment.MOVIE_URI);
         }
-
         return mRootView;
     }
 
-//    // Deprecated, but stored for reference
-//    private void fetchMovieDetails(int movieId) {
-//        new FetchMovieDetailsTask(getActivity(), PostersFragment.mTmdb, movieId, mRootView);
-//    }
 
     /*
         App bar action methods
@@ -286,6 +300,15 @@ public class DetailFragment extends Fragment
                     MovieColumns.TMDB_ID + " = ? ",
                     new String[]{Integer.toString(movieId)}
             );
+            if (swapFavorites == 1) {
+                Toast.makeText(mContext, getString(R.string.format_modify_favorites,
+                        "Added", mData.getString(Details.COL_MOVIE_TITLE), "to"),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(mContext, getString(R.string.format_modify_favorites,
+                        "Removed", mData.getString(Details.COL_MOVIE_TITLE), "from"),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
         cursor.close();
 
@@ -295,18 +318,41 @@ public class DetailFragment extends Fragment
         return locationId;
     }
 
-    /** Shares the movie with friends */
+    /**
+     * Shares the movie with friends. If there is a trailer, share first trailer link. If no
+     *  trailer, share TMDB link.
+     */
     private Intent shareMovie() {
-        String url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
+        String path = "";
+        Type type = new TypeToken<Trailers>() {}.getType();
+        Trailers trailers = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_TRAILERS), type);
+        if (trailers != null) {
+            List<Youtube> videos = trailers.getYoutube();
+            if (videos.size() != 0) {
+                path = videos.get(0).getSource();
+            }
+        }
+        String url;
+        String shareMessage;
+        if (path == "") {
+            // If there are no trailers, refer to the tmdb homepage of the movie
+            url = URL.PUBLIC_BASE + URL.MOVIE + mData.getInt(Details.COL_MOVIE_TMDB_ID);
+            shareMessage = getString(R.string.format_share_movie_no_trailer,
+                    mData.getString(Details.COL_MOVIE_TITLE),
+                    url,
+                    mData.getString(Details.COL_MOVIE_HOMEPAGE)
+            );
+        } else {
+            // If a trailer exists, refer to the trailer
+            url = URL.YOUTUBE_BASE + path;
+            shareMessage = getString(R.string.format_share_movie_with_trailer,
+                    mData.getString(Details.COL_MOVIE_TITLE),
+                    url
+            );
+        }
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                getString(R.string.format_share_movie,
-                        mData.getString(Details.COL_MOVIE_TITLE),
-                        url,
-                        mData.getString(Details.COL_MOVIE_HOMEPAGE)
-                )
-        );
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
         return shareIntent;
     }
 
@@ -321,8 +367,8 @@ public class DetailFragment extends Fragment
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.BACKDROP.w1280 +
                         mData.getString(Details.COL_MOVIE_BACKDROP_PATH))
                 .fit()
-                .error(android.R.drawable.screen_background_light)
-                .into((ImageView) mRootView.findViewById(R.id.banner));
+                .error(R.drawable.ic_wallpaper_black_48dp)
+                .into((ImageView) mRootView.findViewById(R.id.imageview_banner));
     }
 
     /** Sets the poster. White field if path is null */
@@ -331,8 +377,8 @@ public class DetailFragment extends Fragment
         Picasso.with(mContext)
                 .load(URL.IMAGE_BASE + IMAGE.SIZE.POSTER.w342 +
                         mData.getString(Details.COL_MOVIE_POSTER_PATH))
-                .error(android.R.drawable.screen_background_light)
-                .into((ImageView) mRootView.findViewById(R.id.container_detail_poster));
+                .error(R.drawable.ic_wallpaper_black_48dp)
+                .into((ImageView) mRootView.findViewById(R.id.imageview_detail_poster));
     }
 
     /** Sets the movie tagline if there is one. Otherwise, leave blank */
@@ -377,10 +423,16 @@ public class DetailFragment extends Fragment
             for (Cast cast : credits.getCast()) {
                 if (actorsList.size() < ACTORS_MAX) {
                     actorsList.add(cast.getName());
-                    if (multiple) {
-                        actors += ", " + getString(R.string.format_detail_actors, cast.getName(), cast.getCharacter());
+                    String actor;
+                    if (cast.getCharacter() != "") {
+                        actor = getString(R.string.format_detail_actors, cast.getName(), cast.getCharacter());
                     } else {
-                        actors = getString(R.string.format_detail_actors, cast.getName(), cast.getCharacter());
+                        actor = cast.getName();
+                    }
+                    if (multiple) {
+                        actors += ", " + actor;
+                    } else {
+                        actors = actor;
                         tv.setTextColor(getResources().getColor(R.color.white));
                         multiple = true;
                     }
@@ -393,7 +445,7 @@ public class DetailFragment extends Fragment
     /** Sets the directors. If no director is found, text color is grey */
     private void setDirectors() {
         TextView tv = (TextView) mRootView.findViewById(R.id.textview_detail_directors);
-        String director = getString(R.string.error_info_null);
+        String directors = getString(R.string.error_info_null);
         boolean multiple = false;
         Type type = new TypeToken<Credits>() {}.getType();
         Credits credits = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_CREDITS), type);
@@ -401,16 +453,16 @@ public class DetailFragment extends Fragment
             for (Crew crew : credits.getCrew()) {
                 if (crew.getJob().equals(JOBS.DIRECTING.DIRECTOR)) {
                     if (multiple) {
-                        director += ", " + getString(R.string.format_detail_directors, crew.getName(), crew.getJob());
+                        directors += ", " + getString(R.string.format_detail_directors, crew.getName(), crew.getJob());
                     } else {
-                        director = getString(R.string.format_detail_directors, crew.getName(), crew.getJob());
+                        directors = getString(R.string.format_detail_directors, crew.getName(), crew.getJob());
                         tv.setTextColor(getResources().getColor(R.color.white));
                         multiple = true;
                     }
                 }
             }
         }
-        tv.setText(director);
+        tv.setText(directors);
     }
 
     /** Sets the writers. If no writer is found, text color is grey */
@@ -447,19 +499,39 @@ public class DetailFragment extends Fragment
         bar.setRating((float) mData.getDouble(Details.COL_MOVIE_VOTE_AVERAGE) / 2);
     }
 
-    /** Sets the release info and runtime */
-    private void setReleaseInfoRuntime() {
-        int runtime = mData.getInt(Details.COL_MOVIE_RUNTIME);
+    /**
+     * Sets the release info, runtime, and mpaa rating pertaining to the user's locale
+     *  (empty if not found)
+     */
+    private void setReleaseInfoRuntimeMpaa() {
         String release_date = ReleaseDates.convertDateFormat(mData.getString(Details.COL_MOVIE_RELEASE_DATE));
-        String release_duration;
-        if (runtime == 0) {
+        int runtime = mData.getInt(Details.COL_MOVIE_RUNTIME);
+        Type type = new TypeToken<Releases>() {}.getType();
+        Releases releases = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_RELEASES), type);
+        String mpaa_rating = "";
+        if (releases != null) {
+            for (Country country : releases.getCountries()) {
+                if (Locale.getDefault().getCountry().contains(country.getIso31661())) {
+                    mpaa_rating = country.getCertification();
+                }
+            }
+        }
+        String release_duration_mpaa;
+        if (runtime == 0 && mpaa_rating == "") {
             // if unknown runtime, just include release date
-            release_duration = release_date;
+            release_duration_mpaa = release_date;
+        } else if (runtime != 0 && mpaa_rating == "") {
+            // if unknown mpaa rating but known runtime, just include release date and runtime
+            release_duration_mpaa = getString(R.string.format_detail_release_runtime, release_date, runtime);
+        } else if (runtime == 0 && mpaa_rating != "") {
+            // if unknown runtime but known mpaa rating, just include release date and mpaa rating
+            release_duration_mpaa = getString(R.string.format_detail_release_mpaa, release_date, mpaa_rating);
         } else {
-            release_duration = getString(R.string.format_detail_release_runtime, release_date, runtime);
+            // if all information is available, include them all!
+            release_duration_mpaa = getString(R.string.format_detail_release_runtime_mpaa, release_date, runtime, mpaa_rating);
         }
         TextView releaseInfoRuntimeTextView = (TextView) mRootView.findViewById(R.id.textview_detail_release_duration_mpaaRating);
-        releaseInfoRuntimeTextView.setText(release_duration);
+        releaseInfoRuntimeTextView.setText(release_duration_mpaa);
         releaseInfoRuntimeTextView.setTextColor(getResources().getColor(R.color.white));
     }
 
@@ -501,7 +573,6 @@ public class DetailFragment extends Fragment
     private void setBackdrops() {
         // Create a BackdropsAdapter if haven't already
         if (mBackdropsAdapter == null) {
-            Log.d(LOG_TAG, "BACKDROPS ADAPTER IS NULL");
             Type type = new TypeToken<Images>() {}.getType();
             Images images = (new Gson()).fromJson(mData.getString(Details.COL_MOVIE_IMAGES), type);
             if (images != null) {
@@ -514,14 +585,16 @@ public class DetailFragment extends Fragment
                     backdropsStatusTextView.setHeight(0);
                 }
             }
-        } else {
-            Log.d(LOG_TAG, "It is not null");
         }
         TwoWayView backdropView = (TwoWayView) mRootView.findViewById(R.id.listview_detail_backdrops);
         backdropView.setAdapter(mBackdropsAdapter);
     }
 
-    /** Sets the trailers **/
+    /**
+     * Sets the trailers
+     *
+     * Note: OnClickListeners for buttons can be configured through the Adapter, which is pretty cool.
+     */
     private void setTrailers() {
         // Create a TrailersAdapter if haven't already
         if (mTrailersAdapter == null) {
@@ -540,9 +613,6 @@ public class DetailFragment extends Fragment
         }
         TwoWayView trailerView = (TwoWayView) mRootView.findViewById(R.id.listview_detail_trailers);
         trailerView.setAdapter(mTrailersAdapter);
-
-        // TODO: The buttons CAN be configured through the pertaining Custom Adapter class! WOO WOO WOO.
-        // TODO: FIX TRAILERS THAT ARE NOT LOADING UP!!!! WHAT THE HELL.
     }
 
     /** Sets the ratings for reviews **/
@@ -603,6 +673,8 @@ public class DetailFragment extends Fragment
             setOverview();
             setRating();
             setDetailedRating();
+
+            swapViewContainers();
         }
     }
 
@@ -610,7 +682,7 @@ public class DetailFragment extends Fragment
     private void setDetailedFields() {
         if (!mLoaded) {
             setTagline();
-            setReleaseInfoRuntime();
+            setReleaseInfoRuntimeMpaa();
             setGenres();
             setFooter();
             setActors();
@@ -620,6 +692,14 @@ public class DetailFragment extends Fragment
             setTrailers();
             setReviews();
             mLoaded = true;
+        }
+    }
+
+    private void swapViewContainers() {
+        if (mData == null) {
+            SwapViewContainers.showViewContainer(mProgressContainer, mRootView);
+        } else {
+            SwapViewContainers.hideViewContainer(mProgressContainer, mRootView);
         }
     }
 
@@ -649,13 +729,26 @@ public class DetailFragment extends Fragment
 //                "Movie in favorites? " + (mData.getInt(Details.COL_MOVIE_FAVORITE)),
 //                Toast.LENGTH_SHORT).show();
 
-//        // Attach an intent to this ShareActionProvider.  You can update this at any time,
-//        // like when the user selects a new piece of data they might like to share.
-//        if (mShareActionProvider != null ) {
-//            mShareActionProvider.setShareIntent(shareMovie());
-//        } else {
-//            Log.d(LOG_TAG, "Share Action Provider is null?");
-//        }
+        // Attach an intent to this ShareActionProvider.
+        // Use new thread to ensure that the correct share intent is loaded onto the provider
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (mShareActionProvider == null) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mRootView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mShareActionProvider.setShareIntent(shareMovie());
+                    }
+                });
+            }
+        }).start();
 
         // set title of movie as title of activity
         getActivity().setTitle(mData.getString(Details.COL_MOVIE_TITLE));

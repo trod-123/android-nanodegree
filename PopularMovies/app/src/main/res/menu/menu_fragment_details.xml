@@ -20,11 +20,11 @@
         android:orderInCategory="1" app:showAsAction="ifRoom"
         android:icon="@drawable/ic_favorite_border_white_24dp"/>
 
-    <!--<item-->
-        <!--android:id="@+id/action_share" android:title="@string/action_share"-->
-        <!--android:orderInCategory="2" app:showAsAction="always"-->
-        <!--android:icon="@drawable/ic_share_white_24dp"-->
-        <!--app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>-->
+    <item
+        android:id="@+id/action_share" android:title="@string/action_share"
+        android:orderInCategory="2" app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_share_white_24dp"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
 
     <item
         android:id="@+id/action_launch_tmdb_page" android:title="@string/action_launch_tmdb_page"

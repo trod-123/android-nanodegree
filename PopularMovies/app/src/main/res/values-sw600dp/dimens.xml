@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
+
+<resources>
+
+    <!-- Padding values -->
+    <dimen name="activity_padding_margin">32dp</dimen>
+    <dimen name="grid_padding_margin">4dp</dimen>
+    <dimen name="grid_overlay_padding_margin">16dp</dimen>
+    <dimen name="detail_content_padding_vertical_margin">32dp</dimen>
+    <dimen name="detail_content_padding_horizontal_margin">128dp</dimen>
+    <dimen name="detail_content_divider_margin">32dp</dimen>
+    <dimen name="grid_card_padding_margin">4dp</dimen>
+    <dimen name="grid_card_corner_radius">4dp</dimen>
+    <dimen name="grid_card_elevation">8dp</dimen>
+
+    <!-- For the poster overlay and the banner -->
+    <dimen name="detail_banner_height">384dp</dimen>
+    <dimen name="detail_banner_height_quarter_1">96dp</dimen>
+    <dimen name="detail_banner_height_quarter_3">288dp</dimen>
+    <dimen name="grid_overlay_height">128dp</dimen>
+
+    <!-- Scrollbar values -->
+    <dimen name="scrollbar_size">3dp</dimen>
+
+</resources>

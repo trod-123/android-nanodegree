@@ -44,6 +44,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.0.+'
     compile 'it.sephiroth.android.library.horizontallistview:hlistview:1.2.2'
     compile 'org.lucasr.twowayview:twowayview:0.1.4'
+    compile 'me.grantland:autofittextview:0.2.+'
 }
 
 repositories {

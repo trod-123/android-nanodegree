@@ -25,10 +25,11 @@
         android:id="@+id/container_detail_banner"
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_banner_height"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@color/white">
 
         <ImageView
-            android:id="@+id/banner"
+            android:id="@+id/imageview_banner"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -94,7 +95,7 @@
                         android:layout_marginLeft="@dimen/activity_padding_margin"
                         card_view:cardCornerRadius="@dimen/grid_card_corner_radius"
                         card_view:cardElevation="@dimen/grid_card_elevation"
-                        card_view:contentPadding="4dp">
+                        card_view:contentPadding="@dimen/grid_card_padding_margin">
 
                         <android.support.v7.widget.CardView
                             android:layout_width="wrap_content"
@@ -103,7 +104,7 @@
 
                             <ImageView
                                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:id="@+id/container_detail_poster" />
+                                android:id="@+id/imageview_detail_poster" />
 
                         </android.support.v7.widget.CardView>
 
@@ -115,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginTop="@dimen/detail_banner_height_quarter_1"
-                        android:padding="@dimen/activity_padding_margin">
+                        android:padding="@dimen/detail_content_divider_margin">
 
                         <!-- Title -->
                         <TextView
@@ -123,7 +124,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
-                            android:textSize="32sp"/>
+                            android:textSize="@dimen/abc_text_size_display_1_material"/>
 
                         <!-- Release date, duration, and MPAA rating -->
                         <TextView
@@ -178,7 +179,10 @@
             <!-- details body container (with black bg) -->
             <LinearLayout
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding_margin"
+                android:paddingLeft="@dimen/detail_content_padding_horizontal_margin"
+                android:paddingRight="@dimen/detail_content_padding_horizontal_margin"
+                android:paddingTop="@dimen/detail_content_padding_vertical_margin"
+                android:paddingBottom="@dimen/detail_content_padding_vertical_margin"
                 android:id="@+id/container_detail_body"
                 android:background="@color/black"
                 android:orientation="vertical" >
@@ -193,9 +197,9 @@
                     android:textSize="@dimen/abc_text_size_medium_material"
                     android:textStyle="bold|italic"
                     android:gravity="bottom|center"
-                    android:paddingLeft="@dimen/activity_padding_margin"
-                    android:paddingRight="@dimen/activity_padding_margin"
-                    android:paddingBottom="@dimen/activity_padding_margin"/>
+                    android:paddingLeft="@dimen/detail_content_divider_margin"
+                    android:paddingRight="@dimen/detail_content_divider_margin"
+                    android:paddingBottom="@dimen/detail_content_divider_margin"/>
 
                 <!-- movie overview -->
                 <TextView
@@ -205,7 +209,7 @@
                     android:text="@string/error_info_null"
                     android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:paddingBottom="@dimen/activity_padding_margin"/>
+                    android:paddingBottom="@dimen/detail_content_divider_margin"/>
 
                 <!--
                     cast and credits
@@ -217,7 +221,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:padding="@dimen/activity_padding_margin"/>
+                    android:padding="@dimen/detail_content_divider_margin"/>
 
                 <!-- Actors -->
                 <TextView
@@ -234,7 +238,7 @@
                     android:text="@string/error_info_null"
                     android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
+                    android:paddingBottom="@dimen/detail_content_divider_margin" />
 
                 <!-- Directors -->
                 <TextView
@@ -251,7 +255,7 @@
                     android:text="@string/error_info_null"
                     android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
+                    android:paddingBottom="@dimen/detail_content_divider_margin" />
 
                 <!-- Writers -->
                 <TextView
@@ -268,7 +272,7 @@
                     android:text="@string/error_info_null"
                     android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin" />
+                    android:paddingBottom="@dimen/detail_content_divider_margin" />
 
                 <!-- Backdrops -->
                 <TextView
@@ -278,7 +282,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:padding="@dimen/activity_padding_margin"/>
+                    android:padding="@dimen/detail_content_divider_margin"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -304,7 +308,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:padding="@dimen/activity_padding_margin"/>
+                    android:padding="@dimen/detail_content_divider_margin"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -332,14 +336,14 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="@dimen/abc_text_size_medium_material"
-                    android:padding="@dimen/activity_padding_margin"/>
+                    android:padding="@dimen/detail_content_divider_margin"/>
 
                 <!-- Averages -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingBottom="@dimen/activity_padding_margin">
+                    android:paddingBottom="@dimen/detail_content_divider_margin">
 
                     <!-- rating, large -->
                     <TextView
@@ -386,14 +390,14 @@
                     android:text="@string/error_no_reviews"
                     android:textColor="@color/grey_500"
                     android:textSize="@dimen/abc_text_size_small_material"
-                    android:paddingBottom="@dimen/activity_padding_margin"/>
+                    android:paddingBottom="@dimen/detail_content_divider_margin"/>
 
                 <!-- reviews list -->
                 <com.thirdarm.popularmovies.utilities.NonScrollListView
                     android:id="@+id/listview_detail_reviews"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:dividerHeight="@dimen/activity_padding_margin"/>
+                    android:dividerHeight="@dimen/detail_content_divider_margin"/>
 
                 <!-- Credits and copyright -->
                 <LinearLayout
@@ -425,5 +429,24 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <!-- Progress container to display while loading data from server -->
+    <RelativeLayout
+        android:id="@+id/container_detail_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:layout_alignParentTop="true"
+        android:visibility="gone">
+
+        <!-- Spinning wheel -->
+        <ProgressBar
+            android:id="@+id/progress_spinner_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            style="@style/Widget.AppCompat.ProgressBar" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

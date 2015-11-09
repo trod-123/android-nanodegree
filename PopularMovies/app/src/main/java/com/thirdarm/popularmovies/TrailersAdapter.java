@@ -95,9 +95,45 @@ public class TrailersAdapter extends BaseAdapter {
         }
 
         final ImageView imageView = (ImageView) convertView.findViewById(R.id.container_detail_trailer);
-        final LinearLayout buttonLayout = (LinearLayout) convertView.findViewById(R.id.container_detail_trailer_buttons);
+        final FrameLayout buttonLayout = (FrameLayout) convertView.findViewById(R.id.container_detail_trailer_buttons);
         final ImageView playButtonView = (ImageView) convertView.findViewById(R.id.imageview_video_play_button);
         final ImageView shareButtonView = (ImageView) convertView.findViewById(R.id.imageview_video_share_button);
+
+        Target trailerTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                imageView.setImageBitmap(bitmap);
+
+                // Set the dimensions of the play and share button overlay and bring it in front of
+                //  the thumbnail
+                FrameLayout.LayoutParams lpBl = new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight(), Gravity.RIGHT);
+                buttonLayout.setLayoutParams(lpBl);
+
+                playButtonView.setAdjustViewBounds(true);
+                playButtonView.setMaxHeight(bitmap.getHeight());
+                playButtonView.setMaxWidth(bitmap.getWidth() / 2);
+                LinearLayout.LayoutParams lpPb = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lpPb.gravity = Gravity.CENTER;
+                playButtonView.setLayoutParams(lpPb);
+
+                shareButtonView.setAdjustViewBounds(true);
+                shareButtonView.setMaxHeight(bitmap.getHeight());
+                shareButtonView.setMaxWidth(bitmap.getWidth() / 2);
+                LinearLayout.LayoutParams lpSb = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                lpSb.gravity = Gravity.CENTER;
+                shareButtonView.setLayoutParams(lpSb);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
 
         // set backdrop
         // TODO: Find an appropriate placeholder image for backdrop paths that are null
@@ -105,43 +141,7 @@ public class TrailersAdapter extends BaseAdapter {
                 .load(URL.YOUTUBE_THUMBNAIL_BASE +
                         mThumbnails.get(position).getSource() + mThumbnailSize)
                 .error(android.R.drawable.screen_background_light)
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        imageView.setImageBitmap(bitmap);
-
-                        // Set the dimensions of the play button overlay and bring it in front of
-                        //  the thumbnail
-                        playButtonView.setAdjustViewBounds(true);
-                        playButtonView.setMaxHeight(bitmap.getHeight());
-                        playButtonView.setMaxWidth(bitmap.getWidth() / 2);
-                        LinearLayout.LayoutParams lpPb = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        lpPb.gravity = Gravity.CENTER;
-                        playButtonView.setLayoutParams(lpPb);
-
-                        shareButtonView.setAdjustViewBounds(true);
-                        shareButtonView.setMaxHeight(bitmap.getHeight());
-                        shareButtonView.setMaxWidth(bitmap.getWidth() / 2);
-                        LinearLayout.LayoutParams lpSb = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        lpSb.gravity = Gravity.CENTER;
-                        shareButtonView.setLayoutParams(lpSb);
-
-                        FrameLayout.LayoutParams lpBl = new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight());
-                        lpBl.gravity = Gravity.CENTER_HORIZONTAL;
-                        buttonLayout.setLayoutParams(lpBl);
-                        buttonLayout.bringToFront();
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                });
+                .into(trailerTarget);
 
         // Set button click listeners
         playButtonView.setOnClickListener(new View.OnClickListener() {

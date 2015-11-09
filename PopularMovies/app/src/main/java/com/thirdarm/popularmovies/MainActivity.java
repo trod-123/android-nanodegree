@@ -17,8 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.thirdarm.popularmovies.sync.MoviesSyncAdapter;
+import com.thirdarm.popularmovies.utilities.Network;
 
 public class MainActivity extends AppCompatActivity
         implements PostersFragment.Callback {
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity
             mTwoPane = true;
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container_fragment_movie_detail, new DetailFragment(),
+                        .replace(R.id.container_fragment_movie_detail, new EmptyDetailFragment(),
                                 DETAILFRAGMENT_TAG)
                         .commit();
             }
@@ -50,7 +52,11 @@ public class MainActivity extends AppCompatActivity
             mTwoPane = false;
         }
 
-        MoviesSyncAdapter.initializeSyncAdapter(this);
+        if (Network.isNetworkAvailable(this)) {
+            MoviesSyncAdapter.initializeSyncAdapter(this);
+        } else {
+            Toast.makeText(this, "There is no internet connection. Did not go through sync.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

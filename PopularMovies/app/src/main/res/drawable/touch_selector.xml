@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
+
+<!-- Button can exist in one of several different states: pressed, focused, or neither -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- State when a row is being pressed, but hasn't yet been activated (finger down) -->
+    <item android:state_pressed="true"
+          android:drawable="@color/overlay_accent" />
+
+    <!-- When the view is "activated".  In SINGLE_CHOICE_MODE, it flags the active row
+         of a ListView -->
+    <item android:state_activated="true"
+          android:drawable="@color/overlay_accent" />
+
+    <!-- Default state. -->
+    <item android:drawable="@android:color/transparent" />
+
+</selector>

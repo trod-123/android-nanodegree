@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
+
+<!-- This layout will only be used in large screen devices like tablets -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="@dimen/activity_padding_margin"
+    android:background="@color/black">
+
+    <RelativeLayout
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:id="@+id/imageview_empty_details"
+            android:src="@drawable/ic_movie_white"
+            android:tint="@color/grey_300"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/greeting_movies"
+            android:textColor="@color/white"
+            android:id="@+id/textView"
+            android:textSize="@dimen/abc_text_size_display_1_material"
+            android:layout_below="@+id/imageview_empty_details"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="@dimen/detail_content_divider_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/empty_details_movie"
+            android:textColor="@color/white"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:gravity="center"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

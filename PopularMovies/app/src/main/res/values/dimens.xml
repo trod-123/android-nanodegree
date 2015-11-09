@@ -14,7 +14,12 @@
 
     <!-- Padding values -->
     <dimen name="activity_padding_margin">16dp</dimen>
-    <dimen name="grid_padding_margin">8dp</dimen>
+    <dimen name="grid_padding_margin">2dp</dimen>
+    <dimen name="grid_overlay_padding_margin">8dp</dimen>
+    <dimen name="detail_content_padding_vertical_margin">16dp</dimen>
+    <dimen name="detail_content_padding_horizontal_margin">16dp</dimen>
+    <dimen name="detail_content_divider_margin">16dp</dimen>
+    <dimen name="grid_card_padding_margin">4dp</dimen>
     <dimen name="grid_card_corner_radius">4dp</dimen>
     <dimen name="grid_card_elevation">8dp</dimen>
 

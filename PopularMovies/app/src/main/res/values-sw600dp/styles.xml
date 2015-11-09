@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (C) 2015 Teddy Rodriguez (TROD)
+  ~    email: cia.123trod@gmail.com
+  ~    github: TROD-123
+  ~
+  ~  For Udacity's Android Developer Nanodegree
+  ~  P1-2: Popular Movies
+  ~
+  ~  Currently for educational purposes only.
+  -->
+
+<resources>
+    <!-- For highlighting poster selected whose details are displayed on right pane -->
+    <style name="SelectListItem">
+        <item name="android:choiceMode">singleChoice</item>
+    </style>
+</resources>

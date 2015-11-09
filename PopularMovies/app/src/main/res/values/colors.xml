@@ -298,8 +298,9 @@
     <!--
           My defined color values
     -->
-    <color name="overlay_dark">#f0000000</color>
-
-
+    <color name="overlay_dark">#f0000000</color> <!-- Same as black -->
+    <color name="overlay_accent">#A0FF4081</color> <!-- Same as pink_A200 -->
+    <color name="overlay_ripple_accent">@color/accent</color>
+    <color name="base_ripple_accent">#A0FF80AB</color> <!-- Same as pink_A100 -->
 
 </resources>

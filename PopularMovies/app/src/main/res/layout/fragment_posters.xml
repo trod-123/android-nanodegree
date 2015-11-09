@@ -15,11 +15,11 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity$MoviePostersFragment"
-    android:background="@color/grey_100">
+    android:background="@color/black">
 
     <!-- Progress spinner and Progress bar, to display while loading data from server -->
     <RelativeLayout
-        android:id="@+id/progress_container"
+        android:id="@+id/container_detail_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:drawable/screen_background_dark_transparent"
@@ -39,7 +39,7 @@
 
             <!-- Spinning wheel -->
             <ProgressBar
-                android:id="@+id/progress_spinner"
+                android:id="@+id/progress_spinner_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -78,9 +78,85 @@
         android:padding="@dimen/grid_padding_margin"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideInset"
-        android:numColumns="auto_fit"
+        android:numColumns="3"
         android:gravity="center"
         android:horizontalSpacing="@dimen/grid_padding_margin"
-        android:verticalSpacing="@dimen/grid_padding_margin" />
+        android:verticalSpacing="@dimen/grid_padding_margin"
+        style="@style/SelectListItem"
+        android:drawSelectorOnTop="true"/>
+
+    <!-- Empty favorites container -->
+    <RelativeLayout
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/activity_padding_margin"
+        android:id="@+id/container_empty_favorites"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:id="@+id/imageview_empty_favorites"
+            android:src="@drawable/ic_favorite_white"
+            android:tint="@color/grey_300"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/greeting_favorites"
+            android:textColor="@color/white"
+            android:id="@+id/textview_empty_favorites"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:layout_below="@+id/imageview_empty_favorites"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="@dimen/detail_content_divider_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/empty_favorites"
+            android:textColor="@color/white"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:gravity="center"
+            android:layout_below="@+id/textview_empty_favorites"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
+    <!-- Empty general movies container -->
+    <RelativeLayout
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/activity_padding_margin"
+        android:id="@+id/container_empty_movies"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:id="@+id/imageview_empty_movies"
+            android:src="@drawable/ic_report_problem_white"
+            android:tint="@color/grey_300"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/greeting_empty"
+            android:textColor="@color/white"
+            android:id="@+id/textview_empty_movies"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:layout_below="@+id/imageview_empty_movies"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="@dimen/detail_content_divider_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/empty_grid"
+            android:textColor="@color/white"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:gravity="center"
+            android:layout_below="@+id/textview_empty_movies"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

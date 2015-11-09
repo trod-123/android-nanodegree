@@ -29,6 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thirdarm.popularmovies.constant.IMAGE;
 import com.thirdarm.popularmovies.constant.PARAMS;
@@ -36,8 +39,15 @@ import com.thirdarm.popularmovies.data.MovieColumns;
 import com.thirdarm.popularmovies.data.MovieProvider;
 import com.thirdarm.popularmovies.data.MovieProjections.Results;
 import com.thirdarm.popularmovies.sync.MoviesSyncAdapter;
+import com.thirdarm.popularmovies.utilities.AutoResizeImageView;
+import com.thirdarm.popularmovies.utilities.AutoResizeTextView;
+import com.thirdarm.popularmovies.utilities.Network;
 import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
+import com.thirdarm.popularmovies.utilities.SwapViewContainers;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 /**
@@ -70,21 +80,15 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
     // views
     private View mRootView;
-    private GridView mGridView;
     private PostersAdapter mPostersAdapter;
+    @Bind(R.id.posters_grid) GridView mGridView;
+    @Bind(R.id.container_empty_favorites) RelativeLayout mEmptyFavoritesContainer;
+    @Bind(R.id.container_empty_movies) RelativeLayout mEmptyMoviesContainer;
 
     // for loading and displaying movies
     private final String mPosterSize = IMAGE.SIZE.POSTER.w500;
     private String mCategory = PARAMS.CATEGORY.POPULAR;
     private int mPosition;
-
-    // thresholds
-    private int THRESHOLD_DATE_LOWER = -35;
-    private int THRESHOLD_DATE_MIDDLE = 0;
-    private int THRESHOLD_DATE_UPPER = 28;
-    private String THRESHOLD_RATING_LOWER = "7";
-    private String THRESHOLD_VOTES_LOWER = "50";
-    private String THRESHOLD_POPULARITY_LOWER = "5";
 
 
     public PostersFragment() {
@@ -156,7 +160,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         // Get a reference to UI elements
         mRootView = inflater.inflate(R.layout.fragment_posters, container, false);
-        mGridView = (GridView) mRootView.findViewById(R.id.posters_grid);
+        ButterKnife.bind(this, mRootView);
 
         // Create PostersAdapter. Loaders will swap the currently null cursor once the cursor has
         //  been loaded.
@@ -202,9 +206,13 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
      * Refreshes/resyncs the movies online
      */
     private void refreshMovies() {
-        mGridView.smoothScrollToPosition(0);
-        MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
-        getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+        if (Network.isNetworkAvailable(mContext)) {
+            mGridView.smoothScrollToPosition(0);
+            MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
+            getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
+        } else {
+            Toast.makeText(mContext, "There is no internet connection. Did not go through sync.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -212,7 +220,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
      *
      * @param category category of movies to fetch
      */
-    public void fetchMovies(String category) {
+    private void fetchMovies(String category) {
         mGridView.smoothScrollToPosition(0);
         mCategory = category;
         getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
@@ -224,7 +232,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
      *
      * @param category the category used to sort movies
      */
-    public void setTitle(String category) {
+    private void setTitle(String category) {
         switch (category) {
             case PARAMS.CATEGORY.DISCOVER:
                 getActivity().setTitle(getString(R.string.title_discover));
@@ -252,6 +260,21 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
+    private void swapViewContainers() {
+        if (mPostersAdapter.getCount() == 0) {
+            if (mCategory == PARAMS.CATEGORY.FAVORITES) {
+                SwapViewContainers.showViewContainer(mEmptyFavoritesContainer, mRootView);
+                SwapViewContainers.hideViewContainer(mEmptyMoviesContainer, mRootView);
+            } else {
+                SwapViewContainers.showViewContainer(mEmptyMoviesContainer, mRootView);
+                SwapViewContainers.hideViewContainer(mEmptyFavoritesContainer, mRootView);
+            }
+        } else {
+            SwapViewContainers.hideViewContainer(mEmptyMoviesContainer, mRootView);
+            SwapViewContainers.hideViewContainer(mEmptyFavoritesContainer, mRootView);
+        }
+    }
+
 
     /*
         Loader methods
@@ -265,8 +288,19 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         String[] selectionArgs = null;
         String sortOrder = null;
 
+        // thresholds
+        int THRESHOLD_DATE_LOWER = -40;
+        int THRESHOLD_DATE_MIDDLE = 0;
+        int THRESHOLD_DATE_UPPER = 28;
+        String THRESHOLD_RATING_LOWER = "7";
+        String THRESHOLD_VOTES_LOWER = "50";
+        String THRESHOLD_POPULARITY_LOWER = "5";
+
         // For defining thresholds for NOW_PLAYING and UPCOMING search queries
         String dateRange[];
+
+        // Set title of activity to reflect category
+        setTitle(mCategory);
 
         // Check to see the current category which would be used to query the appropriate movies
         //  by setting the above fields
@@ -278,7 +312,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         //  that the next page of results will always be ready for when the user needs it.
         switch (mCategory) {
             case PARAMS.CATEGORY.DISCOVER:
-                getActivity().setTitle(getActivity().getString(R.string.title_discover));
                 break;
 
             case PARAMS.CATEGORY.PLAYING:
@@ -291,14 +324,12 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
                 selectionArgs = new String[] {dateRange[0], dateRange[1]};
                 sortOrder = MovieColumns.RELEASE_DATE + " DESC";
-                getActivity().setTitle(getActivity().getString(R.string.title_playing));
                 break;
 
             case PARAMS.CATEGORY.POPULAR:
                 selection = MovieColumns.POPULARITY + " >= ?";
                 selectionArgs = new String[] {THRESHOLD_POPULARITY_LOWER};
                 sortOrder = MovieColumns.POPULARITY + " DESC";
-                getActivity().setTitle(getActivity().getString(R.string.title_popular));
                 break;
 
             case PARAMS.CATEGORY.TOP:
@@ -306,7 +337,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                         MovieColumns.VOTE_COUNT + " >= ?";
                 selectionArgs = new String[] {THRESHOLD_RATING_LOWER, THRESHOLD_VOTES_LOWER};
                 sortOrder = MovieColumns.VOTE_AVERAGE + " DESC";
-                getActivity().setTitle(getActivity().getString(R.string.title_top_rated));
                 break;
 
             case PARAMS.CATEGORY.UPCOMING:
@@ -319,13 +349,11 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 selection = MovieColumns.RELEASE_DATE + " BETWEEN ? AND ? ";
                 selectionArgs = new String[] {dateRange[0], dateRange[1]};
                 sortOrder = MovieColumns.RELEASE_DATE + " ASC";
-                getActivity().setTitle(getActivity().getString(R.string.title_upcoming));
                 break;
 
             case PARAMS.CATEGORY.FAVORITES:
                 selection = MovieColumns.FAVORITE + " == ? ";
                 selectionArgs = new String[] {"1"};
-                getActivity().setTitle(getString(R.string.title_favorites));
                 break;
         }
 
@@ -344,6 +372,8 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
         // Another issue of this is that each time an entry in the cursored database is updated,
         //  the cursor gets re-loaded and this method is called each time
         mPostersAdapter.swapCursor(data);
+        swapViewContainers();
+
         Log.d(LOG_TAG, "onLoadFinished");
     }
 

@@ -31,7 +31,7 @@
     <string name="action_sort_popular">Popular</string>
     <string name="action_sort_rated">Top rated</string>
     <string name="action_sort_upcoming">Upcoming</string>
-    <string name="action_favorite">Favorites</string>
+    <string name="action_favorite">Favorite</string>
     <string name="action_share">Share</string>
     <string name="action_launch_tmdb_page">Launch movie page</string>
 
@@ -42,9 +42,7 @@
     <string name="sync_account_type">popularmovies.thirdarm.com</string>
 
     <!-- Progress statuses -->
-    <string name="status_loading">Loading...</string>
-    <string name="status_still_loading">Still loading data. Please wait...</string>
-    <string name="status_no_internet">There is no internet connection. Please try again.</string>
+    <string name="status_no_internet">There is no internet connection. Did not go through sync.</string>
 
     <!-- Movie details -->
     <string name="detail_overview">Overview</string>
@@ -69,12 +67,26 @@
     <string name="error_no_trailers">No trailers found.</string>
     <string name="error_no_reviews">No reviews found.</string>
 
+    <!-- Empty state strings -->
+    <string name="greeting_movies">Welcome to Movies!</string>
+    <string name="empty_details_movie">Click on a movie to view detailed information.</string>
+    <string name="greeting_favorites">Favorites</string>
+    <string name="empty_favorites">Once you favorite a movie, you\'ll see it listed here.</string>
+    <string name="greeting_empty">Empty database</string>
+    <string name="empty_grid">Oops! There are currently no movies loaded from the online database.
+    You may have no internet connection or you may need to refresh.</string>
+
     <!-- Footers: copyright, credits, version -->
     <string name="footer_tmdb_prefix">"All info and images from "</string>
     <string name="footer_tmdb">The Movie Database</string>
 
 
     <!-- Strings for formatting movie detail data -->
+
+    <!-- Poster rating -->
+    <string name="format_poster_rating">
+        " "<xliff:g id="rating">%1$s</xliff:g> (<xliff:g id="vote_count">%2$s</xliff:g>)
+    </string>
 
     <!-- Tagline -->
     <string name="format_detail_tagline">
@@ -93,6 +105,15 @@
 
     <string name="format_detail_release_runtime">
         <xliff:g id="release_date">%1$s</xliff:g> | <xliff:g id="runtime">%2$s</xliff:g> min
+    </string>
+
+    <string name="format_detail_release_runtime_mpaa">
+        <xliff:g id="release_date">%1$s</xliff:g> | <xliff:g id="runtime">%2$s</xliff:g> min |
+        <xliff:g id="mpaa_raing">%3$s</xliff:g>
+    </string>
+
+    <string name="format_detail_release_mpaa">
+        <xliff:g id="release_date">%1$s</xliff:g> | <xliff:g id="mpaa_raing">%2$s</xliff:g>
     </string>
 
     <!-- Actors -->
@@ -131,11 +152,22 @@
         <xliff:g id="reviews_count">%1$s</xliff:g> <xliff:g id="reviews_tense">%2$s</xliff:g>
     </string>
 
+    <!-- Adding/Removing movie from favorites -->
+    <string name="format_modify_favorites">
+        <xliff:g id="add_remove">%1$s</xliff:g> <xliff:g id="title_movie">%2$s</xliff:g>
+        <xliff:g id="to_from">%3$s</xliff:g> favorites.
+    </string>
+
     <!-- Sharing messages -->
-    <string name="format_share_movie">
-        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g>. It is a good movie. More details
-        here from The Movie Database: <xliff:g id="tmdb_url">%2$s</xliff:g>. Homepage of the movie
-        here: <xliff:g id="homepage_url">%3$s</xliff:g>.
+    <string name="format_share_movie_no_trailer">
+        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g>:
+        <xliff:g id="tmdb_url">%2$s</xliff:g>. Movie homepage:
+        <xliff:g id="homepage_url">%3$s</xliff:g>
+    </string>
+
+    <string name="format_share_movie_with_trailer">
+        Hey, check out <xliff:g id="movie_title">%1$s</xliff:g>:
+        <xliff:g id="trailer_url">%2$s</xliff:g>
     </string>
 
     <string name="format_share_review">
