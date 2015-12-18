@@ -9,7 +9,18 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity
 {
+    // Why is this static? What is this used for?
+    // This is for keeping track of which element has been expanded so that upon activity
+    //  recreation, that element remains expanded. Used in onSaveInstanceState().
+    // It needs to be in the main activity because we are using pagers and the main activity
+    //  keeps track of all the pagers and all the elements that are within each pager.
+    //  Upon recreation, the activity should also remember which fragment is visible, so that
+    //  it also loads that up.
+    // TODO: HOWEVER. There is a bug in which if you expand 2 games from 2 different tabs, both
+    //  may remain expanded, whereas the intent is that only one remains expanded, when you switch
+    //  tabs.
     public static int selected_match_id;
+
     public static int current_fragment = 2;
     public static String LOG_TAG = "MainActivity";
     private final String save_tag = "Save Test";
@@ -27,31 +38,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_about)
-        {
-            Intent start_about = new Intent(this,AboutActivity.class);
-            startActivity(start_about);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState)

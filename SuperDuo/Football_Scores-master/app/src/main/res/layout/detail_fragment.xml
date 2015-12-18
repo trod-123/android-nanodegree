@@ -11,7 +11,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1"
-            android:text="@string/test_text"
             android:textColor="@android:color/black"
             android:textSize="@dimen/League"
             android:id="@+id/league_textview"/>
@@ -20,7 +19,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1"
-            android:text="@string/test_text"
             android:textSize="@dimen/League"
             android:textColor="@android:color/black"
             android:id="@+id/matchday_textview"/>
