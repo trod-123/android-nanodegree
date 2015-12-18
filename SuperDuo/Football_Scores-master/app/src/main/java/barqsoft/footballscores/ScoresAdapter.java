@@ -64,6 +64,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
     public ScoresAdapter(Context c, ScoresAdapterOnClickHandler handler, View empty)
     {
+        Log.d(LOG_TAG, "A ScoresAdapter has been created.");
         mContext = c;
         mClickHandler = handler;
         mEmptyView = empty;
@@ -74,6 +75,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     }
 
     @Override public ScoresAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(LOG_TAG, "In onCreateViewHolder");
         if (parent instanceof RecyclerView) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.scores_list_item, parent, false);
             ViewHolder mHolder = new ViewHolder(view);
@@ -95,6 +97,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 //    }
 
     @Override public void onBindViewHolder(final ViewHolder holder, int position) {
+        Log.d(LOG_TAG, "In onBindViewHolder");
         mCursor.moveToPosition(position);
 
         holder.mHomeNameTextView.setText(mCursor.getString(ScoresProjections.COL_HOME_NAME));
@@ -207,7 +210,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
     @Override public int getItemCount() {
         if (mCursor != null) {
-            Log.d(LOG_TAG, "THE COUNT OF VIEWS IN CURSOR: " + mCursor.getCount());
+            Log.d(LOG_TAG, "In getItemCount(): " + mCursor.getCount());
             return mCursor.getCount();
         } else return 0;
     }
@@ -224,6 +227,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     }
 
     public Cursor swapCursor(Cursor newCursor) {
+        Log.d(LOG_TAG, "In swapCursor()");
         mCursor = newCursor;
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
         return mCursor;
