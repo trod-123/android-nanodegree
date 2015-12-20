@@ -136,7 +136,6 @@ public class myFetchService extends IntentService
         }
     }
 
-    // isReal will be false if dummy data is loaded as JSONdata
     private void processJSONdata (String JSONdata,Context mContext)
     {
         //JSON data
@@ -170,23 +169,14 @@ public class myFetchService extends IntentService
         final String MATCH_DAY = "matchday";
 
         //Match data
-        String League = null;
-        String mDate = null;
-        String mTime = null;
-        String Home = null;
-        String Away = null;
-        String Home_goals = null;
-        String Away_goals = null;
-        String match_id = null;
-        String match_day = null;
-
+        String League, mDate, mTime, Home, Away, Home_goals, Away_goals, match_id, match_day;
 
         try {
             JSONArray matches = new JSONObject(JSONdata).getJSONArray(FIXTURES);
 
 
             //ContentValues to be inserted
-            Vector<ContentValues> values = new Vector <ContentValues> (matches.length());
+            Vector<ContentValues> values = new Vector<> (matches.length());
 
             // Process each fixture data
             for(int i = 0;i < matches.length();i++)
