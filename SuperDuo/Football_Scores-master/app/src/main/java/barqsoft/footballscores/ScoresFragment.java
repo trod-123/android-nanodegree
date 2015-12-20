@@ -155,6 +155,7 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
         Log.d(LOG_TAG, "onLoadFinished");
 
         mScoresAdapter.swapCursor(cursor);
+        mScoresAdapter.notifyDataSetChanged();
     }
 
     @Override

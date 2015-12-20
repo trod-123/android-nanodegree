@@ -69,7 +69,7 @@ public class PagerFragment extends Fragment {
     //  used when there is an unknown amount of fragments to be loaded into the swipe views
     //  (Use FragmentPagerAdapter when there is a fixed, small number of pages).
     // It contains all the methods necessary to run the Pager Adapter to the minimum implementation
-    private class myPageAdapter extends FragmentStatePagerAdapter {
+    private class myPageAdapter extends FragmentPagerAdapter {
 
         @Override
         public Fragment getItem(int i)
