@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import barqsoft.footballscores.data.ScoresProjections;
+import barqsoft.footballscores.utilities.Utilities;
 
 /**
  * TODO: Convert this into an Adapter for RecyclerView

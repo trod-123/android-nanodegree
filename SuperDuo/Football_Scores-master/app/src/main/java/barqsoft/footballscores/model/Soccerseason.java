@@ -8,7 +8,6 @@ import javax.annotation.Generated;
 /**
  * Created by TROD on 20151219.
  */
-
 @Generated("org.jsonschema2pojo")
 public class Soccerseason {
 

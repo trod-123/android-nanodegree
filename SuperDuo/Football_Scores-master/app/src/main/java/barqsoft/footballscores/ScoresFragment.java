@@ -20,7 +20,8 @@ import android.widget.Toast;
 
 import barqsoft.footballscores.data.*;
 import barqsoft.footballscores.data.ScoresProvider;
-import barqsoft.footballscores.service.myFetchService;
+import barqsoft.footballscores.sync.ScoresSyncAdapter;
+import barqsoft.footballscores.utilities.Network;
 
 /**
  * Fragment that displays the list of scores in a recycler view layout
@@ -43,8 +44,12 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
     // Called during onCreateView()
     // TODO: Call this when necessary only.
     private void update_scores() {
-        Intent service_start = new Intent(getActivity(), myFetchService.class);
-        getActivity().startService(service_start);
+        if (Network.isNetworkAvailable(getActivity().getApplicationContext())) {
+            ScoresSyncAdapter.syncImmediately(getActivity().getApplicationContext());
+            getLoaderManager().restartLoader(SCORES_LOADER, null, this);
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setFragmentDate(String date) {

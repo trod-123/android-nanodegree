@@ -1,6 +1,12 @@
-package barqsoft.footballscores;
+package barqsoft.footballscores.utilities;
 
 import android.content.Context;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
+import barqsoft.footballscores.R;
 
 /**
  * Created by yehya khaled on 3/3/2015.
@@ -8,6 +14,8 @@ import android.content.Context;
  * Class updated by TROD on 20151216
  */
 public class Utilities {
+
+    private static final String LOG_TAG = Utilities.class.getSimpleName();
 
     // League numbers
     public static final int BUNDESLIGA1 = 394; // "1. Bundesliga 2015/16"
@@ -80,6 +88,52 @@ public class Utilities {
         return home_goals < 0 || away_goals < 0 ?
                 c.getString(R.string.scores_invalid) :
                 c.getString(R.string.scores_home_away, home_goals, away_goals);
+    }
+
+    /**
+     * Gets the date and time
+     */
+    public static String[] getUserDateTime(String dateTimeString) {
+        // The time is embedded in date. Just extract the time.
+        String time = dateTimeString.substring(dateTimeString.indexOf("T") + 1, dateTimeString.indexOf("Z"));
+        // Cut the time out of the entire date provided in the JSON.
+        String date = dateTimeString.substring(0, dateTimeString.indexOf("T"));
+
+        // Get rid of seconds in the date-time format
+        SimpleDateFormat match_date = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss");
+        match_date.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            Date parseddate = match_date.parse(date + time);
+            SimpleDateFormat new_date = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
+            // Convert date-time to that of user's locale
+            new_date.setTimeZone(TimeZone.getDefault());
+            date = new_date.format(parseddate);
+            time = date.substring(date.indexOf(":") + 1);
+            date = date.substring(0, date.indexOf(":"));
+            return new String[] {date, time};
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    // Static URL prefixes
+    public static final String SEASON_LINK = "http://api.football-data.org/v1/soccerseasons/";
+    public static final String FIXTURE_LINK = "http://api.football-data.org/v1/fixtures/";
+    public static final String TEAM_LINK = "http://api.football-data.org/v1/teams/";
+    private static final String EMPTY_STRING = "";
+
+    /**
+     * Extracts the id associated with a given url
+     *
+     * @param url The url
+     * @param baseUrl The type of url (prefix)
+     * @return The id
+     */
+    public static int extractId(String url, String baseUrl) {
+        return Integer.parseInt(url.replace(baseUrl, EMPTY_STRING));
     }
 
     /**

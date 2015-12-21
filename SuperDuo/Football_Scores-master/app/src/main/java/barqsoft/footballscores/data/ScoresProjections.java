@@ -15,7 +15,9 @@ public interface ScoresProjections {
             ScoresColumns.HOME_GOALS,
             ScoresColumns.AWAY_GOALS,
             ScoresColumns.MATCH_ID,
-            ScoresColumns.MATCH_DAY
+            ScoresColumns.MATCH_DAY,
+            ScoresColumns.HOME_CREST_URL,
+            ScoresColumns.AWAY_CREST_URL
     };
 
     int COL_ID = 0;
@@ -28,4 +30,6 @@ public interface ScoresProjections {
     int COL_AWAY_GOALS = 7;
     int COL_MATCH_ID = 8;
     int COL_MATCH_DAY = 9;
+    int COL_HOME_CREST = 10;
+    int COL_AWAY_CREST = 11;
 }

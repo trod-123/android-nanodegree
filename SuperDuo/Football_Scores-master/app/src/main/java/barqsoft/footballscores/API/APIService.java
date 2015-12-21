@@ -1,5 +1,7 @@
 package barqsoft.footballscores.API;
 
+import java.util.ArrayList;
+
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.model.Fixture;
 import barqsoft.footballscores.model.FixtureComplete;
@@ -8,7 +10,6 @@ import barqsoft.footballscores.model.FixturesResultTeam;
 import barqsoft.footballscores.model.LeagueTable;
 import barqsoft.footballscores.model.PlayersResult;
 import barqsoft.footballscores.model.Soccerseason;
-import barqsoft.footballscores.model.SoccerseasonsResult;
 import barqsoft.footballscores.model.Team;
 import barqsoft.footballscores.model.TeamsResult;
 import retrofit.Call;
@@ -23,6 +24,8 @@ import retrofit.http.Query;
  * Service used to collect and parse JSON data from a server
  * Used for both Asynchronous and Synchronous calls
  *  (uses Retrofit 2.0, by Jake Wharton [Square, Inc., 2015]: http://square.github.io/retrofit/)
+ *
+ * football-data api only allows for 50 requests per minute...
  */
 public interface APIService {
 
@@ -49,7 +52,7 @@ public interface APIService {
      *   e.g. http://api.football-data.org/v1/soccerseasons
      */
     @GET("soccerseasons")
-    Call<SoccerseasonsResult> getSoccerseasons(@Query(PARAMS.SEASON) String season);
+    Call<ArrayList<Soccerseason>> getSoccerseasons(@Query(PARAMS.SEASON) String season);
 
     /**
      * Gets a particular soccerseason

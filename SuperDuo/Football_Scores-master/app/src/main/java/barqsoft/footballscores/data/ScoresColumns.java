@@ -22,9 +22,11 @@ public interface ScoresColumns {
     @DataType(TEXT) @NotNull String HOME_NAME = "home_name";
     @DataType(TEXT) @NotNull String AWAY_NAME = "away_name";
     @DataType(INTEGER) @NotNull String LEAGUE_NAME = "league_name";
-    @DataType(INTEGER) @NotNull String HOME_GOALS = "home_goals";
-    @DataType(INTEGER) @NotNull String AWAY_GOALS = "away_goals";
+    @DataType(INTEGER) String HOME_GOALS = "home_goals";
+    @DataType(INTEGER) String AWAY_GOALS = "away_goals";
     @DataType(INTEGER) @NotNull String MATCH_ID = "match_id";
     @DataType(INTEGER) @NotNull String MATCH_DAY = "match_day";
+    @DataType(TEXT) String HOME_CREST_URL = "home_crest_url";
+    @DataType(TEXT) String AWAY_CREST_URL = "away_crest_url";
 
 }
