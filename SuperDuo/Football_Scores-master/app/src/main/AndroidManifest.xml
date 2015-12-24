@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="barqsoft.footballscores" >
+    package="com.thirdarm.footballscores" >
 
     <!-- Internet permissions -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -20,14 +20,20 @@
 
         <!-- Content provider usage -->
         <provider
-            android:authorities="barqsoft.footballscores"
-            android:name=".ScoresProvider"
+            android:authorities="com.thirdarm.footballscores"
+            android:name="com.thirdarm.footballscores.ScoresProvider"
+            android:exported="false"
+            android:syncable="true"/>
+
+        <provider
+            android:authorities="com.thirdarm.footballscores.provider"
+            android:name="com.thirdarm.footballscores.provider.ScoresProvider"
             android:exported="false"
             android:syncable="true"/>
 
         <!-- Main activity -->
         <activity
-            android:name=".MainActivity"
+            android:name="com.thirdarm.footballscores.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,19 +44,17 @@
 
         <!-- About activity -->
         <activity
-            android:name=".AboutActivity"
+            android:name="com.thirdarm.footballscores.AboutActivity"
             android:label="About"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName="com.thirdarm.footballscores.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="barqsoft.footballscores.MainActivity" />
+                android:value="com.thirdarm.footballscores.MainActivity" />
         </activity>
-
-        <service android:name=".service.myFetchService" />
-
+        
         <!-- Dummy authentication service -->
         <service
-            android:name=".sync.ScoresAuthenticatorService">
+            android:name="com.thirdarm.footballscores.sync.ScoresAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
@@ -61,7 +65,7 @@
 
         <!-- SyncAdapter service -->
         <service
-            android:name=".sync.ScoresSyncService"
+            android:name="com.thirdarm.footballscores.sync.ScoresSyncService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>

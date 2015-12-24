@@ -7,10 +7,10 @@
     <string name="title_activity_about">AboutActivity</string>
 
     <!-- Content provider authority -->
-    <string name="content_authority">barqsoft.footballscores</string>
+    <string name="content_authority">com.thirdarm.footballscores</string>
 
     <!-- Account type (for sync-adapter authenticator -->
-    <string name="sync_account_type">barqsoft.footballscores</string>
+    <string name="sync_account_type">com.thirdarm.footballscores</string>
 
     <!-- Progress statuses -->
     <string name="status_no_internet">There is no internet connection. Did not go through sync.</string>
