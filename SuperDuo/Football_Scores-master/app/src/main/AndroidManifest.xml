@@ -20,12 +20,6 @@
 
         <!-- Content provider usage -->
         <provider
-            android:authorities="com.thirdarm.footballscores"
-            android:name="com.thirdarm.footballscores.ScoresProvider"
-            android:exported="false"
-            android:syncable="true"/>
-
-        <provider
             android:authorities="com.thirdarm.footballscores.provider"
             android:name="com.thirdarm.footballscores.provider.ScoresProvider"
             android:exported="false"
