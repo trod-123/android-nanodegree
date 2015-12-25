@@ -7,7 +7,7 @@
     <string name="title_activity_about">AboutActivity</string>
 
     <!-- Content provider authority -->
-    <string name="content_authority">com.thirdarm.footballscores</string>
+    <string name="content_authority">com.thirdarm.footballscores.provider</string>
 
     <!-- Account type (for sync-adapter authenticator -->
     <string name="sync_account_type">com.thirdarm.footballscores</string>
@@ -46,6 +46,11 @@
     <string name="match_champions_sf">Semifinals</string>
     <string name="match_champiions_f">Finals</string>
 
+    <!-- Status strings -->
+    <string name="status_finished">Final</string>
+    <string name="status_timed">Currently playing</string>
+    <string name="status_upcoming">Upcoming</string>
+
     <!-- Score strings -->
     <string name="scores_invalid">-</string>
     <string name="scores_home_away"><xliff:g id="home">%1$s</xliff:g> - <xliff:g id="away">%2$s</xliff:g></string>
@@ -55,6 +60,18 @@
     <string name="empty_scores_list_no_network">No scores available. The network is not available to fetch scores data.</string>
     <string name="empty_scores_list_server_down">No scores available. The server is not returning data.</string>
     <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of FootballScores.</string>
+
+    <!-- xml layout tools strings -->
+    <string name="tools_home_team_name">Home team</string>
+    <string name="tools_away_team_name">Away team</string>
+    <string name="tools_home_score">1</string>
+    <string name="tools_away_score">4</string>
+    <string name="tools_neutral_score">"@"</string>
+    <string name="tools_status">Final</string>
+    <string name="tools_date">Sunday, Dec 25</string>
+    <string name="tools_time">12:00</string>
+    <string name="tools_league">Primeira Liga</string>
+    <string name="tools_match_day">Match day: 12</string>
 
     <string name="about_text">
         This Application get Football Matches Score for the Premier League,Seria A,Bundesliga,Primera Division

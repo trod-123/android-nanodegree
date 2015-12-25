@@ -18,11 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.thirdarm.footballscores.data.*;
-import com.thirdarm.footballscores.data.ScoresProvider;
 import com.thirdarm.footballscores.provider.ateam.AteamColumns;
-import com.thirdarm.footballscores.provider.ateam.AteamCursor;
-import com.thirdarm.footballscores.provider.ateam.AteamSelection;
 import com.thirdarm.footballscores.provider.bteam.BteamColumns;
 import com.thirdarm.footballscores.provider.fixture.FixtureColumns;
 import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
@@ -81,8 +77,8 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
 
         // Preparing the list view layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        View emptyView = rootView.findViewById(R.id.recyclerview_scores_empty);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_scores);
+        View emptyView = rootView.findViewById(R.id.fragment_main_recyclerview_scores_empty);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_recyclerview_scores);
         mScoresAdapter = new ScoresAdapter(getActivity(), new ScoresAdapter.ScoresAdapterOnClickHandler() {
             @Override public void onClick(int match_id, ScoresAdapter.ViewHolder vh) {
                 mScoresAdapter.detail_match_id = match_id;
@@ -164,9 +160,9 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
                 null);
 
 //        return new CursorLoader(getActivity(),
-//                ScoresProvider.Scores.CONTENT_URI,
-//                Projections.SCORES.COLUMNS,
-//                ScoresColumns.DATE + " == ? ",
+//                (new FixtureSelection()).uri(),
+//                projection,
+//                FixtureColumns.DATE + " == ? ",
 //                fragmentdate,
 //                null);
     }

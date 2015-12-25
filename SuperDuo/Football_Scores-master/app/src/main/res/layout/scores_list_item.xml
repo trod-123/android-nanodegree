@@ -1,99 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:elevation="4dp">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
 
-    <!-- Main fragment -->
     <LinearLayout
-        android:orientation="horizontal" android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="5dp">
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-        <!-- Home column -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <FrameLayout
+            android:id="@+id/scores_list_item_frame_away"
+            android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            tools:background="@android:color/holo_blue_bright"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxHeight="64dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="center"
-                android:id="@+id/home_crest"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textSize="@dimen/TeamNames"
-                android:gravity="center"
-                android:id="@+id/home_name"/>
-
-        </LinearLayout>
-
-        <!-- Scores column -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <FrameLayout
+            android:id="@+id/scores_list_item_frame_home"
+            android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="@dimen/Score"
-                android:id="@+id/score_textview"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:id="@+id/data_textview"/>
-
-        </LinearLayout>
-
-        <!-- Away column -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxHeight="64dp"
-                android:adjustViewBounds="true"
-                android:layout_gravity="center"
-                android:id="@+id/away_crest"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textSize="@dimen/TeamNames"
-                android:id="@+id/away_name"/>
-
-        </LinearLayout>
+            tools:background="@color/accent"/>
 
     </LinearLayout>
 
-    <!-- Details container -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/details_fragment_container"/>
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/scores_list_item_horizontal_padding"
+        android:paddingLeft="@dimen/scores_list_item_horizontal_padding"
+        android:paddingEnd="@dimen/scores_list_item_horizontal_padding"
+        android:paddingRight="@dimen/scores_list_item_horizontal_padding"
+        android:paddingTop="@dimen/scores_list_item_vertical_padding"
+        android:paddingBottom="@dimen/scores_list_item_vertical_padding">
 
-</LinearLayout>
+        <!-- Main fragment -->
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="100dp"
+            android:minHeight="?android:attr/listPreferredItemHeightLarge"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <!-- Away logo -->
+            <ImageView
+                android:id="@+id/scores_list_item_imageview_away_crest"
+                android:layout_width="@dimen/scores_list_item_logo_size"
+                android:layout_height="@dimen/scores_list_item_logo_size"
+                android:adjustViewBounds="true"
+                android:layout_gravity="center"
+                tools:src="@drawable/no_icon"/>
+
+
+            <!-- Main information layout -->
+            <LinearLayout
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <!-- Upper information layout -->
+                <LinearLayout
+                    android:layout_width="match_parent" android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center">
+
+                    <!-- Away column -->
+                    <LinearLayout
+                        android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/scores_list_item_textview_away_name"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="@dimen/scores_list_item_team_name_size"
+                            tools:text="@string/tools_away_team_name"/>
+
+                        <TextView
+                            android:id="@+id/scores_list_item_textview_away_score"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal"
+                            android:fontFamily="sans-serif-medium"
+                            android:textSize="@dimen/scores_list_item_score_size"
+                            tools:text="@string/tools_away_score"/>
+
+                    </LinearLayout>
+
+                    <!-- Center column -->
+                    <FrameLayout
+                        android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginLeft="@dimen/scores_list_item_space"
+                        android:layout_marginRight="@dimen/scores_list_item_space">
+
+                        <TextView
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:fontFamily="sans-serif"
+                            android:text="@string/tools_neutral_score"
+                            android:textSize="@dimen/scores_list_item_details_size"/>
+
+                    </FrameLayout>
+
+                    <!-- Home column -->
+                    <LinearLayout
+                        android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/scores_list_item_textview_home_name"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="@dimen/scores_list_item_team_name_size"
+                            tools:text="@string/tools_home_team_name"/>
+
+                        <TextView
+                            android:id="@+id/scores_list_item_textview_home_score"
+                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:gravity="center_horizontal"
+                            android:fontFamily="sans-serif-medium"
+                            android:textSize="@dimen/scores_list_item_score_size"
+                            tools:text="@string/tools_home_score"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Lower information layout -->
+                <LinearLayout
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:id="@+id/scores_list_item_textview_status"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:fontFamily="sans-serif-light"
+                        android:textSize="@dimen/scores_list_item_details_size"
+                        tools:text="@string/tools_status"/>
+
+                    <TextView
+                        android:id="@+id/scores_list_item_textview_time"
+                        android:layout_width="wrap_content" android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textSize="@dimen/scores_list_item_details_size"
+                        tools:text="@string/tools_time"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Home logo -->
+            <ImageView
+                android:id="@+id/scores_list_item_imageview_home_crest"
+                android:layout_width="@dimen/scores_list_item_logo_size"
+                android:layout_height="@dimen/scores_list_item_logo_size"
+                android:adjustViewBounds="true"
+                android:layout_gravity="center"
+                tools:src="@drawable/no_icon"/>
+
+
+        </LinearLayout>
+
+        <!-- Details container -->
+        <FrameLayout
+            android:id="@+id/scores_list_item_container_fragment_detail"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</FrameLayout>
 

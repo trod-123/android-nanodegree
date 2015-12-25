@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import com.thirdarm.footballscores.R;
-import com.thirdarm.footballscores.data.Projections;
 
 /**
  * Created by yehya khaled on 3/3/2015.

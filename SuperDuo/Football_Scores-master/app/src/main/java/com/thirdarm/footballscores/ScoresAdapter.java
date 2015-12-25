@@ -1,22 +1,20 @@
 package com.thirdarm.footballscores;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
-import com.thirdarm.footballscores.data.*;
 import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
+import com.thirdarm.footballscores.provider.fixture.Status;
 import com.thirdarm.footballscores.utilities.Utilities;
 
 /**
@@ -37,10 +35,14 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     final private View mEmptyView;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public FrameLayout mHomeFrame;
+        public FrameLayout mAwayFrame;
         public TextView mHomeNameTextView;
         public TextView mAwayNameTextView;
-        public TextView mScoreTextView;
-        public TextView mDateTextView;
+        public TextView mHomeScoreTextView;
+        public TextView mAwayScoreTextView;
+        public TextView mTimeTextView;
+        public TextView mStatusTextView;
         public ImageView mHomeCrestImageView;
         public ImageView mAwayCrestImageView;
         public ViewGroup mDetailFragmentContainer;
@@ -55,13 +57,17 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
         public ViewHolder(View view) {
             super(view);
-            mHomeNameTextView = (TextView) view.findViewById(R.id.home_name);
-            mAwayNameTextView = (TextView) view.findViewById(R.id.away_name);
-            mScoreTextView = (TextView) view.findViewById(R.id.score_textview);
-            mDateTextView = (TextView) view.findViewById(R.id.data_textview);
-            mHomeCrestImageView = (ImageView) view.findViewById(R.id.home_crest);
-            mAwayCrestImageView = (ImageView) view.findViewById(R.id.away_crest);
-            mDetailFragmentContainer = (ViewGroup) view.findViewById(R.id.details_fragment_container);
+            mHomeFrame = (FrameLayout) view.findViewById(R.id.scores_list_item_frame_home);
+            mAwayFrame = (FrameLayout) view.findViewById(R.id.scores_list_item_frame_away);
+            mHomeNameTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_home_name);
+            mAwayNameTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_away_name);
+            mHomeScoreTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_home_score);
+            mAwayScoreTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_away_score);
+            mTimeTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_time);
+            mStatusTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_status);
+            mHomeCrestImageView = (ImageView) view.findViewById(R.id.scores_list_item_imageview_home_crest);
+            mAwayCrestImageView = (ImageView) view.findViewById(R.id.scores_list_item_imageview_away_crest);
+            mDetailFragmentContainer = (ViewGroup) view.findViewById(R.id.scores_list_item_container_fragment_detail);
 
             view.setOnClickListener(this);
         }
@@ -102,34 +108,68 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     @Override public void onBindViewHolder(final ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
+        // Set the texts
         holder.mHomeNameTextView.setText(mCursor.getAteamShortname());
         holder.mAwayNameTextView.setText(mCursor.getBteamShortname());
-        holder.mDateTextView.setText(mCursor.getDate() + mCursor.getTime());
-        holder.mScoreTextView.setText(Utilities.getScores(mContext,
-                mCursor.getHomegoals(), mCursor.getAwaygoals()));
+        holder.mTimeTextView.setText(mCursor.getTime() + " " + mCursor.getDate());
+
+        // Set the scores
+        if (mCursor.getHomegoals() != -1 && mCursor.getAwaygoals() != -1) {
+            // Cursors that have scores should be visible score views
+            holder.mHomeScoreTextView.setVisibility(View.VISIBLE);
+            holder.mAwayScoreTextView.setVisibility(View.VISIBLE);
+            // Only set goals if not null
+            // NOTE: WHEN SETTING TEXT TO TEXTVIEWS, TEXT MUST BE A STRING. NOT AN INT.
+            int homeGoals = mCursor.getHomegoals();
+            int awayGoals = mCursor.getAwaygoals();
+            holder.mHomeScoreTextView.setText("" + homeGoals);
+            holder.mAwayScoreTextView.setText("" + awayGoals);
+            // Set the scores colors
+            int homeColor, awayColor, winColor, loseColor;
+            if (mCursor.getStatus() == Status.FINISHED) {
+                holder.mStatusTextView.setText(mContext.getString(R.string.status_finished));
+                winColor = mContext.getResources().getColor(R.color.primary_text);
+                loseColor = mContext.getResources().getColor(R.color.tertiary_text);
+            } else {
+                holder.mStatusTextView.setText(mContext.getString(R.string.status_timed));
+                winColor = mContext.getResources().getColor(R.color.primary_text);
+                loseColor = mContext.getResources().getColor(R.color.secondary_text);
+            }
+            if (homeGoals > awayGoals) {
+                homeColor = winColor;
+                awayColor = loseColor;
+            } else if (homeGoals < awayGoals) {
+                homeColor = loseColor;
+                awayColor = winColor;
+            } else {
+                homeColor = loseColor;
+                awayColor = loseColor;
+            }
+            holder.mHomeNameTextView.setTextColor(homeColor);
+            holder.mHomeScoreTextView.setTextColor(homeColor);
+            holder.mAwayNameTextView.setTextColor(awayColor);
+            holder.mAwayScoreTextView.setTextColor(awayColor);
+        } else {
+            // Cursors that don't have scores should be hidden score views
+            holder.mStatusTextView.setText(mContext.getString(R.string.status_upcoming));
+            int textColor = mContext.getResources().getColor(R.color.primary_text);
+            holder.mHomeNameTextView.setTextColor(textColor);
+            holder.mAwayNameTextView.setTextColor(textColor);
+            holder.mHomeScoreTextView.setVisibility(View.GONE);
+            holder.mAwayScoreTextView.setVisibility(View.GONE);
+        }
+
         holder.match_id = mCursor.getMatchid();
 
-//        holder.mHomeNameTextView.setText(mCursor.getString(Projections.SCORES.COL_HOME_NAME));
-//        holder.mAwayNameTextView.setText(mCursor.getString(Projections.SCORES.COL_AWAY_NAME));
-//        holder.mDateTextView.setText(mCursor.getString(Projections.SCORES.COL_TIME) + mCursor.getString(Projections.SCORES.COL_DATE));
-//        holder.mScoreTextView.setText(Utilities.getScores(mContext,
-//                mCursor.getInt(Projections.SCORES.COL_HOME_GOALS), mCursor.getInt(Projections.SCORES.COL_AWAY_GOALS)));
-//        holder.match_id = mCursor.getDouble(Projections.SCORES.COL_MATCH_ID);
-
-//        // TODO: Use Picasso to display crest (maybe pre-fetch all the team crests?)
-//        holder.mHomeCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
-//                mCursor.getString(Projections.SCORES.COL_HOME_NAME)));
-//        holder.mAwayCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
-//                mCursor.getString(Projections.SCORES.COL_AWAY_NAME)
-//        ));
+        // Set the crests
         String homeCrestUrl = Utilities.convertCrestUrl(mCursor.getAteamCresturl());
-        Glide.with(mContext)
+        Picasso.with(mContext)
                 .load(homeCrestUrl)
                 .error(R.drawable.no_icon)
                 .into(holder.mHomeCrestImageView);
 
         String awayCrestUrl = Utilities.convertCrestUrl(mCursor.getBteamCresturl());
-        Glide.with(mContext)
+        Picasso.with(mContext)
                 .load(awayCrestUrl)
                 .error(R.drawable.no_icon)
                 .into(holder.mAwayCrestImageView);
@@ -154,14 +194,14 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             Button share_button = (Button) detailFragmentView.findViewById(R.id.share_button);
             share_button.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v)
-                {
+                public void onClick(View v) {
                     //add Share Action
                     mContext.startActivity(
                             createShareForecastIntent(
                                     // TODO: Make a string resource for this
                                     holder.mHomeNameTextView.getText() + " " +
-                                            holder.mScoreTextView.getText() + " " +
+                                            holder.mHomeScoreTextView.getText() + " - " +
+                                            holder.mAwayScoreTextView.getText() + " " +
                                             holder.mAwayNameTextView.getText() + " "
                             )
                     );

@@ -4,7 +4,28 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="list_horizonal_matgin">2dp</dimen>
     <dimen name="share_button_margin">150dp</dimen>
+
     <dimen name="TeamNames">17sp</dimen>
     <dimen name="Score">30sp</dimen>
     <dimen name="League">15sp</dimen>
+
+    <!-- List item spaces -->
+    <dimen name="scores_list_item_horizontal_padding">16dp</dimen>
+    <dimen name="scores_list_item_vertical_padding">8dp</dimen>
+    <dimen name="scores_list_item_space">8dp</dimen>
+
+    <!-- List item icon sizes -->
+    <dimen name="scores_list_item_logo_size">64dp</dimen>
+
+    <!-- List item text sizes -->
+    <dimen name="scores_list_item_team_name_size">16sp</dimen>
+    <dimen name="scores_list_item_score_size">32dp</dimen>
+    <dimen name="scores_list_item_details_size">12sp</dimen>
+
+    <!-- For tabs -->
+    <dimen name="tab_max_width">264dp</dimen>
+    <dimen name="tab_padding_bottom">16dp</dimen>
+    <dimen name="tab_label">14sp</dimen>
+    <dimen name="tab_height">72dp</dimen>
+
 </resources>

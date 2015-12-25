@@ -5,14 +5,12 @@
 
     <!-- Scores list -->
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_scores"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="15sp"/>
+        android:id="@+id/fragment_main_recyclerview_scores"
+        android:layout_width="match_parent" android:layout_height="match_parent"/>
 
     <!-- Empty List -->
     <TextView
-        android:id="@+id/recyclerview_scores_empty"
+        android:id="@+id/fragment_main_recyclerview_scores_empty"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:gravity="center_horizontal"
         tools:text="@string/empty_scores_list"

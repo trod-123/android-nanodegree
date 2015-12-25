@@ -22,22 +22,16 @@ import java.util.Vector;
 
 import com.thirdarm.footballscores.API.APIHelper;
 import com.thirdarm.footballscores.R;
-import com.thirdarm.footballscores.data.TeamsColumns;
 import com.thirdarm.footballscores.model.Team;
-import com.thirdarm.footballscores.model.TeamsResult;
-import com.thirdarm.footballscores.provider.ateam.AteamColumns;
 import com.thirdarm.footballscores.provider.ateam.AteamContentValues;
 import com.thirdarm.footballscores.provider.ateam.AteamCursor;
 import com.thirdarm.footballscores.provider.ateam.AteamSelection;
-import com.thirdarm.footballscores.provider.bteam.BteamColumns;
 import com.thirdarm.footballscores.provider.bteam.BteamContentValues;
 import com.thirdarm.footballscores.provider.bteam.BteamCursor;
 import com.thirdarm.footballscores.provider.bteam.BteamSelection;
 import com.thirdarm.footballscores.provider.fixture.FixtureContentValues;
 import com.thirdarm.footballscores.provider.fixture.Status;
 import com.thirdarm.footballscores.utilities.Utilities;
-import com.thirdarm.footballscores.data.ScoresColumns;
-import com.thirdarm.footballscores.data.ScoresProvider;
 import com.thirdarm.footballscores.model.Fixture;
 
 /**
