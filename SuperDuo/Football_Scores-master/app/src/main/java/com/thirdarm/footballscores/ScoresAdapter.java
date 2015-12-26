@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
 import com.thirdarm.footballscores.provider.fixture.Status;
@@ -163,13 +164,14 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
         // Set the crests
         String homeCrestUrl = Utilities.convertCrestUrl(mCursor.getAteamCresturl());
-        Picasso.with(mContext)
+        Glide.with(mContext)
                 .load(homeCrestUrl)
                 .error(R.drawable.no_icon)
                 .into(holder.mHomeCrestImageView);
 
         String awayCrestUrl = Utilities.convertCrestUrl(mCursor.getBteamCresturl());
-        Picasso.with(mContext)
+        Log.d(LOG_TAG, awayCrestUrl);
+        Glide.with(mContext)
                 .load(awayCrestUrl)
                 .error(R.drawable.no_icon)
                 .into(holder.mAwayCrestImageView);
