@@ -1,13 +1,17 @@
 package com.thirdarm.footballscores.utilities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import com.thirdarm.footballscores.R;
+import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 
 /**
  * Created by yehya khaled on 3/3/2015.
@@ -105,7 +109,7 @@ public class Utilities {
         match_date.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             Date parseddate = match_date.parse(date + time);
-            SimpleDateFormat new_date = new SimpleDateFormat("yyyy-MM-dd:HH:mm");
+            SimpleDateFormat new_date = new SimpleDateFormat("EEEE, MMM dd:h:mm aa");
             // Convert date-time to that of user's locale
             new_date.setTimeZone(TimeZone.getDefault());
             date = new_date.format(parseddate);
@@ -176,5 +180,17 @@ public class Utilities {
             case "Stoke City FC" : return R.drawable.stoke_city;
             default: return R.drawable.no_icon;
         }
+    }
+
+    /**
+     * Gets the sync status
+     *
+     * @param c Context used to get the SharedPreferences
+     * @return the sync status integer type
+     */
+    @SuppressWarnings("ResourceType")
+    public static @ScoresSyncAdapter.SyncStatus int getSyncStatus(Context c) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        return sp.getInt(c.getString(R.string.sp_sync_status_key), ScoresSyncAdapter.SYNC_STATUS_UNKNOWN);
     }
 }

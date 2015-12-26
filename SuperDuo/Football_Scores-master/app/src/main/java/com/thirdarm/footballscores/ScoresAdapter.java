@@ -109,10 +109,20 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     @Override public void onBindViewHolder(final ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        // Set the texts
-        holder.mHomeNameTextView.setText(mCursor.getAteamShortname());
-        holder.mAwayNameTextView.setText(mCursor.getBteamShortname());
-        holder.mTimeTextView.setText(mCursor.getTime() + " " + mCursor.getDate());
+        // Set the team names. If there is no short name, use the default name.
+        String homeTeamName = mCursor.getAteamShortname();
+        String awayTeamName = mCursor.getBteamShortname();
+        if (homeTeamName == null) {
+            homeTeamName = mCursor.getAteamName();
+        }
+        if (awayTeamName == null) {
+            awayTeamName = mCursor.getBteamName();
+        }
+        holder.mHomeNameTextView.setText(homeTeamName);
+        holder.mAwayNameTextView.setText(awayTeamName);
+
+        // Set the match time
+        holder.mTimeTextView.setText(mContext.getString(R.string.date_time, mCursor.getDate(), mCursor.getTime()));
 
         // Set the scores
         if (mCursor.getHomegoals() != -1 && mCursor.getAwaygoals() != -1) {
@@ -129,10 +139,12 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             int homeColor, awayColor, winColor, loseColor;
             if (mCursor.getStatus() == Status.FINISHED) {
                 holder.mStatusTextView.setText(mContext.getString(R.string.status_finished));
+                holder.mStatusTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text));
                 winColor = mContext.getResources().getColor(R.color.primary_text);
                 loseColor = mContext.getResources().getColor(R.color.tertiary_text);
             } else {
                 holder.mStatusTextView.setText(mContext.getString(R.string.status_timed));
+                holder.mStatusTextView.setTextColor(mContext.getResources().getColor(R.color.secondary_text));
                 winColor = mContext.getResources().getColor(R.color.primary_text);
                 loseColor = mContext.getResources().getColor(R.color.secondary_text);
             }
@@ -153,6 +165,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         } else {
             // Cursors that don't have scores should be hidden score views
             holder.mStatusTextView.setText(mContext.getString(R.string.status_upcoming));
+            holder.mStatusTextView.setTextColor(mContext.getResources().getColor(R.color.tertiary_text));
             int textColor = mContext.getResources().getColor(R.color.primary_text);
             holder.mHomeNameTextView.setTextColor(textColor);
             holder.mAwayNameTextView.setTextColor(textColor);
@@ -170,7 +183,6 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
                 .into(holder.mHomeCrestImageView);
 
         String awayCrestUrl = Utilities.convertCrestUrl(mCursor.getBteamCresturl());
-        Log.d(LOG_TAG, awayCrestUrl);
         Glide.with(mContext)
                 .load(awayCrestUrl)
                 .error(R.drawable.no_icon)
@@ -272,7 +284,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
     @Override public int getItemCount() {
         if (mCursor != null) {
-            Log.d(LOG_TAG, "There are " + mCursor.getCount() + " views.");
+//            Log.d(LOG_TAG, "There are " + mCursor.getCount() + " views.");
             return mCursor.getCount();
         } else return 0;
     }

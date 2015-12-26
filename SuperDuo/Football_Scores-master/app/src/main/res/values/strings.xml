@@ -6,6 +6,9 @@
     <string name="app_name">Football Scores</string>
     <string name="title_activity_about">AboutActivity</string>
 
+    <!-- Shared preferences keys -->
+    <string name="sp_sync_status_key">SyncStatus</string>
+
     <!-- Content provider authority -->
     <string name="content_authority">com.thirdarm.footballscores.provider</string>
 
@@ -55,11 +58,15 @@
     <string name="scores_invalid">-</string>
     <string name="scores_home_away"><xliff:g id="home">%1$s</xliff:g> - <xliff:g id="away">%2$s</xliff:g></string>
 
+    <!-- Date and time strings -->
+    <string name="date_time"><xliff:g id="date">%1$s</xliff:g>, <xliff:g id="time">%2$s</xliff:g></string>
+
     <!-- Empty recyclerview strings -->
-    <string name="empty_scores_list">No scores available.</string>
+    <string name="empty_scores_list">No games scheduled for this day.</string>
     <string name="empty_scores_list_no_network">No scores available. The network is not available to fetch scores data.</string>
     <string name="empty_scores_list_server_down">No scores available. The server is not returning data.</string>
     <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of FootballScores.</string>
+    <string name="empty_scores_list_unknown">What the fuck.</string>
 
     <!-- xml layout tools strings -->
     <string name="tools_home_team_name">Home team</string>

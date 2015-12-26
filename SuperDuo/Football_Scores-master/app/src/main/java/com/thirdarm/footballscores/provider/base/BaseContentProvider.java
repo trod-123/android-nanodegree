@@ -82,9 +82,7 @@ public abstract class BaseContentProvider extends ContentProvider {
         long rowId = mSqLiteOpenHelper.getWritableDatabase().insertOrThrow(table, null, values);
         if (rowId == -1) return null;
         String notify;
-        if (((notify = uri.getQueryParameter(QUERY_NOTIFY)) == null || "true".equals(notify))) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
+        getContext().getContentResolver().notifyChange(uri, null);
         return uri.buildUpon().appendEncodedPath(String.valueOf(rowId)).build();
     }
 
@@ -107,7 +105,7 @@ public abstract class BaseContentProvider extends ContentProvider {
             db.endTransaction();
         }
         String notify;
-        if (res != 0 && ((notify = uri.getQueryParameter(QUERY_NOTIFY)) == null || "true".equals(notify))) {
+        if (res != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
@@ -119,7 +117,7 @@ public abstract class BaseContentProvider extends ContentProvider {
         QueryParams queryParams = getQueryParams(uri, selection, null);
         int res = mSqLiteOpenHelper.getWritableDatabase().update(queryParams.table, values, queryParams.selection, selectionArgs);
         String notify;
-        if (res != 0 && ((notify = uri.getQueryParameter(QUERY_NOTIFY)) == null || "true".equals(notify))) {
+        if (res != 0 ) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return res;
@@ -130,7 +128,7 @@ public abstract class BaseContentProvider extends ContentProvider {
         QueryParams queryParams = getQueryParams(uri, selection, null);
         int res = mSqLiteOpenHelper.getWritableDatabase().delete(queryParams.table, queryParams.selection, selectionArgs);
         String notify;
-        if (res != 0 && ((notify = uri.getQueryParameter(QUERY_NOTIFY)) == null || "true".equals(notify))) {
+        if (res != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return res;

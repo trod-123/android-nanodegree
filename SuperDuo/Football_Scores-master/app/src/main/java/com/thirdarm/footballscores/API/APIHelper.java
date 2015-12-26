@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.thirdarm.footballscores.R;
 import com.thirdarm.footballscores.model.FixturesResult;
+import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 import com.thirdarm.footballscores.utilities.Utilities;
 import com.thirdarm.footballscores.constant.JSON;
 import com.thirdarm.footballscores.model.Fixture;
@@ -39,6 +40,7 @@ public class APIHelper {
     private final static String LOG_TAG = APIHelper.class.getSimpleName();
 
     private APIService api;
+    private Context mContext;
 
 
     /*
@@ -47,6 +49,7 @@ public class APIHelper {
         This is for API key use
      */
     public APIHelper(final Context c) {
+        mContext = c;
         OkHttpClient httpClient = new OkHttpClient();
         httpClient.interceptors().add(new Interceptor() {
             @Override
@@ -84,6 +87,7 @@ public class APIHelper {
             return api.getSoccerseasons(season).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -97,6 +101,7 @@ public class APIHelper {
             return api.getSingleSoccerseason(id).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -118,6 +123,7 @@ public class APIHelper {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -131,6 +137,7 @@ public class APIHelper {
             return api.getSingleSoccerseasonLeagueTable(id, matchDay).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -144,6 +151,7 @@ public class APIHelper {
             return api.getSingleSoccerseasonFixtures(id, timeFrame, matchDay).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -170,6 +178,7 @@ public class APIHelper {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -183,6 +192,7 @@ public class APIHelper {
             return api.getSingleFixture(id, head2head).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -209,6 +219,7 @@ public class APIHelper {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -223,6 +234,7 @@ public class APIHelper {
             return api.getSingleTeamFixtures(id, season, timeFrame, venue).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -236,6 +248,7 @@ public class APIHelper {
             return api.getSingleTeamPlayers(id).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
+            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }

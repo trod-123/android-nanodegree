@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 import com.thirdarm.footballscores.utilities.Network;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,11 +65,13 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         // Make sure there is internet connection first before going to sync
-        if (Network.isNetworkAvailable(this)) {
-            ScoresSyncAdapter.initializeSyncAdapter(this);
-        } else {
-            Toast.makeText(this, getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
-        }
+        ScoresSyncAdapter.initializeSyncAdapter(this);
+
+//        if (Network.isNetworkAvailable(this)) {
+//            ScoresSyncAdapter.initializeSyncAdapter(this);
+//        } else {
+//            Toast.makeText(this, getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         // Uses a pager handler to handle all the fragments in a single object
         Log.v(save_tag,"will save");
         Log.v(save_tag,"fragment: " + String.valueOf(mViewPager.getCurrentItem()));
-        Log.v(save_tag,"selected id: " + selected_match_id);
+        Log.v(save_tag, "selected id: " + selected_match_id);
         outState.putInt("Pager_Current", mViewPager.getCurrentItem());
         outState.putInt("Selected_match", selected_match_id);
         super.onSaveInstanceState(outState);
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // Create 5 fragments, each with its own date assigned to it
         for (int i = 0; i < NUM_PAGES; i++) {
             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
-            SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat mformat = new SimpleDateFormat("EEEE, MMM dd");
             ScoresFragment newFragment = new ScoresFragment();
             newFragment.setFragmentDate(mformat.format(fragmentdate));
             adapter.addFragment(newFragment, "useless string");
