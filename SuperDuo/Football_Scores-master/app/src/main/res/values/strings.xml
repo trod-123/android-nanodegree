@@ -8,6 +8,7 @@
 
     <!-- Shared preferences keys -->
     <string name="sp_sync_status_key">SyncStatus</string>
+    <string name="sp_teams_collected_key">TeamsCollected</string>
 
     <!-- Content provider authority -->
     <string name="content_authority">com.thirdarm.footballscores.provider</string>

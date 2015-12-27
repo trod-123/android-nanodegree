@@ -69,9 +69,6 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_STATUS_SERVER_INVALID = 2; /* Server not returning valid data */
     public static final int SYNC_STATUS_UNKNOWN = 3;        /* ... I just don't know */
 
-    // For checking whether all teams have successfully been collected before fetching fixtures
-    private static boolean mTeamsCollected = false;
-
     // Time frames for fixtures to be fetched
     private String[] mTimeFrames = new String[] {"n2", "p6"};
 
@@ -91,18 +88,18 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
         ContentResolver cr = getContext().getContentResolver();
         Cursor c = cr.query((new AteamSelection()).uri(), null, null, null, null);
         if (!c.moveToFirst()) {
-            mTeamsCollected = false;
+            setTeamsCollectedState(getContext(), false);
             Log.d(LOG_TAG, "The teams base is currently empty.");
         }
         c.close();
-        if (!mTeamsCollected) {
+        if (!getTeamsCollectedState(getContext())) {
             // If not, initialize teams database
             getAllSeasonsTeams(apiHelper);
         } else {
             Log.d(LOG_TAG, "Did not go through teams sync.");
         }
         // If teams sync still failed, terminate sync and set sync status
-        if (!mTeamsCollected) {
+        if (!getTeamsCollectedState(getContext())) {
             Log.d(LOG_TAG, "Teams failed to fetch. Terminating sync.");
             setSyncStatus(getContext(), SYNC_STATUS_SERVER_DOWN);
             return;
@@ -251,7 +248,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 //        cVValuesB.toArray(bCv);
 //        getContext().getContentResolver().bulkInsert((new AteamContentValues()).uri(), aCv);
 //        getContext().getContentResolver().bulkInsert((new BteamContentValues()).uri(), bCv);
-        mTeamsCollected = true;
+        setTeamsCollectedState(getContext(), true);
         Log.d(LOG_TAG, "All teams have been collected.");
     }
 
@@ -344,7 +341,6 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
 
-
     /**
      * Helper method to get the fake account to be used with SyncAdapter, or make a new one
      * if the fake account doesn't exist yet.  If we make a new account, we call the
@@ -383,6 +379,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
              */
 
             // It is here through which the sync happens
+            setTeamsCollectedState(context, false);
             onAccountCreated(newAccount, context);
         }
         return newAccount;
@@ -440,15 +437,51 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     /**
+     * Sets the state of the teams content provider. This is so that the state can be preserved
+     *  even when app restarts.
+     *
+     * @param c Context from which to get the PreferenceManager
+     * @param status True if teams has been successfully filled. False if teams fetch failed.
+     */
+    private static void setTeamsCollectedState(Context c, boolean status) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        SharedPreferences.Editor spe = sp.edit();
+        spe.putBoolean(c.getString(R.string.sp_teams_collected_key), status);
+        spe.commit();
+    }
+
+    /**
+     * Gets the state of the teams content provider.
+     *
+     * @param c Context from which to get the PreferenceManager
+     * @return True if teams has been successfully filled. False if teams fetch failed.
+     */
+    private static boolean getTeamsCollectedState(Context c) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+        return sp.getBoolean(c.getString(R.string.sp_teams_collected_key), false);
+    }
+
+    /**
      * Sets the sync status into shared preference.  This function should not be called from
      * the UI thread because it uses commit to write to the shared preferences.
+     *
      * @param c Context to get the PreferenceManager from.
      * @param syncStatus The IntDef value to set
      */
     public static void setSyncStatus(Context c, @SyncStatus int syncStatus){
+        Log.d(LOG_TAG, "In setSyncStatus");
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
-        SharedPreferences.Editor spe = sp.edit();
-        spe.putInt(c.getString(R.string.sp_sync_status_key), syncStatus);
-        spe.commit();
+        // Force a change in sync status stored in the shared preferences to an arbitrary value
+        //  to call the OnSharedPreferenceChangeListener in the pertaining fragment that requested
+        //  the sync to disable the swipe refresh animation.
+        sp
+                .edit()
+                .putInt(c.getString(R.string.sp_sync_status_key), 100)
+                .commit();
+        // Set the sync status to the correct status
+        sp
+                .edit()
+                .putInt(c.getString(R.string.sp_sync_status_key), syncStatus)
+                .commit(); /* Use commit since this will be called in bg thread */
     }
 }

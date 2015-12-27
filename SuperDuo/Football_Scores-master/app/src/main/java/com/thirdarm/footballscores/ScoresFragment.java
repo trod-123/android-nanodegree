@@ -1,12 +1,15 @@
 package com.thirdarm.footballscores;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,8 +34,11 @@ import com.thirdarm.footballscores.utilities.Utilities;
 /**
  * Fragment that displays the list of scores in a recycler view layout
  */
-public class ScoresFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ScoresFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener,
+                   SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String LOG_TAG = ScoresFragment.class.getSimpleName();
+
     private ScoresAdapter mScoresAdapter;
     private static final int SCORES_LOADER = 0;
 
@@ -42,27 +48,60 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
 
+    private SwipeRefreshLayout mRefreshLayout;
+
     public ScoresFragment() {
     }
 
-    // This calls myFetchService to fetch scores from the online db.
-    // Called during onCreateView()
-    // TODO: Call this when necessary only.
+    public void setFragmentDate(String date) {
+        fragmentdate[0] = date;
+    }
+
+    /*
+        When implmenting SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
+         register the listeners in onResume() and unregister them in onPause().
+     */
+
+    // This calls the SyncAdapter to fetch scores from the online db.
+    // Called when user swipes downward to refresh (onRefresh()) or when user clicks action_refresh
     private void update_scores() {
-//        if (Network.isNetworkAvailable(getActivity().getApplicationContext())) {
-//            ScoresSyncAdapter.syncImmediately(getActivity().getApplicationContext());
-//            getLoaderManager().restartLoader(SCORES_LOADER, null, this);
-//        } else {
-//            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
-//        }
+        mRefreshLayout.setRefreshing(true);
         ScoresSyncAdapter.syncImmediately(getActivity().getApplicationContext());
         getLoaderManager().restartLoader(SCORES_LOADER, null, this);
     }
 
-    public void setFragmentDate(String date) {
-//        Log.d(LOG_TAG, "Fragment date set to: " + date);
-        fragmentdate[0] = date;
+    @Override
+    public void onRefresh() {
+        update_scores();
     }
+
+    public void onRefreshComplete() {
+        mRefreshLayout.setRefreshing(false);
+    }
+
+    // onRefreshComplete() is called when the SyncAdapter forces a "change" in the sync status
+    //  stored in SharedPreferences
+    @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.sp_sync_status_key))) {
+            onRefreshComplete();
+        }
+    }
+
+    // Register the listeners here
+    @Override public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    // Unregister the listeners here
+    @Override public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,12 +113,11 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
         super.onActivityCreated(savedInstanceState);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Preparing the list view layout
+        // Preparing the recycler view layout
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         View emptyView = rootView.findViewById(R.id.fragment_main_recyclerview_scores_empty);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_recyclerview_scores);
@@ -91,27 +129,14 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
                 mPosition = vh.getAdapterPosition();
             }
         }, emptyView);
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mScoresAdapter);
 
         mScoresAdapter.detail_match_id = MainActivity.selected_match_id;
 
-//        mRecyclerView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-//        {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-//            {
-//                ScoresAdapter.ViewHolder selected = (ScoresAdapter.ViewHolder) view.getTag();
-//                mScoresAdapter.detail_match_id = selected.match_id;
-//                MainActivity.selected_match_id = (int) selected.match_id;
-//                mScoresAdapter.notifyDataSetChanged();
-//            }
-//        });
-
-
-//        Toast.makeText(getActivity(), "The date is: " + fragmentdate[0], Toast.LENGTH_SHORT).show();
-//        Log.d(LOG_TAG, "The date is: " + fragmentdate[0]);
+        // Set the SwipeRefreshLayout
+        mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_main_recyclerview_swiperefresh);
+        mRefreshLayout.setOnRefreshListener(this);
 
         return rootView;
     }
@@ -139,15 +164,11 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
                 update_scores();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Load only the matches pertaining to the appropriate date
-//        Log.d(LOG_TAG, "onCreateLoader");
-
         // The error "java.lang.IllegalArgumentException: column 'x' does not exist" just means
         //  x is not part of projection.
         String[] projection = {
@@ -176,22 +197,12 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-//        int i = 0;
-//        cursor.moveToFirst();
-//        while (!cursor.isAfterLast())
-//        {
-//            i++;
-//            cursor.moveToNext();
-//        }
-//        Log.d(LOG_TAG, "onLoadFinished");
-
         updateEmptyView();
         mScoresAdapter.swapCursor(new FixtureCursor(cursor));
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader)
-    {
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mScoresAdapter.swapCursor(null);
     }
 
@@ -211,7 +222,8 @@ public class ScoresFragment extends Fragment implements LoaderManager.LoaderCall
                     default:
                         if (!Network.isNetworkAvailable(getActivity())) {
                             message = R.string.empty_scores_list_no_network;
-                            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity().getApplicationContext(),
+                                    getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
                         }
                 }
                 emptyView.setText(message);
