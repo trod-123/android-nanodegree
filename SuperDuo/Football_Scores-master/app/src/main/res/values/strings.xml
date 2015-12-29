@@ -4,7 +4,7 @@
 
     <!-- Main -->
     <string name="app_name">Football Scores</string>
-    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_about">About</string>
 
     <!-- Shared preferences keys -->
     <string name="sp_sync_status_key">SyncStatus</string>
@@ -43,8 +43,8 @@
     <string name="league_unknown">League not found.</string>
 
     <!-- Match day strings -->
-    <string name="match_default">Match day: <xliff:g id="num">%1$s</xliff:g></string>
-    <string name="match_champions_gs">Group Stages, Match day: 6</string>
+    <string name="match_default">Matchday: <xliff:g id="num">%1$s</xliff:g></string>
+    <string name="match_champions_gs">Group Stages, Matchday: 6</string>
     <string name="match_champions_fkr">First knockout round</string>
     <string name="match_champions_qf">Quarterfinals</string>
     <string name="match_champions_sf">Semifinals</string>
@@ -56,18 +56,21 @@
     <string name="status_upcoming">Upcoming</string>
 
     <!-- Score strings -->
-    <string name="scores_invalid">-</string>
-    <string name="scores_home_away"><xliff:g id="home">%1$s</xliff:g> - <xliff:g id="away">%2$s</xliff:g></string>
+    <string name="scores_winner">Winner</string>
+    <string name="scores_tied">Tied</string>
 
     <!-- Date and time strings -->
     <string name="date_time"><xliff:g id="date">%1$s</xliff:g>, <xliff:g id="time">%2$s</xliff:g></string>
+
+    <!-- Share button -->
+    <string name="button_share">Share</string>
 
     <!-- Empty recyclerview strings -->
     <string name="empty_scores_list">No games scheduled for this day.</string>
     <string name="empty_scores_list_no_network">No scores available. The network is not available to fetch scores data.</string>
     <string name="empty_scores_list_server_down">No scores available. The server is not returning data.</string>
-    <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of FootballScores.</string>
-    <string name="empty_scores_list_unknown">What the fuck.</string>
+    <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of Football Scores.</string>
+    <string name="empty_scores_list_syncing">Fetching scores from server...</string>
 
     <!-- xml layout tools strings -->
     <string name="tools_home_team_name">Home team</string>
@@ -79,7 +82,39 @@
     <string name="tools_date">Sunday, Dec 25</string>
     <string name="tools_time">12:00</string>
     <string name="tools_league">Primeira Liga</string>
-    <string name="tools_match_day">Match day: 12</string>
+    <string name="tools_match_day">Matchday: 12</string>
+
+    <!-- A11y: Content descriptions -->
+    <string name="a11y_full_match_description">
+        <xliff:g id="status">%1$s</xliff:g> game.
+        League: <xliff:g id="league">%2$s</xliff:g>.
+        Matchday: <xliff:g id="matchday">%3$s</xliff:g>, <xliff:g id="dateTime">%4$s</xliff:g>.
+        <xliff:g id="awayName">%5$s</xliff:g> playing at <xliff:g id="homeName">%6$s</xliff:g>.
+        Score: <xliff:g id="awayScore">%7$d</xliff:g> to <xliff:g id="homeScore">%8$d</xliff:g>.
+        <xliff:g id="winner">%9$s</xliff:g>: <xliff:g id="notedTeam">%10$s</xliff:g>.
+    </string>
+
+    <string name="a11y_upcoming_match_description">
+        Upcoming game.
+        League: <xliff:g id="league">%1$s</xliff:g>.
+        Matchday: <xliff:g id="matchday">%2$s</xliff:g>, <xliff:g id="dateTime">%3$s</xliff:g>.
+        <xliff:g id="awayName">%4$s</xliff:g> playing at <xliff:g id="homeName">%5$s</xliff:g>.
+    </string>
+
+    <string name="a11y_home_team">
+        Home: <xliff:g id="name">%1$s</xliff:g>
+    </string>
+
+    <string name="a11y_away_team">
+        Away: <xliff:g id="name">%1$s</xliff:g>
+    </string>
+
+    <string name="a11y_team_score">
+        <xliff:g id="teamName">%1$s</xliff:g>,
+        Score: <xliff:g id="score">%2$s</xliff:g>,
+        <xliff:g id="status">%3$s</xliff:g>
+    </string>
+
 
     <string name="about_text">
         This Application get Football Matches Score for the Premier League,Seria A,Bundesliga,Primera Division

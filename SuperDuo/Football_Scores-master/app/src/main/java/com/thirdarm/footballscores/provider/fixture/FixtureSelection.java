@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.CursorLoader;
 
 import com.thirdarm.footballscores.provider.base.AbstractSelection;
 import com.thirdarm.footballscores.provider.ateam.*;
@@ -75,14 +74,6 @@ public class FixtureSelection extends AbstractSelection<FixtureSelection> {
         return query(context, null);
     }
 
-    public CursorLoader cursorLoader(Context context, String[] projection) {
-        return new CursorLoader(context, FixtureColumns.CONTENT_URI, projection, sel(), args(), order()) {
-            @Override
-            public Cursor loadInBackground() {
-                return new FixtureCursor(super.loadInBackground());
-            }
-        };
-    }
 
     public FixtureSelection id(long... value) {
         addEquals("fixture." + FixtureColumns._ID, toObjectArray(value));
@@ -324,6 +315,46 @@ public class FixtureSelection extends AbstractSelection<FixtureSelection> {
         return this;
     }
 
+    public FixtureSelection ateamCode(String... value) {
+        addEquals(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection ateamCodeNot(String... value) {
+        addNotEquals(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection ateamCodeLike(String... value) {
+        addLike(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection ateamCodeContains(String... value) {
+        addContains(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection ateamCodeStartsWith(String... value) {
+        addStartsWith(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection ateamCodeEndsWith(String... value) {
+        addEndsWith(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection orderByAteamCode(boolean desc) {
+        orderBy(AteamColumns.CODE, desc);
+        return this;
+    }
+
+    public FixtureSelection orderByAteamCode() {
+        orderBy(AteamColumns.CODE, false);
+        return this;
+    }
+
     public FixtureSelection ateamValue(String... value) {
         addEquals(AteamColumns.VALUE, value);
         return this;
@@ -521,6 +552,46 @@ public class FixtureSelection extends AbstractSelection<FixtureSelection> {
 
     public FixtureSelection orderByBteamShortname() {
         orderBy(BteamColumns.SHORTNAME, false);
+        return this;
+    }
+
+    public FixtureSelection bteamCode(String... value) {
+        addEquals(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection bteamCodeNot(String... value) {
+        addNotEquals(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection bteamCodeLike(String... value) {
+        addLike(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection bteamCodeContains(String... value) {
+        addContains(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection bteamCodeStartsWith(String... value) {
+        addStartsWith(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection bteamCodeEndsWith(String... value) {
+        addEndsWith(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public FixtureSelection orderByBteamCode(boolean desc) {
+        orderBy(BteamColumns.CODE, desc);
+        return this;
+    }
+
+    public FixtureSelection orderByBteamCode() {
+        orderBy(BteamColumns.CODE, false);
         return this;
     }
 

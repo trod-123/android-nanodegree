@@ -111,6 +111,16 @@ public class FixtureCursor extends AbstractCursor implements FixtureModel {
     }
 
     /**
+     * The code name of the team. (String, Nullable)
+     * Can be {@code null}.
+     */
+    @Nullable
+    public String getAteamCode() {
+        String res = getStringOrNull(AteamColumns.CODE);
+        return res;
+    }
+
+    /**
      * The squad market value of the team. (String, Nullable)
      * Can be {@code null}.
      */
@@ -159,6 +169,16 @@ public class FixtureCursor extends AbstractCursor implements FixtureModel {
     @Nullable
     public String getBteamShortname() {
         String res = getStringOrNull(BteamColumns.SHORTNAME);
+        return res;
+    }
+
+    /**
+     * The code name of the team. (String, Nullable)
+     * Can be {@code null}.
+     */
+    @Nullable
+    public String getBteamCode() {
+        String res = getStringOrNull(BteamColumns.CODE);
         return res;
     }
 

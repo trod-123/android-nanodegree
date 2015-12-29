@@ -3,25 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:background="@color/white">
-
-    <LinearLayout
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <FrameLayout
-            android:id="@+id/scores_list_item_frame_away"
-            android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:background="@android:color/holo_blue_bright"/>
-
-        <FrameLayout
-            android:id="@+id/scores_list_item_frame_home"
-            android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:background="@color/accent"/>
-
-    </LinearLayout>
+    android:background="@drawable/touch_selector_scores_list_item">
 
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -36,7 +18,7 @@
 
         <!-- Main fragment -->
         <LinearLayout
-            android:layout_width="match_parent" android:layout_height="100dp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
             android:minHeight="?android:attr/listPreferredItemHeightLarge"
             android:gravity="center_vertical"
             android:orientation="horizontal">
@@ -53,7 +35,7 @@
 
             <!-- Main information layout -->
             <LinearLayout
-                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:orientation="vertical">
@@ -67,8 +49,8 @@
 
                     <!-- Away column -->
                     <LinearLayout
-                        android:layout_width="0dp" android:layout_height="match_parent"
-                        android:layout_weight="4"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="4" android:layout_gravity="bottom"
                         android:gravity="center"
                         android:orientation="vertical">
 
@@ -111,8 +93,8 @@
 
                     <!-- Home column -->
                     <LinearLayout
-                        android:layout_width="0dp" android:layout_height="match_parent"
-                        android:layout_weight="4"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="4" android:layout_gravity="bottom"
                         android:gravity="center"
                         android:orientation="vertical">
 

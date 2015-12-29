@@ -16,4 +16,7 @@
     <color name="secondary_text">#757575</color> <!-- Grey 600 -->
     <color name="tertiary_text">#607d8b</color> <!-- Blue Grey 500 -->
 
+    <!-- touch selector colors -->
+    <color name="touch_selector_activated">@color/primary_light</color>
+
 </resources>

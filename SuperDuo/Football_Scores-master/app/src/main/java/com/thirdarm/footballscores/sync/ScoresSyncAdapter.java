@@ -61,13 +61,15 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     // For transmitting sync status messages with the ui. Stored in and accessed through
     //  SharedPreferences.
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SYNC_STATUS_OK, SYNC_STATUS_SERVER_DOWN, SYNC_STATUS_SERVER_INVALID, SYNC_STATUS_UNKNOWN})
+    @IntDef({SYNC_STATUS_OK, SYNC_STATUS_SERVER_DOWN, SYNC_STATUS_SERVER_INVALID,
+            SYNC_STATUS_UNKNOWN, SYNC_STATUS_SYNCING})
     public @interface SyncStatus {}
 
     public static final int SYNC_STATUS_OK = 0;             /* Status okay. Fetch successful */
     public static final int SYNC_STATUS_SERVER_DOWN = 1;    /* Server is slow or down */
     public static final int SYNC_STATUS_SERVER_INVALID = 2; /* Server not returning valid data */
     public static final int SYNC_STATUS_UNKNOWN = 3;        /* ... I just don't know */
+    public static final int SYNC_STATUS_SYNCING = 4;        /* Currently syncing */
 
     // Time frames for fixtures to be fetched
     private String[] mTimeFrames = new String[] {"n2", "p6"};
@@ -80,6 +82,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override public void onPerformSync(Account account, Bundle extras, String authority,
                                         ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "In onPerformSync");
+        setSyncStatus(getContext(), SYNC_STATUS_SYNCING);
 
         // Generate APIHelper
         APIHelper apiHelper = new APIHelper(getContext());
@@ -220,11 +223,12 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
             for (Team team : seasonTeams) {
                 String name = team.getName();
                 String shortName = team.getShortName();
+                String code = team.getCode();
                 String marketValue = team.getSquadMarketValue();
                 String crestUrl = team.getCrestUrl();
 
-                insertTeamA(name, shortName, marketValue, crestUrl);
-                insertTeamB(name, shortName, marketValue, crestUrl);
+                insertTeamA(name, shortName, code, marketValue, crestUrl);
+                insertTeamB(name, shortName, code, marketValue, crestUrl);
 
 //                AteamContentValues aCv = new AteamContentValues();
 //                aCv.putName(name);
@@ -297,10 +301,11 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
      *
      * @return The id of the inserted team.
      */
-    public long insertTeamA(@NonNull String name, String shortName, String value, String crestUrl ) {
+    public long insertTeamA(@NonNull String name, String shortName, String code, String value, String crestUrl ) {
         AteamContentValues aCv = new AteamContentValues();
         aCv.putName(name);
         aCv.putShortname(shortName);
+        aCv.putCode(code);
         aCv.putValue(value);
         aCv.putCresturl(crestUrl);
 
@@ -315,10 +320,11 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
      *
      * @return The id of the inserted team.
      */
-    public long insertTeamB(@NonNull String name, String shortName, String value, String crestUrl ) {
+    public long insertTeamB(@NonNull String name, String shortName, String code, String value, String crestUrl ) {
         BteamContentValues bCv = new BteamContentValues();
         bCv.putName(name);
         bCv.putShortname(shortName);
+        bCv.putCode(code);
         bCv.putValue(value);
         bCv.putCresturl(crestUrl);
 

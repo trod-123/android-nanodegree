@@ -15,4 +15,8 @@
 
     </style>
 
+    <style name="ScoresListStyle">
+        <item name="android:choiceMode">singleChoice</item>
+    </style>
+
 </resources>

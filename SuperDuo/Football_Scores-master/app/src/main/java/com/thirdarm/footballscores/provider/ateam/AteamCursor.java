@@ -63,6 +63,16 @@ public class AteamCursor extends AbstractCursor implements AteamModel {
     }
 
     /**
+     * The code name of the team. (String, Nullable)
+     * Can be {@code null}.
+     */
+    @Nullable
+    public String getCode() {
+        String res = getStringOrNull(AteamColumns.CODE);
+        return res;
+    }
+
+    /**
      * The squad market value of the team. (String, Nullable)
      * Can be {@code null}.
      */

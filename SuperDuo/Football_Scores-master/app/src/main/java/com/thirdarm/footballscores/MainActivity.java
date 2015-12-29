@@ -41,13 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 5;
 
-    private Toolbar mToolbar;
     private TabLayout mTabLayout;
     public ViewPager mViewPager;
 
-
-    private ViewPagerAdapter mPagerAdapter;
-    private ScoresFragment[] viewFragments = new ScoresFragment[5];
+    public static String[] mFragmentDates = new String[NUM_PAGES];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(mViewPager);
@@ -97,31 +94,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager) {
+        Log.d(LOG_TAG, "In setupViewPager");
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         // Create 5 fragments, each with its own date assigned to it
         for (int i = 0; i < NUM_PAGES; i++) {
             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
             SimpleDateFormat mformat = new SimpleDateFormat("EEEE, MMM dd");
             ScoresFragment newFragment = new ScoresFragment();
-            newFragment.setFragmentDate(mformat.format(fragmentdate));
+            String date = mformat.format(fragmentdate);
+            newFragment.setFragmentDate(date);
+            mFragmentDates[i] = date;
+            newFragment.setFragmentIndex(i);
             adapter.addFragment(newFragment, "useless string");
         }
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(MainActivity.current_fragment);
+        // Allow all 5 fragments to be held by the system at once to avoid recreating fragments.
+        // Was stuck trying to restore fragments after they were being recreated because
+        //  fragmentdate would always be returning null for the fragment that has not yet been
+        //  loaded, causing the app to crash because fragmentdate is used as part of a selection
+        //  argument in the cursor. For example, from app start, moving to the left/right
+        //  fragment, rotating twice, and then trying to move back to the home fragment causes
+        //  the app to crash. I have been at it for hours trying to fix this, but it seems that
+        //  even trying to use savedInstanceStates still caused fragmentdate to become a null
+        //  value. Retaining the fragments in this way helps to alleviate that issue, but at the
+        //  cost of performance.
+        viewPager.setOffscreenPageLimit(4);
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager fm)
-        {
+        public ViewPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int position)
-        {
+        public Fragment getItem(int position) {
             return mFragmentList.get(position);
         }
 

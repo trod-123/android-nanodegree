@@ -82,20 +82,6 @@ public class Utilities {
     }
 
     /**
-     * Gets a string containing the number of home and away goals
-     *
-     * @param c Context of the activity
-     * @param home_goals Number of home goals
-     * @param away_goals Number of away goals
-     * @return Formatted string containing number of home and away goals
-     */
-    public static String getScores(Context c, int home_goals,int away_goals) {
-        return home_goals < 0 || away_goals < 0 ?
-                c.getString(R.string.scores_invalid) :
-                c.getString(R.string.scores_home_away, home_goals, away_goals);
-    }
-
-    /**
      * Gets the date and time
      */
     public static String[] getUserDateTime(String dateTimeString) {
@@ -155,31 +141,6 @@ public class Utilities {
 //            Log.d(LOG_TAG, "NEW Crest url is: " + crestUrl);
         }
         return crestUrl;
-    }
-    /**
-     * Gets the image of the team's crest
-     *
-     * @param teamname Name of the team
-     * @return The id of the drawable of the team's crest
-     */
-    public static int getTeamCrestByTeamName (String teamname)
-    {
-        if (teamname==null){return R.drawable.no_icon;}
-        switch (teamname)
-        { //This is the set of icons that are currently in the app. Feel free to find and add more
-            //as you go.
-            case "Arsenal London FC" : return R.drawable.arsenal;
-            case "Manchester United FC" : return R.drawable.manchester_united;
-            case "Swansea City" : return R.drawable.swansea_city_afc;
-            case "Leicester City" : return R.drawable.leicester_city_fc_hd_logo;
-            case "Everton FC" : return R.drawable.everton_fc_logo1;
-            case "West Ham United FC" : return R.drawable.west_ham;
-            case "Tottenham Hotspur FC" : return R.drawable.tottenham_hotspur;
-            case "West Bromwich Albion" : return R.drawable.west_bromwich_albion_hd_logo;
-            case "Sunderland AFC" : return R.drawable.sunderland;
-            case "Stoke City FC" : return R.drawable.stoke_city;
-            default: return R.drawable.no_icon;
-        }
     }
 
     /**

@@ -46,7 +46,7 @@ public class AteamContentValues extends AbstractContentValues {
     /**
      * Update row(s) using the values stored by this object and the given selection.
      *
-     * @param context Context for using content resolver
+     * @param context The content resolver to use.
      * @param where The selection to use (can be {@code null}).
      */
     public int update(Context context, @Nullable AteamSelection where) {
@@ -73,6 +73,19 @@ public class AteamContentValues extends AbstractContentValues {
 
     public AteamContentValues putShortnameNull() {
         mContentValues.putNull(AteamColumns.SHORTNAME);
+        return this;
+    }
+
+    /**
+     * The code name of the team. (String, Nullable)
+     */
+    public AteamContentValues putCode(@Nullable String value) {
+        mContentValues.put(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamContentValues putCodeNull() {
+        mContentValues.putNull(AteamColumns.CODE);
         return this;
     }
 

@@ -77,6 +77,19 @@ public class BteamContentValues extends AbstractContentValues {
     }
 
     /**
+     * The code name of the team. (String, Nullable)
+     */
+    public BteamContentValues putCode(@Nullable String value) {
+        mContentValues.put(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamContentValues putCodeNull() {
+        mContentValues.putNull(BteamColumns.CODE);
+        return this;
+    }
+
+    /**
      * The squad market value of the team. (String, Nullable)
      */
     public BteamContentValues putValue(@Nullable String value) {

@@ -37,10 +37,17 @@ import com.thirdarm.footballscores.utilities.Utilities;
 public class ScoresFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, SwipeRefreshLayout.OnRefreshListener,
                    SharedPreferences.OnSharedPreferenceChangeListener {
+
     private static final String LOG_TAG = ScoresFragment.class.getSimpleName();
+    private int FRAGMENT_INDEX = 0;
 
     private ScoresAdapter mScoresAdapter;
     private static final int SCORES_LOADER = 0;
+
+    // For the savedInstanceState
+    private static final String KEY_ITEM_SELECTED = "item_selected_key";
+    private static final String KEY_FRAGMENT_DATE = "fragment_date_key";
+    private static final String KEY_FRAGMENT_INDEX = "fragment_index_key";
 
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -54,12 +61,20 @@ public class ScoresFragment extends Fragment
     }
 
     public void setFragmentDate(String date) {
+        Log.d(LOG_TAG, "The fragment date is: " + date);
         fragmentdate[0] = date;
+        Log.d(LOG_TAG, "In setFragmentDate, set the date to: " + fragmentdate[0]);
+    }
+
+    public void setFragmentIndex(int index) {
+        FRAGMENT_INDEX = index;
     }
 
     /*
-        When implmenting SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
-         register the listeners in onResume() and unregister them in onPause().
+        When implementing SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
+         register the listeners in onResume() and unregister them in onPause(), or else
+         onSharedPreferenceChanged() will not be called, even though the SharedPreferences has
+         been changed.
      */
 
     // This calls the SyncAdapter to fetch scores from the online db.
@@ -83,7 +98,13 @@ public class ScoresFragment extends Fragment
     //  stored in SharedPreferences
     @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.sp_sync_status_key))) {
-            onRefreshComplete();
+            @ScoresSyncAdapter.SyncStatus int status = Utilities.getSyncStatus(getActivity());
+            if (status != ScoresSyncAdapter.SYNC_STATUS_SYNCING) {
+                onRefreshComplete();
+            } else {
+                mRefreshLayout.setRefreshing(true);
+                updateEmptyView();
+            }
         }
     }
 
@@ -138,6 +159,26 @@ public class ScoresFragment extends Fragment
         mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_main_recyclerview_swiperefresh);
         mRefreshLayout.setOnRefreshListener(this);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_ITEM_SELECTED)) {
+                mPosition = savedInstanceState.getInt(KEY_ITEM_SELECTED);
+            }
+            if (savedInstanceState.containsKey(KEY_FRAGMENT_DATE)) {
+                setFragmentDate(savedInstanceState.getString(KEY_FRAGMENT_DATE));
+                Log.d(LOG_TAG, "The savedInstanceState had a date value of " + fragmentdate[0]);
+            } else {
+                Log.d(LOG_TAG, "The savedInstanceState did not have any date value.");
+            }
+//            if (savedInstanceState.containsKey(KEY_FRAGMENT_INDEX)) {
+//                FRAGMENT_INDEX = savedInstanceState.getInt(KEY_FRAGMENT_INDEX);
+//                Log.d(LOG_TAG, "The savedInstanceState had a value for the fragment index and loaded a date.");
+//            }
+            mScoresAdapter.onRestoreInstanceState(savedInstanceState);
+        }
+
+//        setFragmentDate(MainActivity.mFragmentDates[FRAGMENT_INDEX]);
+
+
         return rootView;
     }
 
@@ -167,6 +208,27 @@ public class ScoresFragment extends Fragment
         return super.onOptionsItemSelected(item);
     }
 
+    // Store the current position and the fragment date
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (mPosition != RecyclerView.NO_POSITION) {
+            Log.d(LOG_TAG, "The position that is going to be saved in the bundle is " + mPosition);
+            outState.putInt(KEY_ITEM_SELECTED, mPosition);
+        } else {
+            Log.d(LOG_TAG, "There is no position that will be saved in the bundle");
+        }
+        if (mScoresAdapter != null) {
+            mScoresAdapter.onSaveInstanceState(outState);
+        } else {
+            Log.d(LOG_TAG, "In onSaveInstanceState(), Scores Adapter was null.");
+        }
+        Log.d(LOG_TAG, "The fragment date going to be saved in the bundle is " + fragmentdate[0]);
+        outState.putString(KEY_FRAGMENT_DATE, fragmentdate[0]);
+        Log.d(LOG_TAG, "The fragment index going to be saved in the bundle is " + FRAGMENT_INDEX);
+        outState.putInt(KEY_FRAGMENT_INDEX, FRAGMENT_INDEX);
+
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // The error "java.lang.IllegalArgumentException: column 'x' does not exist" just means
@@ -176,8 +238,8 @@ public class ScoresFragment extends Fragment
                 FixtureColumns.STATUS, FixtureColumns.TEAMA_ID, FixtureColumns.TEAMB_ID,
                 FixtureColumns.LEAGUEID, FixtureColumns.HOMEGOALS, FixtureColumns.AWAYGOALS,
                 FixtureColumns.MATCHID, FixtureColumns.MATCHDAY,
-                AteamColumns.NAME, AteamColumns.SHORTNAME, AteamColumns.CRESTURL,
-                BteamColumns.NAME, BteamColumns.SHORTNAME, BteamColumns.CRESTURL
+                AteamColumns.NAME, AteamColumns.SHORTNAME, AteamColumns.CODE, AteamColumns.CRESTURL,
+                BteamColumns.NAME, BteamColumns.SHORTNAME, BteamColumns.CODE, BteamColumns.CRESTURL
         };
 
 //        return new CursorLoader(getActivity(),
@@ -187,6 +249,7 @@ public class ScoresFragment extends Fragment
 //                null,
 //                null);
 
+        Log.d(LOG_TAG, "In onCreateLoader, the fragmentdate is: " + fragmentdate[0]);
         return new CursorLoader(getActivity(),
                 (new FixtureSelection()).uri(),
                 projection,
@@ -199,6 +262,9 @@ public class ScoresFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         updateEmptyView();
         mScoresAdapter.swapCursor(new FixtureCursor(cursor));
+        if (mPosition != RecyclerView.NO_POSITION) {
+            mRecyclerView.smoothScrollToPosition(mPosition);
+        }
     }
 
     @Override
@@ -206,6 +272,9 @@ public class ScoresFragment extends Fragment
         mScoresAdapter.swapCursor(null);
     }
 
+    /**
+     * Updates the empty view to display information pertaining to the status of the sync adapter
+     */
     private void updateEmptyView() {
         if (mScoresAdapter.getItemCount() == 0) {
             TextView emptyView = (TextView) getView().findViewById(R.id.fragment_main_recyclerview_scores_empty);
@@ -213,6 +282,9 @@ public class ScoresFragment extends Fragment
                 int message = R.string.empty_scores_list;
                 @ScoresSyncAdapter.SyncStatus int status = Utilities.getSyncStatus(getActivity());
                 switch (status) {
+                    case ScoresSyncAdapter.SYNC_STATUS_SYNCING :
+                        message = R.string.empty_scores_list_syncing;
+                        break;
                     case ScoresSyncAdapter.SYNC_STATUS_SERVER_DOWN :
                         message = R.string.empty_scores_list_server_down;
                         break;

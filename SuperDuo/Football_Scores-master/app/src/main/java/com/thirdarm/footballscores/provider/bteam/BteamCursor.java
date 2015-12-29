@@ -63,6 +63,16 @@ public class BteamCursor extends AbstractCursor implements BteamModel {
     }
 
     /**
+     * The code name of the team. (String, Nullable)
+     * Can be {@code null}.
+     */
+    @Nullable
+    public String getCode() {
+        String res = getStringOrNull(BteamColumns.CODE);
+        return res;
+    }
+
+    /**
      * The squad market value of the team. (String, Nullable)
      * Can be {@code null}.
      */

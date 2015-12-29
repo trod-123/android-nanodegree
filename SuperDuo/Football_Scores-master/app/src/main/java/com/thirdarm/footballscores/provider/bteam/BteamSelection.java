@@ -172,6 +172,46 @@ public class BteamSelection extends AbstractSelection<BteamSelection> {
         return this;
     }
 
+    public BteamSelection code(String... value) {
+        addEquals(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection codeNot(String... value) {
+        addNotEquals(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection codeLike(String... value) {
+        addLike(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection codeContains(String... value) {
+        addContains(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection codeStartsWith(String... value) {
+        addStartsWith(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection codeEndsWith(String... value) {
+        addEndsWith(BteamColumns.CODE, value);
+        return this;
+    }
+
+    public BteamSelection orderByCode(boolean desc) {
+        orderBy(BteamColumns.CODE, desc);
+        return this;
+    }
+
+    public BteamSelection orderByCode() {
+        orderBy(BteamColumns.CODE, false);
+        return this;
+    }
+
     public BteamSelection value(String... value) {
         addEquals(BteamColumns.VALUE, value);
         return this;

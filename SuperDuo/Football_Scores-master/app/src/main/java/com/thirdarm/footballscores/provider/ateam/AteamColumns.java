@@ -46,6 +46,11 @@ public class AteamColumns implements BaseColumns {
     public static final String SHORTNAME = "ateam__shortname";
 
     /**
+     * The code name of the team. (String, Nullable)
+     */
+    public static final String CODE = "ateam__code";
+
+    /**
      * The squad market value of the team. (String, Nullable)
      */
     public static final String VALUE = "ateam__value";
@@ -63,6 +68,7 @@ public class AteamColumns implements BaseColumns {
             _ID,
             NAME,
             SHORTNAME,
+            CODE,
             VALUE,
             CRESTURL
     };
@@ -73,6 +79,7 @@ public class AteamColumns implements BaseColumns {
         for (String c : projection) {
             if (c.equals(NAME) || c.contains("." + NAME)) return true;
             if (c.equals(SHORTNAME) || c.contains("." + SHORTNAME)) return true;
+            if (c.equals(CODE) || c.contains("." + CODE)) return true;
             if (c.equals(VALUE) || c.contains("." + VALUE)) return true;
             if (c.equals(CRESTURL) || c.contains("." + CRESTURL)) return true;
         }

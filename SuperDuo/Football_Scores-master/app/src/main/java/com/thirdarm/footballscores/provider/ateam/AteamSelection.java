@@ -172,6 +172,46 @@ public class AteamSelection extends AbstractSelection<AteamSelection> {
         return this;
     }
 
+    public AteamSelection code(String... value) {
+        addEquals(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection codeNot(String... value) {
+        addNotEquals(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection codeLike(String... value) {
+        addLike(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection codeContains(String... value) {
+        addContains(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection codeStartsWith(String... value) {
+        addStartsWith(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection codeEndsWith(String... value) {
+        addEndsWith(AteamColumns.CODE, value);
+        return this;
+    }
+
+    public AteamSelection orderByCode(boolean desc) {
+        orderBy(AteamColumns.CODE, desc);
+        return this;
+    }
+
+    public AteamSelection orderByCode() {
+        orderBy(AteamColumns.CODE, false);
+        return this;
+    }
+
     public AteamSelection value(String... value) {
         addEquals(AteamColumns.VALUE, value);
         return this;

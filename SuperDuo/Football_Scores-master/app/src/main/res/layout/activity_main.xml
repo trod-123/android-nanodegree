@@ -13,7 +13,6 @@ android:layout_width="match_parent" android:layout_height="match_parent" >
         android:id="@+id/toolbar"
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <!-- Scrollable tabs do not have fixed width. Only fixed tabs do. -->
@@ -28,6 +27,7 @@ android:layout_width="match_parent" android:layout_height="match_parent" >
 
 <android.support.v4.view.ViewPager
     android:id="@+id/viewpager"
+    android:choiceMode="singleChoice"
     android:layout_width="match_parent" android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 

@@ -2,20 +2,22 @@ package com.thirdarm.footballscores;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.AbsListView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.squareup.picasso.Picasso;
 import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
 import com.thirdarm.footballscores.provider.fixture.Status;
+import com.thirdarm.footballscores.utilities.ItemChoiceManager;
 import com.thirdarm.footballscores.utilities.Utilities;
 
 /**
@@ -31,13 +33,14 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
     // The dataset
     private FixtureCursor mCursor;
+    private int mSelectedPosition;
     final private Context mContext;
     final private ScoresAdapterOnClickHandler mClickHandler;
     final private View mEmptyView;
+    final private ItemChoiceManager mICM;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public FrameLayout mHomeFrame;
-        public FrameLayout mAwayFrame;
+        public View mParentView;
         public TextView mHomeNameTextView;
         public TextView mAwayNameTextView;
         public TextView mHomeScoreTextView;
@@ -53,13 +56,15 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         @Override public void onClick(View v) {
             int position = getAdapterPosition();
             mCursor.moveToPosition(position);
+            mSelectedPosition = position;
+            mICM.onClick(this);
             mClickHandler.onClick(mCursor.getMatchid(), this);
         }
 
         public ViewHolder(View view) {
             super(view);
-            mHomeFrame = (FrameLayout) view.findViewById(R.id.scores_list_item_frame_home);
-            mAwayFrame = (FrameLayout) view.findViewById(R.id.scores_list_item_frame_away);
+            mParentView = view;
+            view.setClickable(true);
             mHomeNameTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_home_name);
             mAwayNameTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_away_name);
             mHomeScoreTextView = (TextView) view.findViewById(R.id.scores_list_item_textview_home_score);
@@ -79,6 +84,8 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         mContext = c;
         mClickHandler = handler;
         mEmptyView = empty;
+        mICM = new ItemChoiceManager(this);
+        mICM.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
     }
 
     public interface ScoresAdapterOnClickHandler {
@@ -100,29 +107,51 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 //    public View newView(Context context, Cursor cursor, ViewGroup parent)
 //    {
 //        View mItem = LayoutInflater.from(context).inflate(R.layout.scores_list_item, parent, false);
-//        ViewHolder mHolder = new ViewHolder(mItem);
-//        mItem.setTag(mHolder);
+//        ViewHolder mParentView = new ViewHolder(mItem);
+//        mItem.setTag(mParentView);
 //        //Log.v(FetchScoreTask.LOG_TAG,"new View inflated");
 //        return mItem;
 //    }
 
     @Override public void onBindViewHolder(final ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
+        mICM.onBindViewHolder(holder, position);
 
-        // Set the team names. If there is no short name, use the default name.
+        // Set the team names. Use code names. If no code name, use short name.
+        //  If there is no short name, use the default name.
         String homeTeamName = mCursor.getAteamShortname();
         String awayTeamName = mCursor.getBteamShortname();
+        String homeTeamCode = mCursor.getAteamCode();
+        String awayTeamCode = mCursor.getBteamCode();
         if (homeTeamName == null) {
             homeTeamName = mCursor.getAteamName();
+            if (homeTeamCode == null) {
+                homeTeamCode = homeTeamName;
+            }
+        } else {
+            if (homeTeamCode == null) {
+                homeTeamCode = homeTeamName;
+            }
         }
         if (awayTeamName == null) {
             awayTeamName = mCursor.getBteamName();
+            if (awayTeamCode == null) {
+                awayTeamCode = awayTeamName;
+            }
+        } else {
+            if (awayTeamCode == null) {
+                awayTeamCode = awayTeamName;
+            }
         }
-        holder.mHomeNameTextView.setText(homeTeamName);
-        holder.mAwayNameTextView.setText(awayTeamName);
+        holder.mHomeNameTextView.setText(homeTeamCode);
+        holder.mAwayNameTextView.setText(awayTeamCode);
 
         // Set the match time
-        holder.mTimeTextView.setText(mContext.getString(R.string.date_time, mCursor.getDate(), mCursor.getTime()));
+        String matchTime = mContext.getString(R.string.date_time, mCursor.getDate(), mCursor.getTime());
+        holder.mTimeTextView.setText(matchTime);
+
+        //
+        String leagueName = Utilities.getLeague(mContext, mCursor.getLeagueid());
 
         // Set the scores
         if (mCursor.getHomegoals() != -1 && mCursor.getAwaygoals() != -1) {
@@ -137,13 +166,14 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             holder.mAwayScoreTextView.setText("" + awayGoals);
             // Set the scores colors
             int homeColor, awayColor, winColor, loseColor;
+            String matchStatus, winStatus, notedTeam;
             if (mCursor.getStatus() == Status.FINISHED) {
-                holder.mStatusTextView.setText(mContext.getString(R.string.status_finished));
+                matchStatus = mContext.getString(R.string.status_finished);
                 holder.mStatusTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text));
                 winColor = mContext.getResources().getColor(R.color.primary_text);
                 loseColor = mContext.getResources().getColor(R.color.tertiary_text);
             } else {
-                holder.mStatusTextView.setText(mContext.getString(R.string.status_timed));
+                matchStatus = mContext.getString(R.string.status_timed);
                 holder.mStatusTextView.setTextColor(mContext.getResources().getColor(R.color.secondary_text));
                 winColor = mContext.getResources().getColor(R.color.primary_text);
                 loseColor = mContext.getResources().getColor(R.color.secondary_text);
@@ -151,17 +181,31 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             if (homeGoals > awayGoals) {
                 homeColor = winColor;
                 awayColor = loseColor;
+                winStatus = mContext.getString(R.string.scores_winner);
+                notedTeam = homeTeamName;
             } else if (homeGoals < awayGoals) {
                 homeColor = loseColor;
                 awayColor = winColor;
+                winStatus = mContext.getString(R.string.scores_winner);
+                notedTeam = awayTeamName;
             } else {
                 homeColor = loseColor;
                 awayColor = loseColor;
+                winStatus = mContext.getString(R.string.scores_tied);
+                notedTeam = "";
             }
+            holder.mStatusTextView.setText(matchStatus);
             holder.mHomeNameTextView.setTextColor(homeColor);
             holder.mHomeScoreTextView.setTextColor(homeColor);
             holder.mAwayNameTextView.setTextColor(awayColor);
             holder.mAwayScoreTextView.setTextColor(awayColor);
+
+            // Set content description
+            holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_full_match_description,
+                            matchStatus, leagueName, mCursor.getMatchday(), matchTime,
+                            awayTeamName, homeTeamName, awayGoals, homeGoals,
+                            winStatus, notedTeam)
+            );
         } else {
             // Cursors that don't have scores should be hidden score views
             holder.mStatusTextView.setText(mContext.getString(R.string.status_upcoming));
@@ -171,8 +215,13 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             holder.mAwayNameTextView.setTextColor(textColor);
             holder.mHomeScoreTextView.setVisibility(View.GONE);
             holder.mAwayScoreTextView.setVisibility(View.GONE);
-        }
 
+            // Set content description
+            holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_upcoming_match_description,
+                            leagueName, mCursor.getMatchday(), matchTime,
+                            awayTeamName, homeTeamName)
+            );
+        }
         holder.match_id = mCursor.getMatchid();
 
         // Set the crests
@@ -197,15 +246,15 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
                     new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT));
 
-            TextView matchDayTextView = (TextView) detailFragmentView.findViewById(R.id.matchday_textview);
+            TextView matchDayTextView = (TextView) detailFragmentView.findViewById(R.id.detail_textview_matchday);
             matchDayTextView.setText(Utilities.getMatchDay(mContext, mCursor.getMatchday(),
                     mCursor.getLeagueid()));
 
-            TextView leagueTextView = (TextView) detailFragmentView.findViewById(R.id.league_textview);
+            TextView leagueTextView = (TextView) detailFragmentView.findViewById(R.id.detail_textview_league);
             leagueTextView.setText(Utilities.getLeague(mContext, mCursor.getLeagueid()));
 
             // For the share button
-            Button share_button = (Button) detailFragmentView.findViewById(R.id.share_button);
+            ImageButton share_button = (ImageButton) detailFragmentView.findViewById(R.id.detail_button_share);
             share_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -225,25 +274,37 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         else holder.mDetailFragmentContainer.removeAllViews();
     }
 
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        mICM.onRestoreInstanceState(savedInstanceState);
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        mICM.onSaveInstanceState(outState);
+    }
+
+    public int getSelectedItemPosition() {
+        return mICM.getSelectedItemPosition();
+    }
+
 //    @Override
 //    public void bindView(View view, final Context context, Cursor cursor)
 //    {
 //        // Get the view holder and bind text to each of its elements
-//        final ViewHolder mHolder = (ViewHolder) view.getTag();
+//        final ViewHolder mParentView = (ViewHolder) view.getTag();
 //
-//        mHolder.mHomeNameTextView.setText(cursor.getString(COL_HOME_NAME));
-//        mHolder.mAwayNameTextView.setText(cursor.getString(COL_AWAY_NAME));
-//        mHolder.mDateTextView.setText(cursor.getString(COL_TIME));
-//        mHolder.mScoreTextView.setText(Utilities.getScores(context, cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS)));
-//        mHolder.match_id = cursor.getDouble(COL_MATCH_ID);
+//        mParentView.mHomeNameTextView.setText(cursor.getString(COL_HOME_NAME));
+//        mParentView.mAwayNameTextView.setText(cursor.getString(COL_AWAY_NAME));
+//        mParentView.mDateTextView.setText(cursor.getString(COL_TIME));
+//        mParentView.mScoreTextView.setText(Utilities.getScores(context, cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS)));
+//        mParentView.match_id = cursor.getDouble(COL_MATCH_ID);
 //
-//        mHolder.mHomeCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
+//        mParentView.mHomeCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
 //                cursor.getString(COL_HOME_NAME)));
-//        mHolder.mAwayCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
+//        mParentView.mAwayCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
 //                cursor.getString(COL_AWAY_NAME)
 //        ));
 //
-//        //Log.v(FetchScoreTask.LOG_TAG,mHolder.mHomeNameTextView.getText() + " Vs. " + mHolder.mAwayNameTextView.getText() +" id " + String.valueOf(mHolder.match_id));
+//        //Log.v(FetchScoreTask.LOG_TAG,mParentView.mHomeNameTextView.getText() + " Vs. " + mParentView.mAwayNameTextView.getText() +" id " + String.valueOf(mParentView.match_id));
 //        //Log.v(FetchScoreTask.LOG_TAG,String.valueOf(detail_match_id));
 //
 //        // This is for the detail fragment layouts
@@ -251,7 +312,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 //                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        View v = vi.inflate(R.layout.detail_fragment, null);
 //        ViewGroup container = (ViewGroup) view.findViewById(R.id.details_fragment_container);
-//        if(mHolder.match_id == detail_match_id)
+//        if(mParentView.match_id == detail_match_id)
 //        {
 //            //Log.v(FetchScoreTask.LOG_TAG,"will insert extraView");
 //
@@ -270,8 +331,8 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 //                public void onClick(View v)
 //                {
 //                    //add Share Action
-//                    context.startActivity(createShareForecastIntent(mHolder.mHomeNameTextView.getText()+" "
-//                    +mHolder.mScoreTextView.getText()+" "+mHolder.mAwayNameTextView.getText() + " "));
+//                    context.startActivity(createShareForecastIntent(mParentView.mHomeNameTextView.getText()+" "
+//                    +mParentView.mScoreTextView.getText()+" "+mParentView.mAwayNameTextView.getText() + " "));
 //                }
 //            });
 //        }

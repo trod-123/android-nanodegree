@@ -41,6 +41,13 @@ public interface AteamModel extends BaseModel {
     String getShortname();
 
     /**
+     * The code name of the team. (String, Nullable)
+     * Can be {@code null}.
+     */
+    @Nullable
+    String getCode();
+
+    /**
      * The squad market value of the team. (String, Nullable)
      * Can be {@code null}.
      */
