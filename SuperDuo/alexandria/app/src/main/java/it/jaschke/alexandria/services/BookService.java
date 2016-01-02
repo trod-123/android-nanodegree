@@ -127,6 +127,7 @@ public class BookService extends IntentService {
             if (buffer.length() == 0) {
                 return;
             }
+            // TODO: Fix this null pointer exception when bookJsonString is converted to JSON below
             bookJsonString = buffer.toString();
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error ", e);

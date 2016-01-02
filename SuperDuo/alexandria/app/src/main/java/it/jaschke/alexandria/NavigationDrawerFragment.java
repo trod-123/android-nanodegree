@@ -26,6 +26,9 @@ import android.widget.ListView;
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
+ *
+ * TODO: Redesign the navigation drawer so that it also covers the app bar and also contains other
+ * pertinent information.
  */
 public class NavigationDrawerFragment extends Fragment {
 

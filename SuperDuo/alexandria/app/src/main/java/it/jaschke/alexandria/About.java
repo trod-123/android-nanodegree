@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+// TODO: Place the about stuff into the navigation drawer
 public class About extends Fragment {
 
     public About(){

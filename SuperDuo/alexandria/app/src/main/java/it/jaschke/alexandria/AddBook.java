@@ -69,16 +69,26 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
             @Override
             public void afterTextChanged(Editable s) {
-                String ean =s.toString();
-                //catch isbn10 numbers
+                // TODO: Add user confirmation messages that the book has been added; allow the
+                //  user themselves to add the book without adding the book automatically without
+                //  the user even giving the action to add it (or implement a preference?)
+                String ean = s.toString();
+                // catch isbn10 numbers
+                // Prefix "978" to the ISBN if user left them out
                 if(ean.length()==10 && !ean.startsWith("978")){
                     ean="978"+ean;
                 }
+                // Do not search and add book until the isbn field is complete
                 if(ean.length()<13){
                     clearFields();
                     return;
                 }
-                //Once we have an ISBN, start a book intent
+
+                // Once we have an ISBN, start a book intent
+                // Adds the book automatically to the user's database once the ISBN has been inputted
+                // User clicking on the save button does not add the book; it just erases what is
+                //  in the edit text field. the book is ALREADY ADDED once the isbn is completed
+                //  and is valid
                 Intent bookIntent = new Intent(getActivity(), BookService.class);
                 bookIntent.putExtra(BookService.EAN, ean);
                 bookIntent.setAction(BookService.FETCH_BOOK);
@@ -87,6 +97,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
+        // TODO: Implement scanning functionality
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +117,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
+        // Clear search text view when user clicks on save button
+        // TODO: Allow the user to add the book themselves instead of automatically
         rootView.findViewById(R.id.save_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,6 +126,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
+        // Delete the book from the cp when user clicks on delete button
         rootView.findViewById(R.id.delete_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,12 +169,16 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         );
     }
 
+    // TODO: Enable book title, author, genre search functionality, not just by ISBN
+    // Use Retrofit RESPONSE objects to populate a list of results and the user can click on
+    //  a result to view information before adding the book to their own list themselves
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
             return;
         }
 
+        // TODO: Each of these fields can potentially be null. Catch those before they happen.
         String bookTitle = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.TITLE));
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText(bookTitle);
 
