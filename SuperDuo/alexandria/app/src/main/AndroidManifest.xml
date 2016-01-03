@@ -7,12 +7,22 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+
+        <!-- For the barcode scanner -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="barcode" />
+
+        <!-- Main activity -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
@@ -22,6 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Settings activity -->
         <activity
             android:label="@string/title_activity_settings"
             android:name=".SettingsActivity"
@@ -31,16 +43,22 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <!-- Barcode scanner activity -->
+        <activity android:name=".BarcodeCaptureActivity"
+                  android:label="@string/scan"/>
 
-
+        <!-- For the content provider -->
         <provider
             android:name=".data.BookProvider"
             android:authorities="it.jaschke.alexandria"
             android:exported="false" />
+
+        <!-- For interacting with the google books api -->
         <service
             android:name=".services.BookService"
             android:exported="false" >
         </service>
+
     </application>
 
 </manifest>
