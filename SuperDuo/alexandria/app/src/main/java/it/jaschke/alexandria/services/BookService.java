@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -16,12 +17,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import it.jaschke.alexandria.MainActivity;
 import it.jaschke.alexandria.R;
 import it.jaschke.alexandria.data.AlexandriaContract;
+import it.jaschke.alexandria.provider.books.BooksCursor;
+import it.jaschke.alexandria.provider.books.BooksSelection;
 
 
 /**
@@ -42,6 +47,7 @@ public class BookService extends IntentService {
         super("Alexandria");
     }
 
+    // Intent action can be fetch or delete book
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
@@ -57,7 +63,7 @@ public class BookService extends IntentService {
     }
 
     /**
-     * Handle action Foo in the provided background thread with the provided
+     * Handle action deleteBook in the provided background thread with the provided
      * parameters.
      */
     private void deleteBook(String ean) {
@@ -66,30 +72,59 @@ public class BookService extends IntentService {
         }
     }
 
+//    @StringDef({
+//            Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
+//            Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO,
+//            Camera.Parameters.FOCUS_MODE_AUTO,
+//            Camera.Parameters.FOCUS_MODE_EDOF,
+//            Camera.Parameters.FOCUS_MODE_FIXED,
+//            Camera.Parameters.FOCUS_MODE_INFINITY,
+//            Camera.Parameters.FOCUS_MODE_MACRO
+//    })
+//    @Retention(RetentionPolicy.SOURCE)
+//    private @interface FocusMode {}
+
     /**
      * Handle action fetchBook in the provided background thread with the provided
      * parameters.
      */
     private void fetchBook(String ean) {
 
+        // TODO: Need to first check whether the given string is an ISBN or a search query
+        // This query type is only going to be used in querying the databse if the book is already
+        //  in it.
+        // Search functions do not need to classify query type. ISBN searches can be performed
+        //  and the books with those ISBNs will be returned in the results.
+
+        // TODO: Add functionality or direction for users in making "special" search queries that,
+        //  for example, narrows results based on author or title.
+
+
+        // Only fetch books of valid ISBNs
         if(ean.length()!=13){
             return;
         }
 
-        Cursor bookEntry = getContentResolver().query(
-                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(ean)),
-                null, // leaving "columns" null just returns all the columns.
-                null, // cols for "where" clause
-                null, // values for "where" clause
-                null  // sort order
-        );
+        // TODO: Check if book already in database. This should be done only when the user is going
+//         //to add the book, not before populating results. The results can already contain the
+//         //book that is already in the database.
+//        Cursor bookEntry = getContentResolver().query(
+//                AlexandriaContract.BookEntry.buildBookUri(Long.parseLong(ean)),
+//                null, // leaving "columns" null just returns all the columns.
+//                null, // cols for "where" clause
+//                null, // values for "where" clause
+//                null  // sort order
+//        );
+//        //If the book is already in the database, there is no need to fetch it again
+//        if(bookEntry.getCount()>0){
+//            bookEntry.close();
+//            return;
+//        }
+//
+//        bookEntry.close();
 
-        if(bookEntry.getCount()>0){
-            bookEntry.close();
-            return;
-        }
 
-        bookEntry.close();
+        // Fetch process
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -202,6 +237,13 @@ public class BookService extends IntentService {
         }
     }
 
+    // There are 3 distinct tables in Alexandria: book, authors, and categories. Upon book detail
+    //  query, the tables are merged (check BookProvider) and a single book instance can grab
+    //  all the values of author or category that have the same EAN (ISBN)
+    // TODO: Maybe for your implementation, you create multiple tables for the list items and do
+    //  the same? Table row ID would be the EAN, and what you'd be doing for the query is just
+    //  querying the EAN. There is no selection or projection involved; it's all simply passing in
+    //  the EAN into the uri matcher.
     private void writeBackBook(String ean, String title, String subtitle, String desc, String imgUrl) {
         ContentValues values= new ContentValues();
         values.put(AlexandriaContract.BookEntry._ID, ean);

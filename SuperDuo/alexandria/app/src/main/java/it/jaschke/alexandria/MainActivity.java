@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 nextFragment = new ListOfBooks();
                 break;
             case 1:
-                nextFragment = new AddBook();
+                nextFragment = new FetchBooksFragment();
                 break;
             case 2:
                 nextFragment = new About();

@@ -31,6 +31,23 @@
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
     <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
 
+    <!-- Fetch adapter strings -->
+    <string name="results_item_title_none">No title</string>
+    <string name="results_item_authors_none">Author not specified</string>
+    <string name="results_item_year_none"> </string>
+    <string name="results_item_description_none"></string>
+
+    <!-- Strings for xml tools -->
+    <string name="tools_results_item_title">Fullmetal Alchemist</string>
+    <string name="tools_results_item_author_date">Hiromu Arakawa, 2000</string>
+    <string name="tools_results_item_description">
+        Breaking the laws of nature is a serious crime! Reads R to L (Japanese Style), for audiences
+         T As Greed and King Bradley continue their battle, the mysterious homunculus "father" makes
+         his move under Central City. In order to achieve his objectives, he will need...
+    </string>
+    <string name="tools_fetch_books_empty">Search for something!</string>
+
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.
     The original version of this app was built by Sascha Jaschke, and a modified version is given to students in the Udacity Android Nanodegree program. </string>

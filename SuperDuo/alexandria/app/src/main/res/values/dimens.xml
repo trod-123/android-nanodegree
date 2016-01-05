@@ -5,7 +5,19 @@
     <dimen name="head_line">24sp</dimen>
     <dimen name="small_fontsize">12sp</dimen>
 
+    <!-- Padding and margins -->
+    <dimen name="results_list_item_horizontal_padding">16dp</dimen>
+    <dimen name="results_list_item_vertical_padding">8dp</dimen>
+    <dimen name="results_list_item_spacing">8dp</dimen>
+
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <!-- Results list view -->
+    <dimen name="results_list_item_thumbnail_width">96dp</dimen>
+    <dimen name="results_list_item_thumbnail_height">256dp</dimen>
+
+
+
 </resources>

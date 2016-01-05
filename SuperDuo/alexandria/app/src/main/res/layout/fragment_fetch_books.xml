@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center_horizontal" android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/fetch_books_search_field"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:inputType="text"
+            android:minEms="@integer/ean_width"
+            android:saveEnabled="true"
+            android:maxLines="1"
+            android:hint="@string/input_hint"
+            android:paddingRight="20dp"/>
+
+        <Button
+            android:id="@+id/fetch_books_button_scan"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/scan_button"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Empty list -->
+        <TextView
+            android:id="@+id/fetch_books_empty"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:text="@string/tools_fetch_books_empty"/>
+
+        <!-- Search results -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fetch_books_recyclerview"
+            android:layout_width="match_parent" android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
+</LinearLayout>
