@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main -->
+    <!-- Main/Titles -->
     <string name="app_name">Alexandria</string>
+    <string name="title_fragment_books">List of Books</string>
+    <string name="title_fragment_fetch">Find books</string>
+    <string name="title_fragment_about">About this App</string>
 
     <!-- Shared preferences keys -->
     <string name="sp_sync_status_key">SyncStatus</string>
 
-    <!-- Menu Items -->
-    <string name="books">List of Books</string>
-    <string name="scan">Scan/Add a Book</string>
-    <string name="about">About this App</string>
-
     <string name="navigation_drawer_open" >Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string name="scan_button">Scan</string>
-    <string name="input_hint">Insert ISBN-13. Digits only.</string>
     <string name="book_cover">Bookcover</string>
 
     <string name="ok_button">Next</string>
@@ -31,16 +27,17 @@
     <string name="share_text">A must read book: </string>
 
     <!-- Barcode Scanner strings -->
-    <string name="ok">OK</string>
-    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
-    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
-
-    <!-- Fetch adapter strings -->
-    <string name="results_item_title_none">No title</string>
-    <string name="results_item_authors_none">Author not specified</string>
-    <string name="results_item_year_none"> </string>
-    <string name="results_item_description_none"></string>
+    <string name="barcode_scanner_ok">OK</string>
+    <string name="barcode_scanner_permission_camera_rationale">
+        Access to the camera is needed for detection
+    </string>
+    <string name="barcode_scanner_no_camera_permission">
+        This application cannot run because it does not have the camera permission.  The application
+        will now exit.
+    </string>
+    <string name="barcode_scanner_low_storage_error">Face detector dependencies cannot be downloaded
+        due to low device storage
+    </string>
 
     <!-- Empty fetch recyclerview strings -->
     <string name="empty_fetch_books_null_query">Search for something!</string>
@@ -48,11 +45,17 @@
         The network is not available. Try checking your internet connection before searching for
         books.
     </string>
-    <string name="empty_fetch_books_server_down">No results found. The server is not returning data.</string>
+    <string name="empty_fetch_books_server_down">
+        No results found. The server is not returning data.
+    </string>
     <string name="empty_fetch_books_server_invalid">
         The server is not returning valid data. Please check for an updated version of Books.
     </string>
     <string name="empty_fetch_books_volume_empty">No results found.</string>
+
+    <!-- Fetch Books Fragment strings -->
+    <string name="fetch_scan_button">Scan</string>
+    <string name="fetch_input_hint">Search for title, author, ISBN, etc.</string>
 
     <!-- Strings for xml tools -->
     <string name="tools_results_item_title">Fullmetal Alchemist</string>
@@ -60,7 +63,7 @@
     <string name="tools_results_item_description">
         Breaking the laws of nature is a serious crime! Reads R to L (Japanese Style), for audiences
          T As Greed and King Bradley continue their battle, the mysterious homunculus "father" makes
-         his move under Central City. In order to achieve his objectives, he will need...
+         his move under Central City. In order to achieve his objectives, he will need&#8230;
     </string>
 
 

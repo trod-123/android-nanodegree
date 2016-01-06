@@ -1,48 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TODO: Fix the ui layout and dimensions -->
-<LinearLayout
+<android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:layout_width="match_parent" android:layout_height="80dp"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    card_view:cardElevation="@dimen/results_list_item_elevation"
+    android:foreground="?android:attr/selectableItemBackground"
     android:minHeight="?android:attr/listPreferredItemHeightLarge"
-    android:paddingStart="@dimen/results_list_item_horizontal_padding"
+    android:layout_marginStart="@dimen/results_list_item_horizontal_padding"
+    android:layout_marginLeft="@dimen/results_list_item_horizontal_padding"
+    android:layout_marginEnd="@dimen/results_list_item_horizontal_padding"
+    android:layout_marginRight="@dimen/results_list_item_horizontal_padding"
+    android:layout_marginTop="@dimen/results_list_item_vertical_padding"
+    android:layout_marginBottom="@dimen/results_list_item_vertical_padding">
+
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Left column, Book thumbnail image -->
+        <ImageView
+            android:id="@+id/results_list_imageview_book_thumbnail"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center|top" android:gravity="center"
+            tools:src="@drawable/ic_action_accept"
+            android:padding="@dimen/results_list_item_spacing"/>
+
+        <!-- Right column, informational -->
+        <LinearLayout
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical"
+            android:padding="@dimen/results_list_item_spacing">
+
+            <TextView
+                android:id="@+id/results_list_textview_title"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/primary_text"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="@dimen/results_list_item_title_size"
+                tools:text="@string/tools_results_item_title"/>
+
+            <TextView
+                android:id="@+id/results_list_textview_author_date"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/results_list_item_author_size"
+                tools:text="@string/tools_results_item_author_date"/>
+
+            <TextView
+                android:id="@+id/results_list_textview_description"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/results_list_item_description_size"
+                tools:text="@string/tools_results_item_description"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+
+<!--     android:paddingStart="@dimen/results_list_item_horizontal_padding"
     android:paddingLeft="@dimen/results_list_item_horizontal_padding"
     android:paddingEnd="@dimen/results_list_item_horizontal_padding"
     android:paddingRight="@dimen/results_list_item_horizontal_padding"
     android:paddingTop="@dimen/results_list_item_vertical_padding"
-    android:paddingBottom="@dimen/results_list_item_vertical_padding">
-
-    <!-- Left column, Book thumbnail image -->
-    <ImageView
-        android:id="@+id/results_list_imageview_book_thumbnail"
-        android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:gravity="center"
-        tools:src="@drawable/ic_action_accept"/>
-
-    <!-- Right column, informational -->
-    <LinearLayout
-        android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/results_list_textview_title"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            tools:text="@string/tools_results_item_title"/>
-
-        <TextView
-            android:id="@+id/results_list_textview_author_date"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            tools:text="@string/tools_results_item_author_date"/>
-
-        <TextView
-            android:id="@+id/results_list_textview_description"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            tools:text="@string/tools_results_item_description"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+    android:paddingBottom="@dimen/results_list_item_vertical_padding" -->

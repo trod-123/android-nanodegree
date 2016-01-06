@@ -36,7 +36,12 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden"> <!-- android:windowSoftInputMode="stateHidden"
+                                                            prevents keyboard from popping up
+                                                            automatically if activity loads with an
+                                                            EditText as the first view
+                                                             (link: http://stackoverflow.com/questions/2496901/android-on-screen-keyboard-auto-popping-up -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -55,7 +60,7 @@
 
         <!-- Barcode scanner activity -->
         <activity android:name=".BarcodeCaptureActivity"
-                  android:label="@string/scan"/>
+                  android:label="@string/title_fragment_fetch"/>
 
         <!--&lt;!&ndash; For the content provider &ndash;&gt;-->
         <!--<provider-->

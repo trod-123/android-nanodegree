@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="grey">#cccccc</color>
+    <color name="black">#000000</color>
+
+    <!-- using the "Purple" material palette -->
+    <color name="primary">#9c27b0</color> <!-- 500 -->
+    <color name="primary_dark">#7b1fa2</color> <!-- 700 -->
+    <color name="primary_light">#e1bee7</color> <!-- 100 -->
+    <!-- Pink A400 -->
+    <color name="accent">#f50057</color>
+    <!-- text colors -->
+    <color name="primary_text">#212121</color> <!-- Grey 900 -->
+    <color name="secondary_text">#757575</color> <!-- Grey 600 -->
+    <color name="tertiary_text">#607d8b</color> <!-- Blue Grey 500 -->
+
+    <!-- touch selector colors -->
+    <color name="touch_selector_activated">@color/primary_light</color>
+
+</resources>

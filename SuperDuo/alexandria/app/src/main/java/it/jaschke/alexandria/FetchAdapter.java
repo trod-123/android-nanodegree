@@ -3,6 +3,7 @@ package it.jaschke.alexandria;
 import android.content.Context;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.EventLogTags;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 
@@ -117,7 +121,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             description = volumeInfo.getDescription();
         }
         if (description.length() > 0) {
-            holder.mDescriptionTextView.setText(description);
+            holder.mDescriptionTextView.setText(Html.fromHtml(description));
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
         } else {
             holder.mDescriptionTextView.setVisibility(View.GONE);
@@ -127,7 +131,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null) {
             imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
         }
-        Glide.with(mContext)
+        Picasso.with(mContext)
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);

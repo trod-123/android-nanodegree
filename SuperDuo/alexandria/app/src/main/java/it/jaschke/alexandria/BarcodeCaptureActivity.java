@@ -142,9 +142,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
             }
         };
 
-        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
+        Snackbar.make(mGraphicOverlay, R.string.barcode_scanner_permission_camera_rationale,
                 Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.ok, listener)
+                .setAction(R.string.barcode_scanner_ok, listener)
                 .show();
     }
 
@@ -196,8 +196,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
             boolean hasLowStorage = registerReceiver(null, lowstorageFilter) != null;
 
             if (hasLowStorage) {
-                Toast.makeText(this, R.string.low_storage_error, Toast.LENGTH_LONG).show();
-                Log.w(TAG, getString(R.string.low_storage_error));
+                Toast.makeText(this, R.string.barcode_scanner_low_storage_error, Toast.LENGTH_LONG).show();
+                Log.w(TAG, getString(R.string.barcode_scanner_low_storage_error));
             }
         }
 
@@ -298,8 +298,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Multitracker sample")
-                .setMessage(R.string.no_camera_permission)
-                .setPositiveButton(R.string.ok, listener)
+                .setMessage(R.string.barcode_scanner_no_camera_permission)
+                .setPositiveButton(R.string.barcode_scanner_ok, listener)
                 .show();
     }
 

@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -201,7 +200,7 @@ public class FetchBooksFragment extends Fragment
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        activity.setTitle(R.string.scan);
+        activity.setTitle(R.string.title_fragment_fetch);
     }
 
     private class FetchResultsTask extends AsyncTask<Void, Void, List<Volume>> {
