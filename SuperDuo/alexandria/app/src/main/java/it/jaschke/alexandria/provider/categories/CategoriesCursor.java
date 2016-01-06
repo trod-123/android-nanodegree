@@ -41,12 +41,26 @@ public class CategoriesCursor extends AbstractCursor implements CategoriesModel 
     }
 
     /**
-     * Category name. (String, Nullable)
-     * Can be {@code null}.
+     * Category name. (String, Not nullable)
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     public String getName() {
         String res = getStringOrNull(CategoriesColumns.NAME);
+        if (res == null)
+            throw new NullPointerException("The value of 'name' in the database was null, which is not allowed according to the model definition");
+        return res;
+    }
+
+    /**
+     * The volume corresponding to the category. (String, Not nullable)
+     * Cannot be {@code null}.
+     */
+    @NonNull
+    public String getCategoryvolumeid() {
+        String res = getStringOrNull(CategoriesColumns.CATEGORYVOLUMEID);
+        if (res == null)
+            throw new NullPointerException("The value of 'categoryvolumeid' in the database was null, which is not allowed according to the model definition");
         return res;
     }
 }

@@ -46,7 +46,7 @@ public class BooksContentValues extends AbstractContentValues {
     /**
      * Update row(s) using the values stored by this object and the given selection.
      *
-     * @param context The content resolver to use.
+     * @param contentResolver The content resolver to use.
      * @param where The selection to use (can be {@code null}).
      */
     public int update(Context context, @Nullable BooksSelection where) {

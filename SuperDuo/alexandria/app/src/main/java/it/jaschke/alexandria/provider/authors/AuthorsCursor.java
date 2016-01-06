@@ -41,12 +41,26 @@ public class AuthorsCursor extends AbstractCursor implements AuthorsModel {
     }
 
     /**
-     * Author's name. (String, Nullable)
-     * Can be {@code null}.
+     * Author's name. (String, Not nullable)
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     public String getName() {
         String res = getStringOrNull(AuthorsColumns.NAME);
+        if (res == null)
+            throw new NullPointerException("The value of 'name' in the database was null, which is not allowed according to the model definition");
+        return res;
+    }
+
+    /**
+     * The volume corresponding to the author. (String, Not nullable)
+     * Cannot be {@code null}.
+     */
+    @NonNull
+    public String getAuthorvolumeid() {
+        String res = getStringOrNull(AuthorsColumns.AUTHORVOLUMEID);
+        if (res == null)
+            throw new NullPointerException("The value of 'authorvolumeid' in the database was null, which is not allowed according to the model definition");
         return res;
     }
 }

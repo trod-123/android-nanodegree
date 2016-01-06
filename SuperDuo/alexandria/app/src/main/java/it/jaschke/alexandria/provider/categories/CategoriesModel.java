@@ -27,9 +27,16 @@ import android.support.annotation.Nullable;
 public interface CategoriesModel extends BaseModel {
 
     /**
-     * Category name. (String, Nullable)
-     * Can be {@code null}.
+     * Category name. (String, Not nullable)
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     String getName();
+
+    /**
+     * The volume corresponding to the category. (String, Not nullable)
+     * Cannot be {@code null}.
+     */
+    @NonNull
+    String getCategoryvolumeid();
 }

@@ -46,7 +46,7 @@ public class AuthorsContentValues extends AbstractContentValues {
     /**
      * Update row(s) using the values stored by this object and the given selection.
      *
-     * @param context The content resolver to use.
+     * @param contentResolver The content resolver to use.
      * @param where The selection to use (can be {@code null}).
      */
     public int update(Context context, @Nullable AuthorsSelection where) {
@@ -54,15 +54,22 @@ public class AuthorsContentValues extends AbstractContentValues {
     }
 
     /**
-     * Author's name. (String, Nullable)
+     * Author's name. (String, Not nullable)
      */
-    public AuthorsContentValues putName(@Nullable String value) {
+    public AuthorsContentValues putName(@NonNull String value) {
+        if (value == null) throw new IllegalArgumentException("name must not be null");
         mContentValues.put(AuthorsColumns.NAME, value);
         return this;
     }
 
-    public AuthorsContentValues putNameNull() {
-        mContentValues.putNull(AuthorsColumns.NAME);
+
+    /**
+     * The volume corresponding to the author. (String, Not nullable)
+     */
+    public AuthorsContentValues putAuthorvolumeid(@NonNull String value) {
+        if (value == null) throw new IllegalArgumentException("authorvolumeid must not be null");
+        mContentValues.put(AuthorsColumns.AUTHORVOLUMEID, value);
         return this;
     }
+
 }

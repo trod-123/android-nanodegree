@@ -35,9 +35,14 @@ public class AuthorsColumns implements BaseColumns {
     public static final String _ID = BaseColumns._ID;
 
     /**
-     * Author's name. (String, Nullable)
+     * Author's name. (String, Not nullable)
      */
     public static final String NAME = "name";
+
+    /**
+     * The volume corresponding to the author. (String, Not nullable)
+     */
+    public static final String AUTHORVOLUMEID = "authorVolumeId";
 
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
@@ -45,7 +50,8 @@ public class AuthorsColumns implements BaseColumns {
     // @formatter:off
     public static final String[] ALL_COLUMNS = new String[] {
             _ID,
-            NAME
+            NAME,
+            AUTHORVOLUMEID
     };
     // @formatter:on
 
@@ -53,6 +59,7 @@ public class AuthorsColumns implements BaseColumns {
         if (projection == null) return true;
         for (String c : projection) {
             if (c.equals(NAME) || c.contains("." + NAME)) return true;
+            if (c.equals(AUTHORVOLUMEID) || c.contains("." + AUTHORVOLUMEID)) return true;
         }
         return false;
     }

@@ -131,4 +131,44 @@ public class AuthorsSelection extends AbstractSelection<AuthorsSelection> {
         orderBy(AuthorsColumns.NAME, false);
         return this;
     }
+
+    public AuthorsSelection authorvolumeid(String... value) {
+        addEquals(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection authorvolumeidNot(String... value) {
+        addNotEquals(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection authorvolumeidLike(String... value) {
+        addLike(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection authorvolumeidContains(String... value) {
+        addContains(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection authorvolumeidStartsWith(String... value) {
+        addStartsWith(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection authorvolumeidEndsWith(String... value) {
+        addEndsWith(AuthorsColumns.AUTHORVOLUMEID, value);
+        return this;
+    }
+
+    public AuthorsSelection orderByAuthorvolumeid(boolean desc) {
+        orderBy(AuthorsColumns.AUTHORVOLUMEID, desc);
+        return this;
+    }
+
+    public AuthorsSelection orderByAuthorvolumeid() {
+        orderBy(AuthorsColumns.AUTHORVOLUMEID, false);
+        return this;
+    }
 }

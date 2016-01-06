@@ -27,9 +27,16 @@ import android.support.annotation.Nullable;
 public interface AuthorsModel extends BaseModel {
 
     /**
-     * Author's name. (String, Nullable)
-     * Can be {@code null}.
+     * Author's name. (String, Not nullable)
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     String getName();
+
+    /**
+     * The volume corresponding to the author. (String, Not nullable)
+     * Cannot be {@code null}.
+     */
+    @NonNull
+    String getAuthorvolumeid();
 }

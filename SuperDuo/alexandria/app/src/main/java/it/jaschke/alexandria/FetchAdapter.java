@@ -1,12 +1,11 @@
 package it.jaschke.alexandria;
 
 import android.content.Context;
-import android.media.Image;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.EventLogTags;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,15 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
+import it.jaschke.alexandria.utilities.Library;
 
 /**
  * Created by TROD on 20160104.
@@ -52,11 +49,11 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
 
         public ViewHolder(View view) {
             super(view);
-            mThumbnail = (ImageView) view.findViewById(R.id.results_list_imageview_book_thumbnail);
-            mTitleTextView = (TextView) view.findViewById(R.id.results_list_textview_title);
-            mDateAuthorTextView = (TextView) view.findViewById(R.id.results_list_textview_author_date);
-            mDescriptionTextView = (TextView) view.findViewById(R.id.results_list_textview_description);
-            mMenuButton = (ImageButton) view.findViewById(R.id.results_list_action_button);
+            mThumbnail = (ImageView) view.findViewById(R.id.books_list_imageview_book_thumbnail);
+            mTitleTextView = (TextView) view.findViewById(R.id.books_list_textview_title);
+            mDateAuthorTextView = (TextView) view.findViewById(R.id.books_list_textview_author_date);
+            mDescriptionTextView = (TextView) view.findViewById(R.id.books_list_textview_description);
+            mMenuButton = (ImageButton) view.findViewById(R.id.books_list_action_button);
 
             view.setOnClickListener(this);
         }
@@ -76,7 +73,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     public FetchAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (parent instanceof RecyclerView) {
             View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.results_list_item, parent, false);
+                    .inflate(R.layout.books_list_item, parent, false);
             ViewHolder vh = new ViewHolder(view);
             view.setTag(vh);
             return vh;
@@ -88,7 +85,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         // Get information from results list and set view content. Hide views if null.
-        Volume volume = mVolumesList.get(position);
+        final Volume volume = mVolumesList.get(position);
         VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
         // Title of book
         String title;
@@ -139,6 +136,14 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
         // Action menu button
+        // TODO: Do this programmatically. Hide the button if there is no link.
+        // TODO: Add a preview button and embedded book preview feature in app
+        final String infoLink;
+        if (volumeInfo.getInfoLink() != null) {
+            infoLink = volumeInfo.getInfoLink();
+        } else {
+            infoLink = "";
+        }
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
@@ -150,9 +155,10 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                         if (item.getTitle().equals(mContext.getString(R.string.action_view_details))) {
                             Toast.makeText(mContext, "Will view details for item " + position, Toast.LENGTH_SHORT).show();
                         } else if (item.getTitle().equals(mContext.getString(R.string.action_add))) {
-                            Toast.makeText(mContext, "Will add item " + position + " to library.", Toast.LENGTH_SHORT).show();
+                            Library.addToLibrary(mContext, volume);
                         } else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
-                            Toast.makeText(mContext, "Will open up " + position + " in browser.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoLink));
+                            mContext.startActivity(intent);
                         }
                         return true;
                     }

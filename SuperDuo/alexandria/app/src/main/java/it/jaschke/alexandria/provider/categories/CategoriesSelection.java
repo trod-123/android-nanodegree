@@ -131,4 +131,44 @@ public class CategoriesSelection extends AbstractSelection<CategoriesSelection> 
         orderBy(CategoriesColumns.NAME, false);
         return this;
     }
+
+    public CategoriesSelection categoryvolumeid(String... value) {
+        addEquals(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection categoryvolumeidNot(String... value) {
+        addNotEquals(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection categoryvolumeidLike(String... value) {
+        addLike(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection categoryvolumeidContains(String... value) {
+        addContains(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection categoryvolumeidStartsWith(String... value) {
+        addStartsWith(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection categoryvolumeidEndsWith(String... value) {
+        addEndsWith(CategoriesColumns.CATEGORYVOLUMEID, value);
+        return this;
+    }
+
+    public CategoriesSelection orderByCategoryvolumeid(boolean desc) {
+        orderBy(CategoriesColumns.CATEGORYVOLUMEID, desc);
+        return this;
+    }
+
+    public CategoriesSelection orderByCategoryvolumeid() {
+        orderBy(CategoriesColumns.CATEGORYVOLUMEID, false);
+        return this;
+    }
 }

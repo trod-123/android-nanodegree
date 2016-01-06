@@ -35,9 +35,14 @@ public class CategoriesColumns implements BaseColumns {
     public static final String _ID = BaseColumns._ID;
 
     /**
-     * Category name. (String, Nullable)
+     * Category name. (String, Not nullable)
      */
     public static final String NAME = "name";
+
+    /**
+     * The volume corresponding to the category. (String, Not nullable)
+     */
+    public static final String CATEGORYVOLUMEID = "categoryVolumeId";
 
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
@@ -45,7 +50,8 @@ public class CategoriesColumns implements BaseColumns {
     // @formatter:off
     public static final String[] ALL_COLUMNS = new String[] {
             _ID,
-            NAME
+            NAME,
+            CATEGORYVOLUMEID
     };
     // @formatter:on
 
@@ -53,6 +59,7 @@ public class CategoriesColumns implements BaseColumns {
         if (projection == null) return true;
         for (String c : projection) {
             if (c.equals(NAME) || c.contains("." + NAME)) return true;
+            if (c.equals(CATEGORYVOLUMEID) || c.contains("." + CATEGORYVOLUMEID)) return true;
         }
         return false;
     }

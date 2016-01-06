@@ -46,7 +46,7 @@ public class CategoriesContentValues extends AbstractContentValues {
     /**
      * Update row(s) using the values stored by this object and the given selection.
      *
-     * @param context The content resolver to use.
+     * @param contentResolver The content resolver to use.
      * @param where The selection to use (can be {@code null}).
      */
     public int update(Context context, @Nullable CategoriesSelection where) {
@@ -54,15 +54,22 @@ public class CategoriesContentValues extends AbstractContentValues {
     }
 
     /**
-     * Category name. (String, Nullable)
+     * Category name. (String, Not nullable)
      */
-    public CategoriesContentValues putName(@Nullable String value) {
+    public CategoriesContentValues putName(@NonNull String value) {
+        if (value == null) throw new IllegalArgumentException("name must not be null");
         mContentValues.put(CategoriesColumns.NAME, value);
         return this;
     }
 
-    public CategoriesContentValues putNameNull() {
-        mContentValues.putNull(CategoriesColumns.NAME);
+
+    /**
+     * The volume corresponding to the category. (String, Not nullable)
+     */
+    public CategoriesContentValues putCategoryvolumeid(@NonNull String value) {
+        if (value == null) throw new IllegalArgumentException("categoryvolumeid must not be null");
+        mContentValues.put(CategoriesColumns.CATEGORYVOLUMEID, value);
         return this;
     }
+
 }

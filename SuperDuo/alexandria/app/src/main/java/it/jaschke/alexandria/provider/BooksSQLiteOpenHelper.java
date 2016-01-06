@@ -41,7 +41,8 @@ public class BooksSQLiteOpenHelper extends SQLiteOpenHelper {
     public static final String SQL_CREATE_TABLE_AUTHORS = "CREATE TABLE IF NOT EXISTS "
             + AuthorsColumns.TABLE_NAME + " ( "
             + AuthorsColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + AuthorsColumns.NAME + " TEXT "
+            + AuthorsColumns.NAME + " TEXT NOT NULL, "
+            + AuthorsColumns.AUTHORVOLUMEID + " TEXT NOT NULL "
             + " );";
 
     public static final String SQL_CREATE_TABLE_BOOKS = "CREATE TABLE IF NOT EXISTS "
@@ -74,7 +75,8 @@ public class BooksSQLiteOpenHelper extends SQLiteOpenHelper {
     public static final String SQL_CREATE_TABLE_CATEGORIES = "CREATE TABLE IF NOT EXISTS "
             + CategoriesColumns.TABLE_NAME + " ( "
             + CategoriesColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + CategoriesColumns.NAME + " TEXT "
+            + CategoriesColumns.NAME + " TEXT NOT NULL, "
+            + CategoriesColumns.CATEGORYVOLUMEID + " TEXT NOT NULL "
             + " );";
 
     // @formatter:on
