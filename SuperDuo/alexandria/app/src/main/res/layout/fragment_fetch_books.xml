@@ -35,12 +35,21 @@
             android:id="@+id/fetch_books_empty"
             android:layout_width="match_parent" android:layout_height="match_parent"
             android:gravity="center_horizontal"
-            android:text="@string/tools_fetch_books_empty"/>
+            android:text="@string/empty_fetch_books_null_query"/>
 
         <!-- Search results -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fetch_books_recyclerview"
             android:layout_width="match_parent" android:layout_height="match_parent"/>
+
+        <!-- Spinning wheel for loading -->
+        <ProgressBar
+            android:id="@+id/fetch_books_progress_spinner"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            style="@style/Widget.AppCompat.ProgressBar" />
+
 
     </FrameLayout>
 

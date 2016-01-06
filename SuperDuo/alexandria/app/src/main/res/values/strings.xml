@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Main -->
     <string name="app_name">Alexandria</string>
+
+    <!-- Shared preferences keys -->
+    <string name="sp_sync_status_key">SyncStatus</string>
 
     <!-- Menu Items -->
     <string name="books">List of Books</string>
@@ -37,6 +42,18 @@
     <string name="results_item_year_none"> </string>
     <string name="results_item_description_none"></string>
 
+    <!-- Empty fetch recyclerview strings -->
+    <string name="empty_fetch_books_null_query">Search for something!</string>
+    <string name="empty_fetch_books_no_network">
+        The network is not available. Try checking your internet connection before searching for
+        books.
+    </string>
+    <string name="empty_fetch_books_server_down">No results found. The server is not returning data.</string>
+    <string name="empty_fetch_books_server_invalid">
+        The server is not returning valid data. Please check for an updated version of Books.
+    </string>
+    <string name="empty_fetch_books_volume_empty">No results found.</string>
+
     <!-- Strings for xml tools -->
     <string name="tools_results_item_title">Fullmetal Alchemist</string>
     <string name="tools_results_item_author_date">Hiromu Arakawa, 2000</string>
@@ -45,7 +62,6 @@
          T As Greed and King Bradley continue their battle, the mysterious homunculus "father" makes
          his move under Central City. In order to achieve his objectives, he will need...
     </string>
-    <string name="tools_fetch_books_empty">Search for something!</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->

@@ -28,7 +28,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     private List<Volume> mVolumesList;
     private int mPosition;
     final private FetchAdapterOnClickHandler mClickHandler;
-    final private View mEmptyView;
+    final private TextView mEmptyView;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // Views go here
@@ -60,7 +60,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     public FetchAdapter(Context context, FetchAdapterOnClickHandler handler, View empty) {
         mContext = context;
         mClickHandler = handler;
-        mEmptyView = empty;
+        mEmptyView = (TextView) empty;
     }
 
     @Override
@@ -82,63 +82,55 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
 
         // Get information from results list and set view content. Hide views if null.
         Volume volume = mVolumesList.get(position);
-        if (volume != null) {
-            VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
-            if (volumeInfo != null) {
-                // Title of book
-                String title = "";
-                if (volumeInfo.getTitle() != null) {
-                    title = volumeInfo.getTitle();
-                    holder.mTitleTextView.setText(title);
-                    holder.mTitleTextView.setVisibility(View.VISIBLE);
-                } else {
-                    holder.mTitleTextView.setVisibility(View.GONE);
-                }
-                // Authors and published date (only include year)
-                String authors = "";
-                if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
-                    for (int i = 0; i < volumeInfo.getAuthors().size(); i++) {
-                        authors += volumeInfo.getAuthors().get(i) + ", ";
-                    }
-                }
-                String year = "";
-                if (volumeInfo.getPublishedDate() != null) {
-                    year = volumeInfo.getPublishedDate().substring(0, 4);
-                }
-                if ((authors + year).length() > 0) {
-                    holder.mDateAuthorTextView.setText(authors + year);
-                    holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
-                } else {
-                    holder.mDateAuthorTextView.setVisibility(View.GONE);
-                }
-                // Description
-                String description = "";
-                if (volume.getSearchInfo() != null) {
-                    description = volume.getSearchInfo().getTextSnippet();
-                } else if (volumeInfo.getDescription() != null){
-                    description = volumeInfo.getDescription();
-                }
-                if (description.length() > 0) {
-                    holder.mDescriptionTextView.setText(description);
-                    holder.mDescriptionTextView.setVisibility(View.VISIBLE);
-                } else {
-                    holder.mDescriptionTextView.setVisibility(View.GONE);
-                }
-                // Cover thumbnail
-                String imageLink = "";
-                if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null) {
-                    imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
-                }
-                Glide.with(mContext)
-                        .load(imageLink)
-                        .error(R.drawable.ic_launcher)
-                        .into(holder.mThumbnail);
-            } else {
-                Log.d(LOG_TAG, "The volumeInfo object is null.");
-            }
+        VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
+        // Title of book
+        String title = "";
+        if (volumeInfo.getTitle() != null) {
+            title = volumeInfo.getTitle();
+            holder.mTitleTextView.setText(title);
+            holder.mTitleTextView.setVisibility(View.VISIBLE);
         } else {
-            Log.d(LOG_TAG, "The volume object is null.");
+            holder.mTitleTextView.setVisibility(View.GONE);
         }
+        // Authors and published date (only include year)
+        String authors = "";
+        if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
+            for (int i = 0; i < volumeInfo.getAuthors().size(); i++) {
+                authors += volumeInfo.getAuthors().get(i) + ", ";
+            }
+        }
+        String year = "";
+        if (volumeInfo.getPublishedDate() != null) {
+            year = volumeInfo.getPublishedDate().substring(0, 4);
+        }
+        if ((authors + year).length() > 0) {
+            holder.mDateAuthorTextView.setText(authors + year);
+            holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
+        } else {
+            holder.mDateAuthorTextView.setVisibility(View.GONE);
+        }
+        // Description
+        String description = "";
+        if (volume.getSearchInfo() != null) {
+            description = volume.getSearchInfo().getTextSnippet();
+        } else if (volumeInfo.getDescription() != null) {
+            description = volumeInfo.getDescription();
+        }
+        if (description.length() > 0) {
+            holder.mDescriptionTextView.setText(description);
+            holder.mDescriptionTextView.setVisibility(View.VISIBLE);
+        } else {
+            holder.mDescriptionTextView.setVisibility(View.GONE);
+        }
+        // Cover thumbnail
+        String imageLink = "";
+        if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null) {
+            imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
+        }
+        Glide.with(mContext)
+                .load(imageLink)
+                .error(R.drawable.ic_launcher)
+                .into(holder.mThumbnail);
     }
 
     @Override
@@ -151,11 +143,6 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     }
 
     public List<Volume> swapList(List<Volume> volumeList) {
-        if (volumeList != null) {
-            Log.d(LOG_TAG, "In swapList. The size of the volumeList is " + volumeList.size());
-        } else {
-            Log.d(LOG_TAG, "In swapList. The volumeList is null.");
-        }
         mVolumesList = volumeList;
         mEmptyView.setVisibility(getItemCount() == 0 ? View.VISIBLE : View.GONE);
         return mVolumesList;

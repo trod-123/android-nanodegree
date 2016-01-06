@@ -2,8 +2,10 @@ package it.jaschke.alexandria;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -25,11 +30,13 @@ import java.util.TimerTask;
 import it.jaschke.alexandria.api.APIHelper;
 import it.jaschke.alexandria.api.APIService;
 import it.jaschke.alexandria.model.Volume;
+import it.jaschke.alexandria.utilities.Network;
 
 /**
  * Created by TROD on 20160104.
  */
-public class FetchBooksFragment extends Fragment {
+public class FetchBooksFragment extends Fragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String LOG_TAG = FetchBooksFragment.class.getSimpleName();
 
@@ -37,6 +44,7 @@ public class FetchBooksFragment extends Fragment {
     private View mRootView;
     private RecyclerView mRecyclerView;
     private FetchAdapter mFetchAdapter;
+    private ProgressBar mLoadingSpinner;
     private List<Volume> mVolumeList;
 
     // For the saveInstanceState
@@ -46,6 +54,37 @@ public class FetchBooksFragment extends Fragment {
 
     public FetchBooksFragment(){
     }
+
+
+    /*
+        When implementing SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
+         register the listeners in onResume() and unregister them in onPause(), or else
+         onSharedPreferenceChanged() will not be called, even though the SharedPreferences has
+         been changed.
+     */
+
+    // Register the listeners here
+    @Override public void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    // Unregister the listeners here
+    @Override public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    // onRefreshComplete() is called when the SyncAdapter forces a "change" in the sync status
+    //  stored in SharedPreferences
+    @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.sp_sync_status_key))) {
+                updateEmptyView();
+        }
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -61,6 +100,7 @@ public class FetchBooksFragment extends Fragment {
         View emptyView = mRootView.findViewById(R.id.fetch_books_empty);
 
         mSearchField = (EditText) mRootView.findViewById(R.id.fetch_books_search_field);
+        mLoadingSpinner = (ProgressBar) mRootView.findViewById(R.id.fetch_books_progress_spinner);
 
         // Initialize recycler view
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.fetch_books_recyclerview);
@@ -108,7 +148,11 @@ public class FetchBooksFragment extends Fragment {
                     @Override public void run() {
                         // This is where actions are done
                         String query = s.toString();
-                        new FetchResultsTask(query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
+                        if (Network.isNetworkAvailable(getContext())) {
+                            new FetchResultsTask(query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
+                        } else {
+                            Network.setSyncStatus(getContext(), Network.SYNC_STATUS_NO_NETWORK);
+                        }
                     }
                 }, TIMER_DURATION);
             }
@@ -140,12 +184,8 @@ public class FetchBooksFragment extends Fragment {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
-//                    statusMessage.setText(R.string.barcode_success);
-//                    barcodeValue.setText(barcode.displayValue);
                     ((EditText) mRootView.findViewById(R.id.fetch_books_search_field)).setText(barcode.displayValue);
-                    Log.d(LOG_TAG, "Barcode read: " + barcode.displayValue);
                 } else {
-//                    statusMessage.setText(R.string.barcode_failure);
                     Log.d(LOG_TAG, "No barcode captured, intent data is null");
                 }
             } else {
@@ -177,26 +217,66 @@ public class FetchBooksFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+            mLoadingSpinner.post(new Runnable() {
+                @Override
+                public void run() {
+                    mLoadingSpinner.setVisibility(View.VISIBLE);
+                }
+            });
         }
 
         @Override
         protected List<Volume> doInBackground(Void... params) {
-            Log.d(LOG_TAG, "Fetching book...");
-
             APIHelper apiHelper = new APIHelper(getContext());
 
             // Fetch search results
-            List<Volume> volumes = apiHelper.getSearchResults(mQuery, mStartIndex, mSort);
-            return volumes;
+            return apiHelper.getSearchResults(mQuery, mStartIndex, mSort);
         }
 
         @Override
         protected void onPostExecute(List<Volume> volumes) {
-            Log.d(LOG_TAG, "Volumes list swapped to something that's filled");
             mFetchAdapter.swapList(volumes);
+            if (volumes == null || volumes.size() != 0) {
+                // Update the empty view according to the last sync status recorded while getting
+                //  search results in the APIHelper
+                updateEmptyView();
+            } else {
+                // If there are no results, set the status and update the empty view to reflect that
+                Network.setSyncStatus(getContext(), Network.SYNC_STATUS_NO_RESULTS);
+            }
             // This is necessary to refresh the recycler view
             mFetchAdapter.notifyDataSetChanged();
+            mLoadingSpinner.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Updates the empty view to display information pertaining to the status of the search
+     */
+    private void updateEmptyView() {
+        if (mFetchAdapter.getItemCount() == 0) {
+            TextView emptyView = (TextView) mRootView.findViewById(R.id.fetch_books_empty);
+            if (emptyView != null) {
+                int message = R.string.empty_fetch_books_null_query;
+                @Network.SyncStatus int status = Network.getSyncStatus(getActivity());
+                switch (status) {
+                    case Network.SYNC_STATUS_NO_RESULTS :
+                        message = R.string.empty_fetch_books_volume_empty;
+                        break;
+                    case Network.SYNC_STATUS_SERVER_DOWN :
+                        message = R.string.empty_fetch_books_server_down;
+                        break;
+                    case Network.SYNC_STATUS_SERVER_INVALID :
+                        message = R.string.empty_fetch_books_server_invalid;
+                        break;
+                    default:
+                        if (!Network.isNetworkAvailable(getActivity())) {
+                            message = R.string.empty_fetch_books_no_network;
+                        }
+                }
+                emptyView.setText(message);
+                mFetchAdapter.notifyDataSetChanged();
+            }
         }
     }
 }

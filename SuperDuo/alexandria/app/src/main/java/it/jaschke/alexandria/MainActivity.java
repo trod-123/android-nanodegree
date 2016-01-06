@@ -17,10 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import it.jaschke.alexandria.api.Callback;
-
-
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, Callback {
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -132,24 +129,24 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         super.onDestroy();
     }
 
-    @Override
-    public void onItemSelected(String ean) {
-        Bundle args = new Bundle();
-        args.putString(BookDetail.EAN_KEY, ean);
-
-        BookDetail fragment = new BookDetail();
-        fragment.setArguments(args);
-
-        int id = R.id.container;
-        if(findViewById(R.id.right_container) != null){
-            id = R.id.right_container;
-        }
-        getSupportFragmentManager().beginTransaction()
-                .replace(id, fragment)
-                .addToBackStack("Book Detail")
-                .commit();
-
-    }
+//    @Override
+//    public void onItemSelected(String ean) {
+//        Bundle args = new Bundle();
+//        args.putString(BookDetail.EAN_KEY, ean);
+//
+//        BookDetail fragment = new BookDetail();
+//        fragment.setArguments(args);
+//
+//        int id = R.id.container;
+//        if(findViewById(R.id.right_container) != null){
+//            id = R.id.right_container;
+//        }
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(id, fragment)
+//                .addToBackStack("Book Detail")
+//                .commit();
+//
+//    }
 
     private class MessageReciever extends BroadcastReceiver {
         @Override
