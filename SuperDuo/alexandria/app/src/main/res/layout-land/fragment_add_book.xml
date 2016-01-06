@@ -17,7 +17,7 @@
             android:saveEnabled="true"
             android:textIsSelectable="false"
             android:maxLength="@integer/ean_size"
-            android:hint="@string/fetch_input_hint"
+            android:hint="@string/list_input_hint"
             android:layout_marginLeft="40dp"
             android:layout_marginStart="40dp"
             android:maxLines="1"
@@ -29,7 +29,6 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/fetch_scan_button"
             android:id="@+id/scan_button"
             android:layout_marginLeft="23dp"
             android:layout_marginStart="23dp"

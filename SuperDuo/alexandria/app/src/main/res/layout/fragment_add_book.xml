@@ -26,13 +26,12 @@
                 android:saveEnabled="true"
                 android:maxLength="@integer/ean_size"
                 android:maxLines="1"
-                android:hint="@string/fetch_input_hint"
+                android:hint="@string/list_input_hint"
                 android:paddingRight="20dp"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/fetch_scan_button"
                 android:id="@+id/scan_button"/>
 
         </LinearLayout>

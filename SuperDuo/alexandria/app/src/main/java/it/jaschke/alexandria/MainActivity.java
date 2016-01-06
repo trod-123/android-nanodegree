@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         switch (position){
             default:
             case 0:
-                nextFragment = new ListOfBooks();
+                nextFragment = new ViewBooksFragment();
                 break;
             case 1:
                 nextFragment = new FetchBooksFragment();

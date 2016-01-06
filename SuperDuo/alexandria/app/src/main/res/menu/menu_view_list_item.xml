@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A pop-up menu for individual search results -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- View more details -->
+    <item android:id="@+id/action_view_details"
+          android:title="@string/action_view_details"/>
+
+    <!-- Add to library -->
+    <item android:id="@+id/action_remove"
+          android:title="@string/action_remove"/>
+
+    <!-- Open in Google Books website -->
+    <item android:id="@+id/action_view_browser"
+          android:title="@string/action_view_browser"/>
+
+</menu>

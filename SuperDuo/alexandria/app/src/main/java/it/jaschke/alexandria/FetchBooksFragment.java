@@ -1,6 +1,7 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -54,6 +55,12 @@ public class FetchBooksFragment extends Fragment
     public FetchBooksFragment(){
     }
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        getActivity().setTitle(R.string.title_fragment_fetch);
+    }
 
     /*
         When implementing SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
@@ -147,7 +154,7 @@ public class FetchBooksFragment extends Fragment
                     @Override public void run() {
                         // This is where actions are done
                         String query = s.toString();
-                        new FetchResultsTask(query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
+                        new FetchResultsTask(getContext(), query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
                     }
                 }, TIMER_DURATION);
             }
@@ -193,18 +200,14 @@ public class FetchBooksFragment extends Fragment
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        activity.setTitle(R.string.title_fragment_fetch);
-    }
-
     private class FetchResultsTask extends AsyncTask<Void, Void, List<Volume>> {
+        Context mContext;
         String mQuery;
         int mStartIndex;
         String mSort;
 
-        public FetchResultsTask(String query, int startIndex, String sort) {
+        public FetchResultsTask(Context context, String query, int startIndex, String sort) {
+            mContext = context;
             mQuery = query;
             mStartIndex = startIndex;
             mSort = sort;
@@ -222,7 +225,7 @@ public class FetchBooksFragment extends Fragment
 
         @Override
         protected List<Volume> doInBackground(Void... params) {
-            APIHelper apiHelper = new APIHelper(getContext());
+            APIHelper apiHelper = new APIHelper(mContext);
 
             // Fetch search results
             return apiHelper.getSearchResults(mQuery, mStartIndex, mSort);

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
-    android:id="@+id/fetch_books_coordinator_root"
+    android:id="@+id/view_books_coordinator_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/fetch_books_root"
+        android:id="@+id/view_books_root"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:orientation="vertical">
 
         <!-- Top panel for search -->
         <EditText
-            android:id="@+id/fetch_books_search_field"
+            android:id="@+id/view_books_search_field"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="@dimen/activity_padding_horizontal_margin"
@@ -31,37 +31,36 @@
 
             <!-- Empty list -->
             <TextView
-                android:id="@+id/fetch_books_empty"
+                android:id="@+id/view_books_empty"
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:gravity="center_horizontal"
-                android:text="@string/empty_fetch_books_null_query"/>
+                android:text="@string/empty_view_books"/>
 
             <!-- Search results -->
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/fetch_books_recyclerview"
+                android:id="@+id/view_books_recyclerview"
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 style="@style/BooksListStyle"/>
 
             <!-- Spinning wheel for loading -->
             <ProgressBar
-                android:id="@+id/fetch_books_progress_spinner"
+                android:id="@+id/view_books_progress_spinner"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:visibility="gone"
                 style="@style/Widget.AppCompat.ProgressBar" />
-
 
         </FrameLayout>
 
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fetch_books_button_scan"
+        android:id="@+id/view_books_button_add"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="@dimen/activity_padding_horizontal_margin"
-        android:src="@drawable/ic_barcode_white_24dp"
-        app:layout_anchor="@id/fetch_books_recyclerview"
+        android:src="@drawable/ic_add_white_24dp"
+        app:layout_anchor="@id/view_books_recyclerview"
         app:layout_behavior="it.jaschke.alexandria.utilities.FABScrollBehavior"
         app:layout_anchorGravity="bottom|right|end"/>
 
