@@ -10,9 +10,16 @@
     <!-- Shared preferences keys -->
     <string name="sp_sync_status_key">SyncStatus</string>
 
+    <!-- Action buttons -->
+    <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_add">Add to library</string>
+    <string name="action_delete">Delete from library</string>
+    <string name="action_view_details">View details</string>
+    <string name="action_view_browser">Open in Google Books</string>
+
     <string name="navigation_drawer_open" >Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
     <string name="book_cover">Bookcover</string>
 
     <string name="ok_button">Next</string>
@@ -22,7 +29,6 @@
     <string name="delete">Delete Book</string>
     <string name="pref_startScreen">Select Startscreen</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="action_share">Share</string>
     <string name="back_button">go back</string>
     <string name="share_text">A must read book: </string>
 

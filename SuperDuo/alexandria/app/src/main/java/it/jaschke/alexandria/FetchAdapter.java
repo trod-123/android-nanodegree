@@ -2,15 +2,19 @@ package it.jaschke.alexandria;
 
 import android.content.Context;
 import android.media.Image;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.EventLogTags;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
@@ -30,7 +34,6 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
 
     private Context mContext;
     private List<Volume> mVolumesList;
-    private int mPosition;
     final private FetchAdapterOnClickHandler mClickHandler;
     final private TextView mEmptyView;
 
@@ -40,10 +43,11 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         public TextView mTitleTextView;
         public TextView mDateAuthorTextView;
         public TextView mDescriptionTextView;
+        public ImageButton mMenuButton;
 
         @Override
         public void onClick(View v) {
-            mClickHandler.onClick(mPosition, this);
+            mClickHandler.onClick(getAdapterPosition(), this);
         }
 
         public ViewHolder(View view) {
@@ -52,6 +56,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             mTitleTextView = (TextView) view.findViewById(R.id.results_list_textview_title);
             mDateAuthorTextView = (TextView) view.findViewById(R.id.results_list_textview_author_date);
             mDescriptionTextView = (TextView) view.findViewById(R.id.results_list_textview_description);
+            mMenuButton = (ImageButton) view.findViewById(R.id.results_list_action_button);
 
             view.setOnClickListener(this);
         }
@@ -81,14 +86,12 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        mPosition = position;
-
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         // Get information from results list and set view content. Hide views if null.
         Volume volume = mVolumesList.get(position);
         VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
         // Title of book
-        String title = "";
+        String title;
         if (volumeInfo.getTitle() != null) {
             title = volumeInfo.getTitle();
             holder.mTitleTextView.setText(title);
@@ -127,7 +130,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             holder.mDescriptionTextView.setVisibility(View.GONE);
         }
         // Cover thumbnail
-        String imageLink = "";
+        String imageLink = "path";
         if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null) {
             imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
         }
@@ -135,6 +138,28 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
+        // Action menu button
+        holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
+                menu.getMenuInflater().inflate(R.menu.menu_results_list_item, menu.getMenu());
+
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details))) {
+                            Toast.makeText(mContext, "Will view details for item " + position, Toast.LENGTH_SHORT).show();
+                        } else if (item.getTitle().equals(mContext.getString(R.string.action_add))) {
+                            Toast.makeText(mContext, "Will add item " + position + " to library.", Toast.LENGTH_SHORT).show();
+                        } else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
+                            Toast.makeText(mContext, "Will open up " + position + " in browser.", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    }
+                });
+                menu.show();
+            }
+        });
     }
 
     @Override

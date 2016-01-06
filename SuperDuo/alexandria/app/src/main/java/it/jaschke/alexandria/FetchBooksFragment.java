@@ -147,11 +147,7 @@ public class FetchBooksFragment extends Fragment
                     @Override public void run() {
                         // This is where actions are done
                         String query = s.toString();
-                        if (Network.isNetworkAvailable(getContext())) {
-                            new FetchResultsTask(query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
-                        } else {
-                            Network.setSyncStatus(getContext(), Network.SYNC_STATUS_NO_NETWORK);
-                        }
+                        new FetchResultsTask(query, 0, APIService.PARAMS.SORT.RELEVANCE).execute();
                     }
                 }, TIMER_DURATION);
             }

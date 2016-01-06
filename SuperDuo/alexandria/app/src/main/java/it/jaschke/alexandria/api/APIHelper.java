@@ -43,15 +43,20 @@ public class APIHelper {
     }
 
     public List<Volume> getSearchResults(String searchQuery, int startIndex, String sort) {
-        // Only loop a certain number of times
-        if (mRecursiveCount == RECURSIVE_MAX) {
-            mRecursiveCount = 0;
-            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_DOWN);
+        // Check for internet connection
+        if (!Network.isNetworkAvailable(mContext)) {
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_NO_NETWORK);
             return null;
         }
         // Ignore empty search queries
         if (searchQuery.length() == 0) {
             Network.setSyncStatus(mContext, Network.SYNC_STATUS_OK);
+            return null;
+        }
+        // Only loop a certain number of times
+        if (mRecursiveCount == RECURSIVE_MAX) {
+            mRecursiveCount = 0;
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_DOWN);
             return null;
         }
         Call<VolumeResults> response = api.getSearchResults(API_KEY, searchQuery, startIndex, sort);
@@ -74,6 +79,11 @@ public class APIHelper {
     }
 
     public Volume getIndividualVolume(int id) {
+        // Check for internet connection
+        if (!Network.isNetworkAvailable(mContext)) {
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_NO_NETWORK);
+            return null;
+        }
         // Only loop a certain number of times
         if (mRecursiveCount == RECURSIVE_MAX) {
             mRecursiveCount = 0;
