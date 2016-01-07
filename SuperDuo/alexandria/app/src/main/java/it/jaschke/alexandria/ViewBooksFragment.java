@@ -3,6 +3,7 @@ package it.jaschke.alexandria;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,13 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.provider.books.BooksColumns;
 import it.jaschke.alexandria.provider.books.BooksCursor;
 import it.jaschke.alexandria.provider.books.BooksSelection;
@@ -35,7 +35,7 @@ public class ViewBooksFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = ViewBooksFragment.class.getSimpleName();
-    private static final int BOOKS_LOADER = 0;
+    private static final int BOOKS_LOADER_ID = 0;
 
     private EditText mSearchField;
     private View mRootView;
@@ -45,6 +45,9 @@ public class ViewBooksFragment extends Fragment
 
     // For the saveInstanceState
     private static final String SIS_QUERY = "query";
+
+    // For keeping track of whether returned cursor was queried
+    private boolean mQueried = false;
 
     public ViewBooksFragment(){
     }
@@ -58,7 +61,7 @@ public class ViewBooksFragment extends Fragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(BOOKS_LOADER, null, this);
+        getLoaderManager().initLoader(BOOKS_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -122,8 +125,13 @@ public class ViewBooksFragment extends Fragment
                 timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override public void run() {
-                        // This is where actions are done
-                        String query = s.toString();
+                        // Restarting the loader needs to be done on the ui thread
+                        mRootView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                restartLoader();
+                            }
+                        });
                     }
                 }, TIMER_DURATION);
             }
@@ -146,17 +154,51 @@ public class ViewBooksFragment extends Fragment
         return mRootView;
     }
 
+    private void restartLoader(){
+        getLoaderManager().restartLoader(BOOKS_LOADER_ID, null, this);
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Prepare the selection for the query
+        String selection =
+                BooksColumns.TITLE + " LIKE ? OR " +
+                BooksColumns.SUBTITLE + " LIKE ? OR " +
+                BooksColumns.AUTHORS + " LIKE ? OR " +
+                BooksColumns.ISBN_10 + " LIKE ? OR " +
+                BooksColumns.ISBN_13 + " LIKE ? OR " +
+                BooksColumns.PUBLISHER + " LIKE ? ";
+        String query = "%" + mSearchField.getText().toString() + "%";
+
+        // If there is a query, load the cursor containing the results
+        if(query.length() - 2 > 0) {
+            mQueried = true;
+            return new CursorLoader(getContext(),
+                    (new BooksSelection()).uri(),
+                    null,
+                    selection,
+                    new String[]{query, query, query, query, query, query},
+                    null);
+        }
+
+        // If the query is empty, load all the books in the library
+        mQueried = false;
         return new CursorLoader(getContext(),
                 (new BooksSelection()).uri(),
-                BooksColumns.ALL_COLUMNS,
-                null, null, null);
+                null, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mViewAdapter.swapCursor(new BooksCursor(data));
+        // If the user queries, set the no results string. If there is no query, set the empty
+        //  library string.
+        TextView emptyView = (TextView) mRootView.findViewById(R.id.view_books_empty);
+        if (mQueried) {
+            emptyView.setText(R.string.empty_view_books_no_results);
+        } else {
+            emptyView.setText(R.string.empty_view_books);
+        }
         mViewAdapter.notifyDataSetChanged();
     }
 

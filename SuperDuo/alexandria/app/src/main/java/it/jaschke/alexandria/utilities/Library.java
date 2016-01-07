@@ -43,7 +43,8 @@ public class Library {
         String smallThumbnailUrl = null;    String thumbnailUrl = null;
         String language = null;             String previewUrl = null;
         String infoUrl = null;              String canonicalVolumeUrl = null;
-        String descriptionSnippet = null;
+        String descriptionSnippet = null;   String authorsString = "";
+        String categoriesString = "";
 
         List<String> authors = null;        List<String> categories = null;
 
@@ -57,8 +58,12 @@ public class Library {
             title = volumeInfo.getTitle();
             if (volumeInfo.getSubtitle() != null)
                 subtitle = volumeInfo.getSubtitle();
-            if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0)
+            if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
                 authors = volumeInfo.getAuthors();
+                for (String author : authors) {
+                    authorsString += author + " ";
+                }
+            }
             if (volumeInfo.getPublisher() != null)
                 publisher = volumeInfo.getPublisher();
             if (volumeInfo.getPublishedDate() != null)
@@ -75,8 +80,12 @@ public class Library {
                 pageCount = volumeInfo.getPageCount();
             if (volumeInfo.getPrintType() != null)
                 printType = volumeInfo.getPrintType();
-            if (volumeInfo.getCategories() != null && volumeInfo.getCategories().size() > 0)
+            if (volumeInfo.getCategories() != null && volumeInfo.getCategories().size() > 0) {
                 categories = volumeInfo.getCategories();
+                for (String category : categories) {
+                    categoriesString += category + " ";
+                }
+            }
             if (volumeInfo.getAverageRating() != null)
                 averageRating = volumeInfo.getAverageRating();
             if (volumeInfo.getRatingsCount() != null)
@@ -107,12 +116,14 @@ public class Library {
         bCv.putBookid(bookId);
         bCv.putTitle(title);
         bCv.putSubtitle(subtitle);
+        bCv.putAuthors(authorsString);
         bCv.putPublisher(publisher);
         bCv.putPublisheddate(publishedDate);
         bCv.putDescription(description);
         bCv.putIsbn10(isbn_10);
         bCv.putIsbn13(isbn_13);
         bCv.putPrinttype(printType);
+        bCv.putCategories(categoriesString);
         bCv.putMaturityrating(maturityRating);
         bCv.putSmallthumbnailurl(smallThumbnailUrl);
         bCv.putThumbnailurl(thumbnailUrl);
@@ -125,8 +136,7 @@ public class Library {
         bCv.putRatingscount(ratingsCount);
         bCv.putAveragerating(averageRating);
 
-
-        // Update is already in library. Add otherwise.
+        // Update if already in library. Add otherwise.
 
         ContentResolver cr = context.getContentResolver();
         // Book

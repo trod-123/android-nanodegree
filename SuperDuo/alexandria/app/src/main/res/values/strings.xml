@@ -61,9 +61,10 @@
 
     <!-- Empty view recyclerview strings -->
     <string name="empty_view_books">Your library is empty. Try adding some books!</string>
+    <string name="empty_view_books_no_results">No results found.</string>
 
     <!-- Search strings -->
-    <string name="list_input_hint">Search for title, author, ISBN, etc.</string>
+    <string name="list_input_hint">Search titles, authors, and ISBNs</string>
 
 
     <!-- Strings for xml tools -->
