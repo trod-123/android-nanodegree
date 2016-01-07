@@ -19,6 +19,10 @@
     <dimen name="books_list_item_author_size">14sp</dimen>
     <dimen name="books_list_item_description_size">14sp</dimen>
 
+    <!-- Scrollbar sizes -->
+    <dimen name="scrollbar_width">4dp</dimen>
+    <dimen name="scrollbar_radius">4dp</dimen>
+
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>

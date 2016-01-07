@@ -12,4 +12,12 @@
         <item name="android:choiceMode">singleChoice</item>
     </style>
 
+    <style name="ScrollbarVerticalStyle">
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb_vertical</item>
+        <item name="android:scrollbarTrackVertical">@drawable/scrollbar_track_vertical</item>
+        <item name="android:scrollbarSize">@dimen/scrollbar_width</item>
+    </style>
+
 </resources>
