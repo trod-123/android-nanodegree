@@ -3,6 +3,7 @@
 
     <!-- Main/Titles -->
     <string name="app_name">Alexandria</string>
+    <string name="title_activity_details">Details</string>
     <string name="title_fragment_books">My Books</string>
     <string name="title_fragment_fetch">Find books</string>
     <string name="title_fragment_about">About @string/app_name</string>
@@ -66,15 +67,40 @@
     <!-- Search strings -->
     <string name="list_input_hint">Search titles, authors, and ISBNs</string>
 
-
     <!-- Strings for xml tools -->
-    <string name="tools_results_item_title">Fullmetal Alchemist</string>
-    <string name="tools_results_item_author_date">Hiromu Arakawa, 2000</string>
-    <string name="tools_results_item_description">
+    <string name="tools_book_title">Fullmetal Alchemist</string>
+    <string name="tools_book_subtitle">The boy who lived</string>
+    <string name="tools_book_author_date">Hiromu Arakawa, 2000</string>
+    <string name="tools_book_publisher">The Learning Company</string>
+    <string name="tools_book_isbn10">0744016314</string>
+    <string name="tools_book_isbn13">9780744016314</string>
+    <string name="tools_book_printType">Book</string>
+    <string name="tools_book_maturityRating">Everyone</string>
+    <string name="tools_book_language">English</string>
+    <string name="tools_book_description">
+        This book is intended for presenting the basic concepts of Finite Element Analysis applied
+        to several engineering applications. Salient Features: 1. Covers several modules of
+        elasticity, heat conduction, eigenvalue and fluid flow analysis which are necessary for a
+        student of Mechanical Engineering. 2. Finite Element formulations have been presented using
+        both global and natural coordinates. It is important for providing smooth transition form
+        formulation in global coordinates to natural coordinates. 3. Special focus has been given to
+        heat conduction problems and fluid flows which are not sufficiently discussed in other
+        textbooks. 4. Important factors affecting the formulation have been included as
+        Miscellaneous Topics. 5. Several examples have been worked out in order to highlight the
+        applications of Finite Element Analysis. New to this Edition Apart from moderately revising
+        the whole text three new chapters \"Dynamic Analysis\", \"Non-linear Analysis\", \"Bending
+        of Thin Plates\", three appendices and short questions and answers have been added in the
+        present edition to make it more useful.
+    </string>
+    <string name="tools_book_description_short">
         Breaking the laws of nature is a serious crime! Reads R to L (Japanese Style), for audiences
          T As Greed and King Bradley continue their battle, the mysterious homunculus "father" makes
          his move under Central City. In order to achieve his objectives, he will need&#8230;
     </string>
+    <string name="tools_book_pageCount">364pp</string>
+    <string name="tools_book_ratingsCount">140</string>
+    <string name="tools_book_ratingsAverage">3.4</string>
+    <string name="tools_book_categories">Drama, Non fiction</string>
 
 
 <!-- TODO: Remove or change this placeholder text -->

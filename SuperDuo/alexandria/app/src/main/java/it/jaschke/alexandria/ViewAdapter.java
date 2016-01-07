@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -80,9 +79,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             ViewHolder vh = new ViewHolder(view);
             view.setTag(vh);
             return vh;
-        } else {
+        } else
             throw new RuntimeException("The ViewGroup is not bound to RecyclerView");
-        }
     }
 
     @Override
@@ -109,33 +107,28 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         }
         c.close();
         String year = "";
-        if (mBooksCursor.getPublisheddate() != null) {
+        if (mBooksCursor.getPublisheddate() != null)
             year = mBooksCursor.getPublisheddate().substring(0, 4);
-        }
         if ((authors + year).length() > 0) {
             holder.mDateAuthorTextView.setText(authors + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
-        }
         // Description
         String description = "";
-        if (mBooksCursor.getDescriptionsnippet() != null) {
+        if (mBooksCursor.getDescriptionsnippet() != null)
             description = mBooksCursor.getDescriptionsnippet();
-        } else if (mBooksCursor.getDescription() != null) {
+        else if (mBooksCursor.getDescription() != null)
             description = mBooksCursor.getDescription();
-        }
         if (description.length() > 0) {
             holder.mDescriptionTextView.setText(Html.fromHtml(description));
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else
             holder.mDescriptionTextView.setVisibility(View.GONE);
-        }
         // Cover thumbnail
         String imageLink = "path";
-        if (mBooksCursor.getSmallthumbnailurl() != null) {
+        if (mBooksCursor.getSmallthumbnailurl() != null)
             imageLink = mBooksCursor.getSmallthumbnailurl();
-        }
         Picasso.with(mContext)
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
@@ -144,11 +137,10 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         // TODO: Do this programmatically. Hide the button if there is no link.
         // TODO: Add a preview button and embedded book preview feature in app
         final String infoLink;
-        if (mBooksCursor.getInfolink() != null) {
+        if (mBooksCursor.getInfolink() != null)
             infoLink = mBooksCursor.getInfolink();
-        } else {
+        else
             infoLink = "";
-        }
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
@@ -157,11 +149,12 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details))) {
-                            Toast.makeText(mContext, "Will view details for item " + bookId, Toast.LENGTH_SHORT).show();
-                        } else if (item.getTitle().equals(mContext.getString(R.string.action_remove))) {
+                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details)))
+                            ((ViewBooksFragment.BookSelectionCallback) mContext)
+                                    .onBookItemSelected(bookId, holder);
+                        else if (item.getTitle().equals(mContext.getString(R.string.action_remove)))
                             Library.removeFromLibrary(mContext, bookId);
-                        } else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
+                        else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoLink));
                             mContext.startActivity(intent);
                         }

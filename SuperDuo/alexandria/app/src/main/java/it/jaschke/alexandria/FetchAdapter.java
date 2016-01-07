@@ -42,9 +42,10 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         public TextView mDescriptionTextView;
         public ImageButton mMenuButton;
 
+        // (1) This is the first click method that is called when user presses on a view.
         @Override
         public void onClick(View v) {
-            mClickHandler.onClick(getAdapterPosition(), this);
+            mClickHandler.onClick(mVolumesList.get(getAdapterPosition()), this);
         }
 
         public ViewHolder(View view) {
@@ -59,8 +60,9 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         }
     }
 
+    // (2) This is the second click method that is called when user presses on a view.
     public interface FetchAdapterOnClickHandler {
-        void onClick(int position, FetchAdapter.ViewHolder holder);
+        void onClick(Volume volume, FetchAdapter.ViewHolder holder);
     }
 
     public FetchAdapter(Context context, FetchAdapterOnClickHandler handler, View empty) {
@@ -77,9 +79,8 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             ViewHolder vh = new ViewHolder(view);
             view.setTag(vh);
             return vh;
-        } else {
+        } else
             throw new RuntimeException("The ViewGroup is not bound to RecyclerView");
-        }
     }
 
     @Override
@@ -93,9 +94,8 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             title = volumeInfo.getTitle();
             holder.mTitleTextView.setText(title);
             holder.mTitleTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else
             holder.mTitleTextView.setVisibility(View.GONE);
-        }
         // Authors and published date (only include year)
         String authors = "";
         if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
@@ -104,33 +104,28 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
             }
         }
         String year = "";
-        if (volumeInfo.getPublishedDate() != null) {
+        if (volumeInfo.getPublishedDate() != null)
             year = volumeInfo.getPublishedDate().substring(0, 4);
-        }
         if ((authors + year).length() > 0) {
             holder.mDateAuthorTextView.setText(authors + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
-        }
         // Description
         String description = "";
-        if (volume.getSearchInfo() != null) {
+        if (volume.getSearchInfo() != null)
             description = volume.getSearchInfo().getTextSnippet();
-        } else if (volumeInfo.getDescription() != null) {
+        else if (volumeInfo.getDescription() != null)
             description = volumeInfo.getDescription();
-        }
         if (description.length() > 0) {
             holder.mDescriptionTextView.setText(Html.fromHtml(description));
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
-        } else {
+        } else
             holder.mDescriptionTextView.setVisibility(View.GONE);
-        }
         // Cover thumbnail
         String imageLink = "path";
-        if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null) {
+        if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null)
             imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
-        }
         Picasso.with(mContext)
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
@@ -139,11 +134,10 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         // TODO: Do this programmatically. Hide the button if there is no link.
         // TODO: Add a preview button and embedded book preview feature in app
         final String infoLink;
-        if (volumeInfo.getInfoLink() != null) {
+        if (volumeInfo.getInfoLink() != null)
             infoLink = volumeInfo.getInfoLink();
-        } else {
+        else
             infoLink = "";
-        }
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
@@ -152,11 +146,12 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details))) {
-                            Toast.makeText(mContext, "Will view details for item " + position, Toast.LENGTH_SHORT).show();
-                        } else if (item.getTitle().equals(mContext.getString(R.string.action_add))) {
+                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details)))
+                            ((FetchBooksFragment.ResultSelectionCallback) mContext)
+                                    .onResultItemSelected(volume, holder);
+                        else if (item.getTitle().equals(mContext.getString(R.string.action_add)))
                             Library.addToLibrary(mContext, volume);
-                        } else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
+                        else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
                             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoLink));
                             mContext.startActivity(intent);
                         }

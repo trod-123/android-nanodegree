@@ -1,6 +1,5 @@
 package it.jaschke.alexandria;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,6 +50,18 @@ public class FetchBooksFragment extends Fragment
     private static final String SIS_QUERY = "query";
 
     private static final int RC_BARCODE_CAPTURE = 1001;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface ResultSelectionCallback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        void onResultItemSelected(Volume volume, FetchAdapter.ViewHolder vh);
+    }
 
     public FetchBooksFragment(){
     }
@@ -111,9 +122,12 @@ public class FetchBooksFragment extends Fragment
         // Initialize recycler view
         mRecyclerView = (RecyclerView) mRootView.findViewById(R.id.fetch_books_recyclerview);
         mFetchAdapter = new FetchAdapter(getContext(), new FetchAdapter.FetchAdapterOnClickHandler() {
+            // (3) This is the third click method that is called when user presses on a view.
+            //      This calls the last method, which is the one hosted in the housing activity.
             @Override
-            public void onClick(int position, FetchAdapter.ViewHolder holder) {
-                Log.d(LOG_TAG, "View " + position + " has been clicked!!!");
+            public void onClick(Volume volume, FetchAdapter.ViewHolder holder) {
+                ((ResultSelectionCallback) getActivity())
+                        .onResultItemSelected(volume, holder);
             }
         }, emptyView);
         mFetchAdapter.swapList(null);

@@ -12,12 +12,19 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+import it.jaschke.alexandria.model.Volume;
+
+public class MainActivity extends ActionBarActivity
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+        ViewBooksFragment.BookSelectionCallback, FetchBooksFragment.ResultSelectionCallback {
+
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -175,5 +182,22 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         super.onBackPressed();
     }
 
+    // This callback starts the detail activity. This is called within ViewBooksFragment,
+    //  which allows communication of which book was selected.
+    @Override
+    public void onBookItemSelected(String bookId, ViewAdapter.ViewHolder vh) {
+        Intent intent = new Intent(this, DetailActivity.class)
+                .putExtra(DetailFragment.BOOK_ID, bookId);
+        startActivity(intent);
+    }
 
+    // This callback starts the detail activity. This is called within FetchBooksFragment,
+    //  which allows communication of the actual book that was selected.
+    @Override
+    public void onResultItemSelected(Volume volume, FetchAdapter.ViewHolder vh) {
+        Log.d(LOG_TAG, "The volume title is " + volume.getVolumeInfo().getTitle());
+        Intent intent = new Intent(this, DetailActivity.class)
+                .putExtra(DetailFragment.VOLUME_OBJECT, volume);
+        startActivity(intent);
+    }
 }

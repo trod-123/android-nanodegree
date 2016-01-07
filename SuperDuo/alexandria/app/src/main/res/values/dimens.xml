@@ -9,15 +9,21 @@
     <dimen name="activity_padding_vertical_margin">16dp</dimen>
 
     <!-- Padding, margins, and elevation -->
-    <dimen name="books_list_item_horizontal_padding">8dp</dimen>
-    <dimen name="books_list_item_vertical_padding">4dp</dimen>
-    <dimen name="books_list_item_spacing">8dp</dimen>
-    <dimen name="books_list_item_elevation">2dp</dimen>
+    <dimen name="cardview_horizontal_padding">8dp</dimen>
+    <dimen name="cardview_vertical_padding">4dp</dimen>
+    <dimen name="cardview_spacing">8dp</dimen>
+    <dimen name="cardview_elevation">2dp</dimen>
 
     <!-- Text sizes -->
-    <dimen name="books_list_item_title_size">20sp</dimen>
-    <dimen name="books_list_item_author_size">14sp</dimen>
-    <dimen name="books_list_item_description_size">14sp</dimen>
+    <dimen name="cardview_list_title_size">20sp</dimen>
+    <dimen name="cardview_list_author_size">14sp</dimen>
+    <dimen name="cardview_list_description_size">14sp</dimen>
+
+    <dimen name="cardview_details_headline_size">24sp</dimen>
+    <dimen name="cardview_details_title_size">20sp</dimen>
+    <dimen name="cardview_details_subheading_size">16sp</dimen>
+    <dimen name="cardview_details_body_size">14sp</dimen>
+    <dimen name="cardview_details_caption_size">12sp</dimen>
 
     <!-- Scrollbar sizes -->
     <dimen name="scrollbar_width">4dp</dimen>

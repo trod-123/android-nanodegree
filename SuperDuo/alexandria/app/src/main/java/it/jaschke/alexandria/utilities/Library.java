@@ -68,6 +68,8 @@ public class Library {
                 publisher = volumeInfo.getPublisher();
             if (volumeInfo.getPublishedDate() != null)
                 publishedDate = volumeInfo.getPublishedDate();
+            if (volumeInfo.getDescription() != null)
+                description = volumeInfo.getDescription();
             if (volumeInfo.getIndustryIdentifiers() != null) {
                 for (IndustryIdentifier indId : volumeInfo.getIndustryIdentifiers()) {
                    if (indId.getType() == "ISBN_10")

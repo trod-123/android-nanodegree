@@ -5,15 +5,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    card_view:cardElevation="@dimen/books_list_item_elevation"
+    card_view:cardElevation="@dimen/cardview_elevation"
     android:foreground="?android:attr/selectableItemBackground"
     android:minHeight="?android:attr/listPreferredItemHeightLarge"
-    android:layout_marginStart="@dimen/books_list_item_horizontal_padding"
-    android:layout_marginLeft="@dimen/books_list_item_horizontal_padding"
-    android:layout_marginEnd="@dimen/books_list_item_horizontal_padding"
-    android:layout_marginRight="@dimen/books_list_item_horizontal_padding"
-    android:layout_marginTop="@dimen/books_list_item_vertical_padding"
-    android:layout_marginBottom="@dimen/books_list_item_vertical_padding">
+    android:layout_marginStart="@dimen/cardview_horizontal_padding"
+    android:layout_marginLeft="@dimen/cardview_horizontal_padding"
+    android:layout_marginEnd="@dimen/cardview_horizontal_padding"
+    android:layout_marginRight="@dimen/cardview_horizontal_padding"
+    android:layout_marginTop="@dimen/cardview_vertical_padding"
+    android:layout_marginBottom="@dimen/cardview_vertical_padding">
 
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -27,14 +27,14 @@
             android:adjustViewBounds="true"
             android:layout_gravity="center|top" android:gravity="center"
             tools:src="@drawable/ic_action_accept"
-            android:padding="@dimen/books_list_item_spacing"/>
+            android:padding="@dimen/cardview_spacing"/>
 
         <!-- Right column, informational -->
         <LinearLayout
             android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="3"
             android:orientation="vertical"
-            android:padding="@dimen/books_list_item_spacing">
+            android:padding="@dimen/cardview_spacing">
 
             <LinearLayout
                 android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -46,8 +46,8 @@
                     android:layout_weight="1"
                     android:textColor="@color/primary_text"
                     android:fontFamily="sans-serif-medium"
-                    android:textSize="@dimen/books_list_item_title_size"
-                    tools:text="@string/tools_results_item_title"/>
+                    android:textSize="@dimen/cardview_list_title_size"
+                    tools:text="@string/tools_book_title"/>
 
                 <!-- Action button would display a menu of options -->
                 <ImageButton
@@ -55,8 +55,8 @@
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
                     android:clickable="true"
-                    android:layout_marginStart="@dimen/books_list_item_spacing"
-                    android:layout_marginLeft="@dimen/books_list_item_spacing"
+                    android:layout_marginStart="@dimen/cardview_spacing"
+                    android:layout_marginLeft="@dimen/cardview_spacing"
                     android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
                     android:tint="@color/black"/>
 
@@ -67,16 +67,16 @@
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:textColor="@color/secondary_text"
-                android:textSize="@dimen/books_list_item_author_size"
-                tools:text="@string/tools_results_item_author_date"/>
+                android:textSize="@dimen/cardview_list_author_size"
+                tools:text="@string/tools_book_author_date"/>
 
             <TextView
                 android:id="@+id/books_list_textview_description"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:textColor="@color/primary_text"
-                android:textSize="@dimen/books_list_item_description_size"
-                tools:text="@string/tools_results_item_description"/>
+                android:textSize="@dimen/cardview_list_description_size"
+                tools:text="@string/tools_book_description_short"/>
 
         </LinearLayout>
 

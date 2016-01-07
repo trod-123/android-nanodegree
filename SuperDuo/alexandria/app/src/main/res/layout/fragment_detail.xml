@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/details_scrollview_root"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    style="@style/ScrollbarVerticalStyle">
+
+    <!-- Title and glance card -->
+    <android.support.v7.widget.CardView
+        android:id="@+id/details_card_main"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:cardElevation="@dimen/cardview_elevation"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minHeight="?android:attr/listPreferredItemHeightLarge"
+        android:layout_marginStart="@dimen/cardview_horizontal_padding"
+        android:layout_marginLeft="@dimen/cardview_horizontal_padding"
+        android:layout_marginEnd="@dimen/cardview_horizontal_padding"
+        android:layout_marginRight="@dimen/cardview_horizontal_padding"
+        android:layout_marginTop="@dimen/cardview_horizontal_padding"
+        android:layout_marginBottom="@dimen/cardview_horizontal_padding">
+
+        <LinearLayout
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Top, containing cover and basic info -->
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/cardview_spacing">
+
+                <ImageView
+                    android:id="@+id/details_imageview_book_thumbnail"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:layout_gravity="center|bottom" android:gravity="center"
+                    tools:src="@drawable/ic_launcher"
+                    android:padding="@dimen/cardview_spacing"/>
+
+                <LinearLayout
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="2" android:orientation="vertical"
+                    android:layout_gravity="bottom"
+                    android:padding="@dimen/cardview_spacing">
+
+                    <TextView
+                        android:id="@+id/details_textview_title"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/primary_text"
+                        android:fontFamily="sans-serif-medium"
+                        android:textSize="@dimen/cardview_details_headline_size"
+                        tools:text="@string/tools_book_title"/>
+
+                    <TextView
+                        android:id="@+id/details_textview_subtitle"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/primary_text"
+                        android:fontFamily="sans-serif"
+                        android:textSize="@dimen/cardview_details_subheading_size"
+                        tools:text="@string/tools_book_subtitle"/>
+
+                    <TextView
+                        android:id="@+id/details_textview_author_date"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_title_size"
+                        tools:text="@string/tools_book_author_date"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/grey"/>
+
+            <!-- Bottom, containing long description -->
+            <TextView
+                android:id="@+id/details_textview_description"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/cardview_details_body_size"
+                tools:text="@string/tools_book_description"
+                android:padding="@dimen/activity_padding_horizontal_margin"/>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</ScrollView>

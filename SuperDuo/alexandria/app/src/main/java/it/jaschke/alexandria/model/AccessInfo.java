@@ -1,11 +1,14 @@
 package it.jaschke.alexandria.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import javax.annotation.Generated;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("org.jsonschema2pojo")
-public class AccessInfo {
+public class AccessInfo implements Parcelable {
 
     @SerializedName("country")
     @Expose
@@ -177,4 +180,49 @@ public class AccessInfo {
     public void setQuoteSharingAllowed(Boolean quoteSharingAllowed) {
         this.quoteSharingAllowed = quoteSharingAllowed;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.country);
+        dest.writeString(this.viewability);
+        dest.writeValue(this.embeddable);
+        dest.writeValue(this.publicDomain);
+        dest.writeString(this.textToSpeechPermission);
+        dest.writeParcelable(this.epub, 0);
+        dest.writeParcelable(this.pdf, 0);
+        dest.writeString(this.webReaderLink);
+        dest.writeString(this.accessViewStatus);
+        dest.writeValue(this.quoteSharingAllowed);
+    }
+
+    public AccessInfo() {
+    }
+
+    protected AccessInfo(Parcel in) {
+        this.country = in.readString();
+        this.viewability = in.readString();
+        this.embeddable = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.publicDomain = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.textToSpeechPermission = in.readString();
+        this.epub = in.readParcelable(Epub.class.getClassLoader());
+        this.pdf = in.readParcelable(Pdf.class.getClassLoader());
+        this.webReaderLink = in.readString();
+        this.accessViewStatus = in.readString();
+        this.quoteSharingAllowed = (Boolean) in.readValue(Boolean.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<AccessInfo> CREATOR = new Parcelable.Creator<AccessInfo>() {
+        public AccessInfo createFromParcel(Parcel source) {
+            return new AccessInfo(source);
+        }
+
+        public AccessInfo[] newArray(int size) {
+            return new AccessInfo[size];
+        }
+    };
 }

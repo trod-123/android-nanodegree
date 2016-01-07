@@ -3,7 +3,6 @@ package it.jaschke.alexandria;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -12,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +46,18 @@ public class ViewBooksFragment extends Fragment
 
     // For keeping track of whether returned cursor was queried
     private boolean mQueried = false;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface BookSelectionCallback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        void onBookItemSelected(String bookId, ViewAdapter.ViewHolder vh);
+    }
 
     public ViewBooksFragment(){
     }
@@ -86,7 +96,8 @@ public class ViewBooksFragment extends Fragment
         mViewAdapter = new ViewAdapter(getContext(), new ViewAdapter.ViewAdapterOnClickHandler() {
             @Override
             public void onClick(String bookId, ViewAdapter.ViewHolder holder) {
-                Log.d(LOG_TAG, "Book " + bookId + " has been clicked!!!");
+                ((BookSelectionCallback) getActivity())
+                        .onBookItemSelected(bookId, holder);
             }
         }, emptyView);
         mViewAdapter.swapCursor(null);
@@ -110,9 +121,8 @@ public class ViewBooksFragment extends Fragment
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // User is currently typing: reset already started timer (if existing)
-                if (timer != null) {
+                if (timer != null)
                     timer.cancel();
-                }
             }
 
             // Called after text in EditText changes
@@ -194,11 +204,10 @@ public class ViewBooksFragment extends Fragment
         // If the user queries, set the no results string. If there is no query, set the empty
         //  library string.
         TextView emptyView = (TextView) mRootView.findViewById(R.id.view_books_empty);
-        if (mQueried) {
+        if (mQueried)
             emptyView.setText(R.string.empty_view_books_no_results);
-        } else {
+        else
             emptyView.setText(R.string.empty_view_books);
-        }
         mViewAdapter.notifyDataSetChanged();
     }
 

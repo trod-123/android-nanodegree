@@ -1,5 +1,8 @@
 package it.jaschke.alexandria.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Generated;
@@ -7,7 +10,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 @Generated("org.jsonschema2pojo")
-public class VolumeInfo {
+public class VolumeInfo implements Parcelable {
 
     @SerializedName("title")
     @Expose
@@ -366,4 +369,72 @@ public class VolumeInfo {
     public void setCanonicalVolumeLink(String canonicalVolumeLink) {
         this.canonicalVolumeLink = canonicalVolumeLink;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeString(this.subtitle);
+        dest.writeStringList(this.authors);
+        dest.writeString(this.publisher);
+        dest.writeString(this.publishedDate);
+        dest.writeString(this.description);
+        dest.writeList(this.industryIdentifiers);
+        dest.writeParcelable(this.readingModes, flags);
+        dest.writeValue(this.pageCount);
+        dest.writeString(this.printType);
+        dest.writeStringList(this.categories);
+        dest.writeValue(this.averageRating);
+        dest.writeValue(this.ratingsCount);
+        dest.writeString(this.maturityRating);
+        dest.writeValue(this.allowAnonLogging);
+        dest.writeString(this.contentVersion);
+        dest.writeParcelable(this.imageLinks, flags);
+        dest.writeString(this.language);
+        dest.writeString(this.previewLink);
+        dest.writeString(this.infoLink);
+        dest.writeString(this.canonicalVolumeLink);
+    }
+
+    public VolumeInfo() {
+    }
+
+    protected VolumeInfo(Parcel in) {
+        this.title = in.readString();
+        this.subtitle = in.readString();
+        this.authors = in.createStringArrayList();
+        this.publisher = in.readString();
+        this.publishedDate = in.readString();
+        this.description = in.readString();
+        this.industryIdentifiers = new ArrayList<>();
+        in.readList(this.industryIdentifiers, IndustryIdentifier.class.getClassLoader());
+        this.readingModes = in.readParcelable(ReadingModes.class.getClassLoader());
+        this.pageCount = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.printType = in.readString();
+        this.categories = in.createStringArrayList();
+        this.averageRating = (Double) in.readValue(Double.class.getClassLoader());
+        this.ratingsCount = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.maturityRating = in.readString();
+        this.allowAnonLogging = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.contentVersion = in.readString();
+        this.imageLinks = in.readParcelable(ImageLinks.class.getClassLoader());
+        this.language = in.readString();
+        this.previewLink = in.readString();
+        this.infoLink = in.readString();
+        this.canonicalVolumeLink = in.readString();
+    }
+
+    public static final Parcelable.Creator<VolumeInfo> CREATOR = new Parcelable.Creator<VolumeInfo>() {
+        public VolumeInfo createFromParcel(Parcel source) {
+            return new VolumeInfo(source);
+        }
+
+        public VolumeInfo[] newArray(int size) {
+            return new VolumeInfo[size];
+        }
+    };
 }
