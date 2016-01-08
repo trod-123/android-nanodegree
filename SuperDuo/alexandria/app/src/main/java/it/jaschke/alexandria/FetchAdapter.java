@@ -23,6 +23,7 @@ import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
+import it.jaschke.alexandria.utilities.UIHelper;
 
 /**
  * Created by TROD on 20160104.
@@ -86,71 +87,44 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        // Get information from results list and set view content. Hide views if null.
+        // Get information from results list
+        final String title, authors, infoLink;
+        String subtitle, year, description, imageLink;
+
         final Volume volume = mVolumesList.get(position);
         VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
-        // Title of book
-        final String title;
-        if (volumeInfo.getTitle() != null)
-            title = volumeInfo.getTitle();
-        else
-            title = mContext.getString(R.string.library_book_no_name);
-        holder.mTitleTextView.setText(title);
-        // Authors and published date (only include year)
-        String authors = "";
-        if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
-            int size = volumeInfo.getAuthors().size();
-            for (int i = 0; i < size; i++) {
-                if (size == 1)
-                    authors = volumeInfo.getAuthors().get(i);
-                else if (i < size - 1)
-                    // Only add comma if there is another author coming up next
-                    authors += volumeInfo.getAuthors().get(i) + ", ";
-                else
-                    // Append "and" if last author and there are multiple authors
-                    authors += mContext.getString(R.string.list_and) + volumeInfo.getAuthors().get(i);
-            }
+
+        title = UIHelper.getTitle(mContext, volumeInfo, null);
+        authors = UIHelper.getAuthors(mContext, volumeInfo, null);
+        year = UIHelper.getDatePublished(volumeInfo, null);
+        description = UIHelper.getShortDescription(volume, null);
+        if (description.length() == 0) {
+            description = UIHelper.getDescription(volumeInfo, null);
         }
-        final String authorsFinal;
-        if (authors.length() > 0)
-            authorsFinal = authors;
-        else
-            authorsFinal = mContext.getString(R.string.library_book_no_author);
-        String year = "";
-        if (volumeInfo.getPublishedDate() != null)
-            year = volumeInfo.getPublishedDate().substring(0, 4);
+        imageLink = UIHelper.getThumbnailUrl(volumeInfo, null);
+        infoLink = UIHelper.getInfoLink(volumeInfo, null);
+
+        // Set view content. Hide views if null.
+        holder.mTitleTextView.setText(title);
+
         if ((authors + year).length() > 0) {
             holder.mDateAuthorTextView.setText(authors + ", " + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
-        // Description
-        String description = "";
-        if (volume.getSearchInfo() != null)
-            description = volume.getSearchInfo().getTextSnippet();
-        else if (volumeInfo.getDescription() != null)
-            description = volumeInfo.getDescription();
+
         if (description.length() > 0) {
             holder.mDescriptionTextView.setText(Html.fromHtml(description));
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDescriptionTextView.setVisibility(View.GONE);
-        // Cover thumbnail
-        String imageLink = "path";
-        if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null)
-            imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
+
         Picasso.with(mContext)
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
-        // Action menu button
+
         // TODO: Add a preview button and embedded book preview feature in app
-        final String infoLink;
-        // Even though most likely there will be a link to Google's Book page for this book
-        if (volumeInfo.getInfoLink() != null)
-            infoLink = volumeInfo.getInfoLink();
-        else
-            infoLink = "";
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
@@ -172,7 +146,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                                 Network.openInBrowser(mContext, infoLink);
                                 break;
                             case R.id.action_share :
-                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authorsFinal, infoLink));
+                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authors, infoLink));
                                 break;
                         }
                         return true;

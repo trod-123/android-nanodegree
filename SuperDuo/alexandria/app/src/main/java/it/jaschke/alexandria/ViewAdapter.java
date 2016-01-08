@@ -23,6 +23,7 @@ import it.jaschke.alexandria.provider.authors.AuthorsSelection;
 import it.jaschke.alexandria.provider.books.BooksCursor;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
+import it.jaschke.alexandria.utilities.UIHelper;
 
 /**
  * Created by TROD on 20160104.
@@ -87,73 +88,49 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         mBooksCursor.moveToPosition(position);
-
-        // Get information from results list and set view content. Hide views if null.
         final String bookId = mBooksCursor.getBookid();
-        // Title of book
-        final String title = mBooksCursor.getTitle();
-        holder.mTitleTextView.setText(title);
-        // Authors and published date (only include year)
-        String authors = "";
+
         ContentResolver cr = mContext.getContentResolver();
         AuthorsCursor authorsCursor = new AuthorsCursor(cr.query((new AuthorsSelection()).uri(),
                 new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
                 AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{bookId},
                 null));
-        if (authorsCursor.moveToFirst()) {
-            for (int i = 0; i < authorsCursor.getCount(); i++) {
-                authorsCursor.moveToPosition(i);
-                if (authorsCursor.getCount() == 1)
-                    authors = authorsCursor.getName();
-                else if (i < authorsCursor.getCount() -1)
-                    // Only add comma if there is another author coming up next
-                    authors += authorsCursor.getName() + ", ";
-                else
-                    // Append "and" if last author and there are multiple authors
-                    authors += mContext.getString(R.string.list_and) + authorsCursor.getName();
-            }
+
+        // Get information from results list
+        final String title, authors, infoLink;
+        String subtitle, year, description, imageLink;
+
+        title = UIHelper.getTitle(mContext, null, mBooksCursor);
+        authors = UIHelper.getAuthors(mContext, null, authorsCursor);
+        year = UIHelper.getDatePublished(null, mBooksCursor);
+        description = UIHelper.getShortDescription(null, mBooksCursor);
+        if (description.length() == 0) {
+            description = UIHelper.getDescription(null, mBooksCursor);
         }
-        authorsCursor.close();
-        final String authorsFinal;
-        if (authors.length() > 0)
-            authorsFinal = authors;
-        else
-            authorsFinal = mContext.getString(R.string.library_book_no_author);
-        String year = "";
-        if (mBooksCursor.getPublisheddate() != null)
-            year = mBooksCursor.getPublisheddate().substring(0, 4);
+        imageLink = UIHelper.getThumbnailUrl(null, mBooksCursor);
+        infoLink = UIHelper.getInfoLink(null, mBooksCursor);
+
+        // Set view content. Hide views if null.
+        holder.mTitleTextView.setText(title);
+
         if ((authors + year).length() > 0) {
             holder.mDateAuthorTextView.setText(authors + ", " + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
-        // Description
-        String description = "";
-        if (mBooksCursor.getDescriptionsnippet() != null)
-            description = mBooksCursor.getDescriptionsnippet();
-        else if (mBooksCursor.getDescription() != null)
-            description = mBooksCursor.getDescription();
+
         if (description.length() > 0) {
             holder.mDescriptionTextView.setText(Html.fromHtml(description));
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDescriptionTextView.setVisibility(View.GONE);
-        // Cover thumbnail
-        String imageLink = "path";
-        if (mBooksCursor.getSmallthumbnailurl() != null)
-            imageLink = mBooksCursor.getSmallthumbnailurl();
+
         Picasso.with(mContext)
                 .load(imageLink)
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
-        // Action menu button
-        // TODO: Do this programmatically. Hide the button if there is no link.
+
         // TODO: Add a preview button and embedded book preview feature in app
-        final String infoLink;
-        if (mBooksCursor.getInfolink() != null)
-            infoLink = mBooksCursor.getInfolink();
-        else
-            infoLink = "";
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
@@ -175,7 +152,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                                 Network.openInBrowser(mContext, infoLink);
                                 break;
                             case R.id.action_share :
-                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authorsFinal, infoLink));
+                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authors, infoLink));
                                 break;
                         }
                         return true;

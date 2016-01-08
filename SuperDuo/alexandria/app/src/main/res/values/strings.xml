@@ -34,15 +34,15 @@
 
     <!-- Library interaction -->
     <string name="library_add_book">
-        <xliff:g id="title">%1$s</xliff:g> added to your library!
+        Added <xliff:g id="title">%1$s</xliff:g> to your library!
     </string>
     <string name="library_update_book">
-        <xliff:g id="title">%1$s</xliff:g> was updated in your library.
+        Updated <xliff:g id="title">%1$s</xliff:g> in your library.
     </string>
     <string name="library_delete_book">
-        <xliff:g id="title">%1$s</xliff:g> was deleted from your library.
+        Deleted <xliff:g id="title">%1$s</xliff:g> from your library.
     </string>
-    <string name="library_book_no_name">Title unknown</string>
+    <string name="library_book_no_name">No title</string>
     <string name="library_book_no_author">Unknown author</string>
 
     <!-- Empty fetch recyclerview strings -->
@@ -127,7 +127,8 @@
     <string name="tools_book_categories">Drama, Non fiction</string>
 
     <!-- Misc -->
-    <string name="list_and">and </string>
+    <string name="list_and">and&#160;</string>
+    <string name="list_duple"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
 
 
     <!-- TODO: Redo these strings -->
