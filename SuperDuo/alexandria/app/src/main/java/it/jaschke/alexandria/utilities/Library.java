@@ -161,32 +161,36 @@ public class Library {
         }
         c.close();
         // Authors
-        for (String author : authors) {
-            AuthorsContentValues aCv = new AuthorsContentValues();
-            aCv.putName(author);
-            aCv.putAuthorvolumeid(bookId);
-            c = cr.query((new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
-                    AuthorsColumns.NAME + " == ? AND " + AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{author, bookId}, null);
-            if (c.moveToFirst()) {
-                // do nothing
-            } else {
-                aCv.insert(cr);
+        if (authors != null) {
+            for (String author : authors) {
+                AuthorsContentValues aCv = new AuthorsContentValues();
+                aCv.putName(author);
+                aCv.putAuthorvolumeid(bookId);
+                c = cr.query((new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
+                        AuthorsColumns.NAME + " == ? AND " + AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{author, bookId}, null);
+                if (c.moveToFirst()) {
+                    // do nothing
+                } else {
+                    aCv.insert(cr);
+                }
+                c.close();
             }
-            c.close();
         }
         // Categories
-        for (String category : categories) {
-            CategoriesContentValues cCv = new CategoriesContentValues();
-            cCv.putName(category);
-            cCv.putCategoryvolumeid(bookId);
-            c = cr.query((new CategoriesSelection()).uri(), new String[]{CategoriesColumns.NAME, CategoriesColumns.CATEGORYVOLUMEID},
-                    CategoriesColumns.NAME + " == ? AND " + CategoriesColumns.CATEGORYVOLUMEID + " == ? ", new String[]{category, bookId}, null);
-            if (c.moveToFirst()) {
-                // do nothing
-            } else {
-                cCv.insert(cr);
+        if (categories != null) {
+            for (String category : categories) {
+                CategoriesContentValues cCv = new CategoriesContentValues();
+                cCv.putName(category);
+                cCv.putCategoryvolumeid(bookId);
+                c = cr.query((new CategoriesSelection()).uri(), new String[]{CategoriesColumns.NAME, CategoriesColumns.CATEGORYVOLUMEID},
+                        CategoriesColumns.NAME + " == ? AND " + CategoriesColumns.CATEGORYVOLUMEID + " == ? ", new String[]{category, bookId}, null);
+                if (c.moveToFirst()) {
+                    // do nothing
+                } else {
+                    cCv.insert(cr);
+                }
+                c.close();
             }
-            c.close();
         }
 
         return id;
