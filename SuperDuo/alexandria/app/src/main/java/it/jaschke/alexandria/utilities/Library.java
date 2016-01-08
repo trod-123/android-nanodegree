@@ -5,9 +5,11 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.List;
 
+import it.jaschke.alexandria.R;
 import it.jaschke.alexandria.model.IndustryIdentifier;
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
@@ -31,7 +33,10 @@ public class Library {
 
     private static final String LOG_TAG = Library.class.getSimpleName();
 
-    public static long addToLibrary(Context context, Volume volume) {
+    public static final String ISBN_10 = "ISBN_10";
+    public static final String ISBN_13 = "ISBN_13";
+
+    public static long addToLibrary(Context context, Volume volume, String bookTitle) {
         long id = -1;
 
         // Extract data from volume (only id and title are not nullable)
@@ -55,7 +60,10 @@ public class Library {
         bookId = volume.getId();
         if (volume.getVolumeInfo() != null) {
             VolumeInfo volumeInfo = volume.getVolumeInfo();
-            title = volumeInfo.getTitle();
+            if (volumeInfo.getTitle() != null)
+                title = volumeInfo.getTitle();
+            else
+                title = context.getString(R.string.library_book_no_name);
             if (volumeInfo.getSubtitle() != null)
                 subtitle = volumeInfo.getSubtitle();
             if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
@@ -72,9 +80,9 @@ public class Library {
                 description = volumeInfo.getDescription();
             if (volumeInfo.getIndustryIdentifiers() != null) {
                 for (IndustryIdentifier indId : volumeInfo.getIndustryIdentifiers()) {
-                   if (indId.getType() == "ISBN_10")
+                   if (indId.getType().equals(ISBN_10))
                        isbn_10 = indId.getIdentifier();
-                   else if (indId.getType() == "ISBN_13")
+                   else if (indId.getType().equals(ISBN_13))
                        isbn_13 = indId.getIdentifier();
                 }
             }
@@ -145,11 +153,11 @@ public class Library {
         Cursor c = cr.query((new BooksSelection()).uri(), new String[]{BooksColumns.BOOKID},
                 BooksColumns.BOOKID + " == ? ", new String[]{bookId}, null);
         if (c.moveToFirst()) {
-            Log.d(LOG_TAG, "The book is already in the database. Updating...");
             id = bCv.update(cr, (new BooksSelection().bookid(bookId)));
+            Toast.makeText(context, context.getString(R.string.library_update_book, bookTitle), Toast.LENGTH_SHORT).show();
         } else {
-            Log.d(LOG_TAG, "The book is not in database. Adding...");
             id = ContentUris.parseId(bCv.insert(cr));
+            Toast.makeText(context, context.getString(R.string.library_add_book, bookTitle), Toast.LENGTH_SHORT).show();
         }
         c.close();
         // Authors
@@ -160,10 +168,8 @@ public class Library {
             c = cr.query((new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
                     AuthorsColumns.NAME + " == ? AND " + AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{author, bookId}, null);
             if (c.moveToFirst()) {
-                Log.d(LOG_TAG, "The author is already paired with this book in the database. Updating...");
                 aCv.update(cr, (new AuthorsSelection().authorvolumeid(bookId)));
             } else {
-                Log.d(LOG_TAG, "The author is not paired with this book in the database. Adding...");
                 aCv.insert(cr);
             }
             c.close();
@@ -176,10 +182,8 @@ public class Library {
             c = cr.query((new CategoriesSelection()).uri(), new String[]{CategoriesColumns.NAME, CategoriesColumns.CATEGORYVOLUMEID},
                     CategoriesColumns.NAME + " == ? AND " + CategoriesColumns.CATEGORYVOLUMEID + " == ? ", new String[]{category, bookId}, null);
             if (c.moveToFirst()) {
-                Log.d(LOG_TAG, "The category is already paired with this book in the database. Updating...");
                 cCv.update(cr, (new CategoriesSelection().categoryvolumeid(bookId)));
             } else {
-                Log.d(LOG_TAG, "The category is not paired with this book in the database. Adding...");
                 cCv.insert(cr);
             }
             c.close();
@@ -188,12 +192,12 @@ public class Library {
         return id;
     }
 
-    public static void removeFromLibrary(Context context, String volumeId) {
+    public static void removeFromLibrary(Context context, String volumeId, String bookTitle) {
         String[] selectionArgs = new String[]{volumeId};
         ContentResolver cr = context.getContentResolver();
         cr.delete((new BooksSelection()).uri(), BooksColumns.BOOKID + " == ? ", selectionArgs);
         cr.delete((new AuthorsSelection()).uri(), AuthorsColumns.AUTHORVOLUMEID + " == ? ", selectionArgs);
         cr.delete((new CategoriesSelection()).uri(), CategoriesColumns.CATEGORYVOLUMEID + " == ? ", selectionArgs);
-        Log.d(LOG_TAG, "Book removed from library.");
+        Toast.makeText(context, context.getString(R.string.library_delete_book, bookTitle), Toast.LENGTH_SHORT).show();
     }
 }

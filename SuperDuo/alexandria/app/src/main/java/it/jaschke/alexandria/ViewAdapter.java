@@ -22,6 +22,7 @@ import it.jaschke.alexandria.provider.authors.AuthorsCursor;
 import it.jaschke.alexandria.provider.authors.AuthorsSelection;
 import it.jaschke.alexandria.provider.books.BooksCursor;
 import it.jaschke.alexandria.utilities.Library;
+import it.jaschke.alexandria.utilities.Network;
 
 /**
  * Created by TROD on 20160104.
@@ -90,27 +91,39 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         // Get information from results list and set view content. Hide views if null.
         final String bookId = mBooksCursor.getBookid();
         // Title of book
-        String title = mBooksCursor.getTitle();
+        final String title = mBooksCursor.getTitle();
         holder.mTitleTextView.setText(title);
         // Authors and published date (only include year)
         String authors = "";
         ContentResolver cr = mContext.getContentResolver();
-        AuthorsCursor c = new AuthorsCursor(cr.query((
-                new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
+        AuthorsCursor authorsCursor = new AuthorsCursor(cr.query((new AuthorsSelection()).uri(),
+                new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
                 AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{bookId},
                 null));
-        if (c.moveToFirst()) {
-            for (int i = 0; i < c.getCount(); i++) {
-                c.moveToPosition(i);
-                authors += c.getName() + ", ";
+        if (authorsCursor.moveToFirst()) {
+            for (int i = 0; i < authorsCursor.getCount(); i++) {
+                authorsCursor.moveToPosition(i);
+                if (authorsCursor.getCount() == 1)
+                    authors = authorsCursor.getName();
+                else if (i < authorsCursor.getCount() -1)
+                    // Only add comma if there is another author coming up next
+                    authors += authorsCursor.getName() + ", ";
+                else
+                    // Append "and" if last author and there are multiple authors
+                    authors += mContext.getString(R.string.list_and) + authorsCursor.getName();
             }
         }
-        c.close();
+        authorsCursor.close();
+        final String authorsFinal;
+        if (authors.length() > 0)
+            authorsFinal = authors;
+        else
+            authorsFinal = mContext.getString(R.string.library_book_no_author);
         String year = "";
         if (mBooksCursor.getPublisheddate() != null)
             year = mBooksCursor.getPublisheddate().substring(0, 4);
         if ((authors + year).length() > 0) {
-            holder.mDateAuthorTextView.setText(authors + year);
+            holder.mDateAuthorTextView.setText(authors + ", " + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
@@ -149,14 +162,21 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details)))
-                            ((ViewBooksFragment.BookSelectionCallback) mContext)
-                                    .onBookItemSelected(bookId, holder);
-                        else if (item.getTitle().equals(mContext.getString(R.string.action_remove)))
-                            Library.removeFromLibrary(mContext, bookId);
-                        else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoLink));
-                            mContext.startActivity(intent);
+                        int id = item.getItemId();
+                        switch (id) {
+                            case R.id.action_view_details :
+                                ((ViewBooksFragment.BookSelectionCallback) mContext)
+                                        .onBookItemSelected(bookId, holder);
+                                break;
+                            case R.id.action_remove :
+                                Library.removeFromLibrary(mContext, bookId, title);
+                                break;
+                            case R.id.action_view_browser :
+                                Network.openInBrowser(mContext, infoLink);
+                                break;
+                            case R.id.action_share :
+                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authorsFinal, infoLink));
+                                break;
                         }
                         return true;
                     }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +45,7 @@ public class FetchBooksFragment extends Fragment
     private RecyclerView mRecyclerView;
     private FetchAdapter mFetchAdapter;
     private ProgressBar mLoadingSpinner;
+    private FloatingActionButton mScannerButton;
     private List<Volume> mVolumeList;
 
     // For the saveInstanceState
@@ -175,9 +177,11 @@ public class FetchBooksFragment extends Fragment
         });
 
         // Launch the camera
-        mRootView.findViewById(R.id.fetch_books_button_scan).setOnClickListener(new View.OnClickListener() {
+        mScannerButton = (FloatingActionButton) mRootView.findViewById(R.id.fetch_books_button_scan);
+        mScannerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mScannerButton.hide();
                 Intent intent = new Intent(getContext(), BarcodeCaptureActivity.class);
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                 intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
@@ -196,6 +200,7 @@ public class FetchBooksFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mScannerButton.show();
         if (requestCode == RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {

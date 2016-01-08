@@ -26,7 +26,7 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:layout_gravity="center|top" android:gravity="center"
-            tools:src="@drawable/ic_action_accept"
+            tools:src="@drawable/ic_launcher"
             android:padding="@dimen/cardview_spacing"/>
 
         <!-- Right column, informational -->

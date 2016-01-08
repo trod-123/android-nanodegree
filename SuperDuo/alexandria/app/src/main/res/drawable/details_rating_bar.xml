@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- For a custom rating bar -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- id/background is for empty stars -->
+    <item android:id="@android:id/background"
+          android:drawable="@drawable/ic_star_outline_blue_grey_500_18dp"/>
+    <!-- id/secondaryProgress is for half stars -->
+    <item android:id="@android:id/secondaryProgress"
+          android:drawable="@drawable/ic_star_half_blue_grey_500_18dp"/>
+    <!-- id/progress is for full stars -->
+    <item android:id="@android:id/progress"
+          android:drawable="@drawable/ic_star_blue_grey_500_18dp"/>
+</layer-list>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
 import android.util.Log;
@@ -70,7 +71,6 @@ public class Network {
 
     /**
      * Gets the sync status
-     *
      * @param c Context used to get the SharedPreferences
      * @return the sync status integer type
      */
@@ -78,5 +78,28 @@ public class Network {
     public static @Network.SyncStatus int getSyncStatus(Context c) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         return sp.getInt(c.getString(R.string.sp_sync_status_key), Network.SYNC_STATUS_UNKNOWN);
+    }
+
+    /**
+     * Shares a message
+     * @param context Context used to start share activity
+     * @param shareText The text to be shared
+     */
+    public static void shareText(Context context, String shareText) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        context.startActivity(shareIntent);
+    }
+
+    /**
+     * Launches url in browser
+     * @param context Context used to start browser activity
+     * @param url The url
+     */
+    public static void openInBrowser(Context context, String url) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        context.startActivity(browserIntent);
     }
 }

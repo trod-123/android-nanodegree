@@ -4,23 +4,31 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import it.jaschke.alexandria.model.IndustryIdentifier;
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.provider.authors.AuthorsColumns;
@@ -29,6 +37,11 @@ import it.jaschke.alexandria.provider.authors.AuthorsSelection;
 import it.jaschke.alexandria.provider.books.BooksColumns;
 import it.jaschke.alexandria.provider.books.BooksCursor;
 import it.jaschke.alexandria.provider.books.BooksSelection;
+import it.jaschke.alexandria.provider.categories.CategoriesColumns;
+import it.jaschke.alexandria.provider.categories.CategoriesCursor;
+import it.jaschke.alexandria.provider.categories.CategoriesSelection;
+import it.jaschke.alexandria.utilities.Library;
+import it.jaschke.alexandria.utilities.Network;
 
 /**
  * Created by TROD on 20160106.
@@ -40,21 +53,52 @@ public class DetailFragment extends Fragment
 
     public static final String BOOK_ID = "bookId";
     private String mBookId;
+    private String mTitle;
+    private String mAuthors = "";
+    private String mInfoUrl;
     public static final String VOLUME_OBJECT = "volumeObject";
     private Volume mVolume;
 
     private static final int DETAIL_LOADER_ID = 0;
 
     @Bind(R.id.details_scrollview_root) ScrollView mScrollView;
+    @Bind(R.id.details_button) FloatingActionButton mDetailsFAB;
+
+    // Main card
     @Bind(R.id.details_textview_title) TextView mTitleTextView;
     @Bind(R.id.details_textview_subtitle) TextView mSubtitleTextView;
     @Bind(R.id.details_textview_author_date) TextView mAuthorDateTextView;
     @Bind(R.id.details_textview_description) TextView mDescriptionTextView;
     @Bind(R.id.details_imageview_book_thumbnail) ImageView mThumbnailImageView;
+    @Bind(R.id.details_rating_container) LinearLayout mRatingsContainer;
+    @Bind(R.id.details_ratingbar) RatingBar mRatingBar;
+    @Bind(R.id.details_rating) TextView mRatingsTextView;
+    @Bind(R.id.details_divider_description) View mDetailsDividerDescription;
+
+    // Bibliographic card labels
+    @Bind(R.id.details_textview_label_bib_title) TextView mLabelBibTitleTextView;
+    @Bind(R.id.details_textview_label_bib_authors) TextView mLabelBibAuthorsTextView;
+    @Bind(R.id.details_textview_label_bib_publisher) TextView mLabelBibPublisherTextView;
+    @Bind(R.id.details_textview_label_bib_date) TextView mLabelBibDateTextView;
+    @Bind(R.id.details_textview_label_bib_isbn) TextView mLabelBibIsbnTextView;
+    @Bind(R.id.details_textview_label_bib_length) TextView mLabelBibLengthTextView;
+    @Bind(R.id.details_textview_label_bib_categories) TextView mLabelBibCategoriesTextView;
+    @Bind(R.id.details_textview_label_bib_language) TextView mLabelBibLanguageTextView;
+    // Bibliographic card content
+    @Bind(R.id.details_textview_bib_title) TextView mBibTitleTextView;
+    @Bind(R.id.details_textview_bib_authors) TextView mBibAuthorsTextView;
+    @Bind(R.id.details_textview_bib_publisher) TextView mBibPublisherTextView;
+    @Bind(R.id.details_textview_bib_date) TextView mBibDateTextView;
+    @Bind(R.id.details_textview_bib_isbn) TextView mBibIsbnTextView;
+    @Bind(R.id.details_textview_bib_length) TextView mBibLengthTextView;
+    @Bind(R.id.details_textview_bib_categories) TextView mBibCategoriesTextView;
+    @Bind(R.id.details_textview_bib_language) TextView mBibLanguageTextView;
+
 
     public DetailFragment() {
         setHasOptionsMenu(true);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,43 +116,16 @@ public class DetailFragment extends Fragment
 
         // If a volume object is found, set the UI
         if (mVolume != null) {
-            VolumeInfo volumeInfo = mVolume.getVolumeInfo();
-            // Titles
-            mTitleTextView.setText(volumeInfo.getTitle());
-            if (volumeInfo.getSubtitle() != null)
-                mSubtitleTextView.setText(volumeInfo.getSubtitle());
-            else
-                mSubtitleTextView.setVisibility(View.GONE);
-            // Authors and published date (only include year)
-            String authors = "";
-            if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
-                for (int i = 0; i < volumeInfo.getAuthors().size(); i++) {
-                    authors += volumeInfo.getAuthors().get(i) + ", ";
+            prepareUi(mVolume, null);
+            mDetailsFAB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Library.addToLibrary(getContext(), mVolume, mVolume.getVolumeInfo().getTitle());
+                    mDetailsFAB.hide();
                 }
-            }
-            String year = "";
-            if (volumeInfo.getPublishedDate() != null)
-                year = volumeInfo.getPublishedDate().substring(0, 4);
-            if ((authors + year).length() > 0)
-                mAuthorDateTextView.setText(authors + year);
-            else
-                mAuthorDateTextView.setVisibility(View.GONE);
-            // Description
-            String description = "";
-            if (volumeInfo.getDescription() != null)
-                description = volumeInfo.getDescription();
-            if (description.length() > 0)
-                mDescriptionTextView.setText(Html.fromHtml(description));
-            else
-                mDescriptionTextView.setVisibility(View.GONE);
-            // Cover thumbnail
-            String imageLink = "path";
-            if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null)
-                imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
-            Picasso.with(getContext())
-                    .load(imageLink)
-                    .error(R.drawable.ic_launcher)
-                    .into(mThumbnailImageView);
+            });
+        } else {
+            mDetailsFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_24dp));
         }
 
         return rootView;
@@ -119,6 +136,27 @@ public class DetailFragment extends Fragment
         getLoaderManager().initLoader(DETAIL_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_details_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_share :
+                Network.shareText(
+                        getContext(), getString(R.string.share_book, mTitle, mAuthors, mInfoUrl));
+                break;
+            case R.id.action_view_browser :
+                Network.openInBrowser(getContext(), mInfoUrl);
+                break;
+        }
+        return true;
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -137,57 +175,294 @@ public class DetailFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // This is only called when a loader is returned. Set the UI using the cursor if available.
         if (data != null && data.moveToFirst()) {
-            BooksCursor cursor = new BooksCursor(data);
-
-            // Titles
-            mTitleTextView.setText(cursor.getTitle());
-            if (cursor.getSubtitle() != null)
-                mSubtitleTextView.setText(cursor.getSubtitle());
-            else
-                mSubtitleTextView.setVisibility(View.GONE);
-            // Authors and published date (only include year)
-            String authors = "";
-            ContentResolver cr = getContext().getContentResolver();
-            AuthorsCursor c = new AuthorsCursor(cr.query((
-                            new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
-                    AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{mBookId},
-                    null));
-            if (c.moveToFirst()) {
-                for (int i = 0; i < c.getCount(); i++) {
-                    c.moveToPosition(i);
-                    authors += c.getName() + ", ";
+            prepareUi(null, new BooksCursor(data));
+            mDetailsFAB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Library.removeFromLibrary(getContext(), mBookId, mTitle);
+                    mDetailsFAB.hide();
                 }
-            }
-            c.close();
-            String year = "";
-            if (cursor.getPublisheddate() != null)
-                year = cursor.getPublisheddate().substring(0, 4);
-            if ((authors + year).length() > 0)
-                mAuthorDateTextView.setText(authors + year);
-            else
-                mAuthorDateTextView.setVisibility(View.GONE);
-            // Description
-            String description = "";
-            if (cursor.getDescription() != null)
-                description = cursor.getDescription();
-            Log.d(LOG_TAG, "The description is" + description);
-            if (description.length() > 0)
-                mDescriptionTextView.setText(Html.fromHtml(description));
-            else
-                mDescriptionTextView.setVisibility(View.GONE);
-            // Cover thumbnail
-            String imageLink = "path";
-            if (cursor.getSmallthumbnailurl() != null)
-                imageLink = cursor.getSmallthumbnailurl();
-            Picasso.with(getContext())
-                    .load(imageLink)
-                    .error(R.drawable.ic_launcher)
-                    .into(mThumbnailImageView);
+            });
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Since there is no adapter, there is no need for this
+    }
+
+    /**
+     * Prepares the UI. Uses volume object or cursor, whichever is provided.
+     * @param volume The volume object, containing book information. To be used from fetch.
+     * @param cursor The cursor. To be used from personal library.
+     */
+    public void prepareUi(@Nullable Volume volume, @Nullable BooksCursor cursor) {
+        // Extract data from volume or cursor (only id and title are not nullable)
+        String subtitle = null;     String publisher = null;
+        String year = "";           String description = "";
+        String isbn_10 = null;      String isbn_13 = null;
+        String imageLink = "path";  String language = null;
+        String categories = "";
+        int pageCount = -1;         int ratingsCount = -1;
+        double averageRating = -1;
+
+        if (volume != null) {
+            VolumeInfo volumeInfo = volume.getVolumeInfo();
+            mInfoUrl = volumeInfo.getInfoLink();
+
+            /*
+                Main card
+             */
+
+            // Titles
+            mTitle = volumeInfo.getTitle();
+            if (volumeInfo.getSubtitle() != null)
+                subtitle = volumeInfo.getSubtitle();
+            // Authors and published date (only include year)
+            if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
+                int size = volumeInfo.getAuthors().size();
+                for (int i = 0; i < size; i++) {
+                    if (size == 1)
+                        mAuthors = volumeInfo.getAuthors().get(i);
+                    else if (i < size - 1)
+                        // Only add comma if there is another author coming up next
+                        mAuthors += volumeInfo.getAuthors().get(i) + ", ";
+                    else
+                        // Append "and" if last author and there are multiple authors
+                        mAuthors += volumeInfo.getAuthors().get(i);
+                }
+            }
+            if (volumeInfo.getPublishedDate() != null)
+                year = volumeInfo.getPublishedDate().substring(0, 4);
+            // Description
+            if (volumeInfo.getDescription() != null)
+                description = volumeInfo.getDescription();
+            // Cover thumbnail
+            if (volumeInfo.getImageLinks() != null && volumeInfo.getImageLinks().getSmallThumbnail() != null)
+                imageLink = volumeInfo.getImageLinks().getSmallThumbnail();
+
+
+            /*
+                Bibliographic card
+             */
+
+            // Publisher
+            if (volumeInfo.getPublisher() != null)
+                publisher = volumeInfo.getPublisher();
+            // ISBN
+            if (volumeInfo.getIndustryIdentifiers() != null) {
+                for (IndustryIdentifier indId : volumeInfo.getIndustryIdentifiers()) {
+                    if (indId.getType().equals(Library.ISBN_10))
+                        isbn_10 = indId.getIdentifier();
+                    else if (indId.getType().equals(Library.ISBN_13))
+                        isbn_13 = indId.getIdentifier();
+                }
+            }
+            // Language
+            if (volumeInfo.getLanguage() != null) {
+                // Convert language locale abbreviation into full language
+                language = new Locale(volumeInfo.getLanguage()).getDisplayLanguage();
+            }
+            // Categories
+            if (volumeInfo.getCategories() != null && volumeInfo.getCategories().size() > 0) {
+                // Only add comma if there is another category coming up next
+                int size = volumeInfo.getCategories().size();
+                for (int i = 0; i < size; i++) {
+                    if (i < size - 1)
+                        categories += volumeInfo.getCategories().get(i) + ", ";
+                    else
+                        categories += volumeInfo.getCategories().get(i);
+                }
+            }
+            // Pages
+            if (volumeInfo.getPageCount() != null)
+                pageCount = volumeInfo.getPageCount();
+            // Ratings
+            if (volumeInfo.getRatingsCount() != null)
+                ratingsCount = volumeInfo.getRatingsCount();
+            if (volumeInfo.getAverageRating() != null)
+                averageRating = volumeInfo.getAverageRating();
+        }
+
+        else if (cursor != null) {
+            mInfoUrl = cursor.getInfolink();
+
+            /*
+                Main card
+             */
+
+            // Titles
+            mTitle = cursor.getTitle();
+            if (cursor.getSubtitle() != null)
+                subtitle = cursor.getSubtitle();
+            // Authors and published date (only include year)
+            ContentResolver cr = getContext().getContentResolver();
+            AuthorsCursor authorsCursor = new AuthorsCursor(cr.query((new AuthorsSelection()).uri(),
+                    new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
+                    AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{mBookId},
+                    null));
+            if (authorsCursor.moveToFirst()) {
+                for (int i = 0; i < authorsCursor.getCount(); i++) {
+                    authorsCursor.moveToPosition(i);
+                    if (authorsCursor.getCount() == 1)
+                        mAuthors = authorsCursor.getName();
+                    else if (i < authorsCursor.getCount() -1)
+                        // Only add comma if there is another author coming up next
+                        mAuthors += authorsCursor.getName() + ", ";
+                    else
+                        // Append "and" if last author and there are multiple authors
+                        mAuthors += getString(R.string.list_and) + authorsCursor.getName();
+                }
+            }
+            authorsCursor.close();
+            if (cursor.getPublisheddate() != null)
+                year = cursor.getPublisheddate().substring(0, 4);
+            // Description
+            if (cursor.getDescription() != null)
+                description = cursor.getDescription();
+            // Cover thumbnail
+            if (cursor.getSmallthumbnailurl() != null)
+                imageLink = cursor.getSmallthumbnailurl();
+
+
+            /*
+                Bibliographic card
+             */
+
+            // Publisher
+            if (cursor.getPublisher() != null)
+                publisher = cursor.getPublisher();
+            // ISBN
+            if (cursor.getIsbn10() != null)
+                isbn_10 = cursor.getIsbn10();
+            if (cursor.getIsbn13() != null)
+                isbn_13 = cursor.getIsbn13();
+            // Language
+            if (cursor.getLanguage() != null)
+                // Convert language locale abbreviation into full language
+                language = new Locale(cursor.getLanguage()).getDisplayLanguage();
+            // Categories
+            CategoriesCursor categoriesCursor = new CategoriesCursor(cr.query((new CategoriesSelection()).uri(),
+                    new String[]{CategoriesColumns.NAME, CategoriesColumns.CATEGORYVOLUMEID},
+                    CategoriesColumns.CATEGORYVOLUMEID + " == ? ", new String[]{mBookId},
+                    null));
+            if (categoriesCursor.moveToFirst()) {
+                for (int i = 0; i < categoriesCursor.getCount(); i++) {
+                    categoriesCursor.moveToPosition(i);
+                    // Only add comma if there is another category coming up next
+                    if (i < categoriesCursor.getCount() - 1)
+                        categories += categoriesCursor.getName() + ", ";
+                    else
+                        categories += categoriesCursor.getName();
+                }
+            }
+            // Pages
+            if (cursor.getPagecount() != null)
+                pageCount = cursor.getPagecount();
+            // Ratings
+            if (cursor.getRatingscount() != null)
+                ratingsCount = cursor.getRatingscount();
+            if (cursor.getAveragerating() != null)
+                averageRating = cursor.getAveragerating();
+        }
+
+        // Set the ui elements. Hide if null.
+
+        getActivity().setTitle(mTitle);
+
+        /*
+            Main card
+         */
+
+        mTitleTextView.setText(mTitle);
+        if (subtitle != null)
+            mSubtitleTextView.setText(subtitle);
+        else
+            mSubtitleTextView.setVisibility(View.GONE);
+        if ((mAuthors + year).length() > 0)
+            mAuthorDateTextView.setText(mAuthors + ", " + year);
+        else
+            mAuthorDateTextView.setVisibility(View.GONE);
+        if (description.length() > 0)
+            mDescriptionTextView.setText(Html.fromHtml(description));
+        else {
+            mDescriptionTextView.setVisibility(View.GONE);
+            mDetailsDividerDescription.setVisibility(View.GONE);
+        }
+        if (ratingsCount != -1) {
+            mRatingBar.setRating((float) averageRating);
+            mRatingsTextView.setText(getString(R.string.detail_rating, ratingsCount));
+        } else {
+            mRatingsContainer.setVisibility(View.GONE);
+        }
+        Picasso.with(getContext())
+                .load(imageLink)
+                .error(R.drawable.ic_launcher)
+                .into(mThumbnailImageView);
+
+        /*
+            Bibliographic card
+         */
+
+        String titles = mTitle;
+        if (subtitle != null)
+            titles += ": " + subtitle;
+        mBibTitleTextView.setText(titles);
+
+        if (mAuthors.length() > 0)
+            mBibAuthorsTextView.setText(mAuthors);
+        else {
+            mLabelBibAuthorsTextView.setVisibility(View.GONE);
+            mBibAuthorsTextView.setVisibility(View.GONE);
+        }
+
+        if (publisher != null)
+            mBibPublisherTextView.setText(publisher);
+        else {
+            mLabelBibPublisherTextView.setVisibility(View.GONE);
+            mBibPublisherTextView.setVisibility(View.GONE);
+        }
+
+        if (year.length() > 0)
+            mBibDateTextView.setText(year);
+        else {
+            mLabelBibDateTextView.setVisibility(View.GONE);
+            mBibDateTextView.setVisibility(View.GONE);
+        }
+
+        String isbns = "";
+        if (isbn_10 != null && isbn_13 != null)
+            isbns += isbn_10 + ", " + isbn_13;
+        else if (isbn_10 != null)
+            isbns += isbn_10;
+        else if (isbn_13 != null)
+            isbns += isbn_13;
+        if (isbns.length() > 0)
+            mBibIsbnTextView.setText(isbns);
+        else {
+            mLabelBibIsbnTextView.setVisibility(View.GONE);
+            mBibIsbnTextView.setVisibility(View.GONE);
+        }
+
+        if (pageCount != -1)
+            mBibLengthTextView.setText(pageCount + " pages");
+        else {
+            mLabelBibLengthTextView.setVisibility(View.GONE);
+            mBibLengthTextView.setVisibility(View.GONE);
+        }
+
+        if (categories.length() > 0)
+            mBibCategoriesTextView.setText(categories);
+        else {
+            mLabelBibCategoriesTextView.setVisibility(View.GONE);
+            mBibCategoriesTextView.setVisibility(View.GONE);
+        }
+
+        if (language != null)
+            mBibLanguageTextView.setText(language);
+        else {
+            mLabelBibLanguageTextView.setVisibility(View.GONE);
+            mBibLanguageTextView.setVisibility(View.GONE);
+        }
     }
 }

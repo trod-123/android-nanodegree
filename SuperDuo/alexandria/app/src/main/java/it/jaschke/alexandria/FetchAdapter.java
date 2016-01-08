@@ -22,6 +22,7 @@ import java.util.List;
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.utilities.Library;
+import it.jaschke.alexandria.utilities.Network;
 
 /**
  * Created by TROD on 20160104.
@@ -89,25 +90,37 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         final Volume volume = mVolumesList.get(position);
         VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
         // Title of book
-        String title;
-        if (volumeInfo.getTitle() != null) {
+        final String title;
+        if (volumeInfo.getTitle() != null)
             title = volumeInfo.getTitle();
-            holder.mTitleTextView.setText(title);
-            holder.mTitleTextView.setVisibility(View.VISIBLE);
-        } else
-            holder.mTitleTextView.setVisibility(View.GONE);
+        else
+            title = mContext.getString(R.string.library_book_no_name);
+        holder.mTitleTextView.setText(title);
         // Authors and published date (only include year)
         String authors = "";
         if (volumeInfo.getAuthors() != null && volumeInfo.getAuthors().size() > 0) {
-            for (int i = 0; i < volumeInfo.getAuthors().size(); i++) {
-                authors += volumeInfo.getAuthors().get(i) + ", ";
+            int size = volumeInfo.getAuthors().size();
+            for (int i = 0; i < size; i++) {
+                if (size == 1)
+                    authors = volumeInfo.getAuthors().get(i);
+                else if (i < size - 1)
+                    // Only add comma if there is another author coming up next
+                    authors += volumeInfo.getAuthors().get(i) + ", ";
+                else
+                    // Append "and" if last author and there are multiple authors
+                    authors += mContext.getString(R.string.list_and) + volumeInfo.getAuthors().get(i);
             }
         }
+        final String authorsFinal;
+        if (authors.length() > 0)
+            authorsFinal = authors;
+        else
+            authorsFinal = mContext.getString(R.string.library_book_no_author);
         String year = "";
         if (volumeInfo.getPublishedDate() != null)
             year = volumeInfo.getPublishedDate().substring(0, 4);
         if ((authors + year).length() > 0) {
-            holder.mDateAuthorTextView.setText(authors + year);
+            holder.mDateAuthorTextView.setText(authors + ", " + year);
             holder.mDateAuthorTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDateAuthorTextView.setVisibility(View.GONE);
@@ -131,9 +144,9 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
         // Action menu button
-        // TODO: Do this programmatically. Hide the button if there is no link.
         // TODO: Add a preview button and embedded book preview feature in app
         final String infoLink;
+        // Even though most likely there will be a link to Google's Book page for this book
         if (volumeInfo.getInfoLink() != null)
             infoLink = volumeInfo.getInfoLink();
         else
@@ -146,14 +159,21 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getTitle().equals(mContext.getString(R.string.action_view_details)))
-                            ((FetchBooksFragment.ResultSelectionCallback) mContext)
-                                    .onResultItemSelected(volume, holder);
-                        else if (item.getTitle().equals(mContext.getString(R.string.action_add)))
-                            Library.addToLibrary(mContext, volume);
-                        else if (item.getTitle().equals(mContext.getString(R.string.action_view_browser))) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(infoLink));
-                            mContext.startActivity(intent);
+                        int id = item.getItemId();
+                        switch (id) {
+                            case R.id.action_view_details :
+                                ((FetchBooksFragment.ResultSelectionCallback) mContext)
+                                        .onResultItemSelected(volume, holder);
+                                break;
+                            case R.id.action_add :
+                                Library.addToLibrary(mContext, volume, title);
+                                break;
+                            case R.id.action_view_browser :
+                                Network.openInBrowser(mContext, infoLink);
+                                break;
+                            case R.id.action_share :
+                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authorsFinal, infoLink));
+                                break;
                         }
                         return true;
                     }

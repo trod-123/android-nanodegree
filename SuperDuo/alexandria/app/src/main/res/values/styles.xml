@@ -20,4 +20,10 @@
         <item name="android:scrollbarSize">@dimen/scrollbar_width</item>
     </style>
 
+    <!-- Rating bar with custom star drawables.
+          (url: http://stackoverflow.com/questions/2446270/android-ratingbar-change-star-colors) -->
+    <style name="DetailsRatingBar" parent="@android:style/Widget.DeviceDefault.RatingBar.Small">
+        <item name="android:progressDrawable">@drawable/details_rating_bar</item>
+    </style>
+
 </resources>

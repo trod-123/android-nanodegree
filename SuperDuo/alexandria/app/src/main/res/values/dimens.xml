@@ -7,12 +7,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_padding_horizontal_margin">16dp</dimen>
     <dimen name="activity_padding_vertical_margin">16dp</dimen>
+    <dimen name="activity_padding">16dp</dimen>
 
     <!-- Padding, margins, and elevation -->
     <dimen name="cardview_horizontal_padding">8dp</dimen>
     <dimen name="cardview_vertical_padding">4dp</dimen>
     <dimen name="cardview_spacing">8dp</dimen>
+    <dimen name="cardview_spacing_small">4dp</dimen>
     <dimen name="cardview_elevation">2dp</dimen>
+    <dimen name="cardview_divider_size">1dp</dimen>
 
     <!-- Text sizes -->
     <dimen name="cardview_list_title_size">20sp</dimen>
