@@ -168,7 +168,7 @@ public class Library {
             c = cr.query((new AuthorsSelection()).uri(), new String[]{AuthorsColumns.NAME, AuthorsColumns.AUTHORVOLUMEID},
                     AuthorsColumns.NAME + " == ? AND " + AuthorsColumns.AUTHORVOLUMEID + " == ? ", new String[]{author, bookId}, null);
             if (c.moveToFirst()) {
-                aCv.update(cr, (new AuthorsSelection().authorvolumeid(bookId)));
+                // do nothing
             } else {
                 aCv.insert(cr);
             }
@@ -182,7 +182,7 @@ public class Library {
             c = cr.query((new CategoriesSelection()).uri(), new String[]{CategoriesColumns.NAME, CategoriesColumns.CATEGORYVOLUMEID},
                     CategoriesColumns.NAME + " == ? AND " + CategoriesColumns.CATEGORYVOLUMEID + " == ? ", new String[]{category, bookId}, null);
             if (c.moveToFirst()) {
-                cCv.update(cr, (new CategoriesSelection().categoryvolumeid(bookId)));
+                // do nothing
             } else {
                 cCv.insert(cr);
             }
