@@ -492,46 +492,6 @@ public class BooksSelection extends AbstractSelection<BooksSelection> {
         return this;
     }
 
-    public BooksSelection printtype(String... value) {
-        addEquals(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection printtypeNot(String... value) {
-        addNotEquals(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection printtypeLike(String... value) {
-        addLike(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection printtypeContains(String... value) {
-        addContains(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection printtypeStartsWith(String... value) {
-        addStartsWith(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection printtypeEndsWith(String... value) {
-        addEndsWith(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksSelection orderByPrinttype(boolean desc) {
-        orderBy(BooksColumns.PRINTTYPE, desc);
-        return this;
-    }
-
-    public BooksSelection orderByPrinttype() {
-        orderBy(BooksColumns.PRINTTYPE, false);
-        return this;
-    }
-
     public BooksSelection categories(String... value) {
         addEquals(BooksColumns.CATEGORIES, value);
         return this;
@@ -649,46 +609,6 @@ public class BooksSelection extends AbstractSelection<BooksSelection> {
 
     public BooksSelection orderByRatingscount() {
         orderBy(BooksColumns.RATINGSCOUNT, false);
-        return this;
-    }
-
-    public BooksSelection maturityrating(String... value) {
-        addEquals(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection maturityratingNot(String... value) {
-        addNotEquals(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection maturityratingLike(String... value) {
-        addLike(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection maturityratingContains(String... value) {
-        addContains(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection maturityratingStartsWith(String... value) {
-        addStartsWith(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection maturityratingEndsWith(String... value) {
-        addEndsWith(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksSelection orderByMaturityrating(boolean desc) {
-        orderBy(BooksColumns.MATURITYRATING, desc);
-        return this;
-    }
-
-    public BooksSelection orderByMaturityrating() {
-        orderBy(BooksColumns.MATURITYRATING, false);
         return this;
     }
 
@@ -812,46 +732,6 @@ public class BooksSelection extends AbstractSelection<BooksSelection> {
         return this;
     }
 
-    public BooksSelection previewlink(String... value) {
-        addEquals(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection previewlinkNot(String... value) {
-        addNotEquals(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection previewlinkLike(String... value) {
-        addLike(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection previewlinkContains(String... value) {
-        addContains(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection previewlinkStartsWith(String... value) {
-        addStartsWith(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection previewlinkEndsWith(String... value) {
-        addEndsWith(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksSelection orderByPreviewlink(boolean desc) {
-        orderBy(BooksColumns.PREVIEWLINK, desc);
-        return this;
-    }
-
-    public BooksSelection orderByPreviewlink() {
-        orderBy(BooksColumns.PREVIEWLINK, false);
-        return this;
-    }
-
     public BooksSelection infolink(String... value) {
         addEquals(BooksColumns.INFOLINK, value);
         return this;
@@ -889,46 +769,6 @@ public class BooksSelection extends AbstractSelection<BooksSelection> {
 
     public BooksSelection orderByInfolink() {
         orderBy(BooksColumns.INFOLINK, false);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelink(String... value) {
-        addEquals(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelinkNot(String... value) {
-        addNotEquals(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelinkLike(String... value) {
-        addLike(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelinkContains(String... value) {
-        addContains(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelinkStartsWith(String... value) {
-        addStartsWith(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection canonicalvolumelinkEndsWith(String... value) {
-        addEndsWith(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksSelection orderByCanonicalvolumelink(boolean desc) {
-        orderBy(BooksColumns.CANONICALVOLUMELINK, desc);
-        return this;
-    }
-
-    public BooksSelection orderByCanonicalvolumelink() {
-        orderBy(BooksColumns.CANONICALVOLUMELINK, false);
         return this;
     }
 

@@ -53,14 +53,12 @@ public class BooksCursor extends AbstractCursor implements BooksModel {
     }
 
     /**
-     * The title of the volume. (String, Not nullable)
-     * Cannot be {@code null}.
+     * The title of the volume. (String, Nullable)
+     * Can be {@code null}.
      */
-    @NonNull
+    @Nullable
     public String getTitle() {
         String res = getStringOrNull(BooksColumns.TITLE);
-        if (res == null)
-            throw new NullPointerException("The value of 'title' in the database was null, which is not allowed according to the model definition");
         return res;
     }
 
@@ -145,16 +143,6 @@ public class BooksCursor extends AbstractCursor implements BooksModel {
     }
 
     /**
-     * The volume's print type. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    public String getPrinttype() {
-        String res = getStringOrNull(BooksColumns.PRINTTYPE);
-        return res;
-    }
-
-    /**
      * The volume's categories. (String, Nullable)
      * Can be {@code null}.
      */
@@ -181,16 +169,6 @@ public class BooksCursor extends AbstractCursor implements BooksModel {
     @Nullable
     public Integer getRatingscount() {
         Integer res = getIntegerOrNull(BooksColumns.RATINGSCOUNT);
-        return res;
-    }
-
-    /**
-     * Maturity rating. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    public String getMaturityrating() {
-        String res = getStringOrNull(BooksColumns.MATURITYRATING);
         return res;
     }
 
@@ -225,32 +203,12 @@ public class BooksCursor extends AbstractCursor implements BooksModel {
     }
 
     /**
-     * Preview url. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    public String getPreviewlink() {
-        String res = getStringOrNull(BooksColumns.PREVIEWLINK);
-        return res;
-    }
-
-    /**
      * Google Books info page. (String, Nullable)
      * Can be {@code null}.
      */
     @Nullable
     public String getInfolink() {
         String res = getStringOrNull(BooksColumns.INFOLINK);
-        return res;
-    }
-
-    /**
-     * Canonical volume link. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    public String getCanonicalvolumelink() {
-        String res = getStringOrNull(BooksColumns.CANONICALVOLUMELINK);
         return res;
     }
 

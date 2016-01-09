@@ -46,7 +46,7 @@ public class BooksContentValues extends AbstractContentValues {
     /**
      * Update row(s) using the values stored by this object and the given selection.
      *
-     * @param contentResolver The content resolver to use.
+     * @param context The content resolver to use.
      * @param where The selection to use (can be {@code null}).
      */
     public int update(Context context, @Nullable BooksSelection where) {
@@ -64,14 +64,17 @@ public class BooksContentValues extends AbstractContentValues {
 
 
     /**
-     * The title of the volume. (String, Not nullable)
+     * The title of the volume. (String, Nullable)
      */
-    public BooksContentValues putTitle(@NonNull String value) {
-        if (value == null) throw new IllegalArgumentException("title must not be null");
+    public BooksContentValues putTitle(@Nullable String value) {
         mContentValues.put(BooksColumns.TITLE, value);
         return this;
     }
 
+    public BooksContentValues putTitleNull() {
+        mContentValues.putNull(BooksColumns.TITLE);
+        return this;
+    }
 
     /**
      * The subtitle of the volume. (String, Nullable)
@@ -178,19 +181,6 @@ public class BooksContentValues extends AbstractContentValues {
     }
 
     /**
-     * The volume's print type. (String, Nullable)
-     */
-    public BooksContentValues putPrinttype(@Nullable String value) {
-        mContentValues.put(BooksColumns.PRINTTYPE, value);
-        return this;
-    }
-
-    public BooksContentValues putPrinttypeNull() {
-        mContentValues.putNull(BooksColumns.PRINTTYPE);
-        return this;
-    }
-
-    /**
      * The volume's categories. (String, Nullable)
      */
     public BooksContentValues putCategories(@Nullable String value) {
@@ -226,19 +216,6 @@ public class BooksContentValues extends AbstractContentValues {
 
     public BooksContentValues putRatingscountNull() {
         mContentValues.putNull(BooksColumns.RATINGSCOUNT);
-        return this;
-    }
-
-    /**
-     * Maturity rating. (String, Nullable)
-     */
-    public BooksContentValues putMaturityrating(@Nullable String value) {
-        mContentValues.put(BooksColumns.MATURITYRATING, value);
-        return this;
-    }
-
-    public BooksContentValues putMaturityratingNull() {
-        mContentValues.putNull(BooksColumns.MATURITYRATING);
         return this;
     }
 
@@ -282,19 +259,6 @@ public class BooksContentValues extends AbstractContentValues {
     }
 
     /**
-     * Preview url. (String, Nullable)
-     */
-    public BooksContentValues putPreviewlink(@Nullable String value) {
-        mContentValues.put(BooksColumns.PREVIEWLINK, value);
-        return this;
-    }
-
-    public BooksContentValues putPreviewlinkNull() {
-        mContentValues.putNull(BooksColumns.PREVIEWLINK);
-        return this;
-    }
-
-    /**
      * Google Books info page. (String, Nullable)
      */
     public BooksContentValues putInfolink(@Nullable String value) {
@@ -304,19 +268,6 @@ public class BooksContentValues extends AbstractContentValues {
 
     public BooksContentValues putInfolinkNull() {
         mContentValues.putNull(BooksColumns.INFOLINK);
-        return this;
-    }
-
-    /**
-     * Canonical volume link. (String, Nullable)
-     */
-    public BooksContentValues putCanonicalvolumelink(@Nullable String value) {
-        mContentValues.put(BooksColumns.CANONICALVOLUMELINK, value);
-        return this;
-    }
-
-    public BooksContentValues putCanonicalvolumelinkNull() {
-        mContentValues.putNull(BooksColumns.CANONICALVOLUMELINK);
         return this;
     }
 

@@ -40,7 +40,7 @@ public class BooksColumns implements BaseColumns {
     public static final String BOOKID = "bookId";
 
     /**
-     * The title of the volume. (String, Not nullable)
+     * The title of the volume. (String, Nullable)
      */
     public static final String TITLE = "title";
 
@@ -85,11 +85,6 @@ public class BooksColumns implements BaseColumns {
     public static final String PAGECOUNT = "pageCount";
 
     /**
-     * The volume's print type. (String, Nullable)
-     */
-    public static final String PRINTTYPE = "printType";
-
-    /**
      * The volume's categories. (String, Nullable)
      */
     public static final String CATEGORIES = "categories";
@@ -103,11 +98,6 @@ public class BooksColumns implements BaseColumns {
      * Number of ratings. (Integer, Nullable)
      */
     public static final String RATINGSCOUNT = "ratingsCount";
-
-    /**
-     * Maturity rating. (String, Nullable)
-     */
-    public static final String MATURITYRATING = "maturityRating";
 
     /**
      * Small thumbnail url. (String, Nullable)
@@ -125,19 +115,9 @@ public class BooksColumns implements BaseColumns {
     public static final String LANGUAGE = "language";
 
     /**
-     * Preview url. (String, Nullable)
-     */
-    public static final String PREVIEWLINK = "previewLink";
-
-    /**
      * Google Books info page. (String, Nullable)
      */
     public static final String INFOLINK = "infoLink";
-
-    /**
-     * Canonical volume link. (String, Nullable)
-     */
-    public static final String CANONICALVOLUMELINK = "canonicalVolumeLink";
 
     /**
      * Shortened description of volume. (String, Nullable)
@@ -160,17 +140,13 @@ public class BooksColumns implements BaseColumns {
             ISBN_10,
             ISBN_13,
             PAGECOUNT,
-            PRINTTYPE,
             CATEGORIES,
             AVERAGERATING,
             RATINGSCOUNT,
-            MATURITYRATING,
             SMALLTHUMBNAILURL,
             THUMBNAILURL,
             LANGUAGE,
-            PREVIEWLINK,
             INFOLINK,
-            CANONICALVOLUMELINK,
             DESCRIPTIONSNIPPET
     };
     // @formatter:on
@@ -188,17 +164,13 @@ public class BooksColumns implements BaseColumns {
             if (c.equals(ISBN_10) || c.contains("." + ISBN_10)) return true;
             if (c.equals(ISBN_13) || c.contains("." + ISBN_13)) return true;
             if (c.equals(PAGECOUNT) || c.contains("." + PAGECOUNT)) return true;
-            if (c.equals(PRINTTYPE) || c.contains("." + PRINTTYPE)) return true;
             if (c.equals(CATEGORIES) || c.contains("." + CATEGORIES)) return true;
             if (c.equals(AVERAGERATING) || c.contains("." + AVERAGERATING)) return true;
             if (c.equals(RATINGSCOUNT) || c.contains("." + RATINGSCOUNT)) return true;
-            if (c.equals(MATURITYRATING) || c.contains("." + MATURITYRATING)) return true;
             if (c.equals(SMALLTHUMBNAILURL) || c.contains("." + SMALLTHUMBNAILURL)) return true;
             if (c.equals(THUMBNAILURL) || c.contains("." + THUMBNAILURL)) return true;
             if (c.equals(LANGUAGE) || c.contains("." + LANGUAGE)) return true;
-            if (c.equals(PREVIEWLINK) || c.contains("." + PREVIEWLINK)) return true;
             if (c.equals(INFOLINK) || c.contains("." + INFOLINK)) return true;
-            if (c.equals(CANONICALVOLUMELINK) || c.contains("." + CANONICALVOLUMELINK)) return true;
             if (c.equals(DESCRIPTIONSNIPPET) || c.contains("." + DESCRIPTIONSNIPPET)) return true;
         }
         return false;

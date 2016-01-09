@@ -24,11 +24,8 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.Locale;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import it.jaschke.alexandria.model.IndustryIdentifier;
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.provider.authors.AuthorsColumns;
@@ -42,7 +39,7 @@ import it.jaschke.alexandria.provider.categories.CategoriesCursor;
 import it.jaschke.alexandria.provider.categories.CategoriesSelection;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
-import it.jaschke.alexandria.utilities.UIHelper;
+import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160106.
@@ -214,21 +211,21 @@ public class DetailFragment extends Fragment
                     null));
         }
 
-        mInfoUrl = UIHelper.getInfoLink(volume, cursor);
-        mTitle = UIHelper.getTitle(getContext(), volume, cursor);
-        subtitle = UIHelper.getSubtitle(volume, cursor);
-        mAuthors = UIHelper.getAuthors(getContext(), volume, authorsCursor);
-        year = UIHelper.getDatePublished(volume, cursor);
-        description = UIHelper.getDescription(volume, cursor);
-        imageLink = UIHelper.getThumbnailUrl(volume, cursor);
-        publisher = UIHelper.getPublisher(volume, cursor);
-        isbns = UIHelper.getISBNs(volume, cursor);
-        language = UIHelper.getLanguage(volume, cursor);
+        mInfoUrl = LibraryHelper.getInfoLink(volume, cursor);
+        mTitle = LibraryHelper.getTitle(getContext(), true, volume, cursor);
+        subtitle = LibraryHelper.getSubtitle(volume, cursor);
+        mAuthors = LibraryHelper.getAuthors(getContext(), true, volume, authorsCursor);
+        year = LibraryHelper.getDatePublished(true, volume, cursor);
+        description = LibraryHelper.getDescription(true, volume, cursor);
+        imageLink = LibraryHelper.getThumbnailUrl(true, volume, cursor);
+        publisher = LibraryHelper.getPublisher(volume, cursor);
+        isbns = LibraryHelper.getISBNs(volume, cursor);
+        language = LibraryHelper.getLanguage(true, volume, cursor);
 
-        categories = UIHelper.getCategories(getContext(), volume, categoriesCursor);
-        pageCount = UIHelper.getPageCount(volume, cursor);
-        ratingsCount = UIHelper.getRatingsCount(volume, cursor);
-        averageRating = UIHelper.getRatingsAverage(volume, cursor);
+        categories = LibraryHelper.getCategories(getContext(), true, volume, categoriesCursor);
+        pageCount = LibraryHelper.getPageCount(volume, cursor);
+        ratingsCount = LibraryHelper.getRatingsCount(volume, cursor);
+        averageRating = LibraryHelper.getRatingsAverage(volume, cursor);
 
         // Set the ui elements. Hide if null.
 

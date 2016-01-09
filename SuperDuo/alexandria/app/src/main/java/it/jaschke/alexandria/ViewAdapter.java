@@ -2,8 +2,6 @@ package it.jaschke.alexandria;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -23,7 +21,7 @@ import it.jaschke.alexandria.provider.authors.AuthorsSelection;
 import it.jaschke.alexandria.provider.books.BooksCursor;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
-import it.jaschke.alexandria.utilities.UIHelper;
+import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160104.
@@ -100,15 +98,15 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
         final String title, authors, infoLink;
         String subtitle, year, description, imageLink;
 
-        title = UIHelper.getTitle(mContext, null, mBooksCursor);
-        authors = UIHelper.getAuthors(mContext, null, authorsCursor);
-        year = UIHelper.getDatePublished(null, mBooksCursor);
-        description = UIHelper.getShortDescription(null, mBooksCursor);
+        title = LibraryHelper.getTitle(mContext, true, null, mBooksCursor);
+        authors = LibraryHelper.getAuthors(mContext, true, null, authorsCursor);
+        year = LibraryHelper.getDatePublished(true, null, mBooksCursor);
+        description = LibraryHelper.getShortDescription(true, null, mBooksCursor);
         if (description.length() == 0) {
-            description = UIHelper.getDescription(null, mBooksCursor);
+            description = LibraryHelper.getDescription(true, null, mBooksCursor);
         }
-        imageLink = UIHelper.getThumbnailUrl(null, mBooksCursor);
-        infoLink = UIHelper.getInfoLink(null, mBooksCursor);
+        imageLink = LibraryHelper.getThumbnailUrl(true, null, mBooksCursor);
+        infoLink = LibraryHelper.getInfoLink(null, mBooksCursor);
 
         // Set view content. Hide views if null.
         holder.mTitleTextView.setText(title);

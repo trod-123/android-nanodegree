@@ -34,10 +34,10 @@ public interface BooksModel extends BaseModel {
     String getBookid();
 
     /**
-     * The title of the volume. (String, Not nullable)
-     * Cannot be {@code null}.
+     * The title of the volume. (String, Nullable)
+     * Can be {@code null}.
      */
-    @NonNull
+    @Nullable
     String getTitle();
 
     /**
@@ -97,13 +97,6 @@ public interface BooksModel extends BaseModel {
     Integer getPagecount();
 
     /**
-     * The volume's print type. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    String getPrinttype();
-
-    /**
      * The volume's categories. (String, Nullable)
      * Can be {@code null}.
      */
@@ -123,13 +116,6 @@ public interface BooksModel extends BaseModel {
      */
     @Nullable
     Integer getRatingscount();
-
-    /**
-     * Maturity rating. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    String getMaturityrating();
 
     /**
      * Small thumbnail url. (String, Nullable)
@@ -153,25 +139,11 @@ public interface BooksModel extends BaseModel {
     String getLanguage();
 
     /**
-     * Preview url. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    String getPreviewlink();
-
-    /**
      * Google Books info page. (String, Nullable)
      * Can be {@code null}.
      */
     @Nullable
     String getInfolink();
-
-    /**
-     * Canonical volume link. (String, Nullable)
-     * Can be {@code null}.
-     */
-    @Nullable
-    String getCanonicalvolumelink();
 
     /**
      * Shortened description of volume. (String, Nullable)

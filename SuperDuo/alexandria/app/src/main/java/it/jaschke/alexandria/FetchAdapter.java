@@ -1,8 +1,6 @@
 package it.jaschke.alexandria;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -13,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -23,7 +20,7 @@ import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
-import it.jaschke.alexandria.utilities.UIHelper;
+import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160104.
@@ -94,15 +91,15 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         final Volume volume = mVolumesList.get(position);
         VolumeInfo volumeInfo = mVolumesList.get(position).getVolumeInfo();
 
-        title = UIHelper.getTitle(mContext, volumeInfo, null);
-        authors = UIHelper.getAuthors(mContext, volumeInfo, null);
-        year = UIHelper.getDatePublished(volumeInfo, null);
-        description = UIHelper.getShortDescription(volume, null);
+        title = LibraryHelper.getTitle(mContext, true, volumeInfo, null);
+        authors = LibraryHelper.getAuthors(mContext, true, volumeInfo, null);
+        year = LibraryHelper.getDatePublished(true, volumeInfo, null);
+        description = LibraryHelper.getShortDescription(true, volume, null);
         if (description.length() == 0) {
-            description = UIHelper.getDescription(volumeInfo, null);
+            description = LibraryHelper.getDescription(true, volumeInfo, null);
         }
-        imageLink = UIHelper.getThumbnailUrl(volumeInfo, null);
-        infoLink = UIHelper.getInfoLink(volumeInfo, null);
+        imageLink = LibraryHelper.getThumbnailUrl(true, volumeInfo, null);
+        infoLink = LibraryHelper.getInfoLink(volumeInfo, null);
 
         // Set view content. Hide views if null.
         holder.mTitleTextView.setText(title);
