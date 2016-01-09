@@ -118,7 +118,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
             holder.mDateAuthorTextView.setVisibility(View.GONE);
 
         if (description.length() > 0) {
-            holder.mDescriptionTextView.setText(Html.fromHtml(description));
+            holder.mDescriptionTextView.setText(description);
             holder.mDescriptionTextView.setVisibility(View.VISIBLE);
         } else
             holder.mDescriptionTextView.setVisibility(View.GONE);

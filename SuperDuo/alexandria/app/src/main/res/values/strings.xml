@@ -16,6 +16,7 @@
     <string name="action_share">Share</string>
     <string name="action_add">Add to library</string>
     <string name="action_remove">Remove from library</string>
+    <string name="action_update">Update in library</string>
     <string name="action_view_details">View details</string>
     <string name="action_view_browser">Open in Google Books</string>
 

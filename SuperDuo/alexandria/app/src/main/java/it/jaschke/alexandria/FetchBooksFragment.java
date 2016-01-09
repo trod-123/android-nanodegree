@@ -62,7 +62,7 @@ public class FetchBooksFragment extends Fragment
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        void onResultItemSelected(Volume volume, FetchAdapter.ViewHolder vh);
+        void onResultItemSelected(Volume volume, boolean update, FetchAdapter.ViewHolder vh);
     }
 
     public FetchBooksFragment(){
@@ -127,9 +127,9 @@ public class FetchBooksFragment extends Fragment
             // (3) This is the third click method that is called when user presses on a view.
             //      This calls the last method, which is the one hosted in the housing activity.
             @Override
-            public void onClick(Volume volume, FetchAdapter.ViewHolder holder) {
+            public void onClick(Volume volume, boolean update, FetchAdapter.ViewHolder holder) {
                 ((ResultSelectionCallback) getActivity())
-                        .onResultItemSelected(volume, holder);
+                        .onResultItemSelected(volume, update, holder);
             }
         }, emptyView);
         mFetchAdapter.swapList(null);
@@ -206,12 +206,7 @@ public class FetchBooksFragment extends Fragment
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     ((EditText) mRootView.findViewById(R.id.fetch_books_search_field)).setText(barcode.displayValue);
-                } else {
-                    Log.d(LOG_TAG, "No barcode captured, intent data is null");
                 }
-            } else {
-//                statusMessage.setText(String.format(getString(R.string.barcode_error),
-//                        CommonStatusCodes.getStatusCodeString(resultCode)));
             }
         }
         else {

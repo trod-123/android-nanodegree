@@ -45,15 +45,15 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         IS_TABLET = isTablet();
-        if(IS_TABLET){
+        if (IS_TABLET) {
             setContentView(R.layout.activity_main_tablet);
-        }else {
+        } else {
             setContentView(R.layout.activity_main);
         }
 
         messageReciever = new MessageReciever();
         IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever,filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
 
         navigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity
 
         // Set up the drawer.
         navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                    (DrawerLayout) findViewById(R.id.drawer_layout));
+                (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment nextFragment;
 
-        switch (position){
+        switch (position) {
             default:
             case 0:
                 nextFragment = new ViewBooksFragment();
@@ -158,13 +158,13 @@ public class MainActivity extends ActionBarActivity
     private class MessageReciever extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra(MESSAGE_KEY)!=null){
+            if (intent.getStringExtra(MESSAGE_KEY) != null) {
                 Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    public void goBack(View view){
+    public void goBack(View view) {
         getSupportFragmentManager().popBackStack();
     }
 
@@ -176,7 +176,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()<2){
+        if (getSupportFragmentManager().getBackStackEntryCount() < 2) {
             finish();
         }
         super.onBackPressed();
@@ -192,12 +192,14 @@ public class MainActivity extends ActionBarActivity
     }
 
     // This callback starts the detail activity. This is called within FetchBooksFragment,
-    //  which allows communication of the actual book that was selected.
+    //  which allows communication of the actual book that was selected and whether the book should
+    //  be updated.
     @Override
-    public void onResultItemSelected(Volume volume, FetchAdapter.ViewHolder vh) {
+    public void onResultItemSelected(Volume volume, boolean update, FetchAdapter.ViewHolder vh) {
         Log.d(LOG_TAG, "The volume title is " + volume.getVolumeInfo().getTitle());
         Intent intent = new Intent(this, DetailActivity.class)
-                .putExtra(DetailFragment.VOLUME_OBJECT, volume);
+                .putExtra(DetailFragment.VOLUME_OBJECT, volume)
+                .putExtra(DetailFragment.UPDATE_BOOK, update);
         startActivity(intent);
     }
 }

@@ -1,10 +1,14 @@
 package it.jaschke.alexandria;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.preference.Preference;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,8 @@ import java.util.List;
 
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
+import it.jaschke.alexandria.provider.books.BooksColumns;
+import it.jaschke.alexandria.provider.books.BooksSelection;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
 import it.jaschke.alexandria.utilities.LibraryHelper;
@@ -44,7 +50,10 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
         // (1) This is the first click method that is called when user presses on a view.
         @Override
         public void onClick(View v) {
-            mClickHandler.onClick(mVolumesList.get(getAdapterPosition()), this);
+            Volume volume = mVolumesList.get(getAdapterPosition());
+            // Check to see if the book is already in library when letting hosting activity know
+            //  so that it can let the detail fragment know
+            mClickHandler.onClick(volume, LibraryHelper.isInLibrary(mContext, volume.getId()), this);
         }
 
         public ViewHolder(View view) {
@@ -61,7 +70,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
 
     // (2) This is the second click method that is called when user presses on a view.
     public interface FetchAdapterOnClickHandler {
-        void onClick(Volume volume, FetchAdapter.ViewHolder holder);
+        void onClick(Volume volume, boolean update, FetchAdapter.ViewHolder holder);
     }
 
     public FetchAdapter(Context context, FetchAdapterOnClickHandler handler, View empty) {
@@ -121,35 +130,54 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
                 .error(R.drawable.ic_launcher)
                 .into(holder.mThumbnail);
 
-        // TODO: Add a preview button and embedded book preview feature in app
+        // Dynamically set the menu items based on if the book is already in the user's library
         holder.mMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                PopupMenu menu = new PopupMenu(mContext, holder.mMenuButton);
-                menu.getMenuInflater().inflate(R.menu.menu_results_list_item, menu.getMenu());
+                PopupMenu popupMenu = new PopupMenu(mContext, holder.mMenuButton);
+                Menu menu = popupMenu.getMenu();
+                popupMenu.getMenuInflater().inflate(R.menu.menu_results_list_item, menu);
+                // Check to see if the book is already in the library and set menu items accordingly
+                // Because this dynamically influences popup menu layout, this check needs to be
+                //  done HERE, and not anywhere else.
+                final boolean update;
+                if (LibraryHelper.isInLibrary(mContext, volume.getId())) {
+                    menu.findItem(R.id.action_add).setTitle(R.string.action_update);
+                    menu.findItem(R.id.action_remove).setVisible(true);
+                    update = true;
+                }
+                else {
+                    menu.findItem(R.id.action_add).setTitle(R.string.action_add);
+                    menu.findItem(R.id.action_remove).setVisible(false);
+                    update = false;
+                }
 
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int id = item.getItemId();
                         switch (id) {
-                            case R.id.action_view_details :
+                            case R.id.action_view_details:
                                 ((FetchBooksFragment.ResultSelectionCallback) mContext)
-                                        .onResultItemSelected(volume, holder);
+                                        .onResultItemSelected(volume, update, holder);
                                 break;
-                            case R.id.action_add :
+                            case R.id.action_add:
                                 Library.addToLibrary(mContext, volume, title);
                                 break;
-                            case R.id.action_view_browser :
+                            case R.id.action_remove:
+                                Library.removeFromLibrary(mContext, volume.getId(), title);
+                                break;
+                            case R.id.action_view_browser:
                                 Network.openInBrowser(mContext, infoLink);
                                 break;
-                            case R.id.action_share :
-                                Network.shareText(mContext, mContext.getString(R.string.share_book, title, authors, infoLink));
+                            case R.id.action_share:
+                                Network.shareText(mContext, mContext.getString(
+                                        R.string.share_book, title, authors, infoLink));
                                 break;
                         }
                         return true;
                     }
                 });
-                menu.show();
+                popupMenu.show();
             }
         });
     }

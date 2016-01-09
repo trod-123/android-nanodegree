@@ -25,6 +25,9 @@ public class DetailActivity extends AppCompatActivity {
             else if (getIntent().hasExtra(DetailFragment.VOLUME_OBJECT))
                 arguments.putParcelable(DetailFragment.VOLUME_OBJECT,
                         getIntent().getParcelableExtra(DetailFragment.VOLUME_OBJECT));
+            if (getIntent().hasExtra(DetailFragment.UPDATE_BOOK))
+                arguments.putBoolean(DetailFragment.UPDATE_BOOK,
+                        getIntent().getBooleanExtra(DetailFragment.UPDATE_BOOK, false));
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(arguments);

@@ -1,8 +1,12 @@
 package it.jaschke.alexandria.utilities;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import org.jsoup.Jsoup;
 
 import java.util.List;
 import java.util.Locale;
@@ -12,7 +16,9 @@ import it.jaschke.alexandria.model.IndustryIdentifier;
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
 import it.jaschke.alexandria.provider.authors.AuthorsCursor;
+import it.jaschke.alexandria.provider.books.BooksColumns;
 import it.jaschke.alexandria.provider.books.BooksCursor;
+import it.jaschke.alexandria.provider.books.BooksSelection;
 import it.jaschke.alexandria.provider.categories.CategoriesCursor;
 
 /**
@@ -29,6 +35,26 @@ import it.jaschke.alexandria.provider.categories.CategoriesCursor;
  * based on purpose of use.
  */
 public class LibraryHelper {
+
+    /**
+     * Returns whether the book is already in the library
+     * @param context
+     * @param id
+     * @return
+     */
+    public static boolean isInLibrary(@NonNull Context context, @NonNull String id) {
+        boolean result = false;
+        Cursor c = context.getContentResolver().query((new BooksSelection()).uri(),
+                null,
+                BooksColumns.BOOKID + " == ? ",
+                new String[]{id},
+                null);
+        if (c!= null) {
+            result = c.moveToFirst();
+            c.close();
+        }
+        return result;
+    }
 
     /**
      * Gets the Google Books url. Must NOT be null.
@@ -64,11 +90,8 @@ public class LibraryHelper {
         if (cursor != null && cursor.getTitle() != null) {
             return cursor.getTitle();
         }
-        if (display) {
-            return context.getString(R.string.library_book_no_name);
-        } else {
-            return null;
-        }
+        return display ? context.getString(R.string.library_book_no_name) : null;
+
     }
 
 
@@ -190,15 +213,12 @@ public class LibraryHelper {
         if (cursor != null && cursor.getPublisheddate() != null) {
             return cursor.getPublisheddate().substring(0, 4);
         }
-        if (display) {
-            return "";
-        } else {
-            return null;
-        }
+        return display ? "" : null;
     }
 
     /**
-     * Gets the short description.
+     * Gets the short description. Only keep html emphasis if displaying string during fetch. Strip
+     * html attributes when storing in cursor.
      *
      * @param display If true, return an empty string if none. Otherwise, return null.
      * @param volume
@@ -208,16 +228,13 @@ public class LibraryHelper {
     public static String getShortDescription(boolean display, @Nullable Volume volume, @Nullable BooksCursor cursor) {
         if (volume != null && volume.getSearchInfo() != null &&
                 volume.getSearchInfo().getTextSnippet() != null) {
-            return volume.getSearchInfo().getTextSnippet();
+            return display ? volume.getSearchInfo().getTextSnippet() :
+                    Jsoup.parse(volume.getSearchInfo().getTextSnippet()).text();
         }
         if (cursor != null && cursor.getDescriptionsnippet() != null) {
             return cursor.getDescriptionsnippet();
         }
-        if (display) {
-            return "";
-        } else {
-            return null;
-        }
+        return display ? "" : null;
     }
 
     /**
@@ -235,11 +252,7 @@ public class LibraryHelper {
         if (cursor != null && cursor.getDescription() != null) {
             return cursor.getDescription();
         }
-        if (display) {
-            return "";
-        } else {
-            return null;
-        }
+        return display ? "" : null;
     }
 
     /**
@@ -259,11 +272,8 @@ public class LibraryHelper {
         if (cursor != null && cursor.getSmallthumbnailurl() != null) {
             return cursor.getSmallthumbnailurl();
         }
-        if (display) {
-            return "link";
-        } else {
-            return null;
-        }
+        return display ? "link" : null;
+
     }
 
     /**
@@ -283,11 +293,7 @@ public class LibraryHelper {
         if (cursor != null && cursor.getThumbnailurl() != null) {
             return cursor.getThumbnailurl();
         }
-        if (display) {
-            return "link";
-        } else {
-            return null;
-        }
+        return display ? "link" : null;
     }
 
     /**
@@ -460,11 +466,7 @@ public class LibraryHelper {
             }
             cursor.close();
         }
-        if (display) {
-            return categories;
-        } else {
-            return null;
-        }
+        return display ? categories : null;
     }
 
     /**

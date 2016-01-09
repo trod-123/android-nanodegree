@@ -10,6 +10,10 @@
     <item android:id="@+id/action_add"
           android:title="@string/action_add"/>
 
+    <!-- Remove from library -->
+    <item android:id="@+id/action_remove"
+          android:title="@string/action_remove"/>
+
     <!-- Open in Google Books website -->
     <item android:id="@+id/action_view_browser"
           android:title="@string/action_view_browser"/>

@@ -53,41 +53,70 @@ public class DetailFragment extends Fragment
     private String mBookId, mTitle, mAuthors, mInfoUrl;
     public static final String VOLUME_OBJECT = "volumeObject";
     private Volume mVolume;
+    public static final String UPDATE_BOOK = "update";
+    private boolean mUpdate;
 
     private static final int DETAIL_LOADER_ID = 0;
 
-    @Bind(R.id.details_scrollview_root) ScrollView mScrollView;
-    @Bind(R.id.details_button) FloatingActionButton mDetailsFAB;
+    @Bind(R.id.details_scrollview_root)
+    ScrollView mScrollView;
+    @Bind(R.id.details_button)
+    FloatingActionButton mDetailsFAB;
 
     // Main card
-    @Bind(R.id.details_textview_title) TextView mTitleTextView;
-    @Bind(R.id.details_textview_subtitle) TextView mSubtitleTextView;
-    @Bind(R.id.details_textview_author_date) TextView mAuthorDateTextView;
-    @Bind(R.id.details_textview_description) TextView mDescriptionTextView;
-    @Bind(R.id.details_imageview_book_thumbnail) ImageView mThumbnailImageView;
-    @Bind(R.id.details_rating_container) LinearLayout mRatingsContainer;
-    @Bind(R.id.details_ratingbar) RatingBar mRatingBar;
-    @Bind(R.id.details_rating) TextView mRatingsTextView;
-    @Bind(R.id.details_divider_description) View mDetailsDividerDescription;
+    @Bind(R.id.details_textview_title)
+    TextView mTitleTextView;
+    @Bind(R.id.details_textview_subtitle)
+    TextView mSubtitleTextView;
+    @Bind(R.id.details_textview_author_date)
+    TextView mAuthorDateTextView;
+    @Bind(R.id.details_textview_description)
+    TextView mDescriptionTextView;
+    @Bind(R.id.details_imageview_book_thumbnail)
+    ImageView mThumbnailImageView;
+    @Bind(R.id.details_rating_container)
+    LinearLayout mRatingsContainer;
+    @Bind(R.id.details_ratingbar)
+    RatingBar mRatingBar;
+    @Bind(R.id.details_rating)
+    TextView mRatingsTextView;
+    @Bind(R.id.details_divider_description)
+    View mDetailsDividerDescription;
 
     // Bibliographic card labels
-    @Bind(R.id.details_textview_label_bib_title) TextView mLabelBibTitleTextView;
-    @Bind(R.id.details_textview_label_bib_authors) TextView mLabelBibAuthorsTextView;
-    @Bind(R.id.details_textview_label_bib_publisher) TextView mLabelBibPublisherTextView;
-    @Bind(R.id.details_textview_label_bib_date) TextView mLabelBibDateTextView;
-    @Bind(R.id.details_textview_label_bib_isbn) TextView mLabelBibIsbnTextView;
-    @Bind(R.id.details_textview_label_bib_length) TextView mLabelBibLengthTextView;
-    @Bind(R.id.details_textview_label_bib_categories) TextView mLabelBibCategoriesTextView;
-    @Bind(R.id.details_textview_label_bib_language) TextView mLabelBibLanguageTextView;
+    @Bind(R.id.details_textview_label_bib_title)
+    TextView mLabelBibTitleTextView;
+    @Bind(R.id.details_textview_label_bib_authors)
+    TextView mLabelBibAuthorsTextView;
+    @Bind(R.id.details_textview_label_bib_publisher)
+    TextView mLabelBibPublisherTextView;
+    @Bind(R.id.details_textview_label_bib_date)
+    TextView mLabelBibDateTextView;
+    @Bind(R.id.details_textview_label_bib_isbn)
+    TextView mLabelBibIsbnTextView;
+    @Bind(R.id.details_textview_label_bib_length)
+    TextView mLabelBibLengthTextView;
+    @Bind(R.id.details_textview_label_bib_categories)
+    TextView mLabelBibCategoriesTextView;
+    @Bind(R.id.details_textview_label_bib_language)
+    TextView mLabelBibLanguageTextView;
     // Bibliographic card content
-    @Bind(R.id.details_textview_bib_title) TextView mBibTitleTextView;
-    @Bind(R.id.details_textview_bib_authors) TextView mBibAuthorsTextView;
-    @Bind(R.id.details_textview_bib_publisher) TextView mBibPublisherTextView;
-    @Bind(R.id.details_textview_bib_date) TextView mBibDateTextView;
-    @Bind(R.id.details_textview_bib_isbn) TextView mBibIsbnTextView;
-    @Bind(R.id.details_textview_bib_length) TextView mBibLengthTextView;
-    @Bind(R.id.details_textview_bib_categories) TextView mBibCategoriesTextView;
-    @Bind(R.id.details_textview_bib_language) TextView mBibLanguageTextView;
+    @Bind(R.id.details_textview_bib_title)
+    TextView mBibTitleTextView;
+    @Bind(R.id.details_textview_bib_authors)
+    TextView mBibAuthorsTextView;
+    @Bind(R.id.details_textview_bib_publisher)
+    TextView mBibPublisherTextView;
+    @Bind(R.id.details_textview_bib_date)
+    TextView mBibDateTextView;
+    @Bind(R.id.details_textview_bib_isbn)
+    TextView mBibIsbnTextView;
+    @Bind(R.id.details_textview_bib_length)
+    TextView mBibLengthTextView;
+    @Bind(R.id.details_textview_bib_categories)
+    TextView mBibCategoriesTextView;
+    @Bind(R.id.details_textview_bib_language)
+    TextView mBibLanguageTextView;
 
 
     public DetailFragment() {
@@ -107,10 +136,17 @@ public class DetailFragment extends Fragment
                 mBookId = arguments.getString(DetailFragment.BOOK_ID);
             if (arguments.containsKey(DetailFragment.VOLUME_OBJECT))
                 mVolume = arguments.getParcelable(DetailFragment.VOLUME_OBJECT);
+            if (arguments.containsKey(DetailFragment.UPDATE_BOOK))
+                mUpdate = arguments.getBoolean(DetailFragment.UPDATE_BOOK);
         }
+
 
         // If a volume object is found, set the UI
         if (mVolume != null) {
+            String bookId = mVolume.getId();
+            // Check to see if the volume is already in library, even though mVolume is not null
+            if (mUpdate)
+                mDetailsFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_update_white_24dp));
             prepareUi(mVolume.getVolumeInfo(), null);
             mDetailsFAB.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -119,10 +155,7 @@ public class DetailFragment extends Fragment
                     mDetailsFAB.hide();
                 }
             });
-        } else {
-            mDetailsFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_24dp));
         }
-
         return rootView;
     }
 
@@ -141,11 +174,11 @@ public class DetailFragment extends Fragment
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_share :
+            case R.id.action_share:
                 Network.shareText(
                         getContext(), getString(R.string.share_book, mTitle, mAuthors, mInfoUrl));
                 break;
-            case R.id.action_view_browser :
+            case R.id.action_view_browser:
                 Network.openInBrowser(getContext(), mInfoUrl);
                 break;
         }
@@ -170,6 +203,7 @@ public class DetailFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // This is only called when a loader is returned. Set the UI using the cursor if available.
         if (data != null && data.moveToFirst()) {
+            mDetailsFAB.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_white_24dp));
             prepareUi(null, new BooksCursor(data));
             mDetailsFAB.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -188,6 +222,7 @@ public class DetailFragment extends Fragment
 
     /**
      * Prepares the UI. Uses volume object or cursor, whichever is provided.
+     *
      * @param volume The volume object, containing book information. To be used from fetch.
      * @param cursor The cursor. To be used from personal library.
      */
