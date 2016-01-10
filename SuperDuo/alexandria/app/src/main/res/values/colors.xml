@@ -19,4 +19,9 @@
     <!-- touch selector colors -->
     <color name="touch_selector_activated">@color/primary_light</color>
 
+    <!-- material light colors -->
+    <color name="grey_300">#e0e0e0</color> <!-- For the status bar -->
+    <color name="grey_100">#f5f5f5</color> <!-- For the app bar -->
+    <color name="grey_50">#fafafa</color> <!-- For the background -->
+
 </resources>

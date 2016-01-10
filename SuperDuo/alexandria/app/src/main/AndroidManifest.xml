@@ -59,15 +59,15 @@
                 android:value="it.jaschke.alexandria.MainActivity"/>
         </activity>
 
-        <!-- Settings activity -->
-        <activity
-            android:label="@string/title_activity_settings"
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+        <!--&lt;!&ndash; Settings activity &ndash;&gt;-->
+        <!--<activity-->
+            <!--android:label="@string/title_activity_settings"-->
+            <!--android:name=".SettingsFragment"-->
+            <!--android:parentActivityName=".MainActivity" >-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value=".MainActivity" />-->
+        <!--</activity>-->
 
         <!-- Barcode scanner activity -->
         <activity android:name=".BarcodeCaptureActivity"

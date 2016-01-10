@@ -1,8 +1,11 @@
 package it.jaschke.alexandria;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,9 +23,9 @@ import it.jaschke.alexandria.model.Volume;
  * Uses a Navigation DrawerLayout. Follows implementation guide provided by CodePath
  *  url: https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer
  */
-public class MainActivity extends AppCompatActivity implements
-        FetchBooksFragment.ResultSelectionCallback, ViewBooksFragment.BookSelectionCallback,
-        ViewBooksFragment.FetchButtonClickedListener {
+public class MainActivity extends AppCompatActivity
+        implements FetchBooksFragment.ResultSelectionCallback,
+        ViewBooksFragment.BookSelectionCallback, ViewBooksFragment.FetchButtonClickedListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private DrawerLayout mDrawer;
@@ -46,11 +49,27 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navView = (NavigationView) findViewById(R.id.navView);
         setupDrawerContent(navView);
 
-        // Load up the find books fragment
-        Fragment fragment = FetchBooksFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, fragment, fragment.getClass().getSimpleName())
-                .commit();
+        // Set default preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+
+        // Load up the fragment specified by the value of the start screen preference saved in the
+        //  shared preferences.
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String prefStartScreen = sp.getString(getString(R.string.pref_startScreen_key), getString(R.string.pref_startScreen_default));
+        Fragment fragment = null;
+        if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[0])) {
+            fragment = FetchBooksFragment.newInstance();
+        } else if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[1])) {
+            fragment = ViewBooksFragment.newInstance();
+        }
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, fragment, fragment.getClass().getSimpleName())
+                    .commit();
+        } else {
+            Log.e(LOG_TAG, "There was an error creating the fragment.");
+        }
     }
 
     // TODO: This is not working. Fix it.
@@ -60,7 +79,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.getMenu().getItem(2).setTitle(getString(R.string.title_fragment_about, getString(R.string.app_name)));
+        // Complete the "About <APP_NAME>" menu entry title
+        navigationView.getMenu().findItem(R.id.nav_about).setTitle(getString(R.string.title_fragment_about, getString(R.string.app_name)));
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -73,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements
     public void selectDrawerItem(MenuItem menuItem) {
         // Create new fragment and specify which to display based on position. Launch settings
         //  activity if selected.
-        Fragment fragment;
+        Fragment fragment = null;
+        PreferenceFragment preferenceFragment = null;
         switch (menuItem.getItemId()) {
             case R.id.nav_my_books:
                 fragment = ViewBooksFragment.newInstance();
@@ -85,15 +106,20 @@ public class MainActivity extends AppCompatActivity implements
                 fragment = AboutFragment.newInstance();
                 break;
             case R.id.nav_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return;
+                preferenceFragment = SettingsFragment.newInstance();
+                break;
             default:
                 fragment = ViewBooksFragment.newInstance();
         }
-        String tag = fragment.getClass().getSimpleName();
+        String tag;
+        if (fragment != null) {
+            tag = fragment.getClass().getSimpleName();
+        } else {
+            tag = preferenceFragment.getClass().getSimpleName();
+        }
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(tag) != null) {
+        FragmentManager sfm = getSupportFragmentManager();
+        if (sfm.findFragmentByTag(tag) != null || getFragmentManager().findFragmentByTag(tag) != null) {
             // TODO: Fix and finish the code below that would allow switching back and forth between
             //  the FetchFragment and the ViewFragment without losing state (or just implement
             //  a Tab layout instead... but the purpose of this exercise was to learn and use the
@@ -101,22 +127,39 @@ public class MainActivity extends AppCompatActivity implements
             // But currently, do nothing if the current fragment is the same as the requested
             //  fragment. It is redundant to load the fragment again when it's already loaded.
 
-//            Log.d(LOG_TAG, "There are " + fm.getBackStackEntryCount() + " in the backstack.");
+//            Log.d(LOG_TAG, "There are " + sfm.getBackStackEntryCount() + " in the backstack.");
 //            Log.d(LOG_TAG, "The tag is " + tag);
-//            if (fm.getBackStackEntryCount() > 1) {
-//                Log.d(LOG_TAG, "The fragment in position " + (fm.getBackStackEntryCount() - 2) + " is " + fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getName());
-//                if (fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 2).getName().equals(tag)) {
+//            if (sfm.getBackStackEntryCount() > 1) {
+//                Log.d(LOG_TAG, "The fragment in position " + (sfm.getBackStackEntryCount() - 2) + " is " + sfm.getBackStackEntryAt(sfm.getBackStackEntryCount() - 1).getName());
+//                if (sfm.getBackStackEntryAt(sfm.getBackStackEntryCount() - 2).getName().equals(tag)) {
 //                    Log.d(LOG_TAG, "The fragment is already loaded in the backstack. Returning...");
-//                    fm.popBackStack();
+//                    sfm.popBackStack();
 //                } else {
 //                    Log.d(LOG_TAG, "The fragment is currently loaded on top");
 //                }
 //            }
         } else {
-            fm.beginTransaction().
-                    replace(R.id.container, fragment, tag)
+            if (fragment != null) {
+                sfm.beginTransaction()
+                        .replace(R.id.container, fragment, tag)
 //                    .addToBackStack(fragment.getClass().getSimpleName())
-                    .commit();
+                        .commit();
+                // If preference fragment is still loaded, remove it
+                if (getFragmentManager().findFragmentByTag(SettingsFragment.class.getSimpleName()) != null) {
+                    Log.d(LOG_TAG, "REMOVING...");
+                    getFragmentManager().beginTransaction()
+                            .remove(getFragmentManager().findFragmentByTag(SettingsFragment.class.getSimpleName()))
+                            .commit();
+                } else {
+                    Log.d(LOG_TAG, "IT IS STILL HERE");
+                }
+            } else {
+                // Load preference fragment if selected
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.container, preferenceFragment, tag)
+//                        .addToBackStack(preferenceFragment.getClass().getSimpleName())
+                        .commit();
+            }
 
             // Highlight the selected item and close drawer. Title is updated in corresponding
             //  fragment's onResume() method for the purposes of the TD to be implemented above
