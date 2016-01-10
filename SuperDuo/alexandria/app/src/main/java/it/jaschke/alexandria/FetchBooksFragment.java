@@ -68,12 +68,10 @@ public class FetchBooksFragment extends Fragment
     public FetchBooksFragment(){
     }
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        getActivity().setTitle(R.string.title_fragment_fetch);
+    public static FetchBooksFragment newInstance() {
+        return new FetchBooksFragment();
     }
+
 
     /*
         When implementing SharedPreferences.OnSharedPreferenceChangeListener, it is necessary to
@@ -85,6 +83,7 @@ public class FetchBooksFragment extends Fragment
     // Register the listeners here
     @Override public void onResume() {
         super.onResume();
+        getActivity().setTitle(R.string.title_fragment_fetch);
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
     }

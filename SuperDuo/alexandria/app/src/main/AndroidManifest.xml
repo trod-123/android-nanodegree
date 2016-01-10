@@ -37,6 +37,7 @@
             android:name=".MainActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden"> <!-- android:windowSoftInputMode="stateHidden"
                                                             prevents keyboard from popping up
                                                             automatically if activity loads with an

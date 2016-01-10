@@ -1,185 +1,159 @@
 package it.jaschke.alexandria;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import it.jaschke.alexandria.model.Volume;
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        ViewBooksFragment.BookSelectionCallback, FetchBooksFragment.ResultSelectionCallback {
-
+/**
+ * Uses a Navigation DrawerLayout. Follows implementation guide provided by CodePath
+ *  url: https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer
+ */
+public class MainActivity extends AppCompatActivity implements
+        FetchBooksFragment.ResultSelectionCallback, ViewBooksFragment.BookSelectionCallback {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment navigationDrawerFragment;
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence title;
-    public static boolean IS_TABLET = false;
-    private BroadcastReceiver messageReciever;
-
-    public static final String MESSAGE_EVENT = "MESSAGE_EVENT";
-    public static final String MESSAGE_KEY = "MESSAGE_EXTRA";
+    private DrawerLayout mDrawer;
+    private Toolbar mToolbar;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IS_TABLET = isTablet();
-        if (IS_TABLET) {
-            setContentView(R.layout.activity_main_tablet);
-        } else {
-            setContentView(R.layout.activity_main);
-        }
+        setContentView(R.layout.activity_main);
 
-        messageReciever = new MessageReciever();
-        IntentFilter filter = new IntentFilter(MESSAGE_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(messageReciever, filter);
+        // Set custom toolbar for the appbar (i.e. replace the action bar)
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_nav);
+        setSupportActionBar(mToolbar);
 
-        navigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        title = getTitle();
+        // Get drawer layout and tie it together with the toolbar using drawer toggle
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = setupDrawerToggle();
 
-        // Set up the drawer.
-        navigationDrawerFragment.setUp(R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-    }
+        // Get drawer view and set it up
+        NavigationView navView = (NavigationView) findViewById(R.id.navView);
+        setupDrawerContent(navView);
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment nextFragment;
-
-        switch (position) {
-            default:
-            case 0:
-                nextFragment = new ViewBooksFragment();
-                break;
-            case 1:
-                nextFragment = new FetchBooksFragment();
-                break;
-            case 2:
-                nextFragment = new About();
-                break;
-
-        }
-
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, nextFragment)
-                .addToBackStack((String) title)
+        // Load up the find books fragment
+        Fragment fragment = FetchBooksFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.container, fragment, fragment.getClass().getSimpleName())
                 .commit();
     }
 
-    public void setTitle(int titleId) {
-        title = getString(titleId);
+    // TODO: This is not working. Fix it.
+    // This is for animating the hamburger icon, indicating whether drawer is being opened or closed
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(title);
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.getMenu().getItem(2).setTitle(getString(R.string.title_fragment_about, getString(R.string.app_name)));
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                selectDrawerItem(menuItem);
+                return true;
+            }
+        });
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!navigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
+    public void selectDrawerItem(MenuItem menuItem) {
+        // Create new fragment and specify which to display based on position. Launch settings
+        //  activity if selected.
+        Fragment fragment;
+        switch (menuItem.getItemId()) {
+            case R.id.nav_my_books:
+                fragment = ViewBooksFragment.newInstance();
+                break;
+            case R.id.nav_fetch_books:
+                fragment = FetchBooksFragment.newInstance();
+                break;
+            case R.id.nav_about:
+                fragment = AboutFragment.newInstance();
+                break;
+            case R.id.nav_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return;
+            default:
+                fragment = ViewBooksFragment.newInstance();
         }
-        return super.onCreateOptionsMenu(menu);
+        String tag = fragment.getClass().getSimpleName();
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(tag) != null) {
+            // TODO: Fix and finish the code below that would allow switching back and forth between
+            //  the FetchFragment and the ViewFragment without losing state (or just implement
+            //  a Tab layout instead... but the purpose of this exercise was to learn and use the
+            //  Navigation DrawerLayout! Next time.)
+            // But currently, do nothing if the current fragment is the same as the requested
+            //  fragment. It is redundant to load the fragment again when it's already loaded.
+
+//            Log.d(LOG_TAG, "There are " + fm.getBackStackEntryCount() + " in the backstack.");
+//            Log.d(LOG_TAG, "The tag is " + tag);
+//            if (fm.getBackStackEntryCount() > 1) {
+//                Log.d(LOG_TAG, "The fragment in position " + (fm.getBackStackEntryCount() - 2) + " is " + fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 1).getName());
+//                if (fm.getBackStackEntryAt(fm.getBackStackEntryCount() - 2).getName().equals(tag)) {
+//                    Log.d(LOG_TAG, "The fragment is already loaded in the backstack. Returning...");
+//                    fm.popBackStack();
+//                } else {
+//                    Log.d(LOG_TAG, "The fragment is currently loaded on top");
+//                }
+//            }
+        } else {
+            fm.beginTransaction().
+                    replace(R.id.container, fragment, tag)
+//                    .addToBackStack(fragment.getClass().getSimpleName())
+                    .commit();
+
+            // Highlight the selected item and close drawer. Title is updated in corresponding
+            //  fragment's onResume() method for the purposes of the TD to be implemented above
+            menuItem.setChecked(true);
+        }
+        mDrawer.closeDrawers();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            // Allow ActionBarToggle to handle events
             return true;
         }
-
+        // Action bar home/up action should open or close drawer
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawer.openDrawer(GravityCompat.START);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReciever);
-        super.onDestroy();
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync toggle state after onRestoreInstanceState has occurred
+        mDrawerToggle.syncState();
     }
 
-//    @Override
-//    public void onItemSelected(String ean) {
-//        Bundle args = new Bundle();
-//        args.putString(BookDetail.EAN_KEY, ean);
-//
-//        BookDetail fragment = new BookDetail();
-//        fragment.setArguments(args);
-//
-//        int id = R.id.container;
-//        if(findViewById(R.id.right_container) != null){
-//            id = R.id.right_container;
-//        }
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(id, fragment)
-//                .addToBackStack("Book Detail")
-//                .commit();
-//
-//    }
 
-    private class MessageReciever extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getStringExtra(MESSAGE_KEY) != null) {
-                Toast.makeText(MainActivity.this, intent.getStringExtra(MESSAGE_KEY), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    public void goBack(View view) {
-        getSupportFragmentManager().popBackStack();
-    }
-
-    private boolean isTablet() {
-        return (getApplicationContext().getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
 
     @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() < 2) {
-            finish();
-        }
-        super.onBackPressed();
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggles
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     // This callback starts the detail activity. This is called within ViewBooksFragment,

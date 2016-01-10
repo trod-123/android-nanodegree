@@ -6,7 +6,7 @@
     <string name="title_activity_details">Details</string>
     <string name="title_fragment_books">My Books</string>
     <string name="title_fragment_fetch">Find books</string>
-    <string name="title_fragment_about">About @string/app_name</string>
+    <string name="title_fragment_about">About <xliff:g id="app_name">%1$s</xliff:g></string>
 
     <!-- Shared preferences keys -->
     <string name="sp_sync_status_key">SyncStatus</string>
@@ -19,6 +19,10 @@
     <string name="action_update">Update in library</string>
     <string name="action_view_details">View details</string>
     <string name="action_view_browser">Open in Google Books</string>
+
+    <!-- Navigation drawer -->
+    <string name="navigation_drawer_open" >Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Barcode Scanner strings -->
     <string name="barcode_scanner_ok">OK</string>
@@ -126,6 +130,8 @@
     <string name="tools_book_ratingsCount">(140)</string>
     <string name="tools_book_ratingsAverage">3.4</string>
     <string name="tools_book_categories">Drama, Non fiction</string>
+    <string name="tools_drawer_title">Find books</string>
+    <string name="tools_drawer_subtitle">Search for books online!</string>
 
     <!-- Misc -->
     <string name="list_and">and&#160;</string>
@@ -133,8 +139,8 @@
 
 
     <!-- TODO: Redo these strings -->
-    <string name="navigation_drawer_open" >Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+
     <string name="book_cover">Bookcover</string>
     <string name="ok_button">Next</string>
     <string name="cancel_button">Cancel</string>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_fetch_books"
+            android:icon="@drawable/ic_local_library_black_24dp"
+            android:title="@string/title_fragment_fetch"
+            android:checked="true"/>
+        <item
+            android:id="@+id/nav_my_books"
+            android:icon="@drawable/ic_my_library_books_black_24dp"
+            android:title="@string/title_fragment_books"/>
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_black_24dp"
+            android:title="@string/title_fragment_about"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/title_activity_settings"/>
+    </group>
+
+</menu>

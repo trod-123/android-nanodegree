@@ -62,6 +62,15 @@ public class ViewBooksFragment extends Fragment
     public ViewBooksFragment(){
     }
 
+    public static ViewBooksFragment newInstance() {
+        return new ViewBooksFragment();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle(R.string.title_fragment_books);
+    }
 
     @Override
     public void onAttach(Context context) {
