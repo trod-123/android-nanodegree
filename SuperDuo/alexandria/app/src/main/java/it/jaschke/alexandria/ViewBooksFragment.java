@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -57,6 +56,13 @@ public class ViewBooksFragment extends Fragment
          * DetailFragmentCallback for when an item has been selected.
          */
         void onBookItemSelected(String bookId, ViewAdapter.ViewHolder vh);
+    }
+
+    /**
+     * This mechanism allows activities to be notified of the + FAB click.
+     */
+    public interface FetchButtonClickedListener {
+        void onFetchButtonClicked();
     }
 
     public ViewBooksFragment(){
@@ -160,7 +166,7 @@ public class ViewBooksFragment extends Fragment
         mRootView.findViewById(R.id.view_books_button_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "This will start the fetch fragment.", Toast.LENGTH_SHORT).show();
+                ((FetchButtonClickedListener) getActivity()).onFetchButtonClicked();
             }
         });
 

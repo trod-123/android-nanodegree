@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,7 +21,8 @@ import it.jaschke.alexandria.model.Volume;
  *  url: https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer
  */
 public class MainActivity extends AppCompatActivity implements
-        FetchBooksFragment.ResultSelectionCallback, ViewBooksFragment.BookSelectionCallback {
+        FetchBooksFragment.ResultSelectionCallback, ViewBooksFragment.BookSelectionCallback,
+        ViewBooksFragment.FetchButtonClickedListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private DrawerLayout mDrawer;
@@ -175,5 +175,15 @@ public class MainActivity extends AppCompatActivity implements
                 .putExtra(DetailFragment.VOLUME_OBJECT, volume)
                 .putExtra(DetailFragment.UPDATE_BOOK, update);
         startActivity(intent);
+    }
+
+    // This callback starts the Fetch fragment. This is called within ViewBooksFragment when the
+    //  user clicks on the + FAB.
+    @Override
+    public void onFetchButtonClicked() {
+        Fragment fragment = FetchBooksFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment, fragment.getClass().getSimpleName())
+                .commit();
     }
 }
