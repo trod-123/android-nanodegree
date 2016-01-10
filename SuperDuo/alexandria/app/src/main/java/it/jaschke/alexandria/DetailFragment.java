@@ -177,12 +177,12 @@ public class DetailFragment extends Fragment
             case R.id.action_share:
                 Network.shareText(
                         getContext(), getString(R.string.share_book, mTitle, mAuthors, mInfoUrl));
-                break;
+                return true;
             case R.id.action_view_browser:
                 Network.openInBrowser(getContext(), mInfoUrl);
-                break;
+                return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
 

@@ -33,16 +33,16 @@
             android:exported="false" />
 
         <!-- Main activity -->
+        <!-- Use NoActionBar to allow DrawerLayout to cover up the toolbar -->
+        <!-- android:windowSoftInputMode="stateHidden" prevents keyboard from popping up
+                automatically if activity loads with an EditText as the first view
+              link: http://stackoverflow.com/questions/2496901/android-on-screen-keyboard-auto-popping-up -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"> <!-- android:windowSoftInputMode="stateHidden"
-                                                            prevents keyboard from popping up
-                                                            automatically if activity loads with an
-                                                            EditText as the first view
-                                                             (link: http://stackoverflow.com/questions/2496901/android-on-screen-keyboard-auto-popping-up -->
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -51,8 +51,8 @@
 
         <!-- Detail activity -->
         <activity
-            android:name=".DetailActivity"
             android:label="@string/title_activity_details"
+            android:name=".DetailActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -72,12 +72,6 @@
         <!-- Barcode scanner activity -->
         <activity android:name=".BarcodeCaptureActivity"
                   android:label="@string/title_fragment_fetch"/>
-
-        <!--&lt;!&ndash; For the content provider &ndash;&gt;-->
-        <!--<provider-->
-            <!--android:name=".data.BookProvider"-->
-            <!--android:authorities="it.jaschke.alexandria"-->
-            <!--android:exported="false" />-->
 
     </application>
 
