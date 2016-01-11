@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- For the navigation drawer (persistent in tablet) -->
+    <dimen name="navigation_drawer_content_padding">@dimen/navigation_drawer_width</dimen>
+
+</resources>

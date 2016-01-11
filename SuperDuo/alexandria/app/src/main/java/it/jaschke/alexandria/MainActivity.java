@@ -3,6 +3,8 @@ package it.jaschke.alexandria;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -16,12 +18,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import it.jaschke.alexandria.model.Volume;
 
 /**
  * Uses a Navigation DrawerLayout. Follows implementation guide provided by CodePath
  *  url: https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer
+ * Also followed a static Navigation Drawer tutorial by Derek Woods
+ *  url: http://derekrwoods.com/2013/09/creating-a-static-navigation-drawer-in-android/
  */
 public class MainActivity extends AppCompatActivity
         implements FetchBooksFragment.ResultSelectionCallback,
@@ -32,22 +40,44 @@ public class MainActivity extends AppCompatActivity
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private boolean TABLET_MODE = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set custom toolbar for the appbar (i.e. replace the action bar)
+        // Get drawer layout and tie drawer layout with the toolbar with drawer toggle
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout_main);
+        mDrawerToggle = setupDrawerToggle();
+
+        // Set custom toolbar for the appbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar_nav);
         setSupportActionBar(mToolbar);
 
-        // Get drawer layout and tie it together with the toolbar using drawer toggle
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = setupDrawerToggle();
+        // Get drawer view (i.e. drawer list) and set it up
+        NavigationView drawerList = (NavigationView) findViewById(R.id.nav_view_main);
+        setupDrawerContent(drawerList);
 
-        // Get drawer view and set it up
-        NavigationView navView = (NavigationView) findViewById(R.id.navView);
-        setupDrawerContent(navView);
+        // Check to see if the device is a phone or tablet by comparing the main content frame's
+        //  leftMargin attribute with that loaded in resources. If the left margin is the same as
+        //  the width of the drawer, then device is in tablet mode (in phone mode, left margin is 0) -->
+        LinearLayout rootView = (LinearLayout) findViewById(R.id.container_content_frame_main);
+        if (((ViewGroup.MarginLayoutParams) rootView.getLayoutParams()).leftMargin ==
+                (int) getResources().getDimension(R.dimen.navigation_drawer_width)) {
+            TABLET_MODE = true;
+            // Lock the drawer
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, drawerList);
+            mDrawer.setScrimColor(Color.TRANSPARENT);
+            // Disable status bar translucency to workaround otherwise grey status bar resulting
+            //   from having a translucent status bar style attribute for phone devices
+            //   (only for Lollipop and above)
+            //   url: http://stackoverflow.com/questions/26702000/change-status-bar-color-with-appcompat-actionbaractivity
+            if (Build.VERSION.SDK_INT >= 21) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
+            }
+        }
 
         // Set default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -65,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         }
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, fragment, fragment.getClass().getSimpleName())
+                    .add(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
                     .commit();
         } else {
             Log.e(LOG_TAG, "There was an error creating the fragment.");
@@ -141,7 +171,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             if (fragment != null) {
                 sfm.beginTransaction()
-                        .replace(R.id.container, fragment, tag)
+                        .replace(R.id.container_fragment_main, fragment, tag)
 //                    .addToBackStack(fragment.getClass().getSimpleName())
                         .commit();
                 // If preference fragment is still loaded, remove it
@@ -156,7 +186,7 @@ public class MainActivity extends AppCompatActivity
             } else {
                 // Load preference fragment if selected
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.container, preferenceFragment, tag)
+                        .replace(R.id.container_fragment_main, preferenceFragment, tag)
 //                        .addToBackStack(preferenceFragment.getClass().getSimpleName())
                         .commit();
             }
@@ -165,7 +195,8 @@ public class MainActivity extends AppCompatActivity
             //  fragment's onResume() method for the purposes of the TD to be implemented above
             menuItem.setChecked(true);
         }
-        mDrawer.closeDrawers();
+        // Only close the drawer if not in tablet mode
+        if (!TABLET_MODE) mDrawer.closeDrawers();
     }
 
     @Override
@@ -199,6 +230,11 @@ public class MainActivity extends AppCompatActivity
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+
+    /*
+        Callbacks with content fragments
+     */
+
     // This callback starts the detail activity. This is called within ViewBooksFragment,
     //  which allows communication of which book was selected.
     @Override
@@ -226,7 +262,7 @@ public class MainActivity extends AppCompatActivity
     public void onFetchButtonClicked() {
         Fragment fragment = FetchBooksFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment, fragment.getClass().getSimpleName())
+                .replace(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
                 .commit();
     }
 }

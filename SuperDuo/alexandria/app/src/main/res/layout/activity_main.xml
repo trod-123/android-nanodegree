@@ -4,45 +4,54 @@
         toolbar from extending to fill the screen when the soft keyboard comes up. for the latter
         purpose, this property needs to be declared at the root layout that houses a toolbar layout.
       url: http://stackoverflow.com/questions/28043202/android-appcompat-toolbar-stretches-when-searchview-gets-focus -->
-<android.support.v4.widget.DrawerLayout
+<!-- When using alternative layouts, to refer to them as a whole in java, make sure there are
+        corresponding rootview types with identical id's, or else the app will crash -->
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <!-- This is for the main content view. Since we are allowing the nav drawer to overlay the
-            toolbar, we need to indicate our custom toolbar here -->
-    <LinearLayout
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout_main"
         android:layout_width="match_parent" android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true">
 
-        <include
-            layout="@layout/toolbar_nav"
-            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <!-- This is for the main content view. Since we are allowing the nav drawer to overlay the
+                toolbar, we need to indicate our custom toolbar here -->
+        <!-- Attributes android:layout_marginLeft(Start) are used to check if device is a tablet or a
+                phone -->
+        <LinearLayout
+            android:id="@+id/container_content_frame_main"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginLeft="@dimen/navigation_drawer_content_padding"
+            android:layout_marginStart="@dimen/navigation_drawer_content_padding">
 
-        <!-- This is our main layout container -->
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent" android:layout_height="match_parent"/>
+            <include
+                layout="@layout/toolbar_nav"
+                android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
-    </LinearLayout>
+            <!-- This is our main layout container -->
+            <FrameLayout
+                android:id="@+id/container_fragment_main"
+                android:layout_width="match_parent" android:layout_height="match_parent"/>
 
+        </LinearLayout>
 
-    <!-- android:layout_gravity="start" tells DrawerLayout to treat
-         this as a sliding drawer on the left side for left-to-right
-         languages and on the right side for right-to-left languages.
-         If you're not building against API 17 or higher, use
-         android:layout_gravity="left" instead. -->
-    <!-- The drawer is given a fixed width in dp and extends the full height of
-         the container. -->
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navView"
-        android:layout_width="wrap_content" android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/white"
-        app:menu="@menu/menu_nav_drawer"
-        app:headerLayout="@layout/nav_drawer_header"/>
+        <!-- android:layout_gravity="start" tells DrawerLayout to treat
+             this as a sliding drawer on the left side for left-to-right
+             languages and on the right side for right-to-left languages.
+             If you're not building against API 17 or higher, use
+             android:layout_gravity="left" instead. -->
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nav_view_main"
+            android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/white"
+            app:menu="@menu/menu_nav_drawer"
+            app:headerLayout="@layout/nav_drawer_header"/>
 
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>
+
+</FrameLayout>
