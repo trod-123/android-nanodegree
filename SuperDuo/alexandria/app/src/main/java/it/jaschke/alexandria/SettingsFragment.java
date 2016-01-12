@@ -10,8 +10,7 @@ import android.preference.PreferenceManager;
 /**
  * Created by saj on 27/01/15.
  *
- * TODO: Add more settings and redesign the layout to that it also includes a title bar. Also,
- * display the current value of a setting as a subtitle.
+ * Settings. What else?
  */
 public class SettingsFragment extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener,

@@ -29,6 +29,8 @@ import it.jaschke.alexandria.provider.books.BooksSelection;
 
 /**
  * Created by TROD on 20160104.
+ *
+ * Fragment for viewing a user's local books
  */
 public class ViewBooksFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {

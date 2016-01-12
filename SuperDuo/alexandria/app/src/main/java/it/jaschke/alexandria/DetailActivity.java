@@ -9,6 +9,8 @@ import android.util.Log;
 
 /**
  * Created by TROD on 20160106.
+ *
+ * Activity container for the detail fragment
  */
 public class DetailActivity extends AppCompatActivity {
 

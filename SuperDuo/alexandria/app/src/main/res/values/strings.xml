@@ -142,18 +142,11 @@
     <string name="list_and">and&#160;</string>
     <string name="list_duple"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
 
-
-    <!-- TODO: Redo these strings -->
-
-
-    <string name="book_cover">Bookcover</string>
-    <string name="ok_button">Next</string>
-    <string name="cancel_button">Cancel</string>
-    <string name="not_found">No Book found</string>
-    <string name="search">Search</string>
-    <string name="delete">Delete Book</string>
-    <string name="back_button">go back</string>
-    <string name="share_text">A must read book: </string>
-    <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.
-    The original version of this app was built by Sascha Jaschke, and a modified version is given to students in the Udacity Android Nanodegree program. </string>
+    <string name="about_text">
+        Alexandria was originally created by Sasch Jaschke and modified for the purposes of turning
+        it into a productionizing assignment for students in the Udacity Android Nanodegree program.
+        \n\nHeavily revised by Teddy Rodriguez, a student in the nanodegree program.
+        \n\nAll book information and images gathered from the Google Books API.
+        \n\n\nApp last updated Monday, January 11, 2016.
+    </string>
 </resources>

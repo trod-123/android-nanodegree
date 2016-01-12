@@ -43,6 +43,8 @@ import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160106.
+ *
+ * Fragment that displays details of books
  */
 public class DetailFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {

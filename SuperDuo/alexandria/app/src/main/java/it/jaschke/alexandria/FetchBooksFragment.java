@@ -36,6 +36,8 @@ import it.jaschke.alexandria.utilities.Network;
 
 /**
  * Created by TROD on 20160104.
+ *
+ * Fragment for searching for books
  */
 public class FetchBooksFragment extends Fragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {

@@ -25,6 +25,8 @@ import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160104.
+ *
+ * Adapter for search results
  */
 public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> {
     private static final String LOG_TAG = FetchAdapter.class.getSimpleName();

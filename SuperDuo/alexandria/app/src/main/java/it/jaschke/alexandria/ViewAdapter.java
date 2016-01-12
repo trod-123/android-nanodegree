@@ -24,6 +24,8 @@ import it.jaschke.alexandria.utilities.LibraryHelper;
 
 /**
  * Created by TROD on 20160104.
+ *
+ * Adapter for books in the user's local library
  */
 public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     private static final String LOG_TAG = ViewAdapter.class.getSimpleName();
