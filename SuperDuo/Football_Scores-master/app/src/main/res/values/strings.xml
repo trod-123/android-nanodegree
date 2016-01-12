@@ -83,6 +83,7 @@
     <string name="tools_time">12:00</string>
     <string name="tools_league">Primeira Liga</string>
     <string name="tools_match_day">Matchday: 12</string>
+    <string name="tools_status_time">Final, Sunday, Dec 25, 7:00 AM</string>
 
     <!-- A11y: Content descriptions -->
     <string name="a11y_full_match_description">

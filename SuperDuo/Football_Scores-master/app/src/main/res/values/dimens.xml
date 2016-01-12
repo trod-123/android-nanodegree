@@ -9,7 +9,15 @@
     <dimen name="Score">30sp</dimen>
     <dimen name="League">15sp</dimen>
 
-    <!-- List item spaces -->
+    <!-- Home screen widget dimensions -->
+    <dimen name="widget_min_width">180dp</dimen>
+    <dimen name="widget_min_height">40dp</dimen>
+    <dimen name="widget_padding">8dp</dimen>
+    <dimen name="widget_margins">8dp</dimen>
+    <dimen name="widget_crest_size">40dp</dimen>
+    <dimen name="widget_ic_logo_size">36dp</dimen>
+
+    <!-- List item padding -->
     <dimen name="scores_list_item_horizontal_padding">16dp</dimen>
     <dimen name="scores_list_item_vertical_padding">8dp</dimen>
     <dimen name="scores_list_item_space">8dp</dimen>
@@ -21,6 +29,15 @@
     <dimen name="scores_list_item_team_name_size">16sp</dimen>
     <dimen name="scores_list_item_score_size">32dp</dimen>
     <dimen name="scores_list_item_details_size">12sp</dimen>
+
+    <!-- Detail padding -->
+    <dimen name="detail_horizontal_padding">64dp</dimen>
+    <dimen name="detail_vertical_padding">2dp</dimen>
+    <dimen name="detail_space">8dp</dimen>
+
+    <!-- Detail text sizes -->
+    <dimen name="detail_league_size">12sp</dimen>
+    <dimen name="detail_matchday_size">12sp</dimen>
 
     <!-- For tabs -->
     <dimen name="tab_max_width">264dp</dimen>

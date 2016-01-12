@@ -11,15 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
-import com.thirdarm.footballscores.utilities.Network;
+import com.thirdarm.footballscores.utilities.Utilities;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -98,10 +95,8 @@ public class MainActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         // Create 5 fragments, each with its own date assigned to it
         for (int i = 0; i < NUM_PAGES; i++) {
-            Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
-            SimpleDateFormat mformat = new SimpleDateFormat("EEEE, MMM dd");
+            String date = Utilities.getUserDate(System.currentTimeMillis() + ((i - 2) * 86400000));
             ScoresFragment newFragment = new ScoresFragment();
-            String date = mformat.format(fragmentdate);
             newFragment.setFragmentDate(date);
             mFragmentDates[i] = date;
             newFragment.setFragmentIndex(i);
@@ -171,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE");
                 day = dayFormat.format(dateInMillis);
             }
-            SimpleDateFormat dayFormat = new SimpleDateFormat("MM/dd");
+            SimpleDateFormat dayFormat = new SimpleDateFormat("M/d");
             return day + "\n" + dayFormat.format(dateInMillis);
         }
 

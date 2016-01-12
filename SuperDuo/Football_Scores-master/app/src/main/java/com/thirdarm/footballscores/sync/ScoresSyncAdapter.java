@@ -7,6 +7,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
@@ -46,6 +47,10 @@ import com.thirdarm.footballscores.model.Fixture;
 public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private static final String LOG_TAG = ScoresSyncAdapter.class.getSimpleName();
+
+    // For notifying the widget provider the sync is complete and data has changed
+    public static final String ACTION_DATA_UPDATED =
+            "com.thirdarm.footballscores.app.ACTION_DATA_UPDATED";
 
     // Interval at which to sync with the weather, in form <# s/min> * <# min> (this is done in
     //  seconds, not milliseconds)
@@ -143,7 +148,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
                         .extractId(fixture.getFixturesLinks().getLinksSoccerseason().getHref(),
                                 Utilities.SEASON_LINK);
                 Log.d(LOG_TAG, "League id is: " + leagueId);
-                String[] dateTime = Utilities.getUserDateTime(fixture.getDate());
+                String[] dateTime = Utilities.convertUserDateTime(fixture.getDate());
 
                 int homeGoals, awayGoals;
                 if (fixture.getResult().getGoalsHomeTeam() != null) {
@@ -476,10 +481,15 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public static void setSyncStatus(Context c, @SyncStatus int syncStatus){
         Log.d(LOG_TAG, "In setSyncStatus");
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
+
+        // Notify the ScoresWidgetProvider that the sync is complete
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
+        c.sendBroadcast(dataUpdatedIntent);
+
         // Force a change in sync status stored in the shared preferences to an arbitrary value
         //  to call the OnSharedPreferenceChangeListener in the pertaining fragment that requested
         //  the sync to disable the swipe refresh animation.
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
         sp
                 .edit()
                 .putInt(c.getString(R.string.sp_sync_status_key), 100)

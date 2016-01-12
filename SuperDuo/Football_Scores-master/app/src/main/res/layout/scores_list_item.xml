@@ -86,8 +86,8 @@
                             android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="sans-serif"
-                            android:text="@string/tools_neutral_score"
-                            android:textSize="@dimen/scores_list_item_details_size"/>
+                            android:textSize="@dimen/scores_list_item_details_size"
+                            android:text="@string/tools_neutral_score"/>
 
                     </FrameLayout>
 

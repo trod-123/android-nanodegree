@@ -2,6 +2,7 @@ package com.thirdarm.footballscores;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -201,11 +202,13 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             holder.mAwayScoreTextView.setTextColor(awayColor);
 
             // Set content description
-            holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_full_match_description,
-                            matchStatus, leagueName, mCursor.getMatchday(), matchTime,
-                            awayTeamName, homeTeamName, awayGoals, homeGoals,
-                            winStatus, notedTeam)
-            );
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_full_match_description,
+                                matchStatus, leagueName, mCursor.getMatchday(), matchTime,
+                                awayTeamName, homeTeamName, awayGoals, homeGoals,
+                                winStatus, notedTeam)
+                );
+            }
         } else {
             // Cursors that don't have scores should be hidden score views
             holder.mStatusTextView.setText(mContext.getString(R.string.status_upcoming));
@@ -217,10 +220,12 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             holder.mAwayScoreTextView.setVisibility(View.GONE);
 
             // Set content description
-            holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_upcoming_match_description,
-                            leagueName, mCursor.getMatchday(), matchTime,
-                            awayTeamName, homeTeamName)
-            );
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+                holder.mParentView.setContentDescription(mContext.getString(R.string.a11y_upcoming_match_description,
+                                leagueName, mCursor.getMatchday(), matchTime,
+                                awayTeamName, homeTeamName)
+                );
+            }
         }
         holder.match_id = mCursor.getMatchid();
 
@@ -228,13 +233,13 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         String homeCrestUrl = Utilities.convertCrestUrl(mCursor.getAteamCresturl());
         Glide.with(mContext)
                 .load(homeCrestUrl)
-                .error(R.drawable.no_icon)
+                .error(R.drawable.ic_launcher)
                 .into(holder.mHomeCrestImageView);
 
         String awayCrestUrl = Utilities.convertCrestUrl(mCursor.getBteamCresturl());
         Glide.with(mContext)
                 .load(awayCrestUrl)
-                .error(R.drawable.no_icon)
+                .error(R.drawable.ic_launcher)
                 .into(holder.mAwayCrestImageView);
 
         // This is for the detail fragment layouts

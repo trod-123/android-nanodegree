@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Home screen widget settings -->
+    <integer name="widget_refresh_period">86400000</integer> <!-- 1 day, in ms -->
+    <integer name="widget_flip_interval">5000</integer>
+
+</resources>

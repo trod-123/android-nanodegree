@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/widget_margins"
+    android:orientation="horizontal">
+
+    <!-- For the left column, displaying logo and buttons to change view -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:padding="@dimen/widget_padding">
+
+        <ImageButton
+            android:id="@+id/widget_item_button_up"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="@dimen/widget_ic_logo_size"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:src="@drawable/ic_keyboard_arrow_up_white_36dp"/>
+
+        <ImageView
+            android:layout_width="@dimen/widget_ic_logo_size"
+            android:layout_height="@dimen/widget_ic_logo_size"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_launcher"/>
+
+        <ImageButton
+            android:id="@+id/widget_item_button_down"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="@dimen/widget_ic_logo_size"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:src="@drawable/ic_keyboard_arrow_down_white_36dp"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Empty List -->
+        <TextView
+            android:id="@+id/widget_view_flipper_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_material_light"
+            android:fontFamily="sans-serif"
+            android:gravity="center_horizontal"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:text="@string/empty_scores_list"
+            android:textColor="@color/secondary_text"
+            tools:text="@string/empty_scores_list"/>
+
+        <AdapterViewFlipper
+            android:id="@+id/widget_view_flipper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autoStart="true"
+            android:flipInterval="@integer/widget_flip_interval"/>
+
+    </FrameLayout>
+
+</LinearLayout>

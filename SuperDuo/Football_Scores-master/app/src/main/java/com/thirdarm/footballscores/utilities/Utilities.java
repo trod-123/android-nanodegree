@@ -84,7 +84,7 @@ public class Utilities {
     /**
      * Gets the date and time
      */
-    public static String[] getUserDateTime(String dateTimeString) {
+    public static String[] convertUserDateTime(String dateTimeString) {
         // The time is embedded in date. Just extract the time.
         String time = dateTimeString.substring(dateTimeString.indexOf("T") + 1, dateTimeString.indexOf("Z"));
         // Cut the time out of the entire date provided in the JSON.
@@ -95,7 +95,7 @@ public class Utilities {
         match_date.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             Date parseddate = match_date.parse(date + time);
-            SimpleDateFormat new_date = new SimpleDateFormat("EEEE, MMM dd:h:mm aa");
+            SimpleDateFormat new_date = new SimpleDateFormat("EEEE, MMM d:h:mm aa");
             // Convert date-time to that of user's locale
             new_date.setTimeZone(TimeZone.getDefault());
             date = new_date.format(parseddate);
@@ -107,6 +107,35 @@ public class Utilities {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Converts a date time array into a shortened, widget-friendly date time configuration
+     * @param date The original date
+     * @return A string array containing a shortened date and time
+     */
+    public static String convertShortUserDate(String date) {
+        SimpleDateFormat longDateFormat = new SimpleDateFormat("EEEE, MMM d");
+        try {
+            Date parsedDate = longDateFormat.parse(date);
+            SimpleDateFormat shortDateFormat = new SimpleDateFormat("EEE, MMM d");
+            String shortDate = shortDateFormat.format(parsedDate);
+            return shortDate;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Converts milliseconds into a cursor-readable date format
+     * @param ms Milliseconds
+     * @return Date string in the form "EEEE, MMM dd"
+     */
+    public static String getUserDate(long ms) {
+        Date date = new Date(ms);
+        SimpleDateFormat sdFormat = new SimpleDateFormat("EEEE, MMM d");
+        return sdFormat.format(date);
     }
 
 
