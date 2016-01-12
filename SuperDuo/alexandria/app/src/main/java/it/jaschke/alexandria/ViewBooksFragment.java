@@ -7,8 +7,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -116,7 +118,14 @@ public class ViewBooksFragment extends Fragment
             }
         }, emptyView);
         mViewAdapter.swapCursor(null);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (((ViewGroup.MarginLayoutParams) mSearchField.getLayoutParams()).leftMargin > 0) {
+            // Number of columns determined by sw and orientation (see res/values/integers)
+            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
+                    getResources().getInteger(R.integer.num_card_columns),
+                    StaggeredGridLayoutManager.VERTICAL));
+        } else {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }
         mRecyclerView.setAdapter(mViewAdapter);
 
         // This is performed every time the text field value is changed

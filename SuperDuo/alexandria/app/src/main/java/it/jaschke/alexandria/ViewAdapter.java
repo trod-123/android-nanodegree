@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,7 +74,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
     public ViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (parent instanceof RecyclerView) {
             View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.books_list_item, parent, false);
+                    .inflate(R.layout.books_card_item, parent, false);
             ViewHolder vh = new ViewHolder(view);
             view.setTag(vh);
             return vh;

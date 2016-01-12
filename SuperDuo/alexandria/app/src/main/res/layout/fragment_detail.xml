@@ -1,349 +1,355 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent" android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
-        <ScrollView
-            android:id="@+id/details_scrollview_root"
+    <ScrollView
+        android:id="@+id/details_scrollview_root"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        style="@style/ScrollbarVerticalStyle"
+        android:scrollbarStyle="outsideOverlay"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+
+        android:paddingStart="@dimen/rootview_horizontal_margin"
+        android:paddingLeft="@dimen/rootview_horizontal_margin"
+        android:paddingEnd="@dimen/rootview_horizontal_margin"
+        android:paddingRight="@dimen/rootview_horizontal_margin">
+
+        <LinearLayout
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            style="@style/ScrollbarVerticalStyle"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:orientation="vertical">
 
-            <LinearLayout
+            <!-- Title and glance card -->
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical">
+                app:cardElevation="@dimen/cardview_elevation"
+                android:minHeight="?android:attr/listPreferredItemHeightLarge"
+                android:layout_margin="@dimen/cardview_horizontal_padding">
 
-                <!-- Title and glance card -->
-                <android.support.v7.widget.CardView
+                <LinearLayout
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    app:cardElevation="@dimen/cardview_elevation"
-                    android:minHeight="?android:attr/listPreferredItemHeightLarge"
-                    android:layout_margin="@dimen/cardview_horizontal_padding">
+                    android:orientation="vertical">
 
+                    <!-- Top, containing cover and basic info -->
                     <LinearLayout
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:padding="@dimen/cardview_spacing">
 
-                        <!-- Top, containing cover and basic info -->
+                        <ImageView
+                            android:id="@+id/details_imageview_book_thumbnail"
+                            android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:adjustViewBounds="true"
+                            android:layout_gravity="center|bottom" android:gravity="center"
+                            tools:src="@drawable/ic_launcher"
+                            android:padding="@dimen/cardview_spacing"/>
+
                         <LinearLayout
-                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="2" android:orientation="vertical"
+                            android:layout_gravity="bottom"
                             android:padding="@dimen/cardview_spacing">
 
-                            <ImageView
-                                android:id="@+id/details_imageview_book_thumbnail"
-                                android:layout_width="0dp" android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:adjustViewBounds="true"
-                                android:layout_gravity="center|bottom" android:gravity="center"
-                                tools:src="@drawable/ic_launcher"
-                                android:padding="@dimen/cardview_spacing"/>
+                            <TextView
+                                android:id="@+id/details_textview_title"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"
+                                android:fontFamily="sans-serif-medium"
+                                android:textSize="@dimen/cardview_details_headline_size"
+                                tools:text="@string/tools_book_title"/>
 
+                            <TextView
+                                android:id="@+id/details_textview_subtitle"
+                                android:layout_width="match_parent" android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"
+                                android:fontFamily="sans-serif"
+                                android:textSize="@dimen/cardview_details_title_size"
+                                tools:text="@string/tools_book_subtitle"/>
+
+                            <TextView
+                                android:id="@+id/details_textview_author_date"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed"
+                                android:textColor="@color/secondary_text"
+                                android:textSize="@dimen/cardview_details_subheading_size"
+                                tools:text="@string/tools_book_author_date"/>
+
+                            <!-- Rating score -->
                             <LinearLayout
-                                android:layout_width="0dp" android:layout_height="wrap_content"
-                                android:layout_weight="2" android:orientation="vertical"
-                                android:layout_gravity="bottom"
-                                android:padding="@dimen/cardview_spacing">
+                                android:id="@+id/details_rating_container"
+                                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="@dimen/cardview_spacing_small">
+
+                                <RatingBar
+                                    android:id="@+id/details_ratingbar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    style="@style/DetailsRatingBar"
+                                    android:isIndicator="true"
+                                    android:max="5"/>
 
                                 <TextView
-                                    android:id="@+id/details_textview_title"
-                                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                                    android:textColor="@color/primary_text"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:textSize="@dimen/cardview_details_headline_size"
-                                    tools:text="@string/tools_book_title"/>
-
-                                <TextView
-                                    android:id="@+id/details_textview_subtitle"
-                                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                                    android:textColor="@color/primary_text"
-                                    android:fontFamily="sans-serif"
-                                    android:textSize="@dimen/cardview_details_title_size"
-                                    tools:text="@string/tools_book_subtitle"/>
-
-                                <TextView
-                                    android:id="@+id/details_textview_author_date"
-                                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-condensed"
-                                    android:textColor="@color/secondary_text"
-                                    android:textSize="@dimen/cardview_details_subheading_size"
-                                    tools:text="@string/tools_book_author_date"/>
-
-                                <!-- Rating score -->
-                                <LinearLayout
-                                    android:id="@+id/details_rating_container"
-                                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:layout_marginTop="@dimen/cardview_spacing_small">
-
-                                    <RatingBar
-                                        android:id="@+id/details_ratingbar"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        style="@style/DetailsRatingBar"
-                                        android:isIndicator="true"
-                                        android:max="5"/>
-
-                                    <TextView
-                                        android:id="@+id/details_rating"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center_vertical"
-                                        android:textColor="@color/tertiary_text"
-                                        android:textSize="@dimen/cardview_details_body_size"
-                                        android:paddingStart="@dimen/cardview_spacing_small"
-                                        android:paddingLeft="@dimen/cardview_spacing_small"
-                                        tools:text="@string/tools_book_ratingsCount"/>
-
-                                </LinearLayout>
+                                    android:id="@+id/details_rating"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:textColor="@color/tertiary_text"
+                                    android:textSize="@dimen/cardview_details_body_size"
+                                    android:paddingStart="@dimen/cardview_spacing_small"
+                                    android:paddingLeft="@dimen/cardview_spacing_small"
+                                    tools:text="@string/tools_book_ratingsCount"/>
 
                             </LinearLayout>
 
                         </LinearLayout>
 
-                        <!-- Divider -->
-                        <include layout="@layout/divider_cardview"
-                            android:id="@+id/details_divider_description"/>
-
-                        <!-- Bottom, containing long description -->
-                        <TextView
-                            android:id="@+id/details_textview_description"
-                            android:layout_width="match_parent" android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-light"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_body_size"
-                            tools:text="@string/tools_book_description"
-                            android:padding="@dimen/activity_padding"/>
-
                     </LinearLayout>
 
-                </android.support.v7.widget.CardView>
+                    <!-- Divider -->
+                    <include layout="@layout/divider_cardview"
+                        android:id="@+id/details_divider_description"/>
 
-                <!-- The miscellaneous card -->
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent" android:layout_height="wrap_content"
-                    app:cardElevation="@dimen/cardview_elevation"
-                    android:minHeight="?android:attr/listPreferredItemHeightLarge"
-                    android:layout_margin="@dimen/cardview_horizontal_padding">
-
-                    <!-- When using GridLayout, to prevent text from clipping and disappearing,
-                            make sure to set
-                                android:layout_width="0dp" and
-                                app:layout_gravity="fill_horizontal"
-                            for the TextViews that can potentially overflow.
-                         url: http://daniel-codes.blogspot.com/2012/01/gridlayout-view-clipping-issues.html -->
-                    <android.support.v7.widget.GridLayout
+                    <!-- Bottom, containing long description -->
+                    <TextView
+                        android:id="@+id/details_textview_description"
                         android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:padding="@dimen/activity_padding"
-                        app:columnCount="2">
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_body_size"
+                        tools:text="@string/tools_book_description"
+                        android:padding="@dimen/activity_padding"/>
 
-                        <!-- Heading -->
-                        <TextView
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_subheading_size"
-                            android:text="@string/detail_bibliographic_information"
-                            app:layout_columnSpan="2"
-                            app:layout_columnWeight="1"
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <!-- The miscellaneous card -->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:cardElevation="@dimen/cardview_elevation"
+                android:minHeight="?android:attr/listPreferredItemHeightLarge"
+                android:layout_margin="@dimen/cardview_horizontal_padding">
+
+                <!-- When using GridLayout, to prevent text from clipping and disappearing,
+                        make sure to set
+                            android:layout_width="0dp" and
                             app:layout_gravity="fill_horizontal"
-                            android:layout_marginBottom="@dimen/cardview_spacing"/>
+                        for the TextViews that can potentially overflow.
+                     url: http://daniel-codes.blogspot.com/2012/01/gridlayout-view-clipping-issues.html -->
+                <android.support.v7.widget.GridLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_padding"
+                    app:columnCount="2">
 
-                        <!-- Title -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_title"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_title"
-                            app:layout_columnWeight="1"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Heading -->
+                    <TextView
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_subheading_size"
+                        android:text="@string/detail_bibliographic_information"
+                        app:layout_columnSpan="2"
+                        app:layout_columnWeight="1"
+                        app:layout_gravity="fill_horizontal"
+                        android:layout_marginBottom="@dimen/cardview_spacing"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_title"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_title_subtitle"
-                            app:layout_columnWeight="3"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_title"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_title"
+                        app:layout_columnWeight="1"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Authors -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_authors"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_authors"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_title"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_title_subtitle"
+                        app:layout_columnWeight="3"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_authors"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_author"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Authors -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_authors"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_authors"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Publisher -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_publisher"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_publisher"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_authors"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_author"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_publisher"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_publisher"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Publisher -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_publisher"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_publisher"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Date -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_date"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_date"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_publisher"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_publisher"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_date"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_date"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Date -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_date"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_date"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- ISBN -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_isbn"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_isbn"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_date"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_date"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_isbn"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_isbns"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- ISBN -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_isbn"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_isbn"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Length -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_length"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_length"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_isbn"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_isbns"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_length"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_length"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Length -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_length"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_length"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Categories -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_categories"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_categories"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_length"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_length"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_categories"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_categories"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Categories -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_categories"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_categories"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <!-- Languages -->
-                        <TextView
-                            android:id="@+id/details_textview_label_bib_language"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/primary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            android:text="@string/detail_label_language"
-                            app:layout_gravity="fill"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <TextView
+                        android:id="@+id/details_textview_bib_categories"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_categories"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                        <TextView
-                            android:id="@+id/details_textview_bib_language"
-                            android:layout_width="0dp"
-                            android:gravity="center_vertical"
-                            android:fontFamily="sans-serif"
-                            android:textColor="@color/secondary_text"
-                            android:textSize="@dimen/cardview_details_caption_size"
-                            tools:text="@string/tools_book_language"
-                            app:layout_gravity="fill_horizontal"
-                            android:paddingBottom="@dimen/cardview_spacing_small"/>
+                    <!-- Languages -->
+                    <TextView
+                        android:id="@+id/details_textview_label_bib_language"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        android:text="@string/detail_label_language"
+                        app:layout_gravity="fill"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                    </android.support.v7.widget.GridLayout>
+                    <TextView
+                        android:id="@+id/details_textview_bib_language"
+                        android:layout_width="0dp"
+                        android:gravity="center_vertical"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="@dimen/cardview_details_caption_size"
+                        tools:text="@string/tools_book_language"
+                        app:layout_gravity="fill_horizontal"
+                        android:paddingBottom="@dimen/cardview_spacing_small"/>
 
-                </android.support.v7.widget.CardView>
+                </android.support.v7.widget.GridLayout>
 
-            </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-        </ScrollView>
+        </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/details_button"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_padding_horizontal_margin"
-            android:layout_gravity="bottom|right"
-            android:src="@drawable/ic_add_white_24dp"
-            app:layout_behavior="it.jaschke.alexandria.utilities.FABScrollBehavior"
-            app:layout_anchorGravity="bottom|right|end"/>
+    </ScrollView>
 
-    </android.support.design.widget.CoordinatorLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/details_button"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_padding_horizontal_margin"
+        android:layout_gravity="bottom|right"
+        android:src="@drawable/ic_add_white_24dp"
+        app:layout_behavior="it.jaschke.alexandria.utilities.FABScrollBehavior"
+        app:layout_anchorGravity="bottom|right|end"/>
+
+</android.support.design.widget.CoordinatorLayout>

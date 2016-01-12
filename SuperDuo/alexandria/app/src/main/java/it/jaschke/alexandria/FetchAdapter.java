@@ -1,12 +1,9 @@
 package it.jaschke.alexandria;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.preference.Preference;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,8 +19,6 @@ import java.util.List;
 
 import it.jaschke.alexandria.model.Volume;
 import it.jaschke.alexandria.model.VolumeInfo;
-import it.jaschke.alexandria.provider.books.BooksColumns;
-import it.jaschke.alexandria.provider.books.BooksSelection;
 import it.jaschke.alexandria.utilities.Library;
 import it.jaschke.alexandria.utilities.Network;
 import it.jaschke.alexandria.utilities.LibraryHelper;
@@ -83,7 +78,7 @@ public class FetchAdapter extends RecyclerView.Adapter<FetchAdapter.ViewHolder> 
     public FetchAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (parent instanceof RecyclerView) {
             View view = LayoutInflater.from(mContext)
-                    .inflate(R.layout.books_list_item, parent, false);
+                    .inflate(R.layout.books_card_item, parent, false);
             ViewHolder vh = new ViewHolder(view);
             view.setTag(vh);
             return vh;

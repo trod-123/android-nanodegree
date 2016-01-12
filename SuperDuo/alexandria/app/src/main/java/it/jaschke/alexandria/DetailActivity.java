@@ -32,8 +32,7 @@ public class DetailActivity extends AppCompatActivity {
                 arguments.putBoolean(DetailFragment.UPDATE_BOOK,
                         getIntent().getBooleanExtra(DetailFragment.UPDATE_BOOK, false));
 
-            DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(arguments);
+            DetailFragment fragment = DetailFragment.newInstance(arguments);
 
             // Start the fragment
             getSupportFragmentManager().beginTransaction()

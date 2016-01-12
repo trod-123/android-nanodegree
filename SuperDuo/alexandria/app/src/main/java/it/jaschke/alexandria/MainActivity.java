@@ -23,6 +23,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import java.util.List;
+
 import it.jaschke.alexandria.model.Volume;
 
 /**
@@ -39,25 +41,26 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private NavigationView mDrawerList;
 
     private boolean TABLET_MODE = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get drawer layout and tie drawer layout with the toolbar with drawer toggle
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout_main);
-        mDrawerToggle = setupDrawerToggle();
-
         // Set custom toolbar for the appbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar_nav);
         setSupportActionBar(mToolbar);
 
         // Get drawer view (i.e. drawer list) and set it up
-        NavigationView drawerList = (NavigationView) findViewById(R.id.nav_view_main);
-        setupDrawerContent(drawerList);
+        mDrawerList = (NavigationView) findViewById(R.id.nav_view_main);
+        setupDrawerContent(mDrawerList);
+
+        // Get drawer layout
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout_main);
 
         // Check to see if the device is a phone or tablet by comparing the main content frame's
         //  leftMargin attribute with that loaded in resources. If the left margin is the same as
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity
                 (int) getResources().getDimension(R.dimen.navigation_drawer_width)) {
             TABLET_MODE = true;
             // Lock the drawer
-            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, drawerList);
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
             mDrawer.setScrimColor(Color.TRANSPARENT);
             // Disable status bar translucency to workaround otherwise grey status bar resulting
             //   from having a translucent status bar style attribute for phone devices
@@ -77,28 +80,36 @@ public class MainActivity extends AppCompatActivity
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 getWindow().setStatusBarColor(getResources().getColor(R.color.primary_dark));
             }
+        } else {
+            TABLET_MODE = false;
+            // tie drawer layout with the toolbar with drawer toggle
+            mDrawerToggle = setupDrawerToggle();
+            // TODO: This does not work yet.
+            // Make sure drawer is closed upon activity reconstruction
+            mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+            mDrawer.closeDrawers();
         }
 
         // Set default preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-
         // Load up the fragment specified by the value of the start screen preference saved in the
-        //  shared preferences.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        String prefStartScreen = sp.getString(getString(R.string.pref_startScreen_key), getString(R.string.pref_startScreen_default));
-        Fragment fragment = null;
-        if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[0])) {
-            fragment = FetchBooksFragment.newInstance();
-        } else if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[1])) {
-            fragment = ViewBooksFragment.newInstance();
-        }
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
-                    .commit();
-        } else {
-            Log.e(LOG_TAG, "There was an error creating the fragment.");
+        //  shared preferences. Pass in the appropriate menuId to the selectDrawerItem() method
+        //  which ultimately creates the fragment
+        if (savedInstanceState == null) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+            String prefStartScreen = sp.getString(getString(R.string.pref_startScreen_key), getString(R.string.pref_startScreen_default));
+            int menuId = -1;
+            if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[0])) {
+                menuId = R.id.nav_fetch_books;
+            } else if (prefStartScreen.equals(getResources().getStringArray(R.array.pref_start_values)[1])) {
+                menuId = R.id.nav_my_books;
+            }
+            if (menuId != -1) {
+                selectDrawerItem(mDrawerList.getMenu().findItem(menuId));
+            } else {
+                Log.e(LOG_TAG, "There was an error creating the fragment.");
+            }
         }
     }
 
@@ -120,7 +131,12 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    /**
+     * This method essentially starts the fragments
+     * @param menuItem The MenuItem of the fragment to start
+     */
     public void selectDrawerItem(MenuItem menuItem) {
+        // TODO: Fix the bug where two options can potentially be selected at once
         // Create new fragment and specify which to display based on position. Launch settings
         //  activity if selected.
         Fragment fragment = null;
@@ -147,8 +163,14 @@ public class MainActivity extends AppCompatActivity
         } else {
             tag = preferenceFragment.getClass().getSimpleName();
         }
-        // Insert the fragment by replacing any existing fragment
+        // Insert the fragment by replacing any existing fragment. Check for both FragmentManager
+        //  and FragmentSupportManager because only the Settings fragment loads via the
+        //  FragmentManager
         FragmentManager sfm = getSupportFragmentManager();
+        if (sfm.findFragmentByTag(DetailFragment.class.getSimpleName()) != null) {
+            // If detail fragment is still loaded, remove it
+            sfm.popBackStack();
+        }
         if (sfm.findFragmentByTag(tag) != null || getFragmentManager().findFragmentByTag(tag) != null) {
             // TODO: Fix and finish the code below that would allow switching back and forth between
             //  the FetchFragment and the ViewFragment without losing state (or just implement
@@ -168,20 +190,19 @@ public class MainActivity extends AppCompatActivity
 //                    Log.d(LOG_TAG, "The fragment is currently loaded on top");
 //                }
 //            }
+            Log.d(LOG_TAG, "Null.");
         } else {
             if (fragment != null) {
+                // Load selected fragment
                 sfm.beginTransaction()
                         .replace(R.id.container_fragment_main, fragment, tag)
 //                    .addToBackStack(fragment.getClass().getSimpleName())
                         .commit();
                 // If preference fragment is still loaded, remove it
                 if (getFragmentManager().findFragmentByTag(SettingsFragment.class.getSimpleName()) != null) {
-                    Log.d(LOG_TAG, "REMOVING...");
                     getFragmentManager().beginTransaction()
                             .remove(getFragmentManager().findFragmentByTag(SettingsFragment.class.getSimpleName()))
                             .commit();
-                } else {
-                    Log.d(LOG_TAG, "IT IS STILL HERE");
                 }
             } else {
                 // Load preference fragment if selected
@@ -189,11 +210,23 @@ public class MainActivity extends AppCompatActivity
                         .replace(R.id.container_fragment_main, preferenceFragment, tag)
 //                        .addToBackStack(preferenceFragment.getClass().getSimpleName())
                         .commit();
+                // If there is another fragment still loaded, remove it
+                List<Fragment> fragments = sfm.getFragments();
+                if (fragments != null) {
+                    for (Fragment f : fragments) {
+                        if (f != null) {
+                            sfm.beginTransaction()
+                                    .remove(f)
+                                    .commit();
+                        }
+                    }
+                }
             }
 
             // Highlight the selected item and close drawer. Title is updated in corresponding
             //  fragment's onResume() method for the purposes of the TD to be implemented above
             menuItem.setChecked(true);
+            Log.d(LOG_TAG, "Checked. " + tag + " " + menuItem.isChecked());
         }
         // Only close the drawer if not in tablet mode
         if (!TABLET_MODE) mDrawer.closeDrawers();
@@ -201,9 +234,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            // Allow ActionBarToggle to handle events
-            return true;
+        if (!TABLET_MODE) {
+            if (mDrawerToggle.onOptionsItemSelected(item)) {
+                // Allow ActionBarToggle to handle events
+                return true;
+            }
         }
         // Action bar home/up action should open or close drawer
         switch (item.getItemId()) {
@@ -217,17 +252,20 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync toggle state after onRestoreInstanceState has occurred
-        mDrawerToggle.syncState();
+        if (!TABLET_MODE) {
+            // Sync toggle state after onRestoreInstanceState has occurred
+            mDrawerToggle.syncState();
+        }
     }
-
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        if (!TABLET_MODE) {
+            // Pass any configuration change to the drawer toggles
+            mDrawerToggle.onConfigurationChanged(newConfig);
+
+        }
     }
 
 
@@ -239,9 +277,20 @@ public class MainActivity extends AppCompatActivity
     //  which allows communication of which book was selected.
     @Override
     public void onBookItemSelected(String bookId, ViewAdapter.ViewHolder vh) {
-        Intent intent = new Intent(this, DetailActivity.class)
-                .putExtra(DetailFragment.BOOK_ID, bookId);
-        startActivity(intent);
+        if (!TABLET_MODE) {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailFragment.BOOK_ID, bookId);
+            startActivity(intent);
+        } else {
+            Bundle arguments = new Bundle();
+            arguments.putString(DetailFragment.BOOK_ID, bookId);
+            Fragment fragment = DetailFragment.newInstance(arguments);
+            // Start the fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     // This callback starts the detail activity. This is called within FetchBooksFragment,
@@ -249,20 +298,28 @@ public class MainActivity extends AppCompatActivity
     //  be updated.
     @Override
     public void onResultItemSelected(Volume volume, boolean update, FetchAdapter.ViewHolder vh) {
-        Log.d(LOG_TAG, "The volume title is " + volume.getVolumeInfo().getTitle());
-        Intent intent = new Intent(this, DetailActivity.class)
-                .putExtra(DetailFragment.VOLUME_OBJECT, volume)
-                .putExtra(DetailFragment.UPDATE_BOOK, update);
-        startActivity(intent);
+        if (!TABLET_MODE) {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailFragment.VOLUME_OBJECT, volume)
+                    .putExtra(DetailFragment.UPDATE_BOOK, update);
+            startActivity(intent);
+        } else {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.VOLUME_OBJECT, volume);
+            arguments.putBoolean(DetailFragment.UPDATE_BOOK, update);
+            Fragment fragment = DetailFragment.newInstance(arguments);
+            // Start the fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     // This callback starts the Fetch fragment. This is called within ViewBooksFragment when the
     //  user clicks on the + FAB.
     @Override
     public void onFetchButtonClicked() {
-        Fragment fragment = FetchBooksFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_fragment_main, fragment, fragment.getClass().getSimpleName())
-                .commit();
+        selectDrawerItem(mDrawerList.getMenu().findItem(R.id.nav_fetch_books));
     }
 }

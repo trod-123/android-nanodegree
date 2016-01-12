@@ -1,12 +1,9 @@
 package it.jaschke.alexandria;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
@@ -33,6 +30,7 @@ public class SettingsFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
+        getActivity().setTitle(R.string.title_fragment_settings);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_startScreen_key)));
     }
 

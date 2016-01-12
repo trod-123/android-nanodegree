@@ -11,8 +11,8 @@
     android:layout_marginLeft="@dimen/cardview_horizontal_padding"
     android:layout_marginEnd="@dimen/cardview_horizontal_padding"
     android:layout_marginRight="@dimen/cardview_horizontal_padding"
-    android:layout_marginTop="@dimen/cardview_vertical_padding"
-    android:layout_marginBottom="@dimen/cardview_vertical_padding">
+    android:layout_marginTop="@dimen/cardview_horizontal_padding"
+    android:layout_marginBottom="@dimen/cardview_horizontal_padding">
 
     <LinearLayout
         android:layout_width="match_parent" android:layout_height="wrap_content"

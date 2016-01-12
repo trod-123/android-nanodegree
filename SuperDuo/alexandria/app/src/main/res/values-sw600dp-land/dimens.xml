@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Flexible margins -->
-    <dimen name="rootview_horizontal_margin">128dp</dimen>
+    <dimen name="rootview_horizontal_margin">160dp</dimen>
 
     <!-- For the navigation drawer (if not 0, persistent) -->
-    <dimen name="navigation_drawer_content_padding">0dp</dimen>
+    <dimen name="navigation_drawer_content_padding">@dimen/navigation_drawer_width</dimen>
 
 </resources>

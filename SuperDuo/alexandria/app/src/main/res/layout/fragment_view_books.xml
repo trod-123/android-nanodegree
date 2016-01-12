@@ -23,7 +23,11 @@
             android:maxLines="1"
             android:hint="@string/list_input_hint"
             android:drawableStart="@drawable/ic_action_search"
-            android:drawableLeft="@drawable/ic_action_search"/>
+            android:drawableLeft="@drawable/ic_action_search"
+            android:layout_marginStart="@dimen/rootview_horizontal_margin"
+            android:layout_marginLeft="@dimen/rootview_horizontal_margin"
+            android:layout_marginEnd="@dimen/rootview_horizontal_margin"
+            android:layout_marginRight="@dimen/rootview_horizontal_margin"/>
 
         <!-- Bottom panel for results -->
         <FrameLayout

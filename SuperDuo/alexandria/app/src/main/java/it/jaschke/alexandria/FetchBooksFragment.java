@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -132,8 +134,14 @@ public class FetchBooksFragment extends Fragment
             }
         }, emptyView);
         mFetchAdapter.swapList(null);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(mFetchAdapter);
+        if (((ViewGroup.MarginLayoutParams) mSearchField.getLayoutParams()).leftMargin > 0) {
+            // Number of columns determined by sw and orientation (see res/values/integers)
+            mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(
+                    getResources().getInteger(R.integer.num_card_columns),
+                    StaggeredGridLayoutManager.VERTICAL));
+        } else {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }        mRecyclerView.setAdapter(mFetchAdapter);
 
         // This is performed every time the text field value is changed
         // Use of timer to delay changed text event attributed to Marcus Pohls of futurestud.io
