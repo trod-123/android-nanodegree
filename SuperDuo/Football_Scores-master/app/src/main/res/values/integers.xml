@@ -5,4 +5,7 @@
     <integer name="widget_refresh_period">86400000</integer> <!-- 1 day, in ms -->
     <integer name="widget_flip_interval">5000</integer>
 
+    <!-- Number of recycler view columns, determined by sw and orientation -->
+    <integer name="num_columns">1</integer>
+
 </resources>

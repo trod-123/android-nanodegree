@@ -12,6 +12,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,10 +51,8 @@ public class ScoresFragment extends Fragment
     private static final String KEY_FRAGMENT_INDEX = "fragment_index_key";
 
     private RecyclerView mRecyclerView;
-    private int mPosition = RecyclerView.NO_POSITION;
 
     private String[] fragmentdate = new String[1];
-    private int last_selected_item = -1;
 
     private SwipeRefreshLayout mRefreshLayout;
 
@@ -142,37 +141,25 @@ public class ScoresFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         View emptyView = rootView.findViewById(R.id.fragment_main_recyclerview_scores_empty);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_recyclerview_scores);
-        mScoresAdapter = new ScoresAdapter(getActivity(), new ScoresAdapter.ScoresAdapterOnClickHandler() {
-            @Override public void onClick(int match_id, ScoresAdapter.ViewHolder vh) {
-                mScoresAdapter.detail_match_id = match_id;
-                MainActivity.selected_match_id = (int) mScoresAdapter.detail_match_id;
-                mScoresAdapter.notifyDataSetChanged();
-                mPosition = vh.getAdapterPosition();
-            }
-        }, emptyView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        Log.d(LOG_TAG, "The margins are " + getResources().getDimension(R.dimen.rootview_horizontal_margin));
+        mScoresAdapter = new ScoresAdapter(getActivity(), emptyView);
+        StaggeredGridLayoutManager sglm =
+                new StaggeredGridLayoutManager(getResources().getInteger(R.integer.num_columns),
+                        StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(sglm);
         mRecyclerView.setAdapter(mScoresAdapter);
-
-        mScoresAdapter.detail_match_id = MainActivity.selected_match_id;
 
         // Set the SwipeRefreshLayout
         mRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_main_recyclerview_swiperefresh);
         mRefreshLayout.setOnRefreshListener(this);
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(KEY_ITEM_SELECTED)) {
-                mPosition = savedInstanceState.getInt(KEY_ITEM_SELECTED);
-            }
             if (savedInstanceState.containsKey(KEY_FRAGMENT_DATE)) {
                 setFragmentDate(savedInstanceState.getString(KEY_FRAGMENT_DATE));
                 Log.d(LOG_TAG, "The savedInstanceState had a date value of " + fragmentdate[0]);
             } else {
                 Log.d(LOG_TAG, "The savedInstanceState did not have any date value.");
             }
-//            if (savedInstanceState.containsKey(KEY_FRAGMENT_INDEX)) {
-//                FRAGMENT_INDEX = savedInstanceState.getInt(KEY_FRAGMENT_INDEX);
-//                Log.d(LOG_TAG, "The savedInstanceState had a value for the fragment index and loaded a date.");
-//            }
             mScoresAdapter.onRestoreInstanceState(savedInstanceState);
         }
 
@@ -210,12 +197,6 @@ public class ScoresFragment extends Fragment
 
     // Store the current position and the fragment date
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (mPosition != RecyclerView.NO_POSITION) {
-            Log.d(LOG_TAG, "The position that is going to be saved in the bundle is " + mPosition);
-            outState.putInt(KEY_ITEM_SELECTED, mPosition);
-        } else {
-            Log.d(LOG_TAG, "There is no position that will be saved in the bundle");
-        }
         if (mScoresAdapter != null) {
             mScoresAdapter.onSaveInstanceState(outState);
         } else {
@@ -262,9 +243,6 @@ public class ScoresFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         updateEmptyView();
         mScoresAdapter.swapCursor(new FixtureCursor(cursor));
-        if (mPosition != RecyclerView.NO_POSITION) {
-            mRecyclerView.smoothScrollToPosition(mPosition);
-        }
     }
 
     @Override

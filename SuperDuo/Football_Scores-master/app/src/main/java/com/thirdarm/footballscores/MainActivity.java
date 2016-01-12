@@ -20,18 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    // Why is this static? What is this used for?
-    // This is for keeping track of which element has been expanded so that upon activity
-    //  recreation, that element remains expanded. Used in onSaveInstanceState().
-    // It needs to be in the main activity because we are using pagers and the main activity
-    //  keeps track of all the pagers and all the elements that are within each pager.
-    //  Upon recreation, the activity should also remember which fragment is visible, so that
-    //  it also loads that up.
-    // TODO: HOWEVER. There is a bug in which if you expand 2 games from 2 different tabs, both
-    //  may remain expanded, whereas the intent is that only one remains expanded, when you switch
-    //  tabs.
-    public static int selected_match_id;
-
     public static int current_fragment = 2;
     public static String LOG_TAG = "MainActivity";
     private final String save_tag = "Save Test";
@@ -52,11 +40,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(mViewPager);
+        if (mViewPager == null) {
+            mViewPager = (ViewPager) findViewById(R.id.viewpager);
+            setupViewPager(mViewPager);
 
-        mTabLayout = (TabLayout) findViewById(R.id.tabs);
-        mTabLayout.setupWithViewPager(mViewPager);
+            mTabLayout = (TabLayout) findViewById(R.id.tabs);
+            mTabLayout.setupWithViewPager(mViewPager);
+        }
 
         // Make sure there is internet connection first before going to sync
         ScoresSyncAdapter.initializeSyncAdapter(this);
@@ -72,21 +62,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         // This is for restoring the current fragment that is displayed when activity restarts itself
         // Uses a pager handler to handle all the fragments in a single object
-        Log.v(save_tag,"will save");
-        Log.v(save_tag,"fragment: " + String.valueOf(mViewPager.getCurrentItem()));
-        Log.v(save_tag, "selected id: " + selected_match_id);
         outState.putInt("Pager_Current", mViewPager.getCurrentItem());
-        outState.putInt("Selected_match", selected_match_id);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.v(save_tag,"will retrive");
-        Log.v(save_tag,"fragment: "+String.valueOf(savedInstanceState.getInt("Pager_Current")));
-        Log.v(save_tag,"selected id: "+savedInstanceState.getInt("Selected_match"));
         current_fragment = savedInstanceState.getInt("Pager_Current");
-        selected_match_id = savedInstanceState.getInt("Selected_match");
         super.onRestoreInstanceState(savedInstanceState);
     }
 

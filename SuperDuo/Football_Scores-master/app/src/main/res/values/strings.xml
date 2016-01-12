@@ -70,7 +70,7 @@
     <string name="empty_scores_list_no_network">No scores available. The network is not available to fetch scores data.</string>
     <string name="empty_scores_list_server_down">No scores available. The server is not returning data.</string>
     <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of Football Scores.</string>
-    <string name="empty_scores_list_syncing">Fetching scores from server...</string>
+    <string name="empty_scores_list_syncing">Fetching scores from server&#8230;</string>
 
     <!-- xml layout tools strings -->
     <string name="tools_home_team_name">Home team</string>

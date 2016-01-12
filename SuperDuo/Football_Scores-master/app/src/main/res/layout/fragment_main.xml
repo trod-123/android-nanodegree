@@ -27,7 +27,11 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fragment_main_recyclerview_scores"
             android:layout_width="match_parent" android:layout_height="match_parent"
-            style="@style/ScoresListStyle"/>
+            style="@style/ScoresListStyle"
+            android:paddingStart="@dimen/rootview_horizontal_margin"
+            android:paddingLeft="@dimen/rootview_horizontal_margin"
+            android:paddingEnd="@dimen/rootview_horizontal_margin"
+            android:paddingRight="@dimen/rootview_horizontal_margin"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

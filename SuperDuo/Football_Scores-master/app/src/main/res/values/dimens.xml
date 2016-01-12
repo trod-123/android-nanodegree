@@ -5,9 +5,16 @@
     <dimen name="list_horizonal_matgin">2dp</dimen>
     <dimen name="share_button_margin">150dp</dimen>
 
-    <dimen name="TeamNames">17sp</dimen>
-    <dimen name="Score">30sp</dimen>
-    <dimen name="League">15sp</dimen>
+    <!-- Flexible margins -->
+    <dimen name="rootview_horizontal_margin">0dp</dimen>
+
+    <!-- Padding, margins, and elevation -->
+    <dimen name="cardview_horizontal_padding">8dp</dimen>
+    <dimen name="cardview_vertical_padding">4dp</dimen>
+    <dimen name="cardview_spacing">8dp</dimen>
+    <dimen name="cardview_spacing_small">4dp</dimen>
+    <dimen name="cardview_elevation">2dp</dimen>
+    <dimen name="cardview_divider_size">1dp</dimen>
 
     <!-- Home screen widget dimensions -->
     <dimen name="widget_min_width">180dp</dimen>
