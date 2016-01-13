@@ -16,7 +16,7 @@
     <string name="pref_startScreen_key" translatable="false">PreferredStartScreen</string>
 
     <!-- Preference stuff -->
-    <string name="pref_startScreen" translatable="true">Select start screen</string>
+    <string name="pref_startScreen" translatable="true">Start screen</string>
     <string name="pref_startScreen_default" translatable="false">0</string>
 
     <!-- Action buttons -->
@@ -100,7 +100,7 @@
     <!-- Share - A must read book: Harry Potter and the Sorcerer's Stone by J.K. Rowling -->
     <string name="share_book" translatable="true">
         A must read book: <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="author">%2$s</xliff:g>
-         (view in Google Books: <xliff:g id="url">%3$s</xliff:g>)
+         <xliff:g id="url">%3$s</xliff:g>)
     </string>
 
     <!-- Strings for xml tools -->
@@ -154,6 +154,6 @@
         it into a productionizing assignment for students in the Udacity Android Nanodegree program.
         \n\nHeavily revised by Teddy Rodriguez, a student in the nanodegree program.
         \n\nAll book information and images gathered from the Google Books API.
-        \n\n\nApp last updated Monday, January 11, 2016.
+        \n\n\nApp last updated Tuesday, January 12, 2016.
     </string>
 </resources>
