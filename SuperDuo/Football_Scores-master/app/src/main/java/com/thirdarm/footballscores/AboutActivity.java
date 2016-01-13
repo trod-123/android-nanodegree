@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,14 @@ public class AboutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_about);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new AboutFragment())
                     .commit();
         }
     }
 
-    public static class PlaceholderFragment extends Fragment {
+    public static class AboutFragment extends Fragment {
 
-        public PlaceholderFragment() {
+        public AboutFragment() {
         }
 
         @Override

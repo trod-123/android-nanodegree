@@ -6,7 +6,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,13 +22,14 @@ import java.util.List;
 import klogi.com.RtlViewPager;
 
 public class MainActivity extends AppCompatActivity {
-    public static int current_fragment = 2;
-    public static String LOG_TAG = "MainActivity";
-    private final String save_tag = "Save Test";
+    public static String LOG_TAG = MainActivity.class.getSimpleName();
 
+    private static final String CURRENT_FRAGMENT_KEY =
+            "com.thirdarm.footballscores.MainActivity.currentFragmentKey";
+
+    public static int mCurrentFragment = 2;
     private static final int NUM_PAGES = 5;
 
-    private Toolbar mToolbar;
     public ViewPager mViewPager;
 
     public static String[] mFragmentDates = new String[NUM_PAGES];
@@ -39,14 +39,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         mViewPager = (RtlViewPager) findViewById(R.id.viewpager);
         setupViewPager(mViewPager);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        // Highlight current fragment tab
+        tabLayout.getTabAt(MainActivity.mCurrentFragment).select();
 
         // Make sure there is internet connection first before going to sync
         ScoresSyncAdapter.initializeSyncAdapter(this);
@@ -62,18 +64,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         // This is for restoring the current fragment that is displayed when activity restarts itself
         // Uses a pager handler to handle all the fragments in a single object
-        outState.putInt("Pager_Current", mViewPager.getCurrentItem());
+        outState.putInt(CURRENT_FRAGMENT_KEY, mViewPager.getCurrentItem());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        current_fragment = savedInstanceState.getInt("Pager_Current");
+        mCurrentFragment = savedInstanceState.getInt(CURRENT_FRAGMENT_KEY);
         super.onRestoreInstanceState(savedInstanceState);
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        Log.d(LOG_TAG, "In setupViewPager");
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         // Create 5 fragments, each with its own date assigned to it
         for (int i = 0; i < NUM_PAGES; i++) {
@@ -82,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
             newFragment.setFragmentDate(date);
             mFragmentDates[i] = date;
             newFragment.setFragmentIndex(i);
-            adapter.addFragment(newFragment, "useless string");
+            adapter.addFragment(newFragment, date);
         }
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(MainActivity.current_fragment);
+        viewPager.setCurrentItem(MainActivity.mCurrentFragment);
         // Allow all 5 fragments to be held by the system at once to avoid recreating fragments.
         // Was stuck trying to restore fragments after they were being recreated because
         //  fragmentdate would always be returning null for the fragment that has not yet been

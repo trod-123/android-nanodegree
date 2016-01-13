@@ -75,7 +75,6 @@ class ScoresRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 BteamColumns.NAME, BteamColumns.SHORTNAME, BteamColumns.CRESTURL
         };
         String[] date = {Utilities.getUserDate(System.currentTimeMillis())};
-        Log.d(LOG_TAG, "The date is " + date[0]);
 
         mCursor = new FixtureCursor(mContext.getContentResolver().query((new FixtureSelection()).uri(),
                 projection,
@@ -221,7 +220,6 @@ class ScoresRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         rv.setOnClickFillInIntent(R.id.widget_item_rootview, fillInIntent);
-
 
         return rv;
     }

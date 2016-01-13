@@ -48,7 +48,6 @@ public class ScoresFragment extends Fragment
     private static final int SCORES_LOADER = 0;
 
     // For the savedInstanceState
-    private static final String KEY_ITEM_SELECTED = "item_selected_key";
     private static final String KEY_FRAGMENT_DATE = "fragment_date_key";
     private static final String KEY_FRAGMENT_INDEX = "fragment_index_key";
 
@@ -62,9 +61,7 @@ public class ScoresFragment extends Fragment
     }
 
     public void setFragmentDate(String date) {
-        Log.d(LOG_TAG, "The fragment date is: " + date);
         fragmentdate[0] = date;
-        Log.d(LOG_TAG, "In setFragmentDate, set the date to: " + fragmentdate[0]);
     }
 
     public void setFragmentIndex(int index) {
@@ -143,7 +140,6 @@ public class ScoresFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         View emptyView = rootView.findViewById(R.id.fragment_main_recyclerview_scores_empty);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_main_recyclerview_scores);
-        Log.d(LOG_TAG, "The margins are " + getResources().getDimension(R.dimen.rootview_horizontal_margin));
         mScoresAdapter = new ScoresAdapter(getActivity(), emptyView);
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(getResources().getInteger(R.integer.num_columns),
@@ -158,16 +154,8 @@ public class ScoresFragment extends Fragment
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_FRAGMENT_DATE)) {
                 setFragmentDate(savedInstanceState.getString(KEY_FRAGMENT_DATE));
-                Log.d(LOG_TAG, "The savedInstanceState had a date value of " + fragmentdate[0]);
-            } else {
-                Log.d(LOG_TAG, "The savedInstanceState did not have any date value.");
             }
-            mScoresAdapter.onRestoreInstanceState(savedInstanceState);
         }
-
-//        setFragmentDate(MainActivity.mFragmentDates[FRAGMENT_INDEX]);
-
-
         return rootView;
     }
 
@@ -199,14 +187,7 @@ public class ScoresFragment extends Fragment
 
     // Store the current position and the fragment date
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (mScoresAdapter != null) {
-            mScoresAdapter.onSaveInstanceState(outState);
-        } else {
-            Log.d(LOG_TAG, "In onSaveInstanceState(), Scores Adapter was null.");
-        }
-        Log.d(LOG_TAG, "The fragment date going to be saved in the bundle is " + fragmentdate[0]);
         outState.putString(KEY_FRAGMENT_DATE, fragmentdate[0]);
-        Log.d(LOG_TAG, "The fragment index going to be saved in the bundle is " + FRAGMENT_INDEX);
         outState.putInt(KEY_FRAGMENT_INDEX, FRAGMENT_INDEX);
 
         super.onSaveInstanceState(outState);
@@ -225,14 +206,6 @@ public class ScoresFragment extends Fragment
                 BteamColumns.NAME, BteamColumns.SHORTNAME, BteamColumns.CODE, BteamColumns.CRESTURL
         };
 
-//        return new CursorLoader(getActivity(),
-//                (new FixtureSelection()).uri(),
-//                projection,
-//                null,
-//                null,
-//                null);
-
-        Log.d(LOG_TAG, "In onCreateLoader, the fragmentdate is: " + fragmentdate[0]);
         return new CursorLoader(getActivity(),
                 (new FixtureSelection()).uri(),
                 projection,
@@ -281,7 +254,8 @@ public class ScoresFragment extends Fragment
                 emptyView.setText(message);
                 mScoresAdapter.notifyDataSetChanged();
 
-                // TODO: Fix this code to update the widgets' empty view text
+                // TODO:
+                // Update the widgets
                 Intent intent = new Intent(getActivity(), ScoresWidgetProvider.class);
                 intent.setAction(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT);
                 intent.putExtra(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT, message);

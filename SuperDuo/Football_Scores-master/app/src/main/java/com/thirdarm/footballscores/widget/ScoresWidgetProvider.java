@@ -60,28 +60,30 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
         RemoteViews root = new RemoteViews(context.getPackageName(), R.layout.widget);
         String intent_action = intent.getAction();
         int id = intent.getIntExtra(WIDGET_IDS_KEY, 0);
-        switch (intent_action) {
-            case ACTION_NEXT :
-                root.showNext(R.id.widget_view_flipper);
-                // This needs to be called to display widget changes
-                appWidgetManager.updateAppWidget(id, root);
-                break;
-            case ACTION_PREVIOUS :
-                root.showPrevious(R.id.widget_view_flipper);
-                appWidgetManager.updateAppWidget(id, root);
-                break;
-            case ACTION_REFRESH :
-                AppWidgetManager.getInstance(context)
-                        .notifyAppWidgetViewDataChanged(id, R.id.widget_view_flipper);
-                break;
-            case ACTION_UPDATE_EMPTY_TEXT :
-                int message = intent.getIntExtra(ACTION_UPDATE_EMPTY_TEXT, -1);
-                if (message != -1) {
-                    root.setTextViewText(R.id.widget_view_flipper_empty, context.getString(message));
+        if (intent_action != null) {
+            switch (intent_action) {
+                case ACTION_NEXT:
+                    root.showNext(R.id.widget_view_flipper);
+                    // This needs to be called to display widget changes
                     appWidgetManager.updateAppWidget(id, root);
-                }
-                break;
-            default :
+                    break;
+                case ACTION_PREVIOUS:
+                    root.showPrevious(R.id.widget_view_flipper);
+                    appWidgetManager.updateAppWidget(id, root);
+                    break;
+                case ACTION_REFRESH:
+                    AppWidgetManager.getInstance(context)
+                            .notifyAppWidgetViewDataChanged(id, R.id.widget_view_flipper);
+                    break;
+                case ACTION_UPDATE_EMPTY_TEXT:
+                    int message = intent.getIntExtra(ACTION_UPDATE_EMPTY_TEXT, -1);
+                    if (message != -1) {
+                        root.setTextViewText(R.id.widget_view_flipper_empty, context.getString(message));
+                        appWidgetManager.updateAppWidget(id, root);
+                    }
+                    break;
+                default:
+            }
         }
         super.onReceive(context, intent);
     }
@@ -101,7 +103,6 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
         // Query to retrieve data here and extract needed information
         // To loop over each app widget put on the homescreen, use a loop iterating over appWidgetIds
         for (int appWidgetId : appWidgetIds) {
-            Log.d(LOG_TAG, "In onuPDATEEE");
             // Set up the intent that will launch the service that will provide the views
             Intent intent = new Intent(context, ScoresWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);

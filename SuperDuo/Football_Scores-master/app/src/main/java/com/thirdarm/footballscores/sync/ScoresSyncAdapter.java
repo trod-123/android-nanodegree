@@ -41,7 +41,7 @@ import com.thirdarm.footballscores.model.Fixture;
 
 /**
  * Created by TROD on 20151220.
- *
+ * <p/>
  * The Scores SyncAdapter
  */
 public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
@@ -55,7 +55,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     // Interval at which to sync with the weather, in form <# s/min> * <# min> (this is done in
     //  seconds, not milliseconds)
     public static final int SYNC_INTERVAL = 60 * 180;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
@@ -68,7 +68,8 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({SYNC_STATUS_OK, SYNC_STATUS_SERVER_DOWN, SYNC_STATUS_SERVER_INVALID,
             SYNC_STATUS_UNKNOWN, SYNC_STATUS_SYNCING})
-    public @interface SyncStatus {}
+    public @interface SyncStatus {
+    }
 
     public static final int SYNC_STATUS_OK = 0;             /* Status okay. Fetch successful */
     public static final int SYNC_STATUS_SERVER_DOWN = 1;    /* Server is slow or down */
@@ -76,17 +77,19 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int SYNC_STATUS_UNKNOWN = 3;        /* ... I just don't know */
     public static final int SYNC_STATUS_SYNCING = 4;        /* Currently syncing */
 
-    // Time frames for fixtures to be fetched
-    private String[] mTimeFrames = new String[] {"n2", "p6"};
+    // Time frames for fixtures to be fetched (see API for more info)
+    private static final String RANGE_UPCOMING = "n2";
+    private static final String RANGE_FINISHED = "p2";
+    private String[] mTimeFrames = new String[]{RANGE_UPCOMING, RANGE_FINISHED};
 
     public ScoresSyncAdapter(Context c, boolean autoInitialize) {
         super(c, autoInitialize);
     }
 
     // AsyncTask or IntentService content goes here
-    @Override public void onPerformSync(Account account, Bundle extras, String authority,
-                                        ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(LOG_TAG, "In onPerformSync");
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String authority,
+                              ContentProviderClient provider, SyncResult syncResult) {
         setSyncStatus(getContext(), SYNC_STATUS_SYNCING);
 
         // Generate APIHelper
@@ -95,47 +98,43 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
         // Check to see first if teams database exists because next procedure depends on it
         ContentResolver cr = getContext().getContentResolver();
         Cursor c = cr.query((new AteamSelection()).uri(), null, null, null, null);
-        if (!c.moveToFirst()) {
-            setTeamsCollectedState(getContext(), false);
-            Log.d(LOG_TAG, "The teams base is currently empty.");
+        if (c != null) {
+            if (!c.moveToFirst()) {
+                setTeamsCollectedState(getContext(), false);
+            }
+            c.close();
         }
-        c.close();
         if (!getTeamsCollectedState(getContext())) {
             // If not, initialize teams database
             getAllSeasonsTeams(apiHelper);
-        } else {
-            Log.d(LOG_TAG, "Did not go through teams sync.");
         }
         // If teams sync still failed, terminate sync and set sync status
         if (!getTeamsCollectedState(getContext())) {
-            Log.d(LOG_TAG, "Teams failed to fetch. Terminating sync.");
+            Log.e(LOG_TAG, "Teams failed to fetch. Terminating sync.");
             setSyncStatus(getContext(), SYNC_STATUS_SERVER_DOWN);
             return;
         }
 
         // Proceed in fetching fixtures
         for (String timeFrame : mTimeFrames) {
-            Log.d(LOG_TAG, "Timeframe: " + timeFrame);
             List<Fixture> fixtures = apiHelper.getFixtures(null, timeFrame);
             // Make sure fixtures isn't null first. Terminate sync and set sync status if null.
             if (fixtures == null) {
-                Log.d(LOG_TAG, "Fixtures failed to fetch. Terminating sync.");
+                Log.e(LOG_TAG, "Fixtures failed to fetch. Terminating sync.");
                 setSyncStatus(getContext(), SYNC_STATUS_SERVER_DOWN);
             }
-            Log.d(LOG_TAG, "Fixture count: " + fixtures.size());
             for (Fixture fixture : fixtures) {
-                Log.d(LOG_TAG, "Individual fixture in timeframe: " + timeFrame);
 
                 // Get the status
                 Status status;
                 switch (fixture.getStatus()) {
-                    case "FINISHED" :
+                    case "FINISHED":
                         status = Status.FINISHED;
                         break;
-                    case "TIMED" :
+                    case "TIMED":
                         status = Status.TIMED;
                         break;
-                    default :
+                    default:
                         status = Status.OTHER;
                         break;
                 }
@@ -147,7 +146,6 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
                 int leagueId = Utilities
                         .extractId(fixture.getFixturesLinks().getLinksSoccerseason().getHref(),
                                 Utilities.SEASON_LINK);
-                Log.d(LOG_TAG, "League id is: " + leagueId);
                 String[] dateTime = Utilities.convertUserDateTime(fixture.getDate());
 
                 int homeGoals, awayGoals;
@@ -170,59 +168,17 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
                         fixture.getHomeTeamName(), fixture.getAwayTeamName(), leagueId,
                         homeGoals, awayGoals, matchId, fixture.getMatchday()
                 );
-
-//                ContentResolver cr = getContext().getContentResolver();
-//                Cursor cursor = cr.query(
-//                        ScoresProvider.Scores.CONTENT_URI,
-//                        new String[]{ScoresColumns.MATCH_ID},
-//                        ScoresColumns.MATCH_ID + " == ? ",
-//                        new String[]{matchId},
-//                        null
-//                );
-//
-//                ContentValues fixtureCv = new ContentValues();
-//                fixtureCv.put(ScoresColumns.DATE, dateTime[0]);
-//                fixtureCv.put(ScoresColumns.TIME, dateTime[1]);
-//                fixtureCv.put(ScoresColumns.HOME_NAME, fixture.getHomeTeamName());
-//                fixtureCv.put(ScoresColumns.AWAY_NAME, fixture.getAwayTeamName());
-//                fixtureCv.put(ScoresColumns.LEAGUE_NAME, leagueId);
-//                fixtureCv.put(ScoresColumns.HOME_GOALS, fixture.getResult().getGoalsHomeTeam());
-//                fixtureCv.put(ScoresColumns.AWAY_GOALS, fixture.getResult().getGoalsAwayTeam());
-//                fixtureCv.put(ScoresColumns.MATCH_ID, matchId);
-//                fixtureCv.put(ScoresColumns.MATCH_DAY, fixture.getMatchday());
-//
-//                if (cursor.moveToFirst()) {
-//                    cr.update(ScoresProvider.Scores.CONTENT_URI,
-//                            fixtureCv,
-//                            ScoresColumns.MATCH_ID + " == ? ",
-//                            new String[]{matchId}
-//                    );
-//                } else {
-//                    values.add(fixtureCv);
-//                }
-//                cursor.close();
             }
-
-            // Bulk insert the scores data
-//            ContentValues[] cv = new ContentValues[values.size()];
-//            values.toArray(cv);
-//            getContext().getContentResolver().bulkInsert(ScoresProvider.Scores.CONTENT_URI, cv);
-
         }
         setSyncStatus(getContext(), SYNC_STATUS_OK);
     }
 
     public void getAllSeasonsTeams(APIHelper apiHelper) {
-        Log.d(LOG_TAG, "In getAllSeasonsTeams");
-        Vector<AteamContentValues> cVValuesA = new Vector<>();
-        Vector<BteamContentValues> cVValuesB = new Vector<>();
         for (int i = SEASON_MIN; i <= SEASON_MAX; i++) {
-            Log.d(LOG_TAG, "The current season being grabbed is: " + i);
             List<Team> seasonTeams = apiHelper.getSingleSoccerseasonTeams(i);
             // make sure that the teams list is not null due to server timeouts.
             if (seasonTeams == null) {
-                Log.d(LOG_TAG, "The Teams list was null due to timeout. Terminating...");
-//                seasonTeams = apiHelper.getSingleSoccerseasonTeams(i);
+                Log.e(LOG_TAG, "The Teams list was null due to timeout. Terminating...");
                 return;
             }
             for (Team team : seasonTeams) {
@@ -234,31 +190,9 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 insertTeamA(name, shortName, code, marketValue, crestUrl);
                 insertTeamB(name, shortName, code, marketValue, crestUrl);
-
-//                AteamContentValues aCv = new AteamContentValues();
-//                aCv.putName(name);
-//                aCv.putShortname(shortName);
-//                aCv.putValue(marketValue);
-//                aCv.putCresturl(crestUrl);
-//
-//                BteamContentValues bCv = new BteamContentValues();
-//                bCv.putName(name);
-//                bCv.putShortname(shortName);
-//                bCv.putValue(marketValue);
-//                bCv.putCresturl(crestUrl);
-//
-//                cVValuesA.add(aCv);
-//                cVValuesB.add(bCv);
             }
         }
-//        AteamContentValues[] aCv = new AteamContentValues[cVValuesA.size()];
-//        BteamContentValues[] bCv = new BteamContentValues[cVValuesB.size()];
-//        cVValuesA.toArray(aCv);
-//        cVValuesB.toArray(bCv);
-//        getContext().getContentResolver().bulkInsert((new AteamContentValues()).uri(), aCv);
-//        getContext().getContentResolver().bulkInsert((new BteamContentValues()).uri(), bCv);
         setTeamsCollectedState(getContext(), true);
-        Log.d(LOG_TAG, "All teams have been collected.");
     }
 
     /**
@@ -301,12 +235,12 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Insert a team. This goes hand-in-hand with insertTeamB(). Another team table is needed
-     *  so that a fixture can point to both home and away teams. This table will essentially
-     *  contain exactly the same elements as teamB.
+     * so that a fixture can point to both home and away teams. This table will essentially
+     * contain exactly the same elements as teamB.
      *
      * @return The id of the inserted team.
      */
-    public long insertTeamA(@NonNull String name, String shortName, String code, String value, String crestUrl ) {
+    public long insertTeamA(@NonNull String name, String shortName, String code, String value, String crestUrl) {
         AteamContentValues aCv = new AteamContentValues();
         aCv.putName(name);
         aCv.putShortname(shortName);
@@ -320,12 +254,12 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Insert a team. This goes hand-in-hand with insertTeamA(). Another team table is needed
-     *  so that a fixture can point to both home and away teams. This table will essentially
-     *  contain exactly the same elements as teamA.
+     * so that a fixture can point to both home and away teams. This table will essentially
+     * contain exactly the same elements as teamA.
      *
      * @return The id of the inserted team.
      */
-    public long insertTeamB(@NonNull String name, String shortName, String code, String value, String crestUrl ) {
+    public long insertTeamB(@NonNull String name, String shortName, String code, String value, String crestUrl) {
         BteamContentValues bCv = new BteamContentValues();
         bCv.putName(name);
         bCv.putShortname(shortName);
@@ -339,7 +273,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Helper method to have the sync adapter sync immediately. The kind of sync will depend on the
-     *   parameters provided during the call
+     * parameters provided during the call
      *
      * @param context The context used to access the account service
      */
@@ -373,7 +307,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
         // If the password doesn't exist, the account doesn't exist
-        if ( null == accountManager.getPassword(newAccount) ) {
+        if (null == accountManager.getPassword(newAccount)) {
 
         /*
          * Add the account and account type, no password or user data
@@ -440,8 +374,8 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Initialize by getting the account, and then if it exists, start sync. This method is called
-     *  by the MainActivity, and everything happens here (calls chain of helper methods ultimately
-     *  leading to syncImmediately())
+     * by the MainActivity, and everything happens here (calls chain of helper methods ultimately
+     * leading to syncImmediately())
      */
     public static void initializeSyncAdapter(Context context) {
         getSyncAccount(context);
@@ -449,9 +383,9 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      * Sets the state of the teams content provider. This is so that the state can be preserved
-     *  even when app restarts.
+     * even when app restarts.
      *
-     * @param c Context from which to get the PreferenceManager
+     * @param c      Context from which to get the PreferenceManager
      * @param status True if teams has been successfully filled. False if teams fetch failed.
      */
     private static void setTeamsCollectedState(Context c, boolean status) {
@@ -476,12 +410,10 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
      * Sets the sync status into shared preference.  This function should not be called from
      * the UI thread because it uses commit to write to the shared preferences.
      *
-     * @param c Context to get the PreferenceManager from.
+     * @param c          Context to get the PreferenceManager from.
      * @param syncStatus The IntDef value to set
      */
-    public static void setSyncStatus(Context c, @SyncStatus int syncStatus){
-        Log.d(LOG_TAG, "In setSyncStatus");
-
+    public static void setSyncStatus(Context c, @SyncStatus int syncStatus) {
         // Notify the ScoresWidgetProvider that the sync is complete
         Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
         c.sendBroadcast(dataUpdatedIntent);

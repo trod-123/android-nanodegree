@@ -16,7 +16,6 @@ import com.thirdarm.footballscores.R;
 import com.thirdarm.footballscores.model.FixturesResult;
 import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 import com.thirdarm.footballscores.utilities.Utilities;
-import com.thirdarm.footballscores.constant.JSON;
 import com.thirdarm.footballscores.model.Fixture;
 import com.thirdarm.footballscores.model.FixtureComplete;
 import com.thirdarm.footballscores.model.FixturesLinks;
@@ -66,7 +65,7 @@ public class APIHelper {
         });
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(JSON.URL_BASE)
+                .baseUrl(APIService.URL_BASE)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient)
                 .build();

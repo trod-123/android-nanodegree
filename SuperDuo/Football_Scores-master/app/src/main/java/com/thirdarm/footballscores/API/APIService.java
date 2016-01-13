@@ -23,9 +23,11 @@ import retrofit.http.Query;
  * Used for both Asynchronous and Synchronous calls
  *  (uses Retrofit 2.0, by Jake Wharton [Square, Inc., 2015]: http://square.github.io/retrofit/)
  *
- * football-data api only allows for 50 requests per minute...
+ * NOTE: football-data api only allows for 50 requests per minute...
  */
 public interface APIService {
+
+    String URL_BASE = "http://api.football-data.org/v1/";
 
     /*
      * Base url: "http://api.football-data.org/v1/fixtures"

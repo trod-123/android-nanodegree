@@ -3,14 +3,10 @@ package com.thirdarm.footballscores;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +14,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
 import com.thirdarm.footballscores.provider.fixture.Status;
-import com.thirdarm.footballscores.utilities.ItemChoiceManager;
 import com.thirdarm.footballscores.utilities.Utilities;
 
 /**
@@ -28,8 +23,6 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
 
     private static final String LOG_TAG = ScoresAdapter.class.getSimpleName();
 
-    public double detail_match_id = 0;
-
     private String FOOTBALL_SCORES_HASHTAG = "#Football_Scores";
 
     // The dataset
@@ -37,7 +30,6 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     private int mSelectedPosition;
     final private Context mContext;
     final private View mEmptyView;
-    final private ItemChoiceManager mICM;
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public View mParentView;
@@ -60,7 +52,6 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
             int position = getAdapterPosition();
             mCursor.moveToPosition(position);
             mSelectedPosition = position;
-            mICM.onClick(this);
         }
 
         public ViewHolder(View view) {
@@ -86,8 +77,6 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
     public ScoresAdapter(Context c, View empty) {
         mContext = c;
         mEmptyView = empty;
-        mICM = new ItemChoiceManager(this);
-        mICM.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
     }
 
 
@@ -103,20 +92,9 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         }
     }
 
-//    @Override
-//    public View newView(Context context, Cursor cursor, ViewGroup parent)
-//    {
-//        View mItem = LayoutInflater.from(context).inflate(R.layout.scores_list_item, parent, false);
-//        ViewHolder mParentView = new ViewHolder(mItem);
-//        mItem.setTag(mParentView);
-//        //Log.v(FetchScoreTask.LOG_TAG,"new View inflated");
-//        return mItem;
-//    }
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        mICM.onBindViewHolder(holder, position);
 
         // Set the team names. Use code names. If no code name, use short name.
         //  If there is no short name, use the default name.
@@ -265,81 +243,9 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         });
     }
 
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        mICM.onRestoreInstanceState(savedInstanceState);
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-        mICM.onSaveInstanceState(outState);
-    }
-
-    public int getSelectedItemPosition() {
-        return mICM.getSelectedItemPosition();
-    }
-
-//    @Override
-//    public void bindView(View view, final Context context, Cursor cursor)
-//    {
-//        // Get the view holder and bind text to each of its elements
-//        final ViewHolder mParentView = (ViewHolder) view.getTag();
-//
-//        mParentView.mHomeNameTextView.setText(cursor.getString(COL_HOME_NAME));
-//        mParentView.mAwayNameTextView.setText(cursor.getString(COL_AWAY_NAME));
-//        mParentView.mDateTextView.setText(cursor.getString(COL_TIME));
-//        mParentView.mScoreTextView.setText(Utilities.getScores(context, cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS)));
-//        mParentView.match_id = cursor.getDouble(COL_MATCH_ID);
-//
-//        mParentView.mHomeCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
-//                cursor.getString(COL_HOME_NAME)));
-//        mParentView.mAwayCrestImageView.setImageResource(Utilities.getTeamCrestByTeamName(
-//                cursor.getString(COL_AWAY_NAME)
-//        ));
-//
-//        //Log.v(FetchScoreTask.LOG_TAG,mParentView.mHomeNameTextView.getText() + " Vs. " + mParentView.mAwayNameTextView.getText() +" id " + String.valueOf(mParentView.match_id));
-//        //Log.v(FetchScoreTask.LOG_TAG,String.valueOf(detail_match_id));
-//
-//        // This is for the detail fragment layouts
-//        LayoutInflater vi = (LayoutInflater) context.getApplicationContext()
-//                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View v = vi.inflate(R.layout.detail_fragment, null);
-//        ViewGroup container = (ViewGroup) view.findViewById(R.id.details_fragment_container);
-//        if(mParentView.match_id == detail_match_id)
-//        {
-//            //Log.v(FetchScoreTask.LOG_TAG,"will insert extraView");
-//
-//            container.addView(v, 0, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
-//                    , ViewGroup.LayoutParams.MATCH_PARENT));
-//            TextView match_day = (TextView) v.findViewById(R.id.matchday_textview);
-//            match_day.setText(Utilities.getMatchDay(context, cursor.getInt(COL_MATCH_DAY),
-//                    cursor.getInt(COL_LEAGUE_NAME)));
-//            TextView league = (TextView) v.findViewById(R.id.league_textview);
-//            league.setText(Utilities.getLeague(context, cursor.getInt(COL_LEAGUE_NAME)));
-//
-//            // For the share button
-//            Button share_button = (Button) v.findViewById(R.id.share_button);
-//            share_button.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v)
-//                {
-//                    //add Share Action
-//                    context.startActivity(createShareForecastIntent(mParentView.mHomeNameTextView.getText()+" "
-//                    +mParentView.mScoreTextView.getText()+" "+mParentView.mAwayNameTextView.getText() + " "));
-//                }
-//            });
-//        }
-//        else
-//        {
-//            container.removeAllViews();
-//        }
-//
-//    }
-
     @Override
     public int getItemCount() {
-        if (mCursor != null) {
-//            Log.d(LOG_TAG, "There are " + mCursor.getCount() + " views.");
-            return mCursor.getCount();
-        } else return 0;
+        return mCursor != null ? mCursor.getCount() : 0;
     }
 
 
