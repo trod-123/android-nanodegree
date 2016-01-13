@@ -225,7 +225,8 @@
                 android:gravity="center"
                 android:src="@drawable/abc_ic_menu_share_mtrl_alpha"
                 style="?android:attr/borderlessButtonStyle"
-                android:tint="@color/primary_text"/>
+                android:tint="@color/primary_text"
+                android:contentDescription="@string/a11y_share_button"/>
 
         </LinearLayout>
 

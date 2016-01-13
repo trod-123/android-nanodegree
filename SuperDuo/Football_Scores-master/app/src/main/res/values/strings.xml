@@ -17,7 +17,9 @@
     <string name="sync_account_type">com.thirdarm.footballscores</string>
 
     <!-- Progress statuses -->
-    <string name="status_no_internet">There is no internet connection. Did not go through sync.</string>
+    <string name="status_no_internet">
+        There is no internet connection. Did not go through sync.
+    </string>
 
     <!-- App Bar -->
     <string name="action_settings">Settings</string>
@@ -60,16 +62,20 @@
     <string name="scores_tied">Tied</string>
 
     <!-- Date and time strings -->
-    <string name="date_time"><xliff:g id="date">%1$s</xliff:g>, <xliff:g id="time">%2$s</xliff:g></string>
-
-    <!-- Share button -->
-    <string name="button_share">Share</string>
+    <string name="date_time">
+        <xliff:g id="date">%1$s</xliff:g>, <xliff:g id="time">%2$s</xliff:g>
+    </string>
 
     <!-- Empty recyclerview strings -->
     <string name="empty_scores_list">No games scheduled for this day.</string>
-    <string name="empty_scores_list_no_network">No scores available. The network is not available to fetch scores data.</string>
-    <string name="empty_scores_list_server_down">No scores available. The server is not returning data.</string>
-    <string name="empty_scores_list_server_error">No scores available. The server is not returning valid data. Please check for an updated version of Football Scores.</string>
+    <string name="empty_scores_list_no_network">
+        No scores available. The network is not available to fetch scores data.</string>
+    <string name="empty_scores_list_server_down">No scores available. The server is not returning
+        data.
+    </string>
+    <string name="empty_scores_list_server_error">No scores available. The server is not returning
+        valid data. Please check for an updated version of Football Scores.
+    </string>
     <string name="empty_scores_list_syncing">Fetching scores from server&#8230;</string>
 
     <!-- xml layout tools strings -->
@@ -102,19 +108,7 @@
         <xliff:g id="awayName">%4$s</xliff:g> playing at <xliff:g id="homeName">%5$s</xliff:g>.
     </string>
 
-    <string name="a11y_home_team">
-        Home: <xliff:g id="name">%1$s</xliff:g>
-    </string>
-
-    <string name="a11y_away_team">
-        Away: <xliff:g id="name">%1$s</xliff:g>
-    </string>
-
-    <string name="a11y_team_score">
-        <xliff:g id="teamName">%1$s</xliff:g>,
-        Score: <xliff:g id="score">%2$s</xliff:g>,
-        <xliff:g id="status">%3$s</xliff:g>
-    </string>
+    <string name="a11y_share_button">Share</string>
 
 
     <string name="about_text">

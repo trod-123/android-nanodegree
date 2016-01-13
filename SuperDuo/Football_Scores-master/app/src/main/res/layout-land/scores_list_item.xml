@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    card_view:cardElevation="@dimen/cardview_default_elevation"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/cardview_horizontal_padding"
+    android:layout_marginEnd="@dimen/cardview_horizontal_padding"
+    android:layout_marginLeft="@dimen/cardview_horizontal_padding"
+    android:layout_marginRight="@dimen/cardview_horizontal_padding"
+    android:layout_marginStart="@dimen/cardview_horizontal_padding"
+    android:layout_marginTop="@dimen/cardview_horizontal_padding"
     android:background="@drawable/touch_selector_scores_list_item"
     android:foreground="?android:attr/selectableItemBackground"
-    android:layout_marginStart="@dimen/cardview_horizontal_padding"
-    android:layout_marginLeft="@dimen/cardview_horizontal_padding"
-    android:layout_marginEnd="@dimen/cardview_horizontal_padding"
-    android:layout_marginRight="@dimen/cardview_horizontal_padding"
-    android:layout_marginTop="@dimen/cardview_horizontal_padding"
-    android:layout_marginBottom="@dimen/cardview_horizontal_padding">
+    card_view:cardElevation="@dimen/cardview_default_elevation">
 
     <LinearLayout
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:paddingStart="@dimen/scores_list_item_horizontal_padding"
-        android:paddingLeft="@dimen/scores_list_item_horizontal_padding"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/scores_list_item_vertical_padding"
         android:paddingEnd="@dimen/scores_list_item_horizontal_padding"
+        android:paddingLeft="@dimen/scores_list_item_horizontal_padding"
         android:paddingRight="@dimen/scores_list_item_horizontal_padding"
-        android:paddingTop="@dimen/scores_list_item_vertical_padding"
-        android:paddingBottom="@dimen/scores_list_item_vertical_padding">
+        android:paddingStart="@dimen/scores_list_item_horizontal_padding"
+        android:paddingTop="@dimen/scores_list_item_vertical_padding">
 
         <!-- Main fragment -->
         <LinearLayout
-            android:layout_width="0dp" android:layout_height="wrap_content"
-            android:minHeight="?android:attr/listPreferredItemHeightLarge"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="3"
+            android:gravity="center_vertical"
+            android:minHeight="?android:attr/listPreferredItemHeightLarge"
+            android:orientation="horizontal"
             android:paddingEnd="@dimen/scores_list_item_vertical_padding"
             android:paddingRight="@dimen/scores_list_item_vertical_padding">
 
@@ -40,47 +43,53 @@
                 android:id="@+id/scores_list_item_imageview_away_crest"
                 android:layout_width="@dimen/scores_list_item_logo_size"
                 android:layout_height="@dimen/scores_list_item_logo_size"
-                android:adjustViewBounds="true"
                 android:layout_gravity="center"
+                android:adjustViewBounds="true"
                 tools:src="@drawable/no_icon"/>
 
 
             <!-- Main information layout -->
             <LinearLayout
-                android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <!-- Upper information layout -->
                 <LinearLayout
-                    android:layout_width="match_parent" android:layout_height="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center">
+                    android:orientation="horizontal">
 
                     <!-- Away column -->
                     <LinearLayout
-                        android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="4" android:layout_gravity="bottom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_weight="4"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/scores_list_item_textview_away_name"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:gravity="center_horizontal"
                             android:fontFamily="sans-serif-light"
+                            android:gravity="center_horizontal"
                             android:textSize="@dimen/scores_list_item_team_name_size"
                             tools:text="@string/tools_away_team_name"/>
 
                         <TextView
                             android:id="@+id/scores_list_item_textview_away_score"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:gravity="center_horizontal"
                             android:fontFamily="sans-serif-medium"
+                            android:gravity="center_horizontal"
                             android:textSize="@dimen/scores_list_item_score_size"
                             tools:text="@string/tools_away_score"/>
 
@@ -88,43 +97,49 @@
 
                     <!-- Center column -->
                     <FrameLayout
-                        android:layout_width="0dp" android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_marginLeft="@dimen/scores_list_item_space"
-                        android:layout_marginRight="@dimen/scores_list_item_space">
+                        android:layout_marginRight="@dimen/scores_list_item_space"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:fontFamily="sans-serif"
-                            android:textSize="@dimen/scores_list_item_details_size"
-                            android:text="@string/tools_neutral_score"/>
+                            android:text="@string/tools_neutral_score"
+                            android:textSize="@dimen/scores_list_item_details_size"/>
 
                     </FrameLayout>
 
                     <!-- Home column -->
                     <LinearLayout
-                        android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="4" android:layout_gravity="bottom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_weight="4"
                         android:gravity="center"
                         android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/scores_list_item_textview_home_name"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:gravity="center_horizontal"
                             android:fontFamily="sans-serif-light"
+                            android:gravity="center_horizontal"
                             android:textSize="@dimen/scores_list_item_team_name_size"
                             tools:text="@string/tools_home_team_name"/>
 
                         <TextView
                             android:id="@+id/scores_list_item_textview_home_score"
-                            android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
-                            android:gravity="center_horizontal"
                             android:fontFamily="sans-serif-medium"
+                            android:gravity="center_horizontal"
                             android:textSize="@dimen/scores_list_item_score_size"
                             tools:text="@string/tools_home_score"/>
 
@@ -134,13 +149,15 @@
 
                 <!-- Lower information layout -->
                 <LinearLayout
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="center">
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/scores_list_item_textview_status"
-                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:fontFamily="sans-serif-light"
                         android:textSize="@dimen/scores_list_item_details_size"
@@ -148,11 +165,12 @@
 
                     <TextView
                         android:id="@+id/scores_list_item_textview_time"
-                        android:layout_width="wrap_content" android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_gravity="center"
-                        android:gravity="center"
+                        android:layout_weight="1"
                         android:fontFamily="sans-serif-condensed"
+                        android:gravity="center"
                         android:textSize="@dimen/scores_list_item_details_size"
                         tools:text="@string/tools_time"/>
 
@@ -165,34 +183,38 @@
                 android:id="@+id/scores_list_item_imageview_home_crest"
                 android:layout_width="@dimen/scores_list_item_logo_size"
                 android:layout_height="@dimen/scores_list_item_logo_size"
-                android:adjustViewBounds="true"
                 android:layout_gravity="center"
+                android:adjustViewBounds="true"
                 tools:src="@drawable/no_icon"/>
 
 
         </LinearLayout>
 
         <View
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/divider_fragment"
-            android:layout_width="@dimen/cardview_divider_size" android:layout_height="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="@dimen/cardview_divider_size"
+            android:layout_height="match_parent"
             android:background="@color/grey"/>
 
         <!-- Details -->
         <LinearLayout
-            android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_gravity="center" android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:padding="@dimen/detail_vertical_padding"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/detail_vertical_padding">
 
             <!-- League name -->
             <TextView
                 android:id="@+id/detail_textview_league"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:gravity="center"
                 android:fontFamily="sans-serif-light"
+                android:gravity="center"
                 android:textColor="@color/primary_text"
                 android:textSize="@dimen/detail_league_size"
                 tools:text="@string/tools_league"/>
@@ -200,22 +222,25 @@
             <!-- Matchday -->
             <TextView
                 android:id="@+id/detail_textview_matchday"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:gravity="center"
                 android:fontFamily="sans-serif-light"
-                android:textSize="@dimen/detail_matchday_size"
+                android:gravity="center"
                 android:textColor="@color/primary_text"
+                android:textSize="@dimen/detail_matchday_size"
                 tools:text="@string/tools_match_day"/>
 
             <!-- Share button -->
             <ImageButton
                 android:id="@+id/detail_button_share"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/a11y_share_button"
                 android:gravity="center"
                 android:src="@drawable/abc_ic_menu_share_mtrl_alpha"
-                style="?android:attr/borderlessButtonStyle"
                 android:tint="@color/primary_text"/>
 
         </LinearLayout>
