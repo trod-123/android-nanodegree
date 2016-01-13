@@ -2,100 +2,118 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/widget_item_rootview"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="@dimen/widget_padding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_material_light"
         android:gravity="center"
-        android:background="@color/background_material_light">
+        android:orientation="vertical"
+        android:padding="@dimen/widget_padding">
 
         <!-- Top panel displaying status, date, and time in top right corner -->
         <LinearLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/widget_padding">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/widget_padding"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/widget_item_status"
-                android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top|start"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-light"
-                android:textSize="@dimen/scores_list_item_details_size"
                 android:textColor="@color/primary_text"
+                android:textSize="@dimen/scores_list_item_details_size"
                 tools:text="@string/tools_status"/>
 
             <TextView
                 android:id="@+id/widget_item_time"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:fontFamily="sans-serif-condensed"
-                android:textSize="@dimen/scores_list_item_details_size"
                 android:textColor="@color/secondary_text"
+                android:textSize="@dimen/scores_list_item_details_size"
                 tools:text="@string/tools_date"/>
 
         </LinearLayout>
 
         <!-- Bottom panel displaying scores -->
         <LinearLayout
-            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <!-- Away scores -->
             <ImageView
                 android:id="@+id/widget_imageview_away_crest"
-                android:layout_width="@dimen/widget_crest_size" android:layout_height="@dimen/widget_crest_size"
-                android:layout_weight="1" android:layout_gravity="center"
+                android:layout_width="@dimen/widget_crest_size"
+                android:layout_height="@dimen/widget_crest_size"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/no_icon"/>
+                android:contentDescription="@string/a11y_away_crest"
+                tools:src="@drawable/ic_launcher"/>
 
             <TextView
                 android:id="@+id/widget_textview_away_score"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1" android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
+                android:gravity="center_horizontal"
                 android:textSize="@dimen/scores_list_item_score_size"
                 tools:text="@string/tools_away_score"/>
 
             <!-- Center column -->
             <FrameLayout
-                android:layout_width="0dp" android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/scores_list_item_space"
-                android:layout_marginRight="@dimen/scores_list_item_space">
+                android:layout_marginRight="@dimen/scores_list_item_space"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:fontFamily="sans-serif"
                     android:text="@string/tools_neutral_score"
-                    android:textSize="@dimen/scores_list_item_details_size"
-                    android:textColor="@color/secondary_text"/>
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/scores_list_item_details_size"/>
 
             </FrameLayout>
 
             <!-- Home scores -->
             <TextView
                 android:id="@+id/widget_textview_home_score"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_weight="1" android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
                 android:fontFamily="sans-serif-medium"
+                android:gravity="center_horizontal"
                 android:textSize="@dimen/scores_list_item_score_size"
                 tools:text="@string/tools_away_score"/>
 
             <ImageView
                 android:id="@+id/widget_imageview_home_crest"
-                android:layout_width="@dimen/widget_crest_size" android:layout_height="@dimen/widget_crest_size"
-                android:layout_weight="1" android:layout_gravity="center"
+                android:layout_width="@dimen/widget_crest_size"
+                android:layout_height="@dimen/widget_crest_size"
+                android:layout_gravity="center"
+                android:layout_weight="1"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/no_icon"/>
+                android:contentDescription="@string/a11y_home_crest"
+                tools:src="@drawable/ic_launcher"/>
 
         </LinearLayout>
 

@@ -11,7 +11,6 @@
     android:layout_marginRight="@dimen/cardview_horizontal_padding"
     android:layout_marginStart="@dimen/cardview_horizontal_padding"
     android:layout_marginTop="@dimen/cardview_horizontal_padding"
-    android:background="@drawable/touch_selector_scores_list_item"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardElevation="@dimen/cardview_default_elevation">
 
@@ -45,7 +44,8 @@
                 android:layout_height="@dimen/scores_list_item_logo_size"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/no_icon"/>
+                android:contentDescription="@string/a11y_away_crest"
+                tools:src="@drawable/ic_launcher"/>
 
 
             <!-- Main information layout -->
@@ -185,7 +185,8 @@
                 android:layout_height="@dimen/scores_list_item_logo_size"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                tools:src="@drawable/no_icon"/>
+                android:contentDescription="@string/a11y_home_crest"
+                tools:src="@drawable/ic_launcher"/>
 
 
         </LinearLayout>

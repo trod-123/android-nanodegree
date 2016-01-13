@@ -114,7 +114,13 @@
         <xliff:g id="awayName">%4$s</xliff:g> playing at <xliff:g id="homeName">%5$s</xliff:g>.
     </string>
 
+    <string name="a11y_home_crest" translatable="true">Home crest</string>
+    <string name="a11y_away_crest" translatable="true">Away crest</string>
+    
     <string name="a11y_share_button" translatable="true">Share</string>
+    <string name="a11y_widget_up_button" translatable="true">Previous entry score</string>
+    <string name="a11y_widget_down_button" translatable="true">Next entry score</string>
+    <string name="a11y_ic_launcher_logo" translatable="false">@string/app_name</string>
 
     <!-- About -->
     <string name="about_text" translatable="true">
