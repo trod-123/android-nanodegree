@@ -2,96 +2,103 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
 
     <!-- Main/Titles -->
-    <string name="app_name">Alexandria</string>
-    <string name="title_activity_details">Details</string>
-    <string name="title_fragment_settings">Settings</string>
-    <string name="title_fragment_books">My Books</string>
-    <string name="title_fragment_fetch">Find books</string>
-    <string name="title_fragment_about">About <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="app_name" translatable="false">Alexandria</string>
+    <string name="title_activity_details" translatable="true">Details</string>
+    <string name="title_fragment_settings" translatable="true">Settings</string>
+    <string name="title_fragment_books" translatable="true">My Books</string>
+    <string name="title_fragment_fetch" translatable="true">Find books</string>
+    <string name="title_fragment_about" translatable="true">
+        About <xliff:g id="app_name">%1$s</xliff:g>
+    </string>
 
     <!-- Shared preferences keys -->
-    <string name="sp_sync_status_key">SyncStatus</string>
-    <string name="pref_startScreen_key">PreferredStartScreen</string>
-    <string name="pref_startScreen">Select start screen</string>
-    <string name="pref_startScreen_default">0</string>
+    <string name="sp_sync_status_key" translatable="false">SyncStatus</string>
+    <string name="pref_startScreen_key" translatable="false">PreferredStartScreen</string>
 
+    <!-- Preference stuff -->
+    <string name="pref_startScreen" translatable="true">Select start screen</string>
+    <string name="pref_startScreen_default" translatable="false">0</string>
 
     <!-- Action buttons -->
-    <string name="action_settings">Settings</string>
-    <string name="action_share">Share</string>
-    <string name="action_add">Add to library</string>
-    <string name="action_remove">Remove from library</string>
-    <string name="action_update">Update in library</string>
-    <string name="action_view_details">View details</string>
-    <string name="action_view_browser">Open in Google Books</string>
+    <string name="action_settings" translatable="true">Settings</string>
+    <string name="action_share" translatable="true">Share</string>
+    <string name="action_add" translatable="true">Add to library</string>
+    <string name="action_remove" translatable="true">Remove from library</string>
+    <string name="action_update" translatable="true">Update in library</string>
+    <string name="action_view_details" translatable="true">View details</string>
+    <string name="action_view_browser" translatable="true">Open in Google Books</string>
 
     <!-- Navigation drawer -->
-    <string name="navigation_drawer_open" >Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="true">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="true">Close navigation drawer</string>
 
     <!-- Barcode Scanner strings -->
-    <string name="barcode_scanner_ok">OK</string>
-    <string name="barcode_scanner_permission_camera_rationale">
+    <string name="barcode_scanner_ok" translatable="true">OK</string>
+    <string name="barcode_scanner_permission_camera_rationale" translatable="true">
         Access to the camera is needed for detection
     </string>
-    <string name="barcode_scanner_no_camera_permission">
+    <string name="barcode_scanner_no_camera_permission" translatable="true">
         This application cannot run because it does not have the camera permission.  The application
         will now exit.
     </string>
-    <string name="barcode_scanner_low_storage_error">Face detector dependencies cannot be downloaded
-        due to low device storage
+    <string name="barcode_scanner_low_storage_error" translatable="true">
+        Face detector dependencies cannot be downloaded due to low device storage
     </string>
 
     <!-- Library interaction -->
-    <string name="library_add_book">
+    <string name="library_add_book" translatable="true">
         Added <xliff:g id="title">%1$s</xliff:g> to your library!
     </string>
-    <string name="library_update_book">
+    <string name="library_update_book" translatable="true">
         Updated <xliff:g id="title">%1$s</xliff:g> in your library.
     </string>
-    <string name="library_delete_book">
+    <string name="library_delete_book" translatable="true">
         Deleted <xliff:g id="title">%1$s</xliff:g> from your library.
     </string>
-    <string name="library_book_no_name">No title</string>
-    <string name="library_book_no_author">Unknown author</string>
+    <string name="library_book_no_name" translatable="true">No title</string>
+    <string name="library_book_no_author" translatable="true">Unknown author</string>
 
     <!-- Empty fetch recyclerview strings -->
-    <string name="empty_fetch_books_null_query">Search for something!</string>
-    <string name="empty_fetch_books_no_network">
+    <string name="empty_fetch_books_null_query" translatable="true">Search for something!</string>
+    <string name="empty_fetch_books_no_network" translatable="true">
         The network is not available. Try checking your internet connection before searching for
         books.
     </string>
-    <string name="empty_fetch_books_server_down">
+    <string name="empty_fetch_books_server_down" translatable="true">
         No results found. The server is not returning data.
     </string>
-    <string name="empty_fetch_books_server_invalid">
+    <string name="empty_fetch_books_server_invalid" translatable="true">
         The server is not returning valid data. Please check for an updated version of Books.
     </string>
-    <string name="empty_fetch_books_volume_empty">No results found.</string>
+    <string name="empty_fetch_books_volume_empty" translatable="true">No results found.</string>
 
     <!-- Empty view recyclerview strings -->
-    <string name="empty_view_books">Your library is empty. Try adding some books!</string>
-    <string name="empty_view_books_no_results">No results found.</string>
+    <string name="empty_view_books" translatable="true">
+        Your library is empty. Try adding some books!
+    </string>
+    <string name="empty_view_books_no_results" translatable="true">No results found.</string>
 
     <!-- Search strings -->
-    <string name="list_input_hint">Search titles, authors, and ISBNs</string>
+    <string name="list_input_hint" translatable="true">Search titles, authors, and ISBNs</string>
 
     <!-- Detail view -->
-    <string name="detail_rating">(<xliff:g id="number">%1$s</xliff:g>)</string>
-    <string name="detail_bibliographic_information">Bibliographic info</string>
-    <string name="detail_label_title">Title</string>
-    <string name="detail_label_subtitle">Subtitle</string>
-    <string name="detail_label_authors">Author</string>
-    <string name="detail_label_print">Edition</string>
-    <string name="detail_label_publisher">Publisher</string>
-    <string name="detail_label_date">Date</string>
-    <string name="detail_label_isbn">ISBN</string>
-    <string name="detail_label_length">Length</string>
-    <string name="detail_label_categories">Subject</string>
-    <string name="detail_label_language">Language</string>
+    <string name="detail_rating" translatable="false">
+        (<xliff:g id="number">%1$s</xliff:g>)
+    </string>
+    <string name="detail_bibliographic_information" translatable="true">Bibliographic info</string>
+    <string name="detail_label_title" translatable="true">Title</string>
+    <string name="detail_label_subtitle" translatable="true">Subtitle</string>
+    <string name="detail_label_authors" translatable="true">Author</string>
+    <string name="detail_label_print" translatable="true">Edition</string>
+    <string name="detail_label_publisher" translatable="true">Publisher</string>
+    <string name="detail_label_date" translatable="true">Date</string>
+    <string name="detail_label_isbn" translatable="false">ISBN</string>
+    <string name="detail_label_length" translatable="true">Length</string>
+    <string name="detail_label_categories" translatable="true">Subject</string>
+    <string name="detail_label_language" translatable="true">Language</string>
 
     <!-- Share - A must read book: Harry Potter and the Sorcerer's Stone by J.K. Rowling -->
-    <string name="share_book">
+    <string name="share_book" translatable="true">
         A must read book: <xliff:g id="title">%1$s</xliff:g> by <xliff:g id="author">%2$s</xliff:g>
          (view in Google Books: <xliff:g id="url">%3$s</xliff:g>)
     </string>
@@ -139,10 +146,10 @@
     <string name="tools_drawer_subtitle">Search for books online!</string>
 
     <!-- Misc -->
-    <string name="list_and">and&#160;</string>
-    <string name="list_duple"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="list_and" translatable="true">and&#160;</string>
+    <string name="list_duple" translatable="true"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
 
-    <string name="about_text">
+    <string name="about_text" translatable="true">
         Alexandria was originally created by Sasch Jaschke and modified for the purposes of turning
         it into a productionizing assignment for students in the Udacity Android Nanodegree program.
         \n\nHeavily revised by Teddy Rodriguez, a student in the nanodegree program.
