@@ -52,7 +52,7 @@
 
     <!-- Status strings -->
     <string name="status_finished">Final</string>
-    <string name="status_timed">Currently playing</string>
+    <string name="status_timed">Now playing</string>
     <string name="status_upcoming">Upcoming</string>
 
     <!-- Score strings -->

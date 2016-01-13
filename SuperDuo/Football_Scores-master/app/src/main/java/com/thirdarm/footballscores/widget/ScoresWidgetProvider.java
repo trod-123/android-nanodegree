@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.thirdarm.footballscores.MainActivity;
@@ -23,12 +24,20 @@ import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
  * Created by TROD on 20151230.
  */
 public class ScoresWidgetProvider extends AppWidgetProvider {
+    private static final String LOG_TAG = ScoresWidgetProvider.class.getSimpleName();
 
     private static ScoresDataProviderObserver sDataObserver;
     private static HandlerThread sWorkerThread;
     private static Handler sWorkerQueue;
 
+    private RemoteViews mRViews;
+
     public static final String CURSOR_POSITION = "cursorPosition";
+    private static final String ACTION_NEXT = "actionNext";
+    private static final String ACTION_PREVIOUS = "actionPrevious";
+    private static final String ACTION_REFRESH = "actionRefresh";
+    private static final String WIDGET_IDS_KEY = "widgetIds";
+    private static final String WIDGET_DATA_KEY = "widgetdata";
 
     public ScoresWidgetProvider() {
         // Start the worker thread
@@ -45,6 +54,31 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Log.d(LOG_TAG, "IT is not null");
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        RemoteViews root = new RemoteViews(context.getPackageName(), R.layout.widget);
+        String intent_action = intent.getAction();
+        int id = intent.getIntExtra(WIDGET_IDS_KEY, 0);
+        switch (intent_action) {
+            case ACTION_NEXT :
+                Log.d(LOG_TAG, "NEXT");
+                root.showNext(R.id.widget_view_flipper);
+                // This needs to be called to display widget changes
+                appWidgetManager.updateAppWidget(id, root);
+                break;
+            case ACTION_PREVIOUS :
+                Log.d(LOG_TAG, "PREVIOUS");
+                root.showPrevious(R.id.widget_view_flipper);
+                appWidgetManager.updateAppWidget(id, root);
+                break;
+            case ACTION_REFRESH :
+                Log.d(LOG_TAG, "REFRESH");
+//                    mRViews.showPrevious(R.id.widget_view_flipper);
+                AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(id, R.id.widget_view_flipper);
+                break;
+            default :
+        }
         super.onReceive(context, intent);
     }
 
@@ -63,6 +97,7 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
         // Query to retrieve data here and extract needed information
         // To loop over each app widget put on the homescreen, use a loop iterating over appWidgetIds
         for (int appWidgetId : appWidgetIds) {
+            Log.d(LOG_TAG, "In onuPDATEEE");
             // Set up the intent that will launch the service that will provide the views
             Intent intent = new Intent(context, ScoresWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -71,21 +106,44 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             // To get the views associated with the widget, use RemoteViews
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
+            mRViews = new RemoteViews(context.getPackageName(), R.layout.widget);
             // Set the adapter
-            views.setRemoteAdapter(R.id.widget_view_flipper, intent);
+            mRViews.setRemoteAdapter(R.id.widget_view_flipper, intent);
             // Set the empty view (empty view must be a sibling of collection view)
-            views.setEmptyView(R.id.widget_view_flipper, R.id.widget_view_flipper_empty);
+            mRViews.setEmptyView(R.id.widget_view_flipper, R.id.widget_view_flipper_empty);
 
             // The pending intent allows widget to launch the host activity when a user clicks
             //  on the widget. For a widget provider that uses collections, an intent template
-            //  needs to be used.
+            //  needs to be used if you want individual behavior for each item. But, if you want
+            //  a global button independent of the item, then a pending template is not needed.
             Intent clickIntent = new Intent(context, MainActivity.class);
             PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, 0);
-            views.setPendingIntentTemplate(R.id.widget_item_rootview, clickPendingIntent);
+            // The view that is passed in should be the id of the view the user clicks on to
+            //  activate the intent. It has to be a view declared within the RemoteView
+            mRViews.setPendingIntentTemplate(R.id.widget_view_flipper, clickPendingIntent);
 
-            appWidgetManager.updateAppWidget(appWidgetId, views);
+            Intent nextIntent = new Intent(context, ScoresWidgetProvider.class);
+            nextIntent.setAction(ACTION_NEXT);
+            nextIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
+            PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 0, nextIntent, 0);
+            mRViews.setOnClickPendingIntent(R.id.widget_item_button_down, nextPendingIntent);
+
+            Intent previousIntent = new Intent(context, ScoresWidgetProvider.class);
+            previousIntent.setAction(ACTION_PREVIOUS);
+            previousIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
+            PendingIntent previousPendingIntent = PendingIntent.getBroadcast(context, 0, previousIntent, 0);
+            mRViews.setOnClickPendingIntent(R.id.widget_item_button_up, previousPendingIntent);
+
+//            Intent updateIntent = new Intent();
+//            updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+//            updateIntent.putExtra(WIDGET_IDS_KEY, appWidgetIds);
+//            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            mRViews.setOnClickPendingIntent(R.id.widget_item_button_up, pendingUpdateIntent);
+
+            appWidgetManager.updateAppWidget(appWidgetId, mRViews);
         }
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_view_flipper);
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     /**
