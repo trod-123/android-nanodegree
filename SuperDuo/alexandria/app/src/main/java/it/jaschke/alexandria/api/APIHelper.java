@@ -102,7 +102,7 @@ public class APIHelper {
                 return getIndividualVolume(id);
             }
         } catch (IOException e) {
-            Log.d(LOG_TAG, "There was an error fetching individual volume info", e);
+            Log.e(LOG_TAG, "There was an error fetching individual volume info", e);
             Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
