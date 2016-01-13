@@ -47,4 +47,6 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'com.android.support:palette-v7:22.0.+'
+    // for rtl view pager
+    compile 'klogi.com:rtlviewpager:1.0.0'
 }

@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import klogi.com.RtlViewPager;
+
 public class MainActivity extends AppCompatActivity {
     public static int current_fragment = 2;
     public static String LOG_TAG = "MainActivity";
@@ -26,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NUM_PAGES = 5;
 
-    private TabLayout mTabLayout;
+    private Toolbar mToolbar;
     public ViewPager mViewPager;
 
     public static String[] mFragmentDates = new String[NUM_PAGES];
@@ -36,17 +39,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        if (mViewPager == null) {
-            mViewPager = (ViewPager) findViewById(R.id.viewpager);
-            setupViewPager(mViewPager);
+        mViewPager = (RtlViewPager) findViewById(R.id.viewpager);
+        setupViewPager(mViewPager);
 
-            mTabLayout = (TabLayout) findViewById(R.id.tabs);
-            mTabLayout.setupWithViewPager(mViewPager);
-        }
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         // Make sure there is internet connection first before going to sync
         ScoresSyncAdapter.initializeSyncAdapter(this);

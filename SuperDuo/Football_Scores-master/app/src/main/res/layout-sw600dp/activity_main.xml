@@ -28,7 +28,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
+    <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior allows pager fragments to be
+            displayed below the appbar, defined above. without it, the appbar obstructs the top
+            of fragments within the pager -->
+    <klogi.com.RtlViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
