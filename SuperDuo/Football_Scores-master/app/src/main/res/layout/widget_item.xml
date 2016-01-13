@@ -9,6 +9,7 @@
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="@dimen/widget_padding"
+        android:gravity="center"
         android:background="@color/background_material_light">
 
         <!-- Top panel displaying status, date, and time in top right corner -->

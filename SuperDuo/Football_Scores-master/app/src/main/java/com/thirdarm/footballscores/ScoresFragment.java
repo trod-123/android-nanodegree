@@ -1,5 +1,6 @@
 package com.thirdarm.footballscores;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ import com.thirdarm.footballscores.provider.fixture.FixtureSelection;
 import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 import com.thirdarm.footballscores.utilities.Network;
 import com.thirdarm.footballscores.utilities.Utilities;
+import com.thirdarm.footballscores.widget.ScoresWidgetProvider;
 
 /**
  * Fragment that displays the list of scores in a recycler view layout
@@ -278,6 +280,17 @@ public class ScoresFragment extends Fragment
                 }
                 emptyView.setText(message);
                 mScoresAdapter.notifyDataSetChanged();
+
+                // TODO: Fix this code to update the widgets' empty view text
+                Intent intent = new Intent(getActivity(), ScoresWidgetProvider.class);
+                intent.setAction(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT);
+                intent.putExtra(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT, message);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                try {
+                    pendingIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    Log.e(LOG_TAG, "There was an error handling the pending intent.", e);
+                }
             }
         }
     }

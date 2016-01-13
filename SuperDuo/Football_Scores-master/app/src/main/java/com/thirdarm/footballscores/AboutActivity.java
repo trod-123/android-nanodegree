@@ -1,14 +1,18 @@
 package com.thirdarm.footballscores;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 
-public class AboutActivity extends ActionBarActivity {
+public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,33 +25,6 @@ public class AboutActivity extends ActionBarActivity {
         }
     }
 
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_about, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-    */
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
@@ -58,5 +35,17 @@ public class AboutActivity extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             return inflater.inflate(R.layout.fragment_about, container, false);
         }
+    }
+
+    /**
+     * System calls this method to get parent activity intent for up button behavior. By adding
+     *  the Intent.FLAG_ACTIVITY_CLEAR_TOP flag, allows system to check if main activity is already
+     *  running in task, and to use that main activity instead of creating a new instance.
+     * The annotation TargetApi is displayed because this method did not exist before Jelly Bean.
+     * @return Intent directing to the main activity
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override public Intent getParentActivityIntent() {
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 }

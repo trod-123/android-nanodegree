@@ -16,7 +16,7 @@
         android:padding="@dimen/widget_padding">
 
         <ImageButton
-            android:id="@+id/widget_item_button_up"
+            android:id="@+id/widget_button_up"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="@dimen/widget_ic_logo_size"
             android:layout_height="0dp"
@@ -31,7 +31,7 @@
             android:src="@drawable/ic_launcher"/>
 
         <ImageButton
-            android:id="@+id/widget_item_button_down"
+            android:id="@+id/widget_button_down"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="@dimen/widget_ic_logo_size"
             android:layout_height="0dp"

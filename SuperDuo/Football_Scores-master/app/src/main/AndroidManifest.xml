@@ -55,8 +55,9 @@
         <!-- About activity -->
         <activity
             android:name="com.thirdarm.footballscores.AboutActivity"
-            android:label="About"
-            android:parentActivityName="com.thirdarm.footballscores.MainActivity" >
+            android:label="@string/title_activity_about"
+            android:parentActivityName="com.thirdarm.footballscores.MainActivity"
+            android:theme="@style/AppTheme.AppBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.thirdarm.footballscores.MainActivity" />

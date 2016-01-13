@@ -118,14 +118,13 @@
 
 
     <string name="about_text">
-        This Application get Football Matches Score for the Premier League,Seria A,Bundesliga,Primera Division
-        and the Uefa Champions League.
-        All Matches data are acquired from football-data.org free API.
-        All team Logos are acquired from http://hdlogo.wordpress.com/ upon requesting permission form the owner.
-        The original version of this app was created by Yahia Khalid Ibn El Walid Ahmed, and a modified version is given to students in the Udacity Android Nanodegree program.
-        To report any bugs,or suggestions do not hesitate to send a mail to y.k.ibnelwalid@gmail.com.
-
-        During the off season, fake data will be added to the app.
+        FootballScores was originally created by Yahia Khalid Ibn El Walid Ahmed and modified for
+        the purposes of turning it into a productionizing assignment for students in the Udacity
+        Android Nanodegree program.
+        \n\nHeavily revised by Teddy Rodriguez, a student in the nanodegree program.
+        \n\nAll book information gathered from football-data.org\'s free API and team crests
+        downloaded from Wikimedia.
+        \n\n\nApp last updated Tuesday, January 12, 2016.
     </string>
 
 </resources>

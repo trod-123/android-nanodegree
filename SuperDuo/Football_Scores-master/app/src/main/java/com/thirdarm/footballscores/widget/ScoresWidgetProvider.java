@@ -11,14 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.thirdarm.footballscores.MainActivity;
 import com.thirdarm.footballscores.R;
 import com.thirdarm.footballscores.provider.fixture.FixtureSelection;
-import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 
 /**
  * Created by TROD on 20151230.
@@ -30,14 +28,18 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
     private static HandlerThread sWorkerThread;
     private static Handler sWorkerQueue;
 
-    private RemoteViews mRViews;
-
-    public static final String CURSOR_POSITION = "cursorPosition";
-    private static final String ACTION_NEXT = "actionNext";
-    private static final String ACTION_PREVIOUS = "actionPrevious";
-    private static final String ACTION_REFRESH = "actionRefresh";
-    private static final String WIDGET_IDS_KEY = "widgetIds";
-    private static final String WIDGET_DATA_KEY = "widgetdata";
+    public static final String CURSOR_POSITION =
+            "com.thirdarm.footballscores.widget.cursorPosition";
+    private static final String ACTION_NEXT =
+            "com.thirdarm.footballscores.widget.actionNext";
+    private static final String ACTION_PREVIOUS =
+            "com.thirdarm.footballscores.widget.actionPrevious";
+    private static final String ACTION_REFRESH =
+            "com.thirdarm.footballscores.widget.actionRefresh";
+    private static final String WIDGET_IDS_KEY =
+            "com.thirdarm.footballscores.widget.widgetIds";
+    public static final String ACTION_UPDATE_EMPTY_TEXT =
+            "com.thirdarm.footballscores.widget.emptyText";
 
     public ScoresWidgetProvider() {
         // Start the worker thread
@@ -54,28 +56,30 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        Log.d(LOG_TAG, "IT is not null");
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         RemoteViews root = new RemoteViews(context.getPackageName(), R.layout.widget);
         String intent_action = intent.getAction();
         int id = intent.getIntExtra(WIDGET_IDS_KEY, 0);
         switch (intent_action) {
             case ACTION_NEXT :
-                Log.d(LOG_TAG, "NEXT");
                 root.showNext(R.id.widget_view_flipper);
                 // This needs to be called to display widget changes
                 appWidgetManager.updateAppWidget(id, root);
                 break;
             case ACTION_PREVIOUS :
-                Log.d(LOG_TAG, "PREVIOUS");
                 root.showPrevious(R.id.widget_view_flipper);
                 appWidgetManager.updateAppWidget(id, root);
                 break;
             case ACTION_REFRESH :
-                Log.d(LOG_TAG, "REFRESH");
-//                    mRViews.showPrevious(R.id.widget_view_flipper);
-                AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(id, R.id.widget_view_flipper);
+                AppWidgetManager.getInstance(context)
+                        .notifyAppWidgetViewDataChanged(id, R.id.widget_view_flipper);
+                break;
+            case ACTION_UPDATE_EMPTY_TEXT :
+                int message = intent.getIntExtra(ACTION_UPDATE_EMPTY_TEXT, -1);
+                if (message != -1) {
+                    root.setTextViewText(R.id.widget_view_flipper_empty, context.getString(message));
+                    appWidgetManager.updateAppWidget(id, root);
+                }
                 break;
             default :
         }
@@ -106,11 +110,11 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             // To get the views associated with the widget, use RemoteViews
-            mRViews = new RemoteViews(context.getPackageName(), R.layout.widget);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
             // Set the adapter
-            mRViews.setRemoteAdapter(R.id.widget_view_flipper, intent);
+            views.setRemoteAdapter(R.id.widget_view_flipper, intent);
             // Set the empty view (empty view must be a sibling of collection view)
-            mRViews.setEmptyView(R.id.widget_view_flipper, R.id.widget_view_flipper_empty);
+            views.setEmptyView(R.id.widget_view_flipper, R.id.widget_view_flipper_empty);
 
             // The pending intent allows widget to launch the host activity when a user clicks
             //  on the widget. For a widget provider that uses collections, an intent template
@@ -120,29 +124,34 @@ public class ScoresWidgetProvider extends AppWidgetProvider {
             PendingIntent clickPendingIntent = PendingIntent.getActivity(context, 0, clickIntent, 0);
             // The view that is passed in should be the id of the view the user clicks on to
             //  activate the intent. It has to be a view declared within the RemoteView
-            mRViews.setPendingIntentTemplate(R.id.widget_view_flipper, clickPendingIntent);
+            views.setPendingIntentTemplate(R.id.widget_view_flipper, clickPendingIntent);
 
+            // For the next/down button
             Intent nextIntent = new Intent(context, ScoresWidgetProvider.class);
             nextIntent.setAction(ACTION_NEXT);
             nextIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
-            PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 0, nextIntent, 0);
-            mRViews.setOnClickPendingIntent(R.id.widget_item_button_down, nextPendingIntent);
+            PendingIntent pendingNextIntent = PendingIntent
+                    .getBroadcast(context, 0, nextIntent, 0);
+            views.setOnClickPendingIntent(R.id.widget_button_down, pendingNextIntent);
 
+            // For the previous/up button
             Intent previousIntent = new Intent(context, ScoresWidgetProvider.class);
             previousIntent.setAction(ACTION_PREVIOUS);
             previousIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
-            PendingIntent previousPendingIntent = PendingIntent.getBroadcast(context, 0, previousIntent, 0);
-            mRViews.setOnClickPendingIntent(R.id.widget_item_button_up, previousPendingIntent);
+            PendingIntent pendingPreviousIntent = PendingIntent
+                    .getBroadcast(context, 0, previousIntent, 0);
+            views.setOnClickPendingIntent(R.id.widget_button_up, pendingPreviousIntent);
 
+            // TODO: Implement a refresh button that would reload the scores for today
 //            Intent updateIntent = new Intent();
 //            updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-//            updateIntent.putExtra(WIDGET_IDS_KEY, appWidgetIds);
-//            PendingIntent pendingUpdateIntent = PendingIntent.getBroadcast(context, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//            mRViews.setOnClickPendingIntent(R.id.widget_item_button_up, pendingUpdateIntent);
+//            updateIntent.putExtra(WIDGET_IDS_KEY, appWidgetId);
+//            PendingIntent pendingUpdateIntent = PendingIntent
+//                    .getBroadcast(context, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//            views.setOnClickPendingIntent(R.id.widget_button_refresh, pendingUpdateIntent);
 
-            appWidgetManager.updateAppWidget(appWidgetId, mRViews);
+            appWidgetManager.updateAppWidget(appWidgetId, views);
         }
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_view_flipper);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
