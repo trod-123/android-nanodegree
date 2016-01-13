@@ -172,15 +172,4 @@ public class Utilities {
         return crestUrl;
     }
 
-    /**
-     * Gets the sync status
-     *
-     * @param c Context used to get the SharedPreferences
-     * @return the sync status integer type
-     */
-    @SuppressWarnings("ResourceType")
-    public static @ScoresSyncAdapter.SyncStatus int getSyncStatus(Context c) {
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
-        return sp.getInt(c.getString(R.string.sp_sync_status_key), ScoresSyncAdapter.SYNC_STATUS_UNKNOWN);
-    }
 }

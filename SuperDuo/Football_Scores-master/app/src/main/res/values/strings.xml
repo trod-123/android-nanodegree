@@ -77,7 +77,7 @@
         No scores available. The server is not returning data.
     </string>
     <string name="empty_scores_list_server_error" translatable="true">
-        No scores available. The server is not returningvalid data. Please check for an updated
+        No scores available. The server is not returning valid data. Please check for an updated
         version of Football Scores.
     </string>
     <string name="empty_scores_list_syncing" translatable="true">

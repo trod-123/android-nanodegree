@@ -14,7 +14,7 @@ import java.util.List;
 
 import com.thirdarm.footballscores.R;
 import com.thirdarm.footballscores.model.FixturesResult;
-import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
+import com.thirdarm.footballscores.utilities.Network;
 import com.thirdarm.footballscores.utilities.Utilities;
 import com.thirdarm.footballscores.model.Fixture;
 import com.thirdarm.footballscores.model.FixtureComplete;
@@ -40,6 +40,10 @@ public class APIHelper {
 
     private APIService api;
     private Context mContext;
+
+    // For limiting null loops
+    private static final int RECURSIVE_MAX = 10;
+    private int mRecursiveCount = 0;
 
 
     /*
@@ -72,6 +76,25 @@ public class APIHelper {
         api = retrofit.create(APIService.class);
     }
 
+    /**
+     * Checks for internet connection and recursive counts before going through fetch procedures
+     * @return True if passed, false if failed
+     */
+    private boolean preliminaryChecks() {
+        // Check for internet connection
+        if (!Network.isNetworkAvailable(mContext)) {
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_NO_NETWORK);
+            return false;
+        }
+        // Only loop a certain number of times
+        if (mRecursiveCount == RECURSIVE_MAX) {
+            mRecursiveCount = 0;
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_DOWN);
+            return false;
+        }
+        return true;
+    }
+
 
     /*
         Soccerseasons API implementations
@@ -86,7 +109,7 @@ public class APIHelper {
             return api.getSoccerseasons(season).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -100,7 +123,7 @@ public class APIHelper {
             return api.getSingleSoccerseason(id).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -110,19 +133,23 @@ public class APIHelper {
      *   e.g. http://api.football-data.org/v1/soccerseasons/{id}/teams
      */
     public List<Team> getSingleSoccerseasonTeams(int id) {
+        if (!preliminaryChecks()) {
+            return null;
+        }
         Call<TeamsResult> response = api.getSingleSoccerseasonTeams(id);
         try {
             TeamsResult teams = response.execute().body();
             if (teams != null) {
-                Log.d(LOG_TAG, "Teams was successfully obtained. " + id);
+                mRecursiveCount = 0;
+                Network.setSyncStatus(mContext, Network.SYNC_STATUS_OK);
                 return teams.getTeams();
             } else {
-                Log.d(LOG_TAG, "Teams was null. Redoing..." + id);
+                mRecursiveCount++;
                 return getSingleSoccerseasonTeams(id);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Log.e(LOG_TAG ,"There was an error fetching the list of teams.", e);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -136,7 +163,7 @@ public class APIHelper {
             return api.getSingleSoccerseasonLeagueTable(id, matchDay).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -150,7 +177,7 @@ public class APIHelper {
             return api.getSingleSoccerseasonFixtures(id, timeFrame, matchDay).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -165,19 +192,23 @@ public class APIHelper {
      *   e.g. http://api.football-data.org/v1/fixtures?timeFrame=n2
      */
     public List<Fixture> getFixtures(String league, String timeFrame) {
-        Log.d(LOG_TAG, "In getFixtures");
+        if (!preliminaryChecks()) {
+            return null;
+        }
         Call<FixturesResult> response = api.getFixtures(league, timeFrame);
         try {
             FixturesResult result = response.execute().body();
             if (result != null) {
+                mRecursiveCount = 0;
+                Network.setSyncStatus(mContext, Network.SYNC_STATUS_OK);
                 return result.getFixtures();
             } else {
-                Log.d(LOG_TAG, "Fixtures was null. Redoing...");
+                mRecursiveCount++;
                 return getFixtures(league, timeFrame);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Log.e(LOG_TAG, "There was an error fetching the list of fixtures.", e);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -191,7 +222,7 @@ public class APIHelper {
             return api.getSingleFixture(id, head2head).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -206,19 +237,23 @@ public class APIHelper {
      *   e.g. http://api.football-data.org/v1/teams/{id}
      */
     public Team getSingleTeam(int id) {
-//        Log.d(LOG_TAG, "In getSingleTeam. " + id);
+        if (!preliminaryChecks()) {
+            return null;
+        }
         Call<Team> response = api.getSingleTeam(id);
         try {
             Team team = response.execute().body();
             if (team != null) {
+                mRecursiveCount = 0;
+                Network.setSyncStatus(mContext, Network.SYNC_STATUS_OK);
                 return team;
             } else {
-//                Log.d(LOG_TAG, "Team was null. Redoing...");
+                mRecursiveCount++;
                 return getSingleTeam(id);
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Log.e(LOG_TAG, "There was an error fetching a single team.", e);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -233,7 +268,7 @@ public class APIHelper {
             return api.getSingleTeamFixtures(id, season, timeFrame, venue).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }
@@ -247,7 +282,7 @@ public class APIHelper {
             return api.getSingleTeamPlayers(id).execute().body();
         } catch (IOException e) {
             e.printStackTrace();
-            ScoresSyncAdapter.setSyncStatus(mContext, ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID);
+            Network.setSyncStatus(mContext, Network.SYNC_STATUS_SERVER_INVALID);
             return null;
         }
     }

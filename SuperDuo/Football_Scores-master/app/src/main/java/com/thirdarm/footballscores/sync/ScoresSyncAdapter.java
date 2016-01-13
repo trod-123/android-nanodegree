@@ -7,7 +7,6 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
@@ -16,14 +15,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Vector;
 
 import com.thirdarm.footballscores.API.APIHelper;
 import com.thirdarm.footballscores.R;
@@ -36,6 +31,7 @@ import com.thirdarm.footballscores.provider.bteam.BteamCursor;
 import com.thirdarm.footballscores.provider.bteam.BteamSelection;
 import com.thirdarm.footballscores.provider.fixture.FixtureContentValues;
 import com.thirdarm.footballscores.provider.fixture.Status;
+import com.thirdarm.footballscores.utilities.Network;
 import com.thirdarm.footballscores.utilities.Utilities;
 import com.thirdarm.footballscores.model.Fixture;
 
@@ -63,20 +59,6 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     private static final int SEASON_MIN = 394;
     private static final int SEASON_MAX = 405;
 
-    // For transmitting sync status messages with the ui. Stored in and accessed through
-    //  SharedPreferences.
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SYNC_STATUS_OK, SYNC_STATUS_SERVER_DOWN, SYNC_STATUS_SERVER_INVALID,
-            SYNC_STATUS_UNKNOWN, SYNC_STATUS_SYNCING})
-    public @interface SyncStatus {
-    }
-
-    public static final int SYNC_STATUS_OK = 0;             /* Status okay. Fetch successful */
-    public static final int SYNC_STATUS_SERVER_DOWN = 1;    /* Server is slow or down */
-    public static final int SYNC_STATUS_SERVER_INVALID = 2; /* Server not returning valid data */
-    public static final int SYNC_STATUS_UNKNOWN = 3;        /* ... I just don't know */
-    public static final int SYNC_STATUS_SYNCING = 4;        /* Currently syncing */
-
     // Time frames for fixtures to be fetched (see API for more info)
     private static final String RANGE_UPCOMING = "n2";
     private static final String RANGE_FINISHED = "p2";
@@ -90,7 +72,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        setSyncStatus(getContext(), SYNC_STATUS_SYNCING);
+        Network.setSyncStatus(getContext(), Network.SYNC_STATUS_SYNCING);
 
         // Generate APIHelper
         APIHelper apiHelper = new APIHelper(getContext());
@@ -111,7 +93,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
         // If teams sync still failed, terminate sync and set sync status
         if (!getTeamsCollectedState(getContext())) {
             Log.e(LOG_TAG, "Teams failed to fetch. Terminating sync.");
-            setSyncStatus(getContext(), SYNC_STATUS_SERVER_DOWN);
+            Network.setSyncStatus(getContext(), Network.SYNC_STATUS_SERVER_DOWN);
             return;
         }
 
@@ -121,7 +103,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
             // Make sure fixtures isn't null first. Terminate sync and set sync status if null.
             if (fixtures == null) {
                 Log.e(LOG_TAG, "Fixtures failed to fetch. Terminating sync.");
-                setSyncStatus(getContext(), SYNC_STATUS_SERVER_DOWN);
+                Network.setSyncStatus(getContext(), Network.SYNC_STATUS_SERVER_DOWN);
             }
             for (Fixture fixture : fixtures) {
 
@@ -170,7 +152,7 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
                 );
             }
         }
-        setSyncStatus(getContext(), SYNC_STATUS_OK);
+        Network.setSyncStatus(getContext(), Network.SYNC_STATUS_OK);
     }
 
     public void getAllSeasonsTeams(APIHelper apiHelper) {
@@ -406,30 +388,4 @@ public class ScoresSyncAdapter extends AbstractThreadedSyncAdapter {
         return sp.getBoolean(c.getString(R.string.sp_teams_collected_key), false);
     }
 
-    /**
-     * Sets the sync status into shared preference.  This function should not be called from
-     * the UI thread because it uses commit to write to the shared preferences.
-     *
-     * @param c          Context to get the PreferenceManager from.
-     * @param syncStatus The IntDef value to set
-     */
-    public static void setSyncStatus(Context c, @SyncStatus int syncStatus) {
-        // Notify the ScoresWidgetProvider that the sync is complete
-        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED);
-        c.sendBroadcast(dataUpdatedIntent);
-
-        // Force a change in sync status stored in the shared preferences to an arbitrary value
-        //  to call the OnSharedPreferenceChangeListener in the pertaining fragment that requested
-        //  the sync to disable the swipe refresh animation.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
-        sp
-                .edit()
-                .putInt(c.getString(R.string.sp_sync_status_key), 100)
-                .commit();
-        // Set the sync status to the correct status
-        sp
-                .edit()
-                .putInt(c.getString(R.string.sp_sync_status_key), syncStatus)
-                .commit(); /* Use commit since this will be called in bg thread */
-    }
 }

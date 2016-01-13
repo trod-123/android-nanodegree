@@ -11,7 +11,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -31,7 +30,6 @@ import com.thirdarm.footballscores.provider.fixture.FixtureCursor;
 import com.thirdarm.footballscores.provider.fixture.FixtureSelection;
 import com.thirdarm.footballscores.sync.ScoresSyncAdapter;
 import com.thirdarm.footballscores.utilities.Network;
-import com.thirdarm.footballscores.utilities.Utilities;
 import com.thirdarm.footballscores.widget.ScoresWidgetProvider;
 
 /**
@@ -96,8 +94,8 @@ public class ScoresFragment extends Fragment
     //  stored in SharedPreferences
     @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.sp_sync_status_key))) {
-            @ScoresSyncAdapter.SyncStatus int status = Utilities.getSyncStatus(getActivity());
-            if (status != ScoresSyncAdapter.SYNC_STATUS_SYNCING) {
+            @Network.SyncStatus int status = Network.getSyncStatus(getActivity());
+            if (status != Network.SYNC_STATUS_SYNCING) {
                 onRefreshComplete();
             } else {
                 mRefreshLayout.setRefreshing(true);
@@ -233,15 +231,15 @@ public class ScoresFragment extends Fragment
             TextView emptyView = (TextView) getView().findViewById(R.id.fragment_main_recyclerview_scores_empty);
             if (emptyView != null) {
                 int message = R.string.empty_scores_list;
-                @ScoresSyncAdapter.SyncStatus int status = Utilities.getSyncStatus(getActivity());
+                @Network.SyncStatus int status = Network.getSyncStatus(getActivity());
                 switch (status) {
-                    case ScoresSyncAdapter.SYNC_STATUS_SYNCING :
+                    case Network.SYNC_STATUS_SYNCING :
                         message = R.string.empty_scores_list_syncing;
                         break;
-                    case ScoresSyncAdapter.SYNC_STATUS_SERVER_DOWN :
+                    case Network.SYNC_STATUS_SERVER_DOWN :
                         message = R.string.empty_scores_list_server_down;
                         break;
-                    case ScoresSyncAdapter.SYNC_STATUS_SERVER_INVALID :
+                    case Network.SYNC_STATUS_SERVER_INVALID :
                         message = R.string.empty_scores_list_server_error;
                         break;
                     default:
@@ -249,13 +247,13 @@ public class ScoresFragment extends Fragment
                             message = R.string.empty_scores_list_no_network;
                             Toast.makeText(getActivity().getApplicationContext(),
                                     getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
+                            onRefreshComplete();
                         }
                 }
                 emptyView.setText(message);
                 mScoresAdapter.notifyDataSetChanged();
 
-                // TODO:
-                // Update the widgets
+                // TODO: Provide a refresh button to the widget. This does not work.
                 Intent intent = new Intent(getActivity(), ScoresWidgetProvider.class);
                 intent.setAction(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT);
                 intent.putExtra(ScoresWidgetProvider.ACTION_UPDATE_EMPTY_TEXT, message);
