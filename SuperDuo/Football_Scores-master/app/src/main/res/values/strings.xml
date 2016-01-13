@@ -3,80 +3,86 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <!-- Main -->
-    <string name="app_name">Football Scores</string>
-    <string name="title_activity_about">About</string>
+    <string name="app_name" translatable="true">Football Scores</string>
+    <string name="title_activity_about" translatable="true">About</string>
 
     <!-- Shared preferences keys -->
-    <string name="sp_sync_status_key">SyncStatus</string>
-    <string name="sp_teams_collected_key">TeamsCollected</string>
+    <string name="sp_sync_status_key" translatable="false">SyncStatus</string>
+    <string name="sp_teams_collected_key" translatable="false">TeamsCollected</string>
 
     <!-- Content provider authority -->
-    <string name="content_authority">com.thirdarm.footballscores.provider</string>
+    <string name="content_authority" translatable="false">
+        com.thirdarm.footballscores.provider
+    </string>
 
     <!-- Account type (for sync-adapter authenticator -->
-    <string name="sync_account_type">com.thirdarm.footballscores</string>
+    <string name="sync_account_type" translatable="false">com.thirdarm.footballscores</string>
 
     <!-- Progress statuses -->
-    <string name="status_no_internet">
+    <string name="status_no_internet" translatable="true">
         There is no internet connection. Did not go through sync.
     </string>
 
     <!-- App Bar -->
-    <string name="action_settings">Settings</string>
-    <string name="action_refresh">Refresh</string>
-    <string name="share_text">Share</string>
-    <string name="about">About</string>
+    <string name="action_settings" translatable="true">Settings</string>
+    <string name="action_refresh" translatable="true">Refresh</string>
+    <string name="about" translatable="true">About</string>
 
     <!-- Tabs -->
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
-    <string name="tomorrow">Tomorrow</string>
+    <string name="today" translatable="true">Today</string>
+    <string name="yesterday" translatable="true">Yesterday</string>
+    <string name="tomorrow" translatable="true">Tomorrow</string>
 
     <!-- League names -->
-    <string name="league_bundesliga">Bundesliga</string>
-    <string name="league_ligue">Ligue</string>
-    <string name="league_premier_league">Premier League</string>
-    <string name="league_primera_division">Primera Division</string>
-    <string name="league_segunda_division">Segunda Division</string>
-    <string name="league_serie_a">Serie A</string>
-    <string name="league_primeira_liga">Primeira Liga</string>
-    <string name="league_eredivisie">Eredivisie</string>
-    <string name="league_champions">UEFA Champions League</string>
-    <string name="league_unknown">League not found.</string>
+    <string name="league_bundesliga" translatable="true">Bundesliga</string>
+    <string name="league_ligue" translatable="true">Ligue</string>
+    <string name="league_premier_league" translatable="true">Premier League</string>
+    <string name="league_primera_division" translatable="true">Primera Division</string>
+    <string name="league_segunda_division" translatable="true">Segunda Division</string>
+    <string name="league_serie_a" translatable="true">Serie A</string>
+    <string name="league_primeira_liga" translatable="true">Primeira Liga</string>
+    <string name="league_eredivisie" translatable="true">Eredivisie</string>
+    <string name="league_champions" translatable="true">UEFA Champions League</string>
+    <string name="league_unknown" translatable="true">League not found.</string>
 
     <!-- Match day strings -->
-    <string name="match_default">Matchday: <xliff:g id="num">%1$s</xliff:g></string>
-    <string name="match_champions_gs">Group Stages, Matchday: 6</string>
-    <string name="match_champions_fkr">First knockout round</string>
-    <string name="match_champions_qf">Quarterfinals</string>
-    <string name="match_champions_sf">Semifinals</string>
-    <string name="match_champiions_f">Finals</string>
+    <string name="match_default" translatable="true">
+        Matchday: <xliff:g id="num">%1$s</xliff:g>
+    </string>
+    <string name="match_champions_gs" translatable="true">Group Stages, Matchday: 6</string>
+    <string name="match_champions_fkr" translatable="true">First knockout round</string>
+    <string name="match_champions_qf" translatable="true">Quarterfinals</string>
+    <string name="match_champions_sf" translatable="true">Semifinals</string>
+    <string name="match_champiions_f" translatable="true">Finals</string>
 
     <!-- Status strings -->
-    <string name="status_finished">Final</string>
-    <string name="status_timed">Now playing</string>
-    <string name="status_upcoming">Upcoming</string>
+    <string name="status_finished" translatable="true">Final</string>
+    <string name="status_timed" translatable="true">Now playing</string>
+    <string name="status_upcoming" translatable="true">Upcoming</string>
 
     <!-- Score strings -->
-    <string name="scores_winner">Winner</string>
-    <string name="scores_tied">Tied</string>
+    <string name="scores_winner" translatable="true">Winner</string>
+    <string name="scores_tied" translatable="true">Tied</string>
 
     <!-- Date and time strings -->
-    <string name="date_time">
+    <string name="date_time" translatable="false">
         <xliff:g id="date">%1$s</xliff:g>, <xliff:g id="time">%2$s</xliff:g>
     </string>
 
     <!-- Empty recyclerview strings -->
-    <string name="empty_scores_list">No games scheduled for this day.</string>
-    <string name="empty_scores_list_no_network">
+    <string name="empty_scores_list" translatable="true">No games scheduled for this day.</string>
+    <string name="empty_scores_list_no_network" translatable="true">
         No scores available. The network is not available to fetch scores data.</string>
-    <string name="empty_scores_list_server_down">No scores available. The server is not returning
-        data.
+    <string name="empty_scores_list_server_down" translatable="true">
+        No scores available. The server is not returning data.
     </string>
-    <string name="empty_scores_list_server_error">No scores available. The server is not returning
-        valid data. Please check for an updated version of Football Scores.
+    <string name="empty_scores_list_server_error" translatable="true">
+        No scores available. The server is not returningvalid data. Please check for an updated
+        version of Football Scores.
     </string>
-    <string name="empty_scores_list_syncing">Fetching scores from server&#8230;</string>
+    <string name="empty_scores_list_syncing" translatable="true">
+        Fetching scores from server&#8230;
+    </string>
 
     <!-- xml layout tools strings -->
     <string name="tools_home_team_name">Home team</string>
@@ -92,7 +98,7 @@
     <string name="tools_status_time">Final, Sunday, Dec 25, 7:00 AM</string>
 
     <!-- A11y: Content descriptions -->
-    <string name="a11y_full_match_description">
+    <string name="a11y_full_match_description" translatable="true">
         <xliff:g id="status">%1$s</xliff:g> game.
         League: <xliff:g id="league">%2$s</xliff:g>.
         Matchday: <xliff:g id="matchday">%3$s</xliff:g>, <xliff:g id="dateTime">%4$s</xliff:g>.
@@ -101,17 +107,17 @@
         <xliff:g id="winner">%9$s</xliff:g>: <xliff:g id="notedTeam">%10$s</xliff:g>.
     </string>
 
-    <string name="a11y_upcoming_match_description">
+    <string name="a11y_upcoming_match_description" translatable="true">
         Upcoming game.
         League: <xliff:g id="league">%1$s</xliff:g>.
         Matchday: <xliff:g id="matchday">%2$s</xliff:g>, <xliff:g id="dateTime">%3$s</xliff:g>.
         <xliff:g id="awayName">%4$s</xliff:g> playing at <xliff:g id="homeName">%5$s</xliff:g>.
     </string>
 
-    <string name="a11y_share_button">Share</string>
+    <string name="a11y_share_button" translatable="true">Share</string>
 
-
-    <string name="about_text">
+    <!-- About -->
+    <string name="about_text" translatable="true">
         FootballScores was originally created by Yahia Khalid Ibn El Walid Ahmed and modified for
         the purposes of turning it into a productionizing assignment for students in the Udacity
         Android Nanodegree program.
