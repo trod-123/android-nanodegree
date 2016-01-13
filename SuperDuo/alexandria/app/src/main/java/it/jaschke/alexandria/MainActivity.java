@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity
 //                    Log.d(LOG_TAG, "The fragment is currently loaded on top");
 //                }
 //            }
-            Log.d(LOG_TAG, "Null.");
         } else {
             if (fragment != null) {
                 // Load selected fragment
@@ -226,7 +225,6 @@ public class MainActivity extends AppCompatActivity
             // Highlight the selected item and close drawer. Title is updated in corresponding
             //  fragment's onResume() method for the purposes of the TD to be implemented above
             menuItem.setChecked(true);
-            Log.d(LOG_TAG, "Checked. " + tag + " " + menuItem.isChecked());
         }
         // Only close the drawer if not in tablet mode
         if (!TABLET_MODE) mDrawer.closeDrawers();
