@@ -1,5 +1,5 @@
 # Welcome!
-My name is Teddy Rodriguez, and I am currently enrolled as a student in Udacity's Android Nanodegree Program. This is my collection of projects I have completed for the nanodegree. This collection will be updated as I go along with the program.
+My name is Teddy Rodriguez, and I am currently enrolled as a student in Udacity's Android Nanodegree Program. This is my collection of projects I have completed for the nanodegree. This collection will be updated as I go along with the program, and previously submitted projects may also be updated to reflect new concepts learned.
 <p/>
 This repository currently contains:
 <ul>
@@ -8,17 +8,21 @@ This repository currently contains:
 	<li>Project 3: Super Duo (a set of two apps - Football Scores and Alexandria [a books app])</li>
 </ul>
 
+## A little about myself
+I graduated from the University of California, Santa Barbara with highest honors in June of 2014, holding a Bachelor of Arts degree in Psychology and Music and a minor in Applied Psychology. I learned to program following my graduation with Javascript as I tried to create an interactive spreadsheet in Google Sheets for my fraternity, and I really got into it. Later in the same year, I discovered Udacity, and I had my first, formalized introduction to Computer Science while learning basics of programming with Python. Afterwards, I learned Java with Udacity's Introduction to Java Programming course beginning of the following year, and finally decided to join the August 2015 Android Nanodegre cohort so that I can continue practicing and developing my programming skills by making apps for my favorite mobile platform! I am truly excited to learn about programming and see what cool stuff I come up with!
+
 ## About the apps
-Information about each app below, with long descriptions each followed by non-exhaustive lists of what I have used and learned. For sake of space, succeeding lists build upon elements of previous lists.
+Information about each app is inclued below, with long descriptions each followed by non-exhaustive lists of what I have used and learned. For sake of space, succeeding lists build upon elements of previous lists.
 <p/>
-<b>Nanodegree Portfolio</b><br>
+###Nanodegree Portfolio
 This will function as a hub for all the projects I will complete in the Nanodegree.
 <ul>
 	<li>Java</li>
 	<li>Android UI basics</li>
 	<li>Event listeners and button-click handling</li>
 </ul>
-<b>Popular Movies</b><br>
+### Popular Movies
+<em>(Last updated: November 9, 2015)</em><br>
 <img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_movies-tablet-portrait.png"/><br>
 The first app for Android with functionality that I've made, demonstrating many firsts, but most prominently my first interaction with open database API's and handling JSON data. This app provides users with current and up-to-date movie information as provided by The Movie Database (TMDB). This also includes links to trailers and reviews posted on the TMDB website. Users can display and sort movies according to popularity, ratings, recency, and upcoming. The app also enables users to favorite a movie and add it to their own favorites list for later display. Users can also share movies with their friends via text-message or e-mail. There is also offline functionality, leveraged through use of content providers, letting users access movie information already downloaded onto their device, even when their device has no network connection. <em>Popular Movies</em> also takes advantage of Android's concept of <em>Responsive Design</em> by providing different user interface layouts for different device sizes such as phones and tablets. For example, for tablets, a well-known 2 column master-detail layout is used, displaying the list of movies on the left column, and movie details on the right.
 <ul>
@@ -36,9 +40,10 @@ The first app for Android with functionality that I've made, demonstrating many 
 	<li>Tablet UI layouts: Master-Detail</li>
 </ul>
 <p/>
-<b>Football Scores</b><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books-phone-portrait.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_footballscores-tablet-portrait.png"/><br>
+### Football Scores
+<em>(Last updated: January 12, 2016)</em><br>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_footballscores-tablet-portrait.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books-phone-portrait.png"/><br>
 The "Super Duo" assignment involves taking two, already-built apps and turning them from a functional to a production-ready state. <em>Football Scores</em> takes information hosted from http://football-data.org, an open database API created and maintained by Daniel Freitag, and provides users of up-to-date schedules and scores of European soccer games for each day. In the app, dates are currently limited to the current day, two days prior, and two days after, for a total of 5 days. Like <em>Popular Movies</em>, users can also share game information with their friends through messaging. Along with providing accessibility features such as content descriptions and RTL functionality, this app also demonstrates one of my first attempts at adhering to Google's <em>Material Design</em> practices. For navigation, this app displays my first exposure to working with tabs.
 <ul>
 	<li>Integration points and error case handling</li>
@@ -50,7 +55,8 @@ The "Super Duo" assignment involves taking two, already-built apps and turning t
 	<li>Swipe to refresh</li>
 </ul>
 <p/>
-<b>Alexandria (Books)</b><br>
+### Alexandria (Books)
+<em>(Last updated: January 12, 2016)</em><br>
 <img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books-tablet-landscape.png"/><br>
 Also a part of the "Super Duo" assignment, <em>Alexandria</em> interacts with the Google Books API to provide users an opportunity to search for books information and save them into their own local library. To facilitate looking up information, this app also provides barcode scanning functionality so that users can easily scan the ISBN barcodes of their books to look up more information about their books. While <em>Football Scores</em> demonstrates my first use of tabs in an app, <em>Alexandria</em> uses a Navigation Drawer layout. This app also attempts to conform to <em>Material Design</em> standards.
 <ul>
@@ -63,7 +69,7 @@ Also a part of the "Super Duo" assignment, <em>Alexandria</em> interacts with th
 <!-- While I have been provided with functional "start-up" code that does what the app intents to do
 -->
 ## Extra information
-<b>API keys</b><br>
+### API keys
 For security reasons, API keys used in these projects have been removed from public distributions of the code. If you want to build these projects and test them for yourself, you must obtain an appropriate API key corresponding to the project you want to build. Information about where to get API keys below. In the project, store the key in a string resource file in /res/values/.
 <ul>
 	<li><em>Popular Movies</em>: Information gathered from the <a href="https://www.themoviedb.org/?language=en">TMDB database</a>. Information on how to get one <a href="https://www.themoviedb.org/documentation/api">here</a>. In the project, name the string "movie_api_key".</li>
