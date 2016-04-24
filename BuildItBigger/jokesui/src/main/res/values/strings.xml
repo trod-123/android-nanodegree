@@ -1,0 +1,201 @@
+<resources xmlns:xliff="http://schemas.android.com/res-auto">
+
+    <!-- Main/Titles -->
+    <string name="app_name" translatable="false">JokesUI</string>
+
+    <!-- App bar items -->
+    <string name="action_share" translatable="true">Share</string>
+    <string name="action_reset" translatable="true">Reset database</string>
+
+    <!-- Instructions -->
+    <string name="instructions" translatable="true">Press the tell button for a delicious joke, or add your own
+        joke to the mix!
+    </string>
+    <string name="instructions_press_joke" translatable="true">Click on the joke screen for closer reading.</string>
+    <string name="joke_text_placeholder" translatable="true">If you press a button, something funny might come up.
+        \n\n&#8230;Might.
+    </string>
+
+    <!-- Buttons -->
+    <string name="button_get_joke" translatable="true">Tell Joke</string>
+    <string name="button_add_joke" translatable="true">Add Joke</string>
+    <string name="button_remove_joke" translatable="true">Delete Joke</string>
+
+    <!-- Main fragment content titles -->
+    <string name="joke_empty_title" translatable="true">#NoJokesFound</string>
+    <string name="joke_added_title" translatable="true">#JokeAdded</string>
+    <string name="joke_removed_title" translatable="true">#JokeRemoved</string>
+    <string name="joke_reset_title" translatable="true">#DatabaseRestored</string>
+    <string name="joke_error_title" translatable="true">#Error</string>
+    <string name="joke_no_internet_title" translatable="true">#NoInternet</string>
+
+    <!-- Main fragment content main -->
+    <string name="joke_get_no_internet_content" translatable="true">How can we grab a joke from the cloud if you
+        have no internet?
+    </string>
+    <string name="joke_get_error_content" translatable="true">Error 20. What the heck just happened??</string>
+    <string name="joke_added_content" translatable="true">Your precious joke has been added&#8230;</string>
+    <string name="joke_added_no_internet_content" translatable="true">You have no internet. That is sad. We can\'t add
+        your sweet little joke.
+    </string>
+    <string name="joke_added_error_content" translatable="true">There was something wrong with feeding your joke
+        into our mouths&#8230; Try again.
+    </string>
+    <string name="joke_removed_content" translatable="true">The joke list just got emptier, thanks to you.\n>:(</string>
+    <string name="joke_removed_no_internet_content" translatable="true">The jokes will stick with you until you
+        get some good tasting internet.
+    </string>
+    <string name="joke_removed_error_content" translatable="true">We love your jokes so much we don\'t know why we
+        can\'t part with them! Maybe try again.
+    </string>
+    <string name="joke_reset_no_internet_content" translatable="true">You need internet to restore the database?!
+        This app sucks.
+    </string>
+    <string name="joke_error_content" translatable="true">The problem seems to be&#8230; up there.
+        Let me try to ask&#8230;
+        \n\nHey, you up there! What\'s the hold up?? Oh, not sure, huh.
+    </string>
+
+    <!-- Main fragment subs -->
+    <string name="joke_get_sub" translatable="false">id: <xliff:g id="id">%1$s</xliff:g></string>
+    <string name="joke_get_error_sub" translatable="true">I don\'t even know myself&#8230;
+        Maybe there are no jokes on the cloud.</string>
+    <string name="joke_added_sub" translatable="true">Added <xliff:g id="jokeName">%1$s</xliff:g>
+        (<xliff:g id="id">%2$s</xliff:g>)\n\n<xliff:g id="joke">%3$s</xliff:g>
+    </string>
+    <string name="joke_added_error_sub" translatable="true">Failed to add <xliff:g id="jokeName">%1$s</xliff:g>:
+        \n\n<xliff:g id="joke">%2$s</xliff:g>
+    </string>
+    <string name="joke_removed_sub" translatable="true">Removed <xliff:g id="joke">%1$s</xliff:g>
+        (<xliff:g id="id">%2$s</xliff:g>)
+    </string>
+    <string name="joke_reset_sub" translatable="true">Original database jokes from Comedy Central</string>
+
+    <!-- Database reset -->
+    <string name="dialog_joke_reset_title" translatable="true">Database reset</string>
+    <string name="dialog_joke_reset_content" translatable="true">Are you REALLY sure you want to reset the database to
+        its original state? Note this can\'t be undone. Like, really. All your own original jokes
+        will be lost forever! Choose wisely&#8230;
+    </string>
+    <string name="dialog_joke_reset_positive_button" translatable="true">Yes, I\'m sure! I hate these jokes!</string>
+    <string name="dialog_joke_reset_negative_button" translatable="true">Never mind! I really love my jokes!</string>
+    <string name="dialog_joke_reset_neutral_button" translatable="true">How did I even get here&#8230;</string>
+
+    <string name="joke_reset_ip_content" translatable="true">Resetting database&#8230;</string>
+    <string name="joke_reset_complete_content" translatable="true">Jokes database reset complete!</string>
+    <string name="joke_reset_error_content" translatable="true">There was an error with restoring the original
+        database&#8230;
+    </string>
+
+    <!-- Add Joke Dialog -->
+    <string name="dialog_add_joke_title" translatable="true">Add your own joke</string>
+    <string name="dialog_add_joke_instruction" translatable="true">Completely fill out the tasty fields below.</string>
+    <string name="dialog_add_joke_joke" translatable="true">Type your juicy joke here</string>
+    <string name="dialog_add_joke_name" translatable="true">The name of your luscious joke</string>
+    <string name="dialog_add_joke_category" translatable="true">Category</string>
+    <string name="dialog_add_joke_positive_button" translatable="true">Add joke!</string>
+    <string name="dialog_add_joke_negative_button" translatable="true">Cancel</string>
+
+    <!-- Remove Joke Dialog -->
+    <string name="dialog_remove_joke_title" translatable="true">Remove jokes</string>
+    <string name="dialog_remove_joke_instruction" translatable="true">Select which jokes you consider distasteful
+        and never want to see ever again.
+    </string>
+    <string name="dialog_remove_joke_list_empty" translatable="true">The list seems to already be empty&#8230;</string>
+    <string name="dialog_remove_joke_list_loading" translatable="true">Finding your delicious jokes&#8230;</string>
+    <string name="dialog_remove_joke_list_no_internet" translatable="true">You need internet connection for this simple
+        task&#8230; And you don\'t have any. How unfortunate.
+    </string>
+    <string name="dialog_remove_joke_positive_button_single" translatable="true">Remove joke! (1)</string>
+    <string name="dialog_remove_joke_positive_button" translatable="true">Remove jokes!
+        (<xliff:g id="count">%1$s</xliff:g>)
+    </string>
+    <string name="dialog_remove_joke_positive_button_none" translatable="true">Choose jokes&#8230;</string>
+    <string name="dialog_remove_joke_negative_button" translatable="true">Cancel</string>
+
+    <!-- Paid dialog -->
+    <string name="dialog_paid_title" translatable="true">Pay to play</string>
+    <string name="dialog_paid_message" translatable="true">This feature is only in the paid version. So if you don\'t
+        like your jokes, buy the paid version so we can sweetly remove any sour ones you don\'t
+        like anymore.
+        \n\nIf not, then stay sour! We don\'t like you anyway! :)
+    </string>
+    <string name="dialog_paid_positive_button" translatable="true">OK, I suck</string>
+    <string name="dialog_paid_positive_toast" translatable="true">Yeah, you do. Suck it up.</string>
+    <string name="dialog_paid_negative_button" translatable="true">I hate you too</string>
+    <string name="dialog_paid_negative_notification" translatable="true">We just deleted all your jokes. Ha ha.</string>
+    <string name="dialog_paid_neutral_button">F U</string>
+
+    <!-- Share stuff -->
+    <string name="network_share_joke_get" translatable="true">Hey, isn\'t this funny:
+        \n\n<xliff:g id="jokeName">%1$s</xliff:g>
+        \n<xliff:g id="joke">%2$s</xliff:g>
+        \n\n#MyJokesAreTheBest</string>
+    <string name="network_share_joke_get_null" translatable="true">You don\'t know what we have told you yet&#8230;</string>
+    <string name="network_share_joke_get_error" translatable="true">I asked for a joke from my jokes cloud database,
+        and all I got is an error. Is a joke too much to ask for??
+        \n\n#ThisJokesAppSucksSoMuchItsJustCalledJokes
+    </string>
+    <string name="network_share_joke_get_no_internet" translatable="true">I tried to get a joke from my cloud, but then
+        I realized I had no internet. Since when did we get so dependent on the internet??
+        \n\n#FirstWorldProblems
+    </string>
+    <string name="network_share_joke_added" translatable="true">I just added a cool joke to my jokes cloud database!
+        Here it is.
+        \n\n<xliff:g id="jokeName">%1$s</xliff:g>
+        \n<xliff:g id="joke">%2$s</xliff:g>
+        \n\n#MyJokesAreTheBest
+    </string>
+    <string name="network_share_joke_added_error" translatable="true">I tried to add a joke to my jokes cloud database,
+        and I don\'t even know what happened! For the record, the joke is shown below.
+        \n\n<xliff:g id="jokeName">%1$s</xliff:g>
+        \n<xliff:g id="joke">%2$s</xliff:g>
+        \n\n#TheCloudSucksSometimes
+    </string>
+    <string name="network_share_joke_removed" translatable="true">I thought this wasn\'t funny anymore, so I removed it
+        from my jokes cloud database:
+        \n\n<xliff:g id="jokeName">%1$s</xliff:g>
+        \n<xliff:g id="joke">%2$s</xliff:g>
+        \n\n#MyJokesAreProbablyNotTheBest
+    </string>
+    <string name="network_share_joke_removed_error" translatable="true">I failed at removing some jokes from my jokes
+        cloud database. Ha ha. It probably still likes my jokes.
+        \n\n#MyJokesAreAlwaysTheBest
+    </string>
+    <string name="network_share_joke_removed_no_internet" translatable="true">I tried to remove some jokes from my jokes
+        cloud database&#8230; but then I remembered I need internet to access the cloud. Such a
+        silly thing.
+        \n\n#CloudProblems
+    </string>
+    <string name="network_share_joke_error" translatable="true">I tried to do something that requires internet
+        connection. Like what is internet?
+        \n\n#IAmADumbFool
+    </string>
+    <string name="network_share_joke_reset" translatable="true">I thought my jokes cloud database was full of dumb
+        jokes, so I decided to start over from scratch to create even a better database!!
+        \n\n#OnceAFoolNeverAgainTheySay
+    </string>
+    <string name="network_share_joke_reset_error" translatable="true">I failed at clearing out this stupid jokes cloud
+        database.
+        \n\n#IDontEvenKnowWhatHappened
+    </string>
+
+    <!-- About -->
+    <string name="about_title" translatable="true">About</string>
+    <string name="about_dismiss" translatable="true">Dismiss</string>
+    <string name="about_credits">Jokes
+        \nCreated by Teddy Rodriguez
+    </string>
+    <string name="about_text" translatable="true">Jokes was created by Teddy Rodriguez as part
+        of a Gradle project provided by the Udacity Android Nanodegree Program. It takes advantage
+        of Gradle\'s capabilities in integrating Java and Android libraries to build a single,
+        cohesive application. It also utilizes Google\'s Cloud Platform, on which a backend is
+        created that stores jokes pulled from a Java library, and allows for their retrieval and
+        modification.
+        \n\nAll original database jokes were gathered from Comedy Central\'s online jokes database,
+        and their intellectual rights are held by their respective writers.
+        \n\n\nApp last updated Sunday, April 17, 2016.
+    </string>
+    <string name="about_libraries_title">Libraries used</string>
+
+</resources>

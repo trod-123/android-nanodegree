@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_vertical_margin"
+        android:layout_marginEnd="@dimen/dialog_horizontal_margin"
+        android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+        android:layout_marginRight="@dimen/dialog_horizontal_margin"
+        android:layout_marginStart="@dimen/dialog_horizontal_margin"
+        android:layout_marginTop="@dimen/dialog_title_padding"
+        android:text="@string/dialog_add_joke_instruction"
+        android:textStyle="italic"/>
+
+    <EditText
+        android:id="@+id/dialog_add_joke_edittext_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_vertical_margin"
+        android:layout_marginEnd="@dimen/dialog_horizontal_margin"
+        android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+        android:layout_marginRight="@dimen/dialog_horizontal_margin"
+        android:layout_marginStart="@dimen/dialog_horizontal_margin"
+        android:layout_marginTop="@dimen/dialog_vertical_margin"
+        android:hint="@string/dialog_add_joke_name"
+        android:inputType="textCapSentences"/>
+
+    <!-- Sample code for multi-line edit text:
+        http://stackoverflow.com/questions/4233626/allow-multi-line-in-edittext-view-in-android -->
+    <EditText
+        android:id="@+id/dialog_add_joke_edittext_joke"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dialog_vertical_margin"
+        android:layout_marginEnd="@dimen/dialog_horizontal_margin"
+        android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+        android:layout_marginRight="@dimen/dialog_horizontal_margin"
+        android:layout_marginStart="@dimen/dialog_horizontal_margin"
+        android:layout_marginTop="@dimen/dialog_vertical_margin"
+        android:hint="@string/dialog_add_joke_joke"
+        android:inputType="textCapSentences|textMultiLine"
+        android:lines="8"
+        android:scrollbars="vertical"
+        android:gravity="top|start"/>
+
+</LinearLayout>

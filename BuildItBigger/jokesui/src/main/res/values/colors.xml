@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="grey">#cccccc</color>
+    <color name="black">#000000</color>
+
+    <!-- using the "Light Blue" material palette -->
+    <color name="primary">#03a9f4</color> <!-- 500 -->
+    <color name="primary_dark">#0288d1</color> <!-- 700 -->
+    <color name="primary_light">#b3e5fc</color> <!-- 100 -->
+    <!-- Purple A200 -->
+    <color name="accent">#e040fb</color>
+    <!-- text colors -->
+    <color name="primary_text">#212121</color> <!-- Grey 900 -->
+    <color name="secondary_text">#757575</color> <!-- Grey 600 -->
+    <color name="tertiary_text">#607d8b</color> <!-- Blue Grey 500 -->
+
+</resources>

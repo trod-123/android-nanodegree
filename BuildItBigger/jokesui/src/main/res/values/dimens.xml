@@ -1,0 +1,30 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Text sizes -->
+    <dimen name="activity_text_size_title">34sp</dimen>
+    <dimen name="activity_text_size_content">24sp</dimen>
+    <dimen name="activity_text_size_sub">16sp</dimen>
+
+    <!-- Main content margins -->
+    <dimen name="content_vertical_padding">20dp</dimen>
+    <dimen name="content_horizontal_padding">20dp</dimen>
+
+    <!-- Dialog margins -->
+    <dimen name="dialog_horizontal_margin">24dp</dimen>
+    <dimen name="dialog_vertical_margin">4dp</dimen>
+    <dimen name="dialog_title_padding">20dp</dimen>
+
+    <!-- Dialog scrollbar -->
+    <dimen name="dialog_scrollbar_radius">4dp</dimen>
+    <dimen name="dialog_scrollbar_width">4dp</dimen>
+
+    <!-- Space -->
+    <dimen name="space_length">16dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
+
+</resources>

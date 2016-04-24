@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+        android:layout_marginRight="@dimen/dialog_horizontal_margin"
+        android:text="@string/dialog_remove_joke_instruction"/>
+
+    <!-- Indeterminate progress bar for loading  -->
+    <ProgressBar
+        android:id="@+id/dialog_remove_joke_progress_spinner"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Empty list -->
+        <TextView
+            android:id="@+id/dialog_remove_joke_textview_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+            android:layout_marginRight="@dimen/dialog_horizontal_margin"
+            android:text="@string/dialog_remove_joke_list_empty"/>
+
+        <!-- Joke List -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/dialog_remove_joke_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/ScrollbarVerticalStyle"/>
+
+    </FrameLayout>
+
+</LinearLayout>

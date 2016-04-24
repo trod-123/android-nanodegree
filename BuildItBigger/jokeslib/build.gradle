@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    // For Pair<K,V>
+    compile 'org.apache.commons:commons-lang3:3.4'
+}

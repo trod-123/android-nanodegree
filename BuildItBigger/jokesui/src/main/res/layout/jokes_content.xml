@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:id="@+id/scrollview_joke_content"
+    style="@style/ScrollbarVerticalStyle"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin">
+
+        <include
+            android:id="@+id/top_space"
+            layout="@layout/space_vertical"/>
+
+        <TextView
+            android:id="@+id/textview_joke_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top_space"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/joke_text_placeholder"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/activity_text_size_title"/>
+
+        <TextView
+            android:id="@+id/textview_joke_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textview_joke_main"
+            android:layout_marginBottom="@dimen/content_vertical_padding"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/activity_text_size_content"
+            tools:text="Test"/>
+
+        <TextView
+            android:id="@+id/textview_joke_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/textview_joke_content"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/activity_text_size_sub"
+            android:textStyle="italic"
+            tools:text="id: 1234"/>
+
+    </RelativeLayout>
+
+</ScrollView>
