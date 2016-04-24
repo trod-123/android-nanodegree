@@ -6,6 +6,7 @@ This repository currently contains:
 	<li>Project 0: Nanodegree Portfolio</li>
 	<li>Project 1/2: Popular Movies, Stage 1/2</li>
 	<li>Project 3: Super Duo (a set of two apps - Football Scores and Alexandria [a books app])</li>
+	<li>Project 4: Build It Bigger! A Jokes app</li>
 </ul>
 
 ## A little about myself
