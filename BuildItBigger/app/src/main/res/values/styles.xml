@@ -2,7 +2,17 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <!-- Default colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="actionBarStyle">@style/AppTheme.ActionBar</item>
+    </style>
+
+    <!-- App bar -->
+    <style name="AppTheme.ActionBar" parent="style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <!-- Remove shadow below action bar: http://stackoverflow.com/questions/12246388/remove-shadow-below-actionbar/27203224#27203224 -->
+        <item name="elevation">0dp</item>
     </style>
 
 </resources>
