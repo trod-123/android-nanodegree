@@ -120,11 +120,14 @@
         like anymore.
         \n\nIf not, then stay sour! We don\'t like you anyway! :)
     </string>
-    <string name="dialog_paid_positive_button" translatable="true">OK, I suck</string>
-    <string name="dialog_paid_positive_toast" translatable="true">Yeah, you do. Suck it up.</string>
-    <string name="dialog_paid_negative_button" translatable="true">I hate you too</string>
-    <string name="dialog_paid_negative_notification" translatable="true">We just deleted all your jokes. Ha ha.</string>
-    <string name="dialog_paid_neutral_button">F U</string>
+    <string name="dialog_paid_positive_button" translatable="true">OK, Take me to the store!</string>
+    <string name="dialog_paid_negative_button" translatable="true">Fine, Never mind&#8230;</string>
+    <string name="dialog_paid_positive_button_joke" translatable="true">OK, I suck</string>
+    <string name="dialog_paid_positive_toast" translatable="true">Hold your horses! This ain\'t on the Play Store yet!</string>
+    <string name="dialog_paid_positive_toast_joke" translatable="true">Yeah, you do. Suck it up.</string>
+    <string name="dialog_paid_negative_button_joke" translatable="true">I hate you too</string>
+    <string name="dialog_paid_negative_notification_joke" translatable="true">We just deleted all your jokes. Ha ha.</string>
+    <string name="dialog_paid_neutral_button_joke">F U</string>
 
     <!-- Share stuff -->
     <string name="network_share_joke_get" translatable="true">Hey, isn\'t this funny:

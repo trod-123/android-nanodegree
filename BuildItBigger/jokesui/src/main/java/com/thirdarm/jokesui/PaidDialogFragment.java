@@ -37,46 +37,57 @@ public class PaidDialogFragment extends DialogFragment {
         mDialog = new MaterialDialog.Builder(getContext())
                 .title(R.string.dialog_paid_title)
                 .content(R.string.dialog_paid_message)
+//                .positiveText(R.string.dialog_paid_positive_button_joke)
+//                .negativeText(R.string.dialog_paid_negative_button_joke)
+//                .neutralText(R.string.dialog_paid_neutral_button_joke)
                 .positiveText(R.string.dialog_paid_positive_button)
                 .negativeText(R.string.dialog_paid_negative_button)
-                .neutralText(R.string.dialog_paid_neutral_button)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         Toast.makeText(getContext(),
-                                getString(R.string.dialog_paid_positive_toast), Toast.LENGTH_SHORT)
+                                getString(R.string.dialog_paid_positive_toast),
+                                Toast.LENGTH_SHORT)
                                 .show();
                     }
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Utilities.getJokesFragment(getActivity()).startResetJokeContainerTask();
-                        // For creating the action performed when clicking the notification
-                        // (1) Create an intent that will open up an activity
-                        Intent intent = new Intent(getContext(), getActivity().getClass());
-                        // (2) Create a pending intent from this intent
-                        PendingIntent pIntent = PendingIntent.getActivity(getContext(), (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                        // (3) Attach the pending intent to the notification using setContentIntent()
-                        NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(getContext())
-                                .setSmallIcon(R.drawable.gray_circle)
-                                .setContentTitle("Loser")
-                                .setContentText(getString(R.string.dialog_paid_negative_notification))
-                                // Set default sound, vibration, and notification light settings
-                                .setDefaults(Notification.DEFAULT_ALL)
-                                .setContentIntent(pIntent)
-                                // Hide the notification after it is selected
-                                .setAutoCancel(true);
-
-                        ((NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE)).notify(0, nBuilder.build());
-                    }
-                })
-                .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        throw new Error("You deserved it.");
-                    }
-                })
+//                .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        Toast.makeText(getContext(),
+//                                getString(R.string.dialog_paid_positive_toast_joke), Toast.LENGTH_SHORT)
+//                                .show();
+//                    }
+//                })
+//                .onNegative(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        Utilities.getJokesFragment(getActivity()).startResetJokeContainerTask();
+//                        // For creating the action performed when clicking the notification
+//                        // (1) Create an intent that will open up an activity
+//                        Intent intent = new Intent(getContext(), getActivity().getClass());
+//                        // (2) Create a pending intent from this intent
+//                        PendingIntent pIntent = PendingIntent.getActivity(getContext(), (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//                        // (3) Attach the pending intent to the notification using setContentIntent()
+//                        NotificationCompat.Builder nBuilder = new NotificationCompat.Builder(getContext())
+//                                .setSmallIcon(R.drawable.gray_circle)
+//                                .setContentTitle("Loser")
+//                                .setContentText(getString(R.string.dialog_paid_negative_notification_joke))
+//                                // Set default sound, vibration, and notification light settings
+//                                .setDefaults(Notification.DEFAULT_ALL)
+//                                .setContentIntent(pIntent)
+//                                // Hide the notification after it is selected
+//                                .setAutoCancel(true);
+//
+//                        ((NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE)).notify(0, nBuilder.build());
+//                    }
+//                })
+//                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+//                    @Override
+//                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                        throw new Error("You deserved it.");
+//                    }
+//                })
                 .show();
 
         return mDialog;
