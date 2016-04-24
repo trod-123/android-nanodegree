@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity
         implements JokesFragment.JokeClickCallback {
 
     private Toast mToast;
+    private boolean mFlavor;
 
     private InterstitialAd mInterstitialAd;
 
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFlavor = checkIfFreeFlavor();
 
         if (savedInstanceState == null) {
             // Load the fragment from the jokesui library
@@ -34,20 +37,8 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, fragment, Constants.TAGS.FRAGMENT_JOKES)
                     .commit();
-
-            // Load the ad only in the free flavor
-            if (checkIfFreeFlavor()) {
-                // Load the banner ad
-                AdView mAdView = (AdView) findViewById(R.id.adView);
-                // Create an ad request. Check logcat output for the hashed device ID to
-                // get test ads on a physical device. e.g.
-                // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
-                AdRequest adRequest = new AdRequest.Builder()
-                        .build();
-                if (mAdView != null) {
-                    mAdView.loadAd(adRequest);
-                }
-            }
+            // Load the banner ad
+            loadBannerAd();
         }
 
         // TODO: Create a nav drawer that displays a list of all the jokes which the user can freely
@@ -55,12 +46,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Ensure that the banner ad is still visible even after screen rotations
+        loadBannerAd();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         // Load the interstitial ad whenever activity resumes focus
-        if (checkIfFreeFlavor()) {
-            loadInterstitialAd();
-        }
+        loadInterstitialAd();
     }
 
     @Override
@@ -110,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 
 
     /*
-        Interstitial Ad stuff
+        Ad stuff
      */
 
     /**
@@ -119,6 +115,25 @@ public class MainActivity extends AppCompatActivity
      */
     public boolean checkIfFreeFlavor() {
         return getString(R.string.flavorVariant).equals("0");
+    }
+
+    /**
+     * Helper method to load the interstitial ad
+     */
+    public void loadBannerAd() {
+        // Load the ad only in the free flavor
+        if (mFlavor) {
+            // Load the banner ad
+            AdView mAdView = (AdView) findViewById(R.id.adView);
+            // Create an ad request. Check logcat output for the hashed device ID to
+            // get test ads on a physical device. e.g.
+            // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
+            AdRequest adRequest = new AdRequest.Builder()
+                    .build();
+            if (mAdView != null) {
+                mAdView.loadAd(adRequest);
+            }
+        }
     }
 
     /**
@@ -132,7 +147,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onJokeClick(Intent intent) {
-        if (checkIfFreeFlavor() && Utilities.decideInterstitialAd()) {
+        if (mFlavor && Utilities.decideInterstitialAd()) {
             showInterstitialAd();
         }
         startActivity(intent);
@@ -142,9 +157,12 @@ public class MainActivity extends AppCompatActivity
      * Helper method to load the interstitial ad
      */
     public void loadInterstitialAd() {
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId(getString(R.string.ad_interstitial_id));
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        // Load the ad only in the free flavor
+        if (mFlavor) {
+            mInterstitialAd = new InterstitialAd(this);
+            mInterstitialAd.setAdUnitId(getString(R.string.ad_interstitial_id));
+            mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        }
     }
 
     /**

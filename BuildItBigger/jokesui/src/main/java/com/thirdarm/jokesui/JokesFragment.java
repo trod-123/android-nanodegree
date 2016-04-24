@@ -93,6 +93,8 @@ public class JokesFragment extends Fragment {
 
         loadingSpinner = (ProgressBar) root.findViewById(R.id.loading_spinner);
 
+        mTextFormat = 4;
+
         // Set up the get joke button
         Button buttonJoke = (Button) root.findViewById(R.id.button_joke);
         buttonJoke.setOnClickListener(new View.OnClickListener() {

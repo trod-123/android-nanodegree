@@ -83,7 +83,6 @@ public class JokesAdapter extends RecyclerView.Adapter<JokesAdapter.ViewHolder> 
             return vh;
         } else
             throw new RuntimeException("The ViewGroup is not bound to RecyclerView");
-
     }
 
     // Where the good stuff happens. Populate viewholder elements.
