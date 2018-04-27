@@ -1,12 +1,11 @@
 # Sandwich Club Project
 
 ## Project Overview
-A basic app that shows a list of sandwiches, as well as different properties of each
+A basic app that shows a list of sandwiches as well as different properties of each
 
 ## What this project involves
-
-Building a layout and populating its fields from data received as JSON
-Parses JSON objects through built-in utilities provided by org.json
+- Building a layout and populating its fields from data received as JSON.
+- Parses JSON objects through built-in utilities provided by org.json
 
 ## What I learned
 - Parsing JSON to a model object
