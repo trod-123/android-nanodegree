@@ -8,4 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="default_label">
+        <item name="android:textSize">@dimen/label_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="default_content">
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textSize">@dimen/content_text_size</item>
+    </style>
+
 </resources>

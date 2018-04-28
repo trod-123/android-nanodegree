@@ -25,6 +25,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         /* Use databinding to set the view */
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
@@ -71,16 +72,16 @@ public class DetailActivity extends AppCompatActivity {
      * Helper method for populating UI text elements
      */
     private void populateUI(Sandwich sandwich) {
-        // populate the "easy" data automatically
+        /* Populate the "easy" data automatically */
         mBinding.detailContent.setSandwich(sandwich);
 
-        // load the image. show image icon if error
+        /* Load the image. show image icon if error */
         Picasso.with(this)
                 .load(sandwich.getImage())
                 .error(R.drawable.ic_panorama_white_24dp)
                 .into(mBinding.imageIv);
 
-        // if there are empty or null values, then hide these views
+        /* If there are empty or null values, then hide these views */
 
         String description = sandwich.getDescription();
         String origin = sandwich.getPlaceOfOrigin();
@@ -95,14 +96,17 @@ public class DetailActivity extends AppCompatActivity {
             mBinding.detailContent.originTv.setVisibility(View.GONE);
         }
 
-        // populate the lists, or hide views if lists are empty or null
+        /* Populate the lists, or hide views if lists are empty or null
+           Since lists are shown side-by-side, expand either list if the other is hidden by
+            setting the guideline percentage */
 
         List<String> ingredientsList = sandwich.getIngredients();
         if (ingredientsList == null || ingredientsList.size() == 0) {
             mBinding.detailContent.ingredientsLabelTv.setVisibility(View.GONE);
             mBinding.detailContent.ingredientsTv.setVisibility(View.GONE);
+            mBinding.detailContent.guideline.setGuidelinePercent(0);
         } else {
-            String ingredients = TextUtils.join(", ", ingredientsList);
+            String ingredients = TextUtils.join("\n", ingredientsList);
             mBinding.detailContent.ingredientsTv.setText(ingredients);
         }
 
@@ -110,8 +114,9 @@ public class DetailActivity extends AppCompatActivity {
         if (alsoKnownList == null || alsoKnownList.size() == 0) {
             mBinding.detailContent.alsoKnownLabelTv.setVisibility(View.GONE);
             mBinding.detailContent.alsoKnownTv.setVisibility(View.GONE);
+            mBinding.detailContent.guideline.setGuidelinePercent(1);
         } else {
-            String aliases = TextUtils.join(", ", alsoKnownList);
+            String aliases = TextUtils.join("\n", alsoKnownList);
             mBinding.detailContent.alsoKnownTv.setText(aliases);
         }
     }
