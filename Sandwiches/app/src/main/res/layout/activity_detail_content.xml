@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.thirdarm.sandwiches.DetailActivity">
+
+    <data>
+
+        <variable
+            name="sandwich"
+            type="com.thirdarm.sandwiches.model.Sandwich" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Labels -->
+            <TextView
+                android:id="@+id/description_label_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_normal"
+                android:layout_marginLeft="@dimen/margin_normal"
+                android:layout_marginRight="@dimen/margin_normal"
+                android:layout_marginStart="@dimen/margin_normal"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:text="@string/detail_description_label"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/also_known_label_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:text="@string/detail_also_known_as_label"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/description_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/description_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/ingredients_tv" />
+
+            <TextView
+                android:id="@+id/ingredients_label_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:text="@string/detail_ingredients_label"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/description_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/description_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/description_tv" />
+
+            <TextView
+                android:id="@+id/origin_label_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:text="@string/detail_place_of_origin_label"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/origin_tv"
+                app:layout_constraintEnd_toEndOf="@+id/description_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/description_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/also_known_tv" />
+
+            <!-- Content -->
+            <TextView
+                android:id="@+id/description_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{sandwich.description}"
+                android:textIsSelectable="true"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/description_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/description_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/description_label_tv"
+                tools:text="Sandwich description" />
+
+            <TextView
+                android:id="@+id/ingredients_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/ingredients_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/ingredients_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/ingredients_label_tv"
+                tools:text="Sandwich ingredients" />
+
+            <TextView
+                android:id="@+id/also_known_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="@+id/also_known_label_tv"
+                app:layout_constraintStart_toStartOf="@+id/also_known_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/also_known_label_tv"
+                tools:text="Other names for this sandwich" />
+
+            <TextView
+                android:id="@+id/origin_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_normal"
+                android:text="@{sandwich.placeOfOrigin}"
+                android:textIsSelectable="true"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/origin_label_tv"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/origin_label_tv"
+                app:layout_constraintTop_toBottomOf="@+id/origin_label_tv"
+                tools:text="Sandwich place of origin" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+</layout>
+

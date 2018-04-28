@@ -25,7 +25,6 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         /* Use databinding to set the view */
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
@@ -73,7 +72,13 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateUI(Sandwich sandwich) {
         // populate the "easy" data automatically
-        mBinding.setSandwich(sandwich);
+        mBinding.detailContent.setSandwich(sandwich);
+
+        // load the image. show image icon if error
+        Picasso.with(this)
+                .load(sandwich.getImage())
+                .error(R.drawable.ic_panorama_white_24dp)
+                .into(mBinding.imageIv);
 
         // if there are empty or null values, then hide these views
 
@@ -81,39 +86,33 @@ public class DetailActivity extends AppCompatActivity {
         String origin = sandwich.getPlaceOfOrigin();
 
         if (description == null || description.isEmpty()) {
-            mBinding.descriptionLabelTv.setVisibility(View.GONE);
-            mBinding.descriptionTv.setVisibility(View.GONE);
+            mBinding.detailContent.descriptionLabelTv.setVisibility(View.GONE);
+            mBinding.detailContent.descriptionTv.setVisibility(View.GONE);
         }
 
         if (origin == null || origin.isEmpty()) {
-            mBinding.originLabelTv.setVisibility(View.GONE);
-            mBinding.originTv.setVisibility(View.GONE);
+            mBinding.detailContent.originLabelTv.setVisibility(View.GONE);
+            mBinding.detailContent.originTv.setVisibility(View.GONE);
         }
 
         // populate the lists, or hide views if lists are empty or null
 
         List<String> ingredientsList = sandwich.getIngredients();
         if (ingredientsList == null || ingredientsList.size() == 0) {
-            mBinding.ingredientsLabelTv.setVisibility(View.GONE);
-            mBinding.ingredientsTv.setVisibility(View.GONE);
+            mBinding.detailContent.ingredientsLabelTv.setVisibility(View.GONE);
+            mBinding.detailContent.ingredientsTv.setVisibility(View.GONE);
         } else {
             String ingredients = TextUtils.join(", ", ingredientsList);
-            mBinding.ingredientsTv.setText(ingredients);
+            mBinding.detailContent.ingredientsTv.setText(ingredients);
         }
 
         List<String> alsoKnownList = sandwich.getAlsoKnownAs();
         if (alsoKnownList == null || alsoKnownList.size() == 0) {
-            mBinding.alsoKnownLabelTv.setVisibility(View.GONE);
-            mBinding.alsoKnownTv.setVisibility(View.GONE);
+            mBinding.detailContent.alsoKnownLabelTv.setVisibility(View.GONE);
+            mBinding.detailContent.alsoKnownTv.setVisibility(View.GONE);
         } else {
             String aliases = TextUtils.join(", ", alsoKnownList);
-            mBinding.alsoKnownTv.setText(aliases);
+            mBinding.detailContent.alsoKnownTv.setText(aliases);
         }
-
-        // load the image. show image icon if error
-        Picasso.with(this)
-                .load(sandwich.getImage())
-                .error(R.drawable.ic_panorama_white_24dp)
-                .into(mBinding.imageIv);
     }
 }
