@@ -4,7 +4,6 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="padding_normal">16dp</dimen>
     <dimen name="margin_normal">16dp</dimen>
-    <dimen name="sandwich_image_height">200dp</dimen>
     <dimen name="label_text_size">18sp</dimen>
     <dimen name="content_text_size">14sp</dimen>
     <dimen name="margin_narrow">8dp</dimen>

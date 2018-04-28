@@ -11,7 +11,8 @@
         <ImageView
             android:id="@+id/image_iv"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/sandwich_image_height"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:adjustViewBounds="true"
             android:background="@android:color/black"
             android:contentDescription="@string/sandwich_picture_content_description"
@@ -20,7 +21,10 @@
 
         <include
             android:id="@+id/detail_content"
-            layout="@layout/activity_detail_content" />
+            layout="@layout/activity_detail_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" />
 
     </LinearLayout>
 
