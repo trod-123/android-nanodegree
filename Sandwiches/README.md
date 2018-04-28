@@ -1,4 +1,5 @@
 # Sandwich Club Project
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_sandwiches_phone_portrait.png" width="270" height="480"/> <img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_sandwiches_phone_landscape.png" width="480" height="270"/><br>
 
 ## Project Overview
 A basic app that shows a list of sandwiches as well as different properties of each
@@ -9,8 +10,9 @@ A basic app that shows a list of sandwiches as well as different properties of e
 
 ## What I learned
 - Parsing JSON to a model object
-- Designing an activity layout
-- Populating all fields in the layout, using Android Data Binding
+- Designing an activity layout using ConstraintLayout
+- Designing separate layouts for Portrait and Landscape orientations
+- Populating all fields in the layout using Android Data Binding
 
 ## Project source
 Project is sourced from Udacity's Android Nanodegree program. Here is the [Sandwich Club app starter code.](https://github.com/udacity/sandwich-club-starter-code)
