@@ -46,7 +46,7 @@ import com.thirdarm.popularmovies.utilities.ReleaseDates;
 import com.thirdarm.popularmovies.data.MovieProvider.Movies;
 import com.thirdarm.popularmovies.utilities.SwapViewContainers;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -81,9 +81,9 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     // views
     private View mRootView;
     private PostersAdapter mPostersAdapter;
-    @Bind(R.id.posters_grid) GridView mGridView;
-    @Bind(R.id.container_empty_favorites) RelativeLayout mEmptyFavoritesContainer;
-    @Bind(R.id.container_empty_movies) RelativeLayout mEmptyMoviesContainer;
+    @BindView(R.id.posters_grid) GridView mGridView;
+    @BindView(R.id.container_empty_favorites) RelativeLayout mEmptyFavoritesContainer;
+    @BindView(R.id.container_empty_movies) RelativeLayout mEmptyMoviesContainer;
 
     // for loading and displaying movies
     private final String mPosterSize = IMAGE.SIZE.POSTER.w500;

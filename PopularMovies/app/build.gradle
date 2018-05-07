@@ -1,26 +1,14 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        // the latest version of the android-apt plugin
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
-
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.thirdarm.popularmovies"
-        minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 2
+        versionName "2.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -32,21 +20,31 @@ android {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
-    compile 'com.google.code.gson:gson:2.3'
-    apt 'net.simonvt.schematic:schematic-compiler:0.6.3'
-    compile 'net.simonvt.schematic:schematic:0.6.3'
-    compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.android.support:cardview-v7:22.0.+'
-    compile 'it.sephiroth.android.library.horizontallistview:hlistview:1.2.2'
-    compile 'org.lucasr.twowayview:twowayview:0.1.4'
-    compile 'me.grantland:autofittextview:0.2.+'
-}
-
-repositories {
-    mavenCentral()
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.0.0'
+    // picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    // retrofit
+    implementation 'com.squareup.retrofit:retrofit:2.0.0-beta1'
+    implementation 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
+    // gson
+    implementation 'com.google.code.gson:gson:2.8.0'
+    // schematic
+    annotationProcessor 'net.simonvt.schematic:schematic-compiler:0.6.3'
+    implementation 'net.simonvt.schematic:schematic:0.6.3'
+    // butterknife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // cardview
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    // horizontal listview
+    implementation 'it.sephiroth.android.library.horizontallistview:hlistview:1.2.2'
+    // two way view
+    implementation 'org.lucasr.twowayview:twowayview:0.1.4'
+    // autofit textview
+    implementation 'me.grantland:autofittextview:0.2.+'
+    // unit testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
