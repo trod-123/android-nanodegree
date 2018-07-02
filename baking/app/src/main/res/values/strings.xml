@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Baking</string>
+    <string name="recipe_file_name" translatable="false">recipes.json</string>
+    <string name="tablet_layout">Tablet</string>
+
+    <string name="label_ingredients"><b>You need:</b></string>
+    <string name="label_steps"><b>Step-by-step videos:</b></string>
+
+    <plurals name="num_servings">
+        <item quantity="one">Makes %d serving</item>
+        <item quantity="other">Makes %d servings</item>
+    </plurals>
+    <string name="ingredient_item">%1$s of %2$s</string>
+    <string name="title_step_intro">%1$s: Intro</string>
+    <string name="title_step_detailed">%1$s: Step %2$d of %3$d</string>
+
+    <!-- Measurements -->
+    <string name="num_tablespoons_abbrev">%.1f tblsp</string>
+    <string name="num_teaspoons_abbrev">%.1f tsp</string>
+    <string name="num_grams_abbrev">%.1f g</string>
+    <string name="num_ounces_abbrev">%.1f oz</string>
+    <plurals name="num_cups">
+        <item quantity="one">%.1f cup</item>
+        <item quantity="other">%.1f cups</item>
+    </plurals>
+    <plurals name="num_tablespoons">
+        <item quantity="one">%.1f tablespoon</item>
+        <item quantity="other">%.1f tablespoons</item>
+    </plurals>
+    <plurals name="num_teaspoons">
+        <item quantity="one">%.1f teaspoon</item>
+        <item quantity="other">%.1f teaspoons</item>
+    </plurals>
+    <plurals name="num_grams">
+        <item quantity="one">%.1f gram</item>
+        <item quantity="other">%.1f grams</item>
+    </plurals>
+    <plurals name="num_ounces">
+        <item quantity="one">%.1f ounce</item>
+        <item quantity="other">%.1f ounces</item>
+    </plurals>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_ingredients_config_name">Choose a recipe for the widget</string>
+</resources>
