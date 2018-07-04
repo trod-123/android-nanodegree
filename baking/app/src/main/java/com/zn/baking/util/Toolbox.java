@@ -98,10 +98,10 @@ public class Toolbox {
         loadingSpinner.setCenterRadius(40f); // TODO: No magic numbers, and looks real bad on small devices (so big)
         loadingSpinner.setStrokeWidth(12f);
         loadingSpinner.setColorSchemeColors(
-                ContextCompat.getColor(context, R.color.colorAccentDark),
-                ContextCompat.getColor(context, R.color.colorAccentLight),
-                ContextCompat.getColor(context, R.color.colorSecondaryDark),
-                ContextCompat.getColor(context, R.color.colorSecondaryLight));
+                ContextCompat.getColor(context, Colors.LOADING_SPINNER_COLOR_1),
+                ContextCompat.getColor(context, Colors.LOADING_SPINNER_COLOR_2),
+                ContextCompat.getColor(context, Colors.LOADING_SPINNER_COLOR_3),
+                ContextCompat.getColor(context, Colors.LOADING_SPINNER_COLOR_4));
         loadingSpinner.start();
 
         return GlideApp.with(context).asBitmap()
@@ -191,6 +191,18 @@ public class Toolbox {
     public static String generateNumServingsString(Context context, int numServings) {
         return context.getResources()
                 .getQuantityString(R.plurals.num_servings, numServings, numServings);
+    }
+
+    /**
+     * Puts together a consistent number of steps string
+     *
+     * @param context
+     * @param numSteps
+     * @return
+     */
+    public static String generateNumStepsString(Context context, int numSteps) {
+        return context.getResources()
+                .getQuantityString(R.plurals.num_steps, numSteps, numSteps);
     }
 
 

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!--
-Refer to App Widget Documentation for margin information
-http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
-    -->
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_minWidth">160dp</dimen>
     <dimen name="widget_minHeight">200dp</dimen>
+
+    <dimen name="widget_config_horizontal_padding">0dp</dimen>
+
+    <dimen name="details_horizontal_padding">8dp</dimen>
+    <dimen name="details_vertical_padding">8dp</dimen>
+    <dimen name="details_space_size">16dp</dimen>
+
+    <dimen name="details_image_height">240dp</dimen>
 
 </resources>

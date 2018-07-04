@@ -12,16 +12,32 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/image_recipe_photo"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp" /> <!-- TODO: NO MAGIC NUMBERS -->
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_recipe_photo"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" /> <!-- TODO: NO MAGIC NUMBERS -->
+
+            <TextView
+                android:id="@+id/text_num_steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Theme.Baking.TextView.StepNumber"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="1" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/container_recipe_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:background="@color/colorSecondary"
             android:padding="12dp">
 
             <TextView
@@ -29,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@android:color/white"
                 tools:text="My fancy recipe" />
 
             <TextView
@@ -37,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textColor="@color/colorPrimaryLight"
+                android:textColor="@android:color/white"
                 tools:text="4 servings" />
 
         </LinearLayout>

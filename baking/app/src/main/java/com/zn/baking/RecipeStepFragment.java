@@ -3,6 +3,7 @@ package com.zn.baking;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 import com.zn.baking.model.Step;
+import com.zn.baking.util.Colors;
 import com.zn.baking.util.Toolbox;
 
 import butterknife.BindView;
@@ -122,8 +124,10 @@ public class RecipeStepFragment extends Fragment {
         if (savedInstanceState != null) {
             savedVideoPosition = savedInstanceState
                     .getLong(STEP_VIDEO_POSITION_EXTRA_KEY, DEFAULT_STEP_VIDEO_POSITION);
-            mVideoPlaying = savedInstanceState.getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
-            mOrientationJitter = savedInstanceState.getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
+            mVideoPlaying = savedInstanceState
+                    .getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
+            mOrientationJitter = savedInstanceState
+                    .getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
         }
 
         // populate the UI
@@ -139,11 +143,15 @@ public class RecipeStepFragment extends Fragment {
             } else {
                 mHostActivity.setTitle(getString(R.string.title_step_intro, recipeName));
             }
+            mActionBar.setBackgroundDrawable(new ColorDrawable(getArguments()
+                    .getInt(DetailRecipeFragment.RECIPE_DETAIL_APP_BAR_COLOR_EXTRA_KEY,
+                            Colors.DEFAULT_APP_BAR_COLOR)));
         }
         if (mTv_broad_instruction != null)
             mTv_broad_instruction.setText(mStep.getShortDescription());
         if (mTv_instruction != null)
-            mTv_instruction.setText(Toolbox.generateReadableDetailedStepInstruction(mStep.getDescription()));
+            mTv_instruction
+                    .setText(Toolbox.generateReadableDetailedStepInstruction(mStep.getDescription()));
 
         // set up the exoplayer
         mPlayerView = view.findViewById(R.id.player_recipe_step);

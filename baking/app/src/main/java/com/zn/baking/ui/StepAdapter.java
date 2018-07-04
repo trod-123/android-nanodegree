@@ -1,6 +1,7 @@
 package com.zn.baking.ui;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,20 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
 
     private List<Step> mSteps;
     private OnClickHandler mClickHandler;
+    private int mResourceLayoutId;
 
-    public StepAdapter(List<Step> steps, OnClickHandler handler) {
-        this.mSteps = steps;
-        this.mClickHandler = handler;
+    /**
+     * Builds a new Adapter for the Step class. Make sur ethe resourceLayoutId passed
+     * at least contains a view for stepId and stepDescription
+     *
+     * @param steps
+     * @param handler
+     * @param resourceLayoutId
+     */
+    public StepAdapter(List<Step> steps, int resourceLayoutId, OnClickHandler handler) {
+        mSteps = steps;
+        mClickHandler = handler;
+        mResourceLayoutId = resourceLayoutId;
     }
 
     public interface OnClickHandler {
@@ -35,7 +46,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
     @Override
     public StepVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_step, parent, false);
+                .inflate(mResourceLayoutId, parent, false);
         return new StepVH(view);
     }
 
@@ -64,6 +75,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
 
     class StepVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @Nullable
         @BindView(R.id.image_step_thumbnail)
         ImageView mIv_photo;
         @BindView(R.id.text_step_number)
@@ -81,10 +93,12 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
 
         void bindView(Step step) {
             mStep = step;
-            // get the thumbnail image from the video url
-            Toolbox.loadThumbnailFromVideoUrl(itemView.getContext(), step.getVideoURL(), mIv_photo, null);
+            if (mIv_photo != null) {
+                // get the thumbnail image from the video url
+                Toolbox.loadThumbnailFromVideoUrl(itemView.getContext(), step.getVideoURL(), mIv_photo, null);
+            }
 
-//            mTv_stepNum.setText(String.format("%s", getAdapterPosition() == 0 ? "Intro" : getAdapterPosition()));
+            mTv_stepNum.setText(String.format("%s", getAdapterPosition() == 0 ? "Intro" : getAdapterPosition()));
             mTv_instruction.setText(step.getShortDescription());
         }
 

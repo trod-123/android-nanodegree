@@ -18,12 +18,14 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.zn.baking.R;
 import com.zn.baking.model.Recipe;
+import com.zn.baking.util.Colors;
 import com.zn.baking.util.Toolbox;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> {
 
@@ -61,6 +63,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
         }
     }
 
+    public int getRecipePosition(Recipe recipe) {
+        return mRecipeList.indexOf(recipe);
+    }
+
     public void swapLists(List<Recipe> recipes) {
         this.mRecipeList = recipes;
         notifyDataSetChanged();
@@ -68,6 +74,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
     /**
      * Returns the recipe at the provided position. Null if index is out of bounds.
+     *
      * @param i
      * @return
      */
@@ -82,6 +89,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
         @BindView(R.id.image_recipe_photo)
         ImageView mIv_photo;
+        @BindView(R.id.text_num_steps)
+        TextView mTv_numSteps;
         @BindView(R.id.container_recipe_title)
         LinearLayout mLayout_recipe_title;
         @BindView(R.id.text_recipe_name)
@@ -106,6 +115,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
             RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    if (e != null) {
+                        Timber.e(e);
+                    }
                     return false;
                 }
 
@@ -113,7 +125,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                     // set the background color of the title container to match color of image (source: https://developer.android.com/training/material/palette-colors)
                     Palette palette = Palette.from(resource).generate();
-                    int contextColor = palette.getMutedColor(itemView.getResources().getColor(R.color.colorPrimaryLight)); // TODO: Play around with the color options
+                    int contextColor = palette.getMutedColor(itemView.getResources().getColor(Colors.DEFAULT_RECIPE_CARD_COLOR)); // TODO: Play around with the color options
                     mLayout_recipe_title.setBackgroundColor(contextColor);
                     int textColor = Toolbox.getTextColorFromBackgroundColor(itemView.getContext(), contextColor);
                     mTv_recipe_name.setTextColor(textColor);
@@ -124,6 +136,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
             Toolbox.loadThumbnailFromVideoUrl(itemView.getContext(), lastVideoUrl, mIv_photo, listener);
 
             // set the textviews
+            mTv_numSteps.setText(
+                    Toolbox.generateNumStepsString(itemView.getContext(),
+                            recipe.getSteps().size() - 1));
             mTv_recipe_name.setText(recipe.getName());
             mTv_servings.setText(
                     Toolbox.generateNumServingsString(itemView.getContext(), recipe.getServings()));

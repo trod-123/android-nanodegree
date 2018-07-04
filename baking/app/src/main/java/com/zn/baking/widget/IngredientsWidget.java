@@ -70,7 +70,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         }
 
         // pass in the parent widget layout here - in this case, the one containing the stackview
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
 
         // populate the imageview
         String videoUrl = Toolbox.getLastVideoUrlFromRecipe(recipe);

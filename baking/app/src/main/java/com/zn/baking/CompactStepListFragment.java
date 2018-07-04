@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 
 import com.zn.baking.model.Recipe;
 import com.zn.baking.model.Step;
-import com.zn.baking.ui.CompactStepAdapter;
 import com.zn.baking.ui.FragmentHost;
+import com.zn.baking.ui.StepAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +27,7 @@ public class CompactStepListFragment extends Fragment {
 
     @BindView(R.id.recyclerview_steps_list)
     RecyclerView mRecyclerView_steps;
-    CompactStepAdapter mAdapter;
+    StepAdapter mAdapter;
 
     Recipe mRecipe;
 
@@ -46,7 +46,8 @@ public class CompactStepListFragment extends Fragment {
 
         if (mRecipe != null) {
             // set up steps recyclerview
-            mAdapter = new CompactStepAdapter(mRecipe.getSteps(), new CompactStepAdapter.OnClickHandler() {
+            mAdapter = new StepAdapter(mRecipe.getSteps(), R.layout.item_step_compact,
+                    new StepAdapter.OnClickHandler() {
                 @Override
                 public void onClick(Step step) {
                     int position = mAdapter.getPositionOfItem(step);
@@ -64,6 +65,7 @@ public class CompactStepListFragment extends Fragment {
 
     /**
      * Helper to launch the step fragment for the selected step
+     *
      * @param step
      * @param recipeName
      * @param numSteps
