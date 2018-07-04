@@ -49,7 +49,8 @@ public class CompactStepListFragment extends Fragment {
             mAdapter = new CompactStepAdapter(mRecipe.getSteps(), new CompactStepAdapter.OnClickHandler() {
                 @Override
                 public void onClick(Step step) {
-                    launchRecipeStepFragment(step, mRecipe.getName(), mRecipe.getSteps().size());
+                    int position = mAdapter.getPositionOfItem(step);
+                    launchRecipeStepFragment(step, position, mRecipe.getName(), mRecipe.getSteps().size());
                 }
             });
         }
@@ -67,9 +68,10 @@ public class CompactStepListFragment extends Fragment {
      * @param recipeName
      * @param numSteps
      */
-    private void launchRecipeStepFragment(Step step, String recipeName, int numSteps) {
+    private void launchRecipeStepFragment(Step step, int position, String recipeName, int numSteps) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(RecipeStepFragment.STEP_SERIALIZABLE_EXTRA_KEY, step);
+        bundle.putInt(RecipeStepFragment.STEP_POSITION_EXTRA_KEY, position);
         bundle.putString(RecipeStepFragment.RECIPE_NAME_EXTRA_KEY, recipeName);
         bundle.putInt(RecipeStepFragment.NUM_STEPS_EXTRA_KEY, numSteps);
 

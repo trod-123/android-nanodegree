@@ -52,6 +52,10 @@ public class CompactStepAdapter extends RecyclerView.Adapter<CompactStepAdapter.
         }
     }
 
+    public int getPositionOfItem(Step step) {
+        return mSteps.indexOf(step);
+    }
+
     public void swapLists(List<Step> steps) {
         this.mSteps = steps;
         notifyDataSetChanged();

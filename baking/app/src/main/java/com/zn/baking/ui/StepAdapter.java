@@ -53,6 +53,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepVH> {
         }
     }
 
+    public int getPositionOfItem(Step step) {
+        return mSteps.indexOf(step);
+    }
+
     public void swapLists(List<Step> steps) {
         this.mSteps = steps;
         notifyDataSetChanged();

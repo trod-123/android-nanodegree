@@ -47,7 +47,10 @@ public class RecipeStepFragment extends Fragment {
             "com.zn.baking.bundle_step_intent_extra_key";
     public static final String STEP_SERIALIZABLE_EXTRA_KEY =
             "com.zn.baking.step_serializable_extra_key";
-    public static final String RECIPE_NAME_EXTRA_KEY = "com.zn.baking.recipe_name_extra_key";
+    public static final String STEP_POSITION_EXTRA_KEY =
+            "com.zn.baking.step_position_extra_key";
+    public static final String RECIPE_NAME_EXTRA_KEY =
+            "com.zn.baking.recipe_name_extra_key";
     public static final String NUM_STEPS_EXTRA_KEY =
             "com.zn.baking.num_steps_extra_key";
 
@@ -125,13 +128,14 @@ public class RecipeStepFragment extends Fragment {
 
         // populate the UI
         mStep = (Step) getArguments().getSerializable(STEP_SERIALIZABLE_EXTRA_KEY);
+        int stepPosition = getArguments().getInt(STEP_POSITION_EXTRA_KEY);
         String recipeName = getArguments().getString(RECIPE_NAME_EXTRA_KEY);
         int numSteps = getArguments().getInt(NUM_STEPS_EXTRA_KEY);
         if (mStep != null && recipeName != null && !recipeName.isEmpty()) {
-            if (mStep.getId() != 0) {
+            if (stepPosition > 0) {
                 mHostActivity.setTitle(
                         getString(R.string.title_step_detailed,
-                                recipeName, mStep.getId(), numSteps - 1));
+                                recipeName, stepPosition, numSteps - 1));
             } else {
                 mHostActivity.setTitle(getString(R.string.title_step_intro, recipeName));
             }
@@ -140,11 +144,6 @@ public class RecipeStepFragment extends Fragment {
             mTv_broad_instruction.setText(mStep.getShortDescription());
         if (mTv_instruction != null)
             mTv_instruction.setText(Toolbox.generateReadableDetailedStepInstruction(mStep.getDescription()));
-
-        // if in tablet mode, load the steps list pane
-        if (mTabletLayout) {
-
-        }
 
         // set up the exoplayer
         mPlayerView = view.findViewById(R.id.player_recipe_step);

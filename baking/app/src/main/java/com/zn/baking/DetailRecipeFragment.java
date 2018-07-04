@@ -109,7 +109,8 @@ public class DetailRecipeFragment extends Fragment {
         mAdapter = new StepAdapter(mRecipe.getSteps(), new StepAdapter.OnClickHandler() {
             @Override
             public void onClick(Step step) {
-                runRecipeStepActivity(step, mRecipe.getName(), mRecipe.getSteps().size());
+                int position = mAdapter.getPositionOfItem(step);
+                runRecipeStepActivity(step, position, mRecipe.getName(), mRecipe.getSteps().size());
             }
         });
         mRecyclerView_steps.setLayoutManager(new LinearLayoutManager(
@@ -121,13 +122,15 @@ public class DetailRecipeFragment extends Fragment {
     /**
      * Helper to launch the step activity for the selected step
      * @param step
+     * @param position
      * @param recipeName
      * @param numSteps
      */
-    private void runRecipeStepActivity(Step step, String recipeName, int numSteps) {
+    private void runRecipeStepActivity(Step step, int position, String recipeName, int numSteps) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY, mRecipe);
         bundle.putSerializable(RecipeStepFragment.STEP_SERIALIZABLE_EXTRA_KEY, step);
+        bundle.putInt(RecipeStepFragment.STEP_POSITION_EXTRA_KEY, position);
         bundle.putString(RecipeStepFragment.RECIPE_NAME_EXTRA_KEY, recipeName);
         bundle.putInt(RecipeStepFragment.NUM_STEPS_EXTRA_KEY, numSteps);
 
