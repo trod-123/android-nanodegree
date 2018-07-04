@@ -27,7 +27,12 @@ import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
 
+/**
+ * Just a class of neat convenient global helper methods
+ */
 public class Toolbox {
+    private static final int STEP_DESCRIPTION_DOT_THRESHOLD = 5;
+
     private static Toast mToast;
 
     /**
@@ -90,7 +95,7 @@ public class Toolbox {
      */
     private static GlideRequest getGlideRequestForLoadingThumbnail(Context context, String videoUrl, RequestListener<Bitmap> listener) {
         CircularProgressDrawable loadingSpinner = new CircularProgressDrawable(context);
-        loadingSpinner.setCenterRadius(40f); // TODO: No magic numbers
+        loadingSpinner.setCenterRadius(40f); // TODO: No magic numbers, and looks real bad on small devices (so big)
         loadingSpinner.setStrokeWidth(12f);
         loadingSpinner.setColorSchemeColors(
                 ContextCompat.getColor(context, R.color.colorAccentDark),
@@ -254,6 +259,7 @@ public class Toolbox {
      */
     public static String generateReadableDetailedStepInstruction(String instruction) {
         int dotIndex = instruction.indexOf(".");
-        return instruction.substring(dotIndex + 2);
+        return instruction.substring(dotIndex == -1 || dotIndex > STEP_DESCRIPTION_DOT_THRESHOLD ?
+                0 : dotIndex + 2);
     }
 }

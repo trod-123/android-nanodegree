@@ -3,9 +3,9 @@
     android:configure="com.zn.baking.widget.IngredientsWidgetConfigurationActivity"
     android:initialKeyguardLayout="@layout/widget_ingredients"
     android:initialLayout="@layout/widget_ingredients"
-    android:minHeight="160dp"
-    android:minWidth="200dp"
+    android:minHeight="@dimen/widget_minHeight"
+    android:minWidth="@dimen/widget_minWidth"
     android:previewImage="@drawable/example_appwidget_preview"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="86400000"
-    android:widgetCategory="home_screen"></appwidget-provider>
+    android:widgetCategory="home_screen" />

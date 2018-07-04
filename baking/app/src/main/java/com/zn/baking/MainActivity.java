@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
             // if intent contains recipe, then it must have launched from widget
             handleLaunchedFromWidget(startIntent);
         } else {
-            showFragment(new RecipeListFragment(), R.id.master_fragment_container,false);
+            showFragment(new RecipeListFragment(), R.id.master_fragment_container, false);
         }
     }
 
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        // necessary to put as first line when making changes to fragment state, otherwise you get
+        // necessary to call super() as first line when making changes to fragment state, otherwise you get
         // an error: "Can not perform this action after onSaveInstanceState"
         super.onNewIntent(intent);
         if (intent != null && intent.getExtras() != null &&
@@ -120,20 +120,38 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
      * @param startIntent
      */
     private void handleLaunchedFromWidget(Intent startIntent) {
-        // Remove all fragments from the backstack to prevent duplicating
-        // from https://stackoverflow.com/questions/6186433/clear-back-stack-using-fragments
-        getSupportFragmentManager()
-                .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        // put the list fragment behind the detail fragment
-        RecipeListFragment listFragment = new RecipeListFragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.master_fragment_container, listFragment).commit();
-
-        // load up and launch the detail fragment
+        // Prepare the detail fragment
         DetailRecipeFragment fragment = new DetailRecipeFragment();
         fragment.setArguments(startIntent.getExtras());
-        showFragment(fragment, R.id.master_fragment_container, true);
+
+        if (mTabletLayout) {
+            // Prepare the recipe list fragment so that the first recipe does not load in details -
+            // The user's selected recipe will display instead
+            RecipeListFragment recipeListFragment = new RecipeListFragment();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(RecipeListFragment.LAUNCHED_FROM_WIDGET_KEY, true);
+            recipeListFragment.setArguments(bundle);
+
+            // if in tablet layout, show both recipe list fragment and detail fragment
+            showFragment(recipeListFragment, R.id.master_fragment_container, false);
+            showFragment(fragment, R.id.detail_fragment_container, false);
+        } else {
+            // Remove all fragments from the backstack to prevent duplicating
+            // from https://stackoverflow.com/questions/6186433/clear-back-stack-using-fragments
+            getSupportFragmentManager()
+                    .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+            // put the list fragment behind the detail fragment
+            RecipeListFragment listFragment = new RecipeListFragment();
+            getSupportFragmentManager().beginTransaction()
+                    // TODO: Set animations (start and end anims, and shared elements transitions)
+                    // https://stackoverflow.com/questions/4932462/animate-the-transition-between-fragments/33992609
+                    // https://medium.com/bynder-tech/how-to-use-material-transitions-in-fragment-transactions-5a62b9d0b26b
+                    .replace(R.id.master_fragment_container, listFragment).commit();
+
+            // launch the detail fragment
+            showFragment(fragment, R.id.master_fragment_container, true);
+        }
     }
 
     @Override

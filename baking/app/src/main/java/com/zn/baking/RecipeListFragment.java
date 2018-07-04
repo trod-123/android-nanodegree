@@ -33,12 +33,14 @@ public class RecipeListFragment extends Fragment {
             "com.zn.baking.recipe_serializable_extra_key";
     public static final String RECIPE_LIST_RECYCLERVIEW_POSITION_EXTRA_KEY =
             "com.zn.baking.recipe_list_recyclerview_position_extra_key";
+    public static final String LAUNCHED_FROM_WIDGET_KEY = "com.zn.baking.launched_from_widget_key";
 
     @BindView(R.id.recyclerview_recipe_list)
     RecyclerView mRecyclerView_recipes;
     RecipeAdapter mAdapter;
 
     boolean loadedFromWidgetConfig = false; // for passing back recipe to widget config
+    boolean launchedFromWidget = false;
     boolean mTabletMode;
 
     @Nullable
@@ -55,7 +57,9 @@ public class RecipeListFragment extends Fragment {
         } else if (getArguments() != null) {
             // if loaded as widget. load fragment as widget configuration screen
             loadedFromWidgetConfig = getArguments()
-                    .getBoolean(IngredientsWidgetConfigurationActivity.LOAD_FRAGMENT_FROM_CONFIG);
+                    .getBoolean(IngredientsWidgetConfigurationActivity.LOAD_FRAGMENT_FROM_CONFIG, false);
+            // if loaded from widget, do not automatically load details for the first recipe
+            launchedFromWidget = getArguments().getBoolean(LAUNCHED_FROM_WIDGET_KEY, false);
         }
 
         // handle the fragment differently if loaded from widget
@@ -68,7 +72,7 @@ public class RecipeListFragment extends Fragment {
             getActivity().setTitle(getString(R.string.app_name));
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-            if (mTabletMode) {
+            if (mTabletMode && !launchedFromWidget) {
                 // if in tablet mode, automatically load details for first recipe in details layout
                 Recipe recipe = mAdapter.getRecipeAtPosition(0);
                 if (recipe != null) {
@@ -112,6 +116,12 @@ public class RecipeListFragment extends Fragment {
         mRecyclerView_recipes.setHasFixedSize(true);
     }
 
+    /**
+     * Adds the detail fragment for the passed recipe, in the fragment container specified
+     * @param recipe
+     * @param fragmentContainerId
+     * @param addToBackstack
+     */
     private void displayDetailFragment(Recipe recipe, int fragmentContainerId, boolean addToBackstack) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(RECIPE_SERIALIZABLE_EXTRA_KEY, recipe);

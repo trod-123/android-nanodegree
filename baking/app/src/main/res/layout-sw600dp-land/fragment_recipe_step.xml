@@ -9,7 +9,7 @@
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player_recipe_step"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="400dp"
         app:show_buffering="true"
         app:auto_show="false" />
 
