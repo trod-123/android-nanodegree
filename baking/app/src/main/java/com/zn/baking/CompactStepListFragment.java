@@ -15,6 +15,7 @@ import com.zn.baking.model.Recipe;
 import com.zn.baking.model.Step;
 import com.zn.baking.ui.FragmentHost;
 import com.zn.baking.ui.StepAdapter;
+import com.zn.baking.util.Toolbox;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,11 +26,15 @@ import timber.log.Timber;
  */
 public class CompactStepListFragment extends Fragment {
 
+    public static final String SELECTED_STEP_KEY = "com.zn.baking.selected_step_key";
+
     @BindView(R.id.recyclerview_steps_list)
     RecyclerView mRecyclerView_steps;
     StepAdapter mAdapter;
 
     Recipe mRecipe;
+
+    int mSelectedStepIndex = Toolbox.NO_SELECTED_ID;
 
     @Nullable
     @Override
@@ -41,24 +46,35 @@ public class CompactStepListFragment extends Fragment {
         // Up navigation handled in hosting Activity
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mRecipe = (Recipe) getArguments()
-                .getSerializable(RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY);
-
+        mRecipe = getArguments().getParcelable(RecipeListFragment.RECIPE_PARCELABLE_EXTRA_KEY);
         if (mRecipe != null) {
             // set up steps recyclerview
             mAdapter = new StepAdapter(mRecipe.getSteps(), R.layout.item_step_compact,
                     new StepAdapter.OnClickHandler() {
-                @Override
-                public void onClick(Step step) {
-                    int position = mAdapter.getPositionOfItem(step);
-                    launchRecipeStepFragment(step, position, mRecipe.getName(), mRecipe.getSteps().size());
-                }
-            });
+                        @Override
+                        public void onClick(Step step) {
+                            int index = mAdapter.getPositionOfItem(step);
+                            if (mSelectedStepIndex != index) {
+                                launchRecipeStepFragment(step, index,
+                                        mRecipe.getName(), mRecipe.getSteps().size());
+                            }
+                        }
+                    });
+            mSelectedStepIndex = getArguments().getInt(RecipeStepFragment.STEP_POSITION_EXTRA_KEY,
+                    Toolbox.NO_SELECTED_ID);
         }
+
+        if (savedInstanceState != null) {
+            mSelectedStepIndex = savedInstanceState.getInt(SELECTED_STEP_KEY,
+                    Toolbox.NO_SELECTED_ID);
+        }
+
         mRecyclerView_steps.setLayoutManager(new LinearLayoutManager(
                 getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView_steps.setAdapter(mAdapter);
         mRecyclerView_steps.setHasFixedSize(true);
+
+        mAdapter.setPositionSelected(mSelectedStepIndex);
 
         return view;
     }
@@ -72,7 +88,7 @@ public class CompactStepListFragment extends Fragment {
      */
     private void launchRecipeStepFragment(Step step, int position, String recipeName, int numSteps) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(RecipeStepFragment.STEP_SERIALIZABLE_EXTRA_KEY, step);
+        bundle.putParcelable(RecipeStepFragment.STEP_PARCELABLE_EXTRA_KEY, step);
         bundle.putInt(RecipeStepFragment.STEP_POSITION_EXTRA_KEY, position);
         bundle.putString(RecipeStepFragment.RECIPE_NAME_EXTRA_KEY, recipeName);
         bundle.putInt(RecipeStepFragment.NUM_STEPS_EXTRA_KEY, numSteps);
@@ -80,7 +96,12 @@ public class CompactStepListFragment extends Fragment {
         RecipeStepFragment fragment = new RecipeStepFragment();
         fragment.setArguments(bundle);
 
+        mAdapter.setPositionSelected(mSelectedStepIndex = position);
+
         ((FragmentHost) getActivity()).showFragment(
-                fragment, R.id.step_fragment_container, false);
+                fragment, R.id.step_fragment_container, false, null,
+                null, null,
+                Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
     }
 }

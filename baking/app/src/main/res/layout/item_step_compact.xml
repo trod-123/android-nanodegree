@@ -4,13 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginRight="16dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    app:cardElevation="2dp">
+    android:layout_marginBottom="@dimen/step_item_vertical_padding"
+    android:layout_marginEnd="@dimen/step_item_horizontal_padding"
+    android:layout_marginLeft="@dimen/step_item_horizontal_padding"
+    android:layout_marginRight="@dimen/step_item_horizontal_padding"
+    android:layout_marginStart="@dimen/step_item_horizontal_padding"
+    android:layout_marginTop="@dimen/step_item_vertical_padding"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/item_touch_selector"
+    android:stateListAnimator="@animator/item_elevation"
+    app:cardElevation="@dimen/card_elevation_rest">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,8 +23,8 @@
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/text_step_number"
@@ -29,16 +33,16 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                tools:text="1"/>
+                tools:text="1" />
 
         </FrameLayout>
 
         <TextView
             android:id="@+id/text_step_instruction"
             android:layout_width="0dp"
-            android:layout_weight="3"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_weight="3"
             android:padding="16dp"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             tools:text="Place your hand on the lid and firmly grasp it" />

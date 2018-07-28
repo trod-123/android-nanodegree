@@ -1,20 +1,23 @@
 package com.zn.baking;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.transition.Transition;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.zn.baking.ui.FragmentHost;
 import com.zn.baking.util.Toolbox;
 
 import timber.log.Timber;
 
-import static com.zn.baking.RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY;
+import static com.zn.baking.RecipeListFragment.RECIPE_PARCELABLE_EXTRA_KEY;
 
 public class MainActivity extends AppCompatActivity implements FragmentHost {
 
@@ -62,28 +65,59 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
 //            mUniqueTagIncrementer = savedInstanceState.getInt(
 //                    FRAGMENT_TAG_INCREMENTER_KEY, 0);
         } else if (startIntent != null && startIntent.getExtras() != null &&
-                startIntent.getExtras().containsKey(RECIPE_SERIALIZABLE_EXTRA_KEY)) {
+                startIntent.getExtras().containsKey(RECIPE_PARCELABLE_EXTRA_KEY)) {
             // if intent contains recipe, then it must have launched from widget
             handleLaunchedFromWidget(startIntent);
         } else {
-            showFragment(new RecipeListFragment(), R.id.master_fragment_container, false);
+            showFragment(new RecipeListFragment(), R.id.master_fragment_container,
+                    false, null, null, null,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
         }
     }
 
     @Override
-    protected void onResume() {
-        // TODO: Calling activity from recents, even after having closed app, jumps to same widget
-        // recipe page, if widget had launched activity
-        // perhaps there needs to be something done here in onResume since none of the above code is called
-        // This seems to be a bug in the Gmail app too...
-        super.onResume();
-    }
-
-    @Override
-    public void showFragment(Fragment fragment, int fragmentContainerId, Boolean addToBackstack) {
+    public void showFragment(Fragment fragment, int fragmentContainerId,
+                             Boolean addToBackstack, @Nullable ImageView sharedImageTransition,
+                             @Nullable Transition enterTransition,
+                             @Nullable Transition exitTransition,
+                             int enterAnimResource, int exitAnimResource,
+                             int popEnterAnimResource, int popExitAnimResource) {
         FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction()
-                .replace(fragmentContainerId, fragment);
+                .beginTransaction();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (!mTabletLayout) {
+                // Shared elements
+//            if (sharedImageTransition != null) {
+//                transaction.addSharedElement(sharedImageTransition,
+//                        ViewCompat.getTransitionName(sharedImageTransition));
+//            }
+
+                // Set the enter and exit transitions
+                if (enterTransition != null) {
+                    fragment.setEnterTransition(enterTransition);
+                }
+                Fragment previousFragment = getSupportFragmentManager().findFragmentById(fragmentContainerId);
+                if (previousFragment != null && exitTransition != null) {
+                    previousFragment.setExitTransition(exitTransition);
+                }
+            }
+
+            // Set the custom transition animations
+            if (enterAnimResource != Toolbox.NO_ANIMATOR_RESOURCE &&
+                    exitAnimResource != Toolbox.NO_ANIMATOR_RESOURCE) {
+                if (popEnterAnimResource != Toolbox.NO_ANIMATOR_RESOURCE &&
+                        popExitAnimResource != Toolbox.NO_ANIMATOR_RESOURCE) {
+                    transaction.setCustomAnimations(enterAnimResource, exitAnimResource,
+                            popEnterAnimResource, popExitAnimResource);
+                } else {
+                    transaction.setCustomAnimations(enterAnimResource, exitAnimResource);
+                }
+            }
+        }
+
+        transaction.replace(fragmentContainerId, fragment);
         if (addToBackstack) {
             transaction.addToBackStack(null);
         }
@@ -107,10 +141,11 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
         // an error: "Can not perform this action after onSaveInstanceState"
         super.onNewIntent(intent);
         if (intent != null && intent.getExtras() != null &&
-                intent.getExtras().containsKey(RECIPE_SERIALIZABLE_EXTRA_KEY))
+                intent.getExtras().containsKey(RECIPE_PARCELABLE_EXTRA_KEY)) {
             // handle widget launches here as onCreate() is not called again when activity returns
             // to the foreground.
             handleLaunchedFromWidget(intent);
+        }
     }
 
     /**
@@ -120,21 +155,27 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
      * @param startIntent
      */
     private void handleLaunchedFromWidget(Intent startIntent) {
+        Bundle startIntentExtras = startIntent.getExtras();
         // Prepare the detail fragment
-        DetailRecipeFragment fragment = new DetailRecipeFragment();
-        fragment.setArguments(startIntent.getExtras());
+        DetailRecipeFragment detailRecipeFragment = new DetailRecipeFragment();
+        detailRecipeFragment.setArguments(startIntentExtras);
 
         if (mTabletLayout) {
             // Prepare the recipe list fragment so that the first recipe does not load in details -
             // The user's selected recipe will display instead
             RecipeListFragment recipeListFragment = new RecipeListFragment();
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(RecipeListFragment.LAUNCHED_FROM_WIDGET_KEY, true);
-            recipeListFragment.setArguments(bundle);
+            startIntentExtras.putBoolean(RecipeListFragment.LAUNCHED_FROM_WIDGET_KEY, true);
+            recipeListFragment.setArguments(startIntentExtras);
 
             // if in tablet layout, show both recipe list fragment and detail fragment
-            showFragment(recipeListFragment, R.id.master_fragment_container, false);
-            showFragment(fragment, R.id.detail_fragment_container, false);
+            showFragment(recipeListFragment, R.id.master_fragment_container,
+                    false, null, null, null,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
+            showFragment(detailRecipeFragment, R.id.detail_fragment_container,
+                    false, null, null, null,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
         } else {
             // Remove all fragments from the backstack to prevent duplicating
             // from https://stackoverflow.com/questions/6186433/clear-back-stack-using-fragments
@@ -144,13 +185,13 @@ public class MainActivity extends AppCompatActivity implements FragmentHost {
             // put the list fragment behind the detail fragment
             RecipeListFragment listFragment = new RecipeListFragment();
             getSupportFragmentManager().beginTransaction()
-                    // TODO: Set animations (start and end anims, and shared elements transitions)
-                    // https://stackoverflow.com/questions/4932462/animate-the-transition-between-fragments/33992609
-                    // https://medium.com/bynder-tech/how-to-use-material-transitions-in-fragment-transactions-5a62b9d0b26b
                     .replace(R.id.master_fragment_container, listFragment).commit();
 
             // launch the detail fragment
-            showFragment(fragment, R.id.master_fragment_container, true);
+            showFragment(detailRecipeFragment, R.id.master_fragment_container,
+                    true, null, null, null,
+                    R.animator.slide_bottom_enter, R.animator.slide_bottom_exit,
+                    R.animator.slide_bottom_enter, R.animator.slide_bottom_exit);
         }
     }
 

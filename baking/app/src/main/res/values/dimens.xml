@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="widget_margin">8dp</dimen>
-    <dimen name="widget_minWidth">160dp</dimen>
     <dimen name="widget_minHeight">200dp</dimen>
 
     <dimen name="widget_config_horizontal_padding">0dp</dimen>
+    <dimen name="widget_list_item_horizontal_padding">8dp</dimen>
+    <dimen name="widget_list_item_vertical_padding">4dp</dimen>
+    <dimen name="widget_space">4dp</dimen>
 
     <dimen name="details_horizontal_padding">8dp</dimen>
     <dimen name="details_vertical_padding">8dp</dimen>
     <dimen name="details_space_size">16dp</dimen>
 
+    <dimen name="text_horizontal_padding">48dp</dimen>
+
     <dimen name="details_image_height">240dp</dimen>
+
+    <dimen name="progress_spinner_radius">48dp</dimen>
+
+    <dimen name="recycler_view_item_margin">4dp</dimen>
+    <dimen name="recycler_view_column_width">160dp</dimen>
+    <dimen name="recipe_item_image_height">200dp</dimen>
+
+    <dimen name="step_player_height">240dp</dimen>
+    <dimen name="step_item_horizontal_padding">16dp</dimen>
+    <dimen name="step_item_vertical_padding">4dp</dimen>
+    <dimen name="step_item_image_height">64dp</dimen>
+
+
+    <dimen name="card_elevation_rest">2dp</dimen>
+    <dimen name="card_elevation_elevated">4dp</dimen>
 
 </resources>

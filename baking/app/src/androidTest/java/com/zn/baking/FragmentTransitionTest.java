@@ -37,9 +37,11 @@ public class FragmentTransitionTest {
 
     @Test
     public void goToRecipeDetails_thenBack_verifyRecipeName() {
-        mHelper.showDetailFragment();
-        mHelper.onBackButtonPressed();
-        mHelper.checkIfDisplayed_recipeName_inRecipeList();
+        if (!mHelper.isInTabletMode()) {
+            mHelper.showDetailFragment();
+            mHelper.onBackButtonPressed();
+            mHelper.checkIfDisplayed_recipeName_inRecipeList();
+        }
     }
 
     @Test

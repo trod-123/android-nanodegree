@@ -5,10 +5,12 @@
 
     <dimen name="widget_config_horizontal_padding">256dp</dimen>
 
-    <dimen name="details_horizontal_padding">160dp</dimen>
+    <dimen name="details_horizontal_padding">96dp</dimen>
     <dimen name="details_vertical_padding">16dp</dimen>
     <dimen name="details_space_size">32dp</dimen>
 
     <dimen name="details_image_height">400dp</dimen>
+
+    <dimen name="step_player_height">400dp</dimen>
 
 </resources>

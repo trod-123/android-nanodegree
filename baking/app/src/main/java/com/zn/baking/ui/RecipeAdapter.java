@@ -3,13 +3,14 @@ package com.zn.baking.ui;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.graphics.Palette;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
@@ -17,6 +18,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.zn.baking.R;
+import com.zn.baking.model.JsonParser;
 import com.zn.baking.model.Recipe;
 import com.zn.baking.util.Colors;
 import com.zn.baking.util.Toolbox;
@@ -32,13 +34,45 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
     private List<Recipe> mRecipeList;
     private OnClickHandler mClickHandler;
 
+    private int mPositionSelected = RecyclerView.NO_POSITION;
+
+    public int getPositionSelected() {
+        return mPositionSelected;
+    }
+
+    public void setPositionSelected(int position) {
+        notifyItemChanged(mPositionSelected);
+        mPositionSelected = position;
+        notifyItemChanged(mPositionSelected);
+    }
+
+    public int setPositionSelectedFromId(int recipeId) {
+        Recipe recipe = JsonParser.getRecipeFromListByIdHelper(mRecipeList, recipeId);
+        if (recipe != null) {
+            int position = getRecipePosition(recipe);
+            setPositionSelected(position);
+            return position;
+        } else {
+            return Toolbox.NO_SELECTED_ID;
+        }
+    }
+
+    public RecipeAdapter() {
+    }
+
     public RecipeAdapter(List<Recipe> recipes, OnClickHandler handler) {
         this.mRecipeList = recipes;
         this.mClickHandler = handler;
     }
 
+    public void initAdapter(List<Recipe> recipes, OnClickHandler handler) {
+        this.mRecipeList = recipes;
+        this.mClickHandler = handler;
+        notifyDataSetChanged();
+    }
+
     public interface OnClickHandler {
-        void onClick(Recipe recipe);
+        void onClick(Recipe recipe, ImageView iv_recipeImage);
     }
 
     @NonNull
@@ -51,6 +85,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
     @Override
     public void onBindViewHolder(@NonNull RecipeVH holder, int position) {
+        // Highlight the selected item:
+        // From: https://stackoverflow.com/questions/27194044/how-to-properly-highlight-selected-item-on-recyclerview
+        holder.itemView.setSelected(mPositionSelected == position);
         holder.bindView(mRecipeList.get(position));
     }
 
@@ -67,19 +104,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
         return mRecipeList.indexOf(recipe);
     }
 
-    public void swapLists(List<Recipe> recipes) {
-        this.mRecipeList = recipes;
-        notifyDataSetChanged();
-    }
-
     /**
-     * Returns the recipe at the provided position. Null if index is out of bounds.
+     * Returns the recipe at the provided position. Null if index is out of bounds or if
+     * recipe list is null.
      *
      * @param i
      * @return
      */
     public Recipe getRecipeAtPosition(int i) {
-        if (i < mRecipeList.size())
+        if (mRecipeList != null && i < mRecipeList.size())
             return mRecipeList.get(i);
         else
             return null;
@@ -87,8 +120,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
 
     public class RecipeVH extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @BindView(R.id.container_recipe_card)
+        LinearLayout mLayout_recipe_card;
         @BindView(R.id.image_recipe_photo)
         ImageView mIv_photo;
+        @BindView(R.id.recipe_loading_spinner)
+        ProgressBar mPb_recipe;
         @BindView(R.id.text_num_steps)
         TextView mTv_numSteps;
         @BindView(R.id.container_recipe_title)
@@ -107,6 +144,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
         }
 
         void bindView(Recipe recipe) {
+            // show the progress bar
+            mPb_recipe.setVisibility(View.VISIBLE);
+
             mRecipe = recipe;
             // get the final video via list of steps
             String lastVideoUrl = Toolbox.getLastVideoUrlFromRecipe(recipe);
@@ -115,25 +155,34 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
             RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                    if (e != null) {
-                        Timber.e(e);
-                    }
+                    Timber.e(e != null ? e.getMessage() : "Exception message returned null",
+                            "There was an issue loading the recipe item thumbnail: %s");
+
+                    // hide the progress bar when loaded
+                    mPb_recipe.setVisibility(View.INVISIBLE);
                     return false;
                 }
 
                 @Override
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                    // set the background color of the title container to match color of image (source: https://developer.android.com/training/material/palette-colors)
-                    Palette palette = Palette.from(resource).generate();
-                    int contextColor = palette.getMutedColor(itemView.getResources().getColor(Colors.DEFAULT_RECIPE_CARD_COLOR)); // TODO: Play around with the color options
+                    // set the background color of the title container to match color of image
+                    // TODO: Play around with color options
+                    int contextColor = Toolbox.getBackgroundColor(resource, Toolbox.PaletteSwatch.MUTED, itemView.getResources().getColor(Colors.DEFAULT_RECIPE_CARD_COLOR));
                     mLayout_recipe_title.setBackgroundColor(contextColor);
+                    mLayout_recipe_card.setBackgroundColor(contextColor);
                     int textColor = Toolbox.getTextColorFromBackgroundColor(itemView.getContext(), contextColor);
                     mTv_recipe_name.setTextColor(textColor);
                     mTv_servings.setTextColor(textColor);
+
+                    // hide the progress bar when loaded
+                    mPb_recipe.setVisibility(View.INVISIBLE);
                     return false;
                 }
             };
-            Toolbox.loadThumbnailFromVideoUrl(itemView.getContext(), lastVideoUrl, mIv_photo, listener);
+            Toolbox.loadThumbnailFromUrl(itemView.getContext(), lastVideoUrl, mIv_photo, listener);
+
+            // Set the shared element transition
+            ViewCompat.setTransitionName(mIv_photo, Integer.toString(mRecipe.getId()));
 
             // set the textviews
             mTv_numSteps.setText(
@@ -142,12 +191,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeVH> 
             mTv_recipe_name.setText(recipe.getName());
             mTv_servings.setText(
                     Toolbox.generateNumServingsString(itemView.getContext(), recipe.getServings()));
+
         }
 
         @Override
         public void onClick(View view) {
             if (mRecipe != null) {
-                mClickHandler.onClick(mRecipe);
+                setPositionSelected(getLayoutPosition());
+                mClickHandler.onClick(mRecipe, mIv_photo);
             } else {
                 Toolbox.showToast(view.getContext(),
                         "There was an error registering the Recipe click: Recipe is null");

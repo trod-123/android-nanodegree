@@ -1,9 +1,8 @@
 package com.zn.baking;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,15 +15,22 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -36,7 +42,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 import com.zn.baking.model.Step;
-import com.zn.baking.util.Colors;
+import com.zn.baking.util.OrientationHelper;
 import com.zn.baking.util.Toolbox;
 
 import butterknife.BindView;
@@ -47,8 +53,8 @@ public class RecipeStepFragment extends Fragment {
 
     public static final String BUNDLE_STEP_INTENT_EXTRA_KEY =
             "com.zn.baking.bundle_step_intent_extra_key";
-    public static final String STEP_SERIALIZABLE_EXTRA_KEY =
-            "com.zn.baking.step_serializable_extra_key";
+    public static final String STEP_PARCELABLE_EXTRA_KEY =
+            "com.zn.baking.step_parcelable_extra_key";
     public static final String STEP_POSITION_EXTRA_KEY =
             "com.zn.baking.step_position_extra_key";
     public static final String RECIPE_NAME_EXTRA_KEY =
@@ -69,6 +75,12 @@ public class RecipeStepFragment extends Fragment {
     StepActivity mHostActivity;
     ActionBar mActionBar;
 
+    @BindView(R.id.player_recipe_step_container)
+    FrameLayout mFl_player_container;
+    @BindView(R.id.image_recipe_step)
+    ImageView mIv_step;
+    @BindView(R.id.image_step_loading_spinner)
+    ProgressBar mPb_image;
     SimpleExoPlayer mExoPlayer;
     PlayerView mPlayerView;
     @BindView(R.id.text_step_broad_instruction)
@@ -91,12 +103,14 @@ public class RecipeStepFragment extends Fragment {
     // for controlling orientation changes
     OrientationEventListener mOrientationEventListener;
     private int mCurrentOrientation;
-    private boolean mOrientationJitter = false; // if true, prevents system rotation
+    // used when clicking on exoplayer fullscreen button. if true, prevents system rotation
+    private boolean mOrientationJitter = false;
 
     // keeps track of whether user presses play or pause button, to preserve state across config changes
     private boolean mVideoPlaying = true;
 
     private boolean mTabletLayout;
+    private boolean mVideoLoaded = false;
 
     @Nullable
     @Override
@@ -113,7 +127,7 @@ public class RecipeStepFragment extends Fragment {
 
         // Track the current orientation of the device. Be mindful of tablet devices where
         // orientation is different
-        mCurrentOrientation = getCurrentOrientation(mHostActivity);
+        mCurrentOrientation = OrientationHelper.getCurrentOrientation(mHostActivity);
 
         // Up navigation handled in hosting Activity
         mActionBar = mHostActivity.getSupportActionBar();
@@ -131,7 +145,7 @@ public class RecipeStepFragment extends Fragment {
         }
 
         // populate the UI
-        mStep = (Step) getArguments().getSerializable(STEP_SERIALIZABLE_EXTRA_KEY);
+        mStep = getArguments().getParcelable(STEP_PARCELABLE_EXTRA_KEY);
         int stepPosition = getArguments().getInt(STEP_POSITION_EXTRA_KEY);
         String recipeName = getArguments().getString(RECIPE_NAME_EXTRA_KEY);
         int numSteps = getArguments().getInt(NUM_STEPS_EXTRA_KEY);
@@ -143,9 +157,6 @@ public class RecipeStepFragment extends Fragment {
             } else {
                 mHostActivity.setTitle(getString(R.string.title_step_intro, recipeName));
             }
-            mActionBar.setBackgroundDrawable(new ColorDrawable(getArguments()
-                    .getInt(DetailRecipeFragment.RECIPE_DETAIL_APP_BAR_COLOR_EXTRA_KEY,
-                            Colors.DEFAULT_APP_BAR_COLOR)));
         }
         if (mTv_broad_instruction != null)
             mTv_broad_instruction.setText(mStep.getShortDescription());
@@ -153,103 +164,90 @@ public class RecipeStepFragment extends Fragment {
             mTv_instruction
                     .setText(Toolbox.generateReadableDetailedStepInstruction(mStep.getDescription()));
 
-        // set up the exoplayer
         mPlayerView = view.findViewById(R.id.player_recipe_step);
+
+        String thumbnailUrl = mStep.getThumbnailURL();
         String videoUrl = mStep.getVideoURL();
-        if (!videoUrl.isEmpty()) initializePlayer(Uri.parse(videoUrl), savedVideoPosition);
-        else mPlayerView.setVisibility(View.GONE);
+        if ((!thumbnailUrl.isEmpty() && Toolbox.isVideoFile(thumbnailUrl)) ||
+                (!videoUrl.isEmpty() && Toolbox.isVideoFile(videoUrl))) {
+            // set up the exoplayer if we have a video url. Prioritize the videoUrl
+            // if both are not empty
+            String url = !videoUrl.isEmpty() && !thumbnailUrl.isEmpty() ? videoUrl :
+                    !videoUrl.isEmpty() ? videoUrl : thumbnailUrl;
+            initializePlayer(Uri.parse(url), savedVideoPosition);
 
-        // set up fullscreen mode
-        mDecorView = mHostActivity.getWindow().getDecorView();
-        setFullscreen(mHostActivity.getResources().getConfiguration()); // if loaded in landscape, start in fullscreen
+            // set up fullscreen mode
+            mDecorView = mHostActivity.getWindow().getDecorView();
+            setFullscreen(mHostActivity.getResources().getConfiguration()); // if loaded in landscape, start in fullscreen
+        } else if ((!thumbnailUrl.isEmpty() && Toolbox.isImageFile(thumbnailUrl)) ||
+                (!videoUrl.isEmpty() && Toolbox.isImageFile(videoUrl))) {
+            // if there is no video url, but we have an image url, then load the image without
+            // prepping the ExoPlayer. Prioritize the thumbnailUrl if both are not empty
+            String url = !thumbnailUrl.isEmpty() && !videoUrl.isEmpty() ? thumbnailUrl :
+                    !thumbnailUrl.isEmpty() ? thumbnailUrl : videoUrl;
+            mPb_image.setVisibility(View.VISIBLE);
+            RequestListener<Bitmap> requestListener = new RequestListener<Bitmap>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    Timber.e(e != null ? e.getMessage() : "Exception message returned null",
+                            "There was an issue loading the detail step thumbnail: %s");
+                    mPb_image.setVisibility(View.GONE);
+                    return false;
+                }
 
-        // listen to orientation changes, and update display accordingly.
-        // TODO: Be mindful of tablet devices where orientation is different
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                    mPb_image.setVisibility(View.GONE);
+                    return false;
+                }
+            };
+            Toolbox.loadThumbnailFromUrl(mHostActivity, url, mIv_step, requestListener);
+            mPlayerView.setVisibility(View.GONE);
+        } else {
+            // No image url is provided, so just hide the player and image views
+            mFl_player_container.setVisibility(View.GONE);
+        }
+
+        // handle orientation changes ourselves here
+        // TODO: Video fullscreen is only available for phone devices - implement for tablet devices
         mOrientationEventListener =
                 new OrientationEventListener(mHostActivity, SensorManager.SENSOR_DELAY_NORMAL) {
                     // i = [0,360) where 0 = default and 90 = left side on top
                     @Override
                     public void onOrientationChanged(int i) {
-                        if (!mTabletLayout) {
-                            // only purpose for this is to note which orientation we're coming from
-                            int displayOrientation = getCurrentOrientation(mHostActivity);
-                            int targetOrientation = -1; // don't do anything if this stays -1
+                        // only purpose for this is to note which orientation we're coming from
+                        int displayOrientation = OrientationHelper.getCurrentOrientation(mHostActivity);
+                        // manually update screen rotations, similar to how OS does it
+                        int targetOrientation =
+                                OrientationHelper.getTargetOrientation(displayOrientation, i); // don't do anything if this stays -1
 
-                            // manually update screen rotations, similar to how OS does it
-                            if (displayOrientation == Surface.ROTATION_0) {
-                                if (i >= 67 && i <= 133) {
-                                    targetOrientation = Surface.ROTATION_270;
-                                } else if (i >= 227 && i <= 293) {
-                                    targetOrientation = Surface.ROTATION_90;
-                                }
-                            } else if (displayOrientation == Surface.ROTATION_270) {
-                                if (i <= 23) {
-                                    targetOrientation = Surface.ROTATION_0;
-                                } else if (i >= 227 && i <= 293) {
-                                    targetOrientation = Surface.ROTATION_90;
-                                }
-                            } else if (displayOrientation == Surface.ROTATION_90) {
-                                if (i >= 337) {
-                                    targetOrientation = Surface.ROTATION_0;
-                                } else if (i >= 67 && i <= 133) {
-                                    targetOrientation = Surface.ROTATION_270;
-                                }
-                            }
-
-                            // this is where "overriding" OS rotations happens.
-                            // only rotate if there is no jitter
-                            if (!mOrientationJitter && targetOrientation != -1) {
+                        // this is where "overriding" OS rotations happens.
+                        // only rotate if there is no jitter
+                        if (!mOrientationJitter && targetOrientation !=
+                                OrientationHelper.ROTATION_NO_CHANGE) {
+                            if (!mTabletLayout && mVideoLoaded) {
                                 setFullscreen(targetOrientation != Surface.ROTATION_0,
                                         targetOrientation);
+                            } else if (!mVideoLoaded) {
+                                setLandscape(targetOrientation != Surface.ROTATION_0,
+                                        targetOrientation);
+                            }
+                        } else if (mOrientationJitter) {
+                            // otherwise, without rotating, get the actual device orientation
+                            int deviceOrientation =
+                                    OrientationHelper.getDeviceOrientation(i);
 
-                            } else if (mOrientationJitter) {
-                                // otherwise, without rotating, get the actual device orientation
-                                int deviceOrientation;
-
-                                if (i >= 315 || i <= 45) {
-                                    deviceOrientation = Surface.ROTATION_0;
-                                } else if (i <= 135) {
-                                    deviceOrientation = Surface.ROTATION_270;
-                                } else if (i <= 225) {
-                                    deviceOrientation = Surface.ROTATION_180;
-                                } else {
-                                    deviceOrientation = Surface.ROTATION_90;
-                                }
-
-                                // when device orientation matches or is opposite of the display
-                                // orientation, turn off the jitter so user can freely rotate again
-                                if (deviceOrientation == displayOrientation ||
-                                        deviceOrientation == oppositeOrientation(displayOrientation)) {
-                                    mOrientationJitter = false;
-                                }
+                            // when device orientation matches or is opposite of the display
+                            // orientation, turn off the jitter so user can freely rotate again
+                            if (deviceOrientation == displayOrientation ||
+                                    deviceOrientation == OrientationHelper.getOppositeOrientation(displayOrientation)) {
+                                mOrientationJitter = false;
                             }
                         }
                     }
                 };
-        mOrientationEventListener.enable();
 
         return view;
-    }
-
-    /**
-     * Helper method that returns the opposite orientation provided. Return -1 if invalid.
-     *
-     * @param orientation
-     * @return
-     */
-    private int oppositeOrientation(int orientation) {
-        switch (orientation) {
-            case Surface.ROTATION_0:
-                return Surface.ROTATION_180;
-            case Surface.ROTATION_90:
-                return Surface.ROTATION_270;
-            case Surface.ROTATION_180:
-                return Surface.ROTATION_0;
-            case Surface.ROTATION_270:
-                return Surface.ROTATION_90;
-            default:
-                return -1;
-        }
     }
 
     @Override
@@ -280,6 +278,26 @@ public class RecipeStepFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mOrientationEventListener != null) {
+            mOrientationEventListener.enable();
+        }
+        // If coming out of the app from fullscreen mode, restore system bars here
+        if (!mTabletLayout && !isLandscape() && !mActionBar.isShowing()) {
+            mActionBar.show();
+            mBtn_exoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
+            // TODO <small issue>: Upon showing the action bar, a top portion of the video gets cut
+            // off. fix it here. Might need to set the style of this activity to NoActionBar and
+            // then handle all action bar stuff programmatically?
+            if (mDecorView != null) {
+                //mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            }
+        }
+    }
+
+
     /**
      * Sets up the exo player with the Step video
      *
@@ -298,7 +316,8 @@ public class RecipeStepFragment extends Fragment {
             // resize video player container appropriately once video is loaded. setting video
             // height to "WRAP_CONTENT" in the XML requires calculation before determining dimens
             // The time it takes is illustrated by the video player loading in fullscreen to start
-            // with. so best to do it dynamically through here
+            // with if "wrap_content" is provided in the resource file.
+            // so best to do it dynamically through here, and put an initial fixed height in the xml
             mExoPlayer.addVideoListener(new VideoListener() {
                 @Override
                 public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
@@ -307,8 +326,14 @@ public class RecipeStepFragment extends Fragment {
 
                 @Override
                 public void onRenderedFirstFrame() {
-                    if (mTabletLayout || !isFullscreen()) {
-                        mPlayerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    if (mTabletLayout || !isLandscape()) {
+                        mFl_player_container.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT));
+                    } else if (isLandscape()) {
+                        mFl_player_container.setLayoutParams(new LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
                     }
                 }
             });
@@ -346,7 +371,11 @@ public class RecipeStepFragment extends Fragment {
                     .createMediaSource(videoUri);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.seekTo(position);
+            // only loop by default if step is not intro
+            if (mStep.getId() != 0)
+                mExoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
             mExoPlayer.setPlayWhenReady(mVideoPlaying);
+            mVideoLoaded = true;
         }
     }
 
@@ -354,7 +383,7 @@ public class RecipeStepFragment extends Fragment {
      * Helper method for forcing exolayer in and out of fullscreen mode, while enabling jitter
      */
     public void forceChangeFullscreen() {
-        setFullscreen(!isFullscreen(), mCurrentOrientation); // negate boolean to change fullscreen mode
+        setFullscreen(!isLandscape(), mCurrentOrientation); // negate boolean to change fullscreen mode
         mOrientationJitter = true;
     }
 
@@ -369,29 +398,28 @@ public class RecipeStepFragment extends Fragment {
     }
 
     /**
-     * Helper method to set fullscreen mode for the exo player depending on current screen
-     * configuration
+     * Helper method to set fullscreen mode for the exo player if current screen orientation is
+     * not Configuration.ORIENTATION_PORTRAIT. Otherwise, don't do anything
      *
      * @param config
      */
-    public void setFullscreen(Configuration config) {
-        if (config.orientation == Configuration.ORIENTATION_PORTRAIT)
-            setFullscreen(false, mCurrentOrientation);
-        else setFullscreen(true, mCurrentOrientation);
+    private void setFullscreen(Configuration config) {
+        if (config.orientation != Configuration.ORIENTATION_PORTRAIT)
+            setFullscreen(true, mCurrentOrientation);
     }
 
     /**
      * Helper method to set fullscreen mode for the exo player
+     * TODO: Fullscreen is only available for phone devices - implement for tablet devices
      *
      * @param setFullscreen
      * @param landscapeOrientation
      */
-    public void setFullscreen(boolean setFullscreen, int landscapeOrientation) {
+    private void setFullscreen(boolean setFullscreen, int landscapeOrientation) {
         if (!mTabletLayout) {
-            // TODO: Don't do rotations if in tablet layout
             if (setFullscreen) enterFullscreen(landscapeOrientation);
             else exitFullscreen();
-            mCurrentOrientation = getCurrentOrientation(mHostActivity);
+            mCurrentOrientation = OrientationHelper.getCurrentOrientation(mHostActivity);
         }
     }
 
@@ -401,14 +429,11 @@ public class RecipeStepFragment extends Fragment {
      */
     private void enterFullscreen(int landscapeOrientation) {
         mBtn_exoFullscreen.setImageResource(R.drawable.ic_fullscreen_exit_white_24dp);
+        mFl_player_container.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        enterLandscape(landscapeOrientation);
         hideSystemBars();
-
-        if (landscapeOrientation == Surface.ROTATION_270)
-            // "Reverse landscape" is when device's left side is on top
-            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-        else
-            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
     /**
@@ -417,50 +442,55 @@ public class RecipeStepFragment extends Fragment {
      */
     private void exitFullscreen() {
         mBtn_exoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
+        mFl_player_container.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        // show the app bar and status bar
+        exitLandscape();
         showSystemBars();
-
-        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    public boolean isFullscreen() {
+    public boolean isLandscape() {
         return mHostActivity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    public int getCurrentOrientation() {
-        return mCurrentOrientation;
+    private void setLandscape(boolean setLandscape, int landscapeOrientation) {
+        if (setLandscape) enterLandscape(landscapeOrientation);
+        else exitLandscape();
+        mCurrentOrientation = OrientationHelper.getCurrentOrientation(mHostActivity);
     }
 
-    public void setOrientationJitter(boolean value) {
-        mOrientationJitter = true;
+    private void enterLandscape(int landscapeOrientation) {
+        if (landscapeOrientation == Surface.ROTATION_270)
+            // "Reverse landscape" is when device's left side is on top
+            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        else
+            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
-    /**
-     * Helper for getting current screen orientation. See more: getRotation() method
-     *
-     * @param context
-     * @return
-     */
-    private int getCurrentOrientation(Context context) {
-        return ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay().getRotation();
+    private void exitLandscape() {
+        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    public boolean isVideoLoaded() {
+        return mVideoLoaded;
     }
 
     private void showSystemBars() {
         if (!mActionBar.isShowing())
             mActionBar.show();
-        mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        if (mDecorView != null)
+            mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     private void hideSystemBars() {
         if (mActionBar.isShowing())
             mActionBar.hide();
-        mDecorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        if (mDecorView != null)
+            mDecorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 }

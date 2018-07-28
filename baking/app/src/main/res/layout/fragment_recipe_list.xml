@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recyclerview_recipe_list"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swiperefresh_recyclerview_recipe_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.zn.baking.ui.AutofitRecyclerView
+            android:id="@+id/recyclerview_recipe_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:padding="@dimen/recycler_view_item_margin"
+            android:columnWidth="@dimen/recycler_view_column_width"
+            android:clipToPadding="false"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/text_recipe_list_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/text_horizontal_padding"
+        android:layout_marginStart="@dimen/text_horizontal_padding"
+        android:gravity="center_horizontal" />
+
+</FrameLayout>

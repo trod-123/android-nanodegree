@@ -1,10 +1,10 @@
 package com.zn.baking;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import timber.log.Timber;
 
-public class BakingApp extends Application {
+public class BakingApp extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();

@@ -13,4 +13,10 @@
     <color name="textColorSecondary">#ffffff</color>
     <color name="textColorLight">#ffffff</color>
     <color name="textColorDark">#000000</color>
+
+    <color name="divider">#dfdfdf</color>
+    <color name="textColor_listView">#747474</color>
+
+    <color name="selector">#5f000000</color>
+
 </resources>

@@ -70,7 +70,7 @@ public class IngredientsListRemoteViewsService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int i) {
-            RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.item_ingredient);
+            RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.widget_item_ingredient);
             Ingredient ingredient = mIngredientList.get(i);
 
             views.setTextViewText(R.id.text_ingredient_name, ingredient.getIngredient());

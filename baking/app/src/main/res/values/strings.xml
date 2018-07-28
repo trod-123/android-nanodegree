@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Baking</string>
     <string name="recipe_file_name" translatable="false">recipes.json</string>
-    <string name="tablet_layout">Tablet</string>
+    <string name="recipe_url" translatable="false">http://go.udacity.com/android-baking-app-json</string>
+
+    <string name="tablet_layout" translatable="false">Tablet</string>
 
     <string name="label_ingredients"><b>You need:</b></string>
     <string name="label_steps"><b>Step-by-step videos:</b></string>
@@ -43,7 +45,7 @@
         <item quantity="one">%.1f ounce</item>
         <item quantity="other">%.1f ounces</item>
     </plurals>
-    <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_ingredients_config_name">Choose a recipe for the widget</string>
+    <string name="empty_recipe_list_status">The recipe database is empty.\n\nPlease make sure you are connected to the internet before swiping down to refresh.</string>
 </resources>

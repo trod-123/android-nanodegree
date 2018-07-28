@@ -1,13 +1,17 @@
 package com.zn.baking;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,8 +22,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.zn.baking.model.Recipe;
 import com.zn.baking.model.Step;
 import com.zn.baking.ui.StepAdapter;
@@ -39,11 +48,15 @@ public class DetailRecipeFragment extends Fragment {
 
     public static final String RECIPE_DETAIL_APP_BAR_COLOR_EXTRA_KEY =
             "com.zn.baking.recipe_detail_appbar_color_extra_key";
+    public static final String RECIPE_DETAIL_SHARED_IMAGE_TRANSITION =
+            "com.zn.baking.recipe_detail_shared_image_transition";
 
     @BindView(R.id.root_details)
     NestedScrollView mNestedScrollView_root;
     @BindView(R.id.image_details_recipe_photo)
     ImageView mIv_photo;
+    @BindView(R.id.recipe_image_loading_spinner)
+    ProgressBar mPb_recipe;
     @BindView(R.id.text_details_recipe_name)
     TextView mTv_name;
     @BindView(R.id.text_details_num_servings)
@@ -60,10 +73,18 @@ public class DetailRecipeFragment extends Fragment {
     String mLastVideoUrl;
     private boolean mInstantiated = false; // for making sure fragment is scrolled to top when loaded
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recipe_details, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        postponeEnterTransition();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getActivity()).inflateTransition(android.R.transition.move));
+        }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         Timber.tag(MainActivity.class.getSimpleName());
 
@@ -83,8 +104,8 @@ public class DetailRecipeFragment extends Fragment {
         supportActionBar.setBackgroundDrawable(new ColorDrawable(mAppBarColor));
 
         // Fill in recipe details
-        mRecipe = (Recipe) getArguments().getSerializable(
-                RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY);
+        mRecipe = getArguments().getParcelable(
+                RecipeListFragment.RECIPE_PARCELABLE_EXTRA_KEY);
         if (mRecipe != null && !mRecipe.getName().isEmpty()) {
             // Set the title of the app bar, in the proper coloring based on app bar background
             String htmlTextColor = String.format(Locale.US, "#%06x",
@@ -115,18 +136,50 @@ public class DetailRecipeFragment extends Fragment {
             });
             mInstantiated = true;
         }
+    }
 
-        return view;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_recipe_details, container, false);
     }
 
     /**
      * Helper method for binding views
      */
     private void setupUI() {
+        mPb_recipe.setVisibility(View.VISIBLE);
+
         // set imageview
         mLastVideoUrl = Toolbox.getLastVideoUrlFromRecipe(mRecipe);
         if (mLastVideoUrl != null && !mLastVideoUrl.isEmpty())
-            Toolbox.loadThumbnailFromVideoUrl(getContext(), mLastVideoUrl, mIv_photo, null);
+            Toolbox.loadThumbnailFromUrl(getContext(), mLastVideoUrl, mIv_photo, new RequestListener<Bitmap>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    startPostponedEnterTransition();
+
+                    Timber.e(e != null ? e.getMessage() : "Exception message returned null",
+                            "There was an issue loading the detail image thumbnail: %s");
+
+                    // hide the progress bar when loaded
+                    mPb_recipe.setVisibility(View.INVISIBLE);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                    startPostponedEnterTransition();
+                    // hide the progress bar when loaded
+                    mPb_recipe.setVisibility(View.INVISIBLE);
+                    return false;
+                }
+            });
+
+        // prepare the shared image transition
+        String recipeImageTransitionName = getArguments().getString(RECIPE_DETAIL_SHARED_IMAGE_TRANSITION);
+        if (recipeImageTransitionName != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mIv_photo.setTransitionName(recipeImageTransitionName);
+        }
 
         // set textviews
         mTv_name.setText(mRecipe.getName());
@@ -150,6 +203,7 @@ public class DetailRecipeFragment extends Fragment {
                 getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView_steps.setAdapter(mAdapter);
         mRecyclerView_steps.setHasFixedSize(true);
+        ViewCompat.setNestedScrollingEnabled(mRecyclerView_steps, false); // disable nested scrolling so scrolls are "contained" within parent layout (source: https://stackoverflow.com/questions/41134460/nested-scroll-view-not-scrolling-smoothly-with-recyclerview-android)
     }
 
     /**
@@ -162,8 +216,8 @@ public class DetailRecipeFragment extends Fragment {
      */
     private void runRecipeStepActivity(Step step, int position, String recipeName, int numSteps) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY, mRecipe);
-        bundle.putSerializable(RecipeStepFragment.STEP_SERIALIZABLE_EXTRA_KEY, step);
+        bundle.putParcelable(RecipeListFragment.RECIPE_PARCELABLE_EXTRA_KEY, mRecipe);
+        bundle.putParcelable(RecipeStepFragment.STEP_PARCELABLE_EXTRA_KEY, step);
         bundle.putInt(RecipeStepFragment.STEP_POSITION_EXTRA_KEY, position);
         bundle.putString(RecipeStepFragment.RECIPE_NAME_EXTRA_KEY, recipeName);
         bundle.putInt(RecipeStepFragment.NUM_STEPS_EXTRA_KEY, numSteps);

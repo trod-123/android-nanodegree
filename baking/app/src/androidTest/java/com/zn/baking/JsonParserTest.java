@@ -1,20 +1,41 @@
-package com.zn.baking
+package com.zn.baking;
 
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
-import com.zn.baking.model.JsonParser
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
-import org.junit.Test
-import org.junit.runner.RunWith
+import com.zn.baking.model.JsonParser;
+import com.zn.baking.model.Recipe;
+import com.zn.baking.util.HttpUtils;
 
-import org.junit.Assert.*
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-@RunWith(AndroidJUnit4::class)
-class JsonParserTest {
+import java.io.IOException;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+@RunWith(AndroidJUnit4.class)
+public class JsonParserTest {
+
+    private Context mAppContext;
+
+    @Before
+    public void setUp() {
+        mAppContext = InstrumentationRegistry.getTargetContext();
+    }
 
     @Test
-    fun checkRecipeJsonParsingFromString() {
-        val content = "[\n" +
+    public void checkRecipeJsonParsingFromString() {
+        String content = "[\n" +
                 "{\n" +
                 "\"id\": 1,\n" +
                 "\"name\": \"Nutella Pie\",\n" +
@@ -118,25 +139,53 @@ class JsonParserTest {
                 "],\n" +
                 "\"servings\": 8,\n" +
                 "\"image\": \"\"\n" +
-                "}]"
-        checkRecipeJsonParsing(content)
+                "}]";
+        checkRecipeJsonParsing(content);
     }
 
     @Test
-    fun checkRecipeJsonParsingFromFile() {
-        val appContext = InstrumentationRegistry.getTargetContext()
-        val content = JsonParser.openFileFromAssets(appContext, "recipes.json")
-
-        checkRecipeJsonParsing(content)
+    public void checkRecipeJsonParsingFromUrlSynchronously() {
+        String content;
+        try {
+            content = HttpUtils.getStringResponseFromUrlSynchronously(mAppContext.getString(R.string.recipe_url));
+            System.out.println(content);
+            checkRecipeJsonParsing(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
-    private fun checkRecipeJsonParsing(recipeJson: String) {
-        val recipes = JsonParser.parseRecipeFromJson(recipeJson)
-        val recipe = recipes[0]
-        assertTrue(recipe.id == 1)
-        assertTrue(recipe.name == "Nutella Pie")
-        assertTrue(recipe.ingredients[1].quantity == 6.0)
-        assertTrue(recipe.steps[3].shortDescription == "Press the crust into baking form.")
-        assertTrue(recipe.servings == 8)
+    @Test
+    public void checkRecipeJsonParsingFromUrlAsynchronously() {
+        HttpUtils.getStringResponseFromUrlAsynchronously(mAppContext.getString(R.string.recipe_url), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                fail();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String stringResponse = response.body().string();
+                Log.d("TAG", stringResponse);
+                checkRecipeJsonParsing(stringResponse);
+            }
+        });
+    }
+
+
+    private void checkRecipeJsonParsing(String recipeJson) {
+        List<Recipe> recipes = JsonParser.parseRecipeListFromJson(recipeJson);
+        if (recipes != null) {
+            Recipe recipe = recipes.get(0);
+            assertTrue(recipe.getId() == 1);
+            assertTrue(recipe.getName().equals("Nutella Pie"));
+            assertTrue(recipe.getIngredients().get(1).getQuantity() == 6.0);
+            assertTrue(recipe.getSteps().get(3).getShortDescription().equals("Press the crust into baking form."));
+            assertTrue(recipe.getServings() == 8);
+        } else {
+            fail();
+        }
     }
 }

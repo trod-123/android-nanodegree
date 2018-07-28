@@ -1,24 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
-    android:orientation="vertical"
-    android:padding="@dimen/widget_margin">
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/widget_click_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
-        android:layout_marginTop="8dp">
+        android:layout_weight="2">
 
         <ImageView
             android:id="@+id/widget_image_recipe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:tint="#60000000"/>
+            android:scaleType="centerCrop"
+            android:tint="#60000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,9 +31,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 android:shadowColor="@color/textColorDark"
-                android:textColor="@color/textColorLight"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textColor="@color/textColorDark"
                 tools:text="Recipe name" />
 
             <TextView
@@ -42,19 +41,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                 android:shadowColor="@color/textColorDark"
-                android:textColor="@color/textColorLight"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+                android:textColor="@color/textColorDark"
                 tools:text="Makes 10 servings" />
 
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/widget_loading_spinner"
+            android:layout_width="@dimen/progress_spinner_radius"
+            android:layout_height="@dimen/progress_spinner_radius"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
     </FrameLayout>
 
+    <!-- Colors of item text and dividers need to be explicitly defined for API 23 (M, and probably lower) - otherwise they will just be shown as white -->
     <ListView
         android:id="@+id/widget_list_view_ingredients"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3" />
+        android:layout_weight="3"
+        android:divider="@color/divider"
+        android:dividerHeight="1dp"/>
 
 </LinearLayout>

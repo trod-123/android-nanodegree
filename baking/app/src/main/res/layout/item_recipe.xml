@@ -4,28 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/item_touch_selector"
     android:minHeight="120dp"
-    app:cardElevation="2dp">
+    android:stateListAnimator="@animator/item_elevation"
+    app:cardElevation="@dimen/card_elevation_rest">
 
     <LinearLayout
+        android:id="@+id/container_recipe_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/image_recipe_photo"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp" /> <!-- TODO: NO MAGIC NUMBERS -->
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/image_recipe_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/recipe_item_image_height"
+                    android:scaleType="centerCrop" />
+
+                <ProgressBar
+                    android:id="@+id/recipe_loading_spinner"
+                    android:layout_width="@dimen/progress_spinner_radius"
+                    android:layout_height="@dimen/progress_spinner_radius"
+                    android:layout_gravity="center"
+                    android:indeterminate="true" />
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/text_num_steps"
+                style="@style/Theme.Baking.TextView.StepNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Theme.Baking.TextView.StepNumber"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="1" />
@@ -35,9 +54,10 @@
         <LinearLayout
             android:id="@+id/container_recipe_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="@color/colorSecondary"
+            android:orientation="vertical"
             android:padding="12dp">
 
             <TextView

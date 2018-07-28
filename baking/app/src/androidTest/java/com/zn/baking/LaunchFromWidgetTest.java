@@ -44,15 +44,19 @@ public class LaunchFromWidgetTest {
 
     @Test
     public void loadFromWidget_pressBackFromDetails_checkIfDisplayed_recipeName_inRecipeList() {
-        mHelper.onBackButtonPressed();
-        mHelper.checkIfDisplayed_recipeName_inRecipeList();
+        if (!mHelper.isInTabletMode()) {
+            mHelper.onBackButtonPressed();
+            mHelper.checkIfDisplayed_recipeName_inRecipeList();
+        }
     }
 
     @Test
     public void loadFromWidget_pressBackFromDetails_loadFromDifferentWidget_checkIfDisplayed_shortStepDescription_inRecipeDetails() {
-        mHelper.onBackButtonPressed();
-        setWidgetIntentHelper(true);
-        mHelper.checkIfDisplayed_shortStepDescription_inRecipeDetails();
+        if (!mHelper.isInTabletMode()) {
+            mHelper.onBackButtonPressed();
+            setWidgetIntentHelper(true);
+            mHelper.checkIfDisplayed_shortStepDescription_inRecipeDetails();
+        }
     }
 
     /**
@@ -61,7 +65,7 @@ public class LaunchFromWidgetTest {
     private void setWidgetIntentHelper(boolean reinitEspressoHelper) {
         Intent detailIntent = new Intent();
         if (reinitEspressoHelper) mHelper.reinitFields();
-        detailIntent.putExtra(RecipeListFragment.RECIPE_SERIALIZABLE_EXTRA_KEY, mHelper.getRecipe());
+        detailIntent.putExtra(RecipeListFragment.RECIPE_PARCELABLE_EXTRA_KEY, mHelper.getRecipe());
         // simulate widget launch via MainActivity's overridden onNewIntent() method
         mMainActivityTestRule.getActivity().onNewIntent(detailIntent);
     }

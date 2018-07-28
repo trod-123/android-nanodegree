@@ -9,6 +9,9 @@ import android.support.test.espresso.contrib.RecyclerViewActions;
 
 import com.zn.baking.model.JsonParser;
 import com.zn.baking.model.Recipe;
+import com.zn.baking.util.Toolbox;
+
+import org.hamcrest.Matchers;
 
 import java.util.List;
 import java.util.Random;
@@ -38,16 +41,16 @@ public class EspressoTestHelper {
     private String mExpectedRecipeName;
     private String mExpectedStepShortDescription;
 
+    private boolean mTabletMode;
+
     /**
      * Prepares the recipe content with random expected values
      */
     EspressoTestHelper(Context context) {
-        mRecipes = JsonParser.getRecipeListFromAssets(context);
-        mRecipeId = generateRandomRecipeId();
-        mStepId = generateRandomStepId();
-        mRecipe = mRecipes.get(mRecipeId);
-        mExpectedRecipeName = mRecipe.getName();
-        mExpectedStepShortDescription = mRecipe.getSteps().get(mStepId).getShortDescription();
+        mRecipes = JsonParser.getRecipeListFromUserCache(context);
+        reinitFields();
+
+        mTabletMode = Toolbox.isInTabletLayout(context);
     }
 
     /**
@@ -85,6 +88,14 @@ public class EspressoTestHelper {
 
     public String getExpectedStepShortDescription() {
         return mExpectedStepShortDescription;
+    }
+
+    public boolean isInTabletMode() {
+        return mTabletMode;
+    }
+
+    public void setTabletMode(boolean mTabletMode) {
+        this.mTabletMode = mTabletMode;
     }
 
     // endregion
@@ -138,7 +149,7 @@ public class EspressoTestHelper {
     public void checkIfDisplayed_recipeName_inRecipeList() {
         onView(withId(R.id.recyclerview_recipe_list))
                 .perform(RecyclerViewActions.scrollToPosition(mRecipeId));
-        onView(withText(mExpectedRecipeName))
+        onView(Matchers.allOf(withId(R.id.text_recipe_name), withText(mExpectedRecipeName)))
                 .check(matches(isDisplayed()));
     }
 
@@ -194,6 +205,7 @@ public class EspressoTestHelper {
     /**
      * Generates a random recipe id based on the number of recipes. Assumes id numbering of recipes
      * is contiguous, without skipping
+     *
      * @return
      */
     private int generateRandomRecipeId() {
@@ -214,6 +226,7 @@ public class EspressoTestHelper {
 
     /**
      * Gets the max number of steps that exists across all recipes
+     *
      * @return
      */
     private int getMaxNumSteps() {

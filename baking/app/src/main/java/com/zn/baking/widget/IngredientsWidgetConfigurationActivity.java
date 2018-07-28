@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.zn.baking.DetailRecipeFragment;
 import com.zn.baking.R;
 import com.zn.baking.RecipeListFragment;
 import com.zn.baking.model.Recipe;
@@ -57,10 +58,11 @@ public class IngredientsWidgetConfigurationActivity extends AppCompatActivity
     }
 
     @Override
-    public void passRecipeBackToActivity(Recipe recipe) {
+    public void passRecipeBackToActivity(Recipe recipe, int appBarColor) {
         // Update the app widget with the recipe
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId, recipe);
+        IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId,
+                recipe, appBarColor);
 
         // Pass back the original appWidgetId
         Intent resultValue = new Intent();

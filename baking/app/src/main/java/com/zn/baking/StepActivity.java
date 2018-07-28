@@ -1,14 +1,18 @@
 package com.zn.baking;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.transition.Transition;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.zn.baking.ui.FragmentHost;
+import com.zn.baking.util.Colors;
 import com.zn.baking.util.Toolbox;
 
 import timber.log.Timber;
@@ -29,6 +33,14 @@ public class StepActivity extends AppCompatActivity implements FragmentHost {
         // Get if device is in tablet mode
         mTabletLayout = Toolbox.isInTabletLayout(this);
 
+        Intent intent = getIntent();
+
+        // set the app bar color here so fragments don't keep doing it
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(
+                intent.getBundleExtra(RecipeStepFragment.BUNDLE_STEP_INTENT_EXTRA_KEY)
+                        .getInt(DetailRecipeFragment.RECIPE_DETAIL_APP_BAR_COLOR_EXTRA_KEY,
+                                Colors.DEFAULT_APP_BAR_COLOR)));
+
         if (savedInstanceState != null) {
             // load the reference to the current fragment that is displayed
             if (savedInstanceState.containsKey(TAG_CURRENT_FRAGMENT)) {
@@ -36,16 +48,20 @@ public class StepActivity extends AppCompatActivity implements FragmentHost {
                         .findFragmentByTag(savedInstanceState.getString(TAG_CURRENT_FRAGMENT));
             }
         } else {
-            Intent intent = getIntent();
-
             if (mTabletLayout) {
                 // If in tablet mode, create a fragment with the list of steps
                 CompactStepListFragment stepListFragment = createStepListFragment(intent);
-                showFragment(stepListFragment, R.id.step_list_fragment_container, false);
+                showFragment(stepListFragment, R.id.step_list_fragment_container,
+                        false, null, null, null,
+                        Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                        Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
             }
             // create a fragment with the recipe step details
             mStepFragment = createRecipeStepFragment(intent);
-            showFragment(mStepFragment, R.id.step_fragment_container, false);
+            showFragment(mStepFragment, R.id.step_fragment_container,
+                    false, null, null, null,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE,
+                    Toolbox.NO_ANIMATOR_RESOURCE, Toolbox.NO_ANIMATOR_RESOURCE);
         }
     }
 
@@ -55,7 +71,12 @@ public class StepActivity extends AppCompatActivity implements FragmentHost {
      * @param fragment
      * @param addToBackstack
      */
-    public void showFragment(Fragment fragment, int fragmentContainerId, Boolean addToBackstack) {
+    @Override
+    public void showFragment(Fragment fragment, int fragmentContainerId,
+                             Boolean addToBackstack, ImageView sharedImageTransition,
+                             Transition enterTransition, Transition exitTransition,
+                             int enterAnimResource, int exitAnimResource,
+                             int popEnterAnimResource, int popExitAnimResource) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(fragmentContainerId, fragment,
@@ -88,13 +109,19 @@ public class StepActivity extends AppCompatActivity implements FragmentHost {
 
     @Override
     public void onBackPressed() {
-        if (!mTabletLayout && mStepFragment.isFullscreen()) {
-            // Exit out of full screen mode when back button is pressed
+        if (!mTabletLayout && mStepFragment.isLandscape() && mStepFragment.isVideoLoaded()) {
+            // Exit out of full screen mode when back button is pressed, only when video is loaded
             mStepFragment.forceChangeFullscreen();
         } else
             super.onBackPressed();
     }
 
+    /**
+     * Creates a step list fragment out of the passed data (used for dual-pane UI layouts)
+     *
+     * @param data
+     * @return
+     */
     private CompactStepListFragment createStepListFragment(Intent data) {
         Bundle bundle = data.getBundleExtra(RecipeStepFragment.BUNDLE_STEP_INTENT_EXTRA_KEY);
         CompactStepListFragment fragment = new CompactStepListFragment();

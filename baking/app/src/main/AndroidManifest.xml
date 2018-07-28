@@ -12,17 +12,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Baking">
+
+        <!-- With singleTop launchMode, when instance from widget is in background, this allows launching that instance when app is run from launcher (widget needs to include additional flags FLAG_ACTIVITY_NEW_TASK and FLAG_ACTIVITY_CLEAR_TASK to prevent duplicates) -->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".StepActivity" />
+        <!-- ConfigChanges are required for retaining exoplayer instance. Note "screenSize" must also be included for onConfigurationChanged to be called in API 23 and lower -->
+        <activity
+            android:name=".StepActivity"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".MainActivity" />
 
         <activity android:name=".widget.IngredientsWidgetConfigurationActivity">
             <intent-filter>
