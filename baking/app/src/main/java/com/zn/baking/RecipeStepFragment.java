@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.hardware.SensorManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,15 +63,7 @@ public class RecipeStepFragment extends Fragment {
     public static final String NUM_STEPS_EXTRA_KEY =
             "com.zn.baking.num_steps_extra_key";
 
-    public static final String STEP_VIDEO_POSITION_EXTRA_KEY =
-            "com.zn.baking.step_video_position_extra_key";
     public static final long DEFAULT_STEP_VIDEO_POSITION = 0;
-
-    public static final String ORIENTATION_JITTER_EXTRA_KEY =
-            "com.zn.baking.orientation_jitter_extra_key";
-
-    public static final String VIDEO_CURRENTLY_PLAYING_EXTRA_KEY =
-            "com.zn.baking.video_currently_playing_extra_key";
 
     StepActivity mHostActivity;
     ActionBar mActionBar;
@@ -111,6 +104,9 @@ public class RecipeStepFragment extends Fragment {
 
     private boolean mTabletLayout;
     private boolean mVideoLoaded = false;
+    private Uri mVideoUri;
+    private long mVideoPosition = DEFAULT_STEP_VIDEO_POSITION;
+
 
     @Nullable
     @Override
@@ -134,15 +130,18 @@ public class RecipeStepFragment extends Fragment {
         mActionBar.setDisplayHomeAsUpEnabled(true);
 
         // load up the saved video position for restoring state
-        long savedVideoPosition = DEFAULT_STEP_VIDEO_POSITION;
-        if (savedInstanceState != null) {
-            savedVideoPosition = savedInstanceState
-                    .getLong(STEP_VIDEO_POSITION_EXTRA_KEY, DEFAULT_STEP_VIDEO_POSITION);
-            mVideoPlaying = savedInstanceState
-                    .getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
-            mOrientationJitter = savedInstanceState
-                    .getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
-        }
+        // TODO: None of this is even called since we are handing config changes ourselves. Delete
+//        if (savedInstanceState != null) {
+//            mVideoPosition = savedInstanceState
+//                    .getLong(STEP_VIDEO_POSITION_EXTRA_KEY, DEFAULT_STEP_VIDEO_POSITION);
+//            mVideoPlaying = savedInstanceState
+//                    .getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
+//            mOrientationJitter = savedInstanceState
+//                    .getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
+//        }
+
+        // TODO: Provide default constructor for step fragment to ensure all necessary arguments are
+        // provided to set up fragment properly
 
         // populate the UI
         mStep = getArguments().getParcelable(STEP_PARCELABLE_EXTRA_KEY);
@@ -170,11 +169,12 @@ public class RecipeStepFragment extends Fragment {
         String videoUrl = mStep.getVideoURL();
         if ((!thumbnailUrl.isEmpty() && Toolbox.isVideoFile(thumbnailUrl)) ||
                 (!videoUrl.isEmpty() && Toolbox.isVideoFile(videoUrl))) {
+            mVideoLoaded = true;
             // set up the exoplayer if we have a video url. Prioritize the videoUrl
             // if both are not empty
             String url = !videoUrl.isEmpty() && !thumbnailUrl.isEmpty() ? videoUrl :
                     !videoUrl.isEmpty() ? videoUrl : thumbnailUrl;
-            initializePlayer(Uri.parse(url), savedVideoPosition);
+            mVideoUri = Uri.parse(url);
 
             // set up fullscreen mode
             mDecorView = mHostActivity.getWindow().getDecorView();
@@ -183,6 +183,7 @@ public class RecipeStepFragment extends Fragment {
                 (!videoUrl.isEmpty() && Toolbox.isImageFile(videoUrl))) {
             // if there is no video url, but we have an image url, then load the image without
             // prepping the ExoPlayer. Prioritize the thumbnailUrl if both are not empty
+            mPlayerView.setVisibility(View.GONE);
             String url = !thumbnailUrl.isEmpty() && !videoUrl.isEmpty() ? thumbnailUrl :
                     !thumbnailUrl.isEmpty() ? thumbnailUrl : videoUrl;
             mPb_image.setVisibility(View.VISIBLE);
@@ -202,7 +203,6 @@ public class RecipeStepFragment extends Fragment {
                 }
             };
             Toolbox.loadThumbnailFromUrl(mHostActivity, url, mIv_step, requestListener);
-            mPlayerView.setVisibility(View.GONE);
         } else {
             // No image url is provided, so just hide the player and image views
             mFl_player_container.setVisibility(View.GONE);
@@ -251,60 +251,59 @@ public class RecipeStepFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        // pause exoPlayer
-        if (mExoPlayer != null) {
-            mExoPlayer.setPlayWhenReady(false);
-        }
-        if (mOrientationEventListener != null) {
-            mOrientationEventListener.disable();
-        }
-        // allow system to handle rotations again after leaving the fragment
-        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // release exoPlayer
-        if (mExoPlayer != null) {
-            mExoPlayer.stop();
-            mExoPlayer.release();
-            mExoPlayer = null;
-        }
-        if (mOrientationEventListener != null) {
-            mOrientationEventListener.disable();
+    public void onStart() {
+        super.onStart();
+        if (Build.VERSION.SDK_INT > 23) {
+            setupOrientations();
+            if (mVideoLoaded) {
+                // Only load the player if we have a video link available
+                initializePlayer(mVideoUri);
+            }
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mOrientationEventListener != null) {
-            mOrientationEventListener.enable();
-        }
-        // If coming out of the app from fullscreen mode, restore system bars here
-        if (!mTabletLayout && !isLandscape() && !mActionBar.isShowing()) {
-            mActionBar.show();
-            mBtn_exoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
-            // TODO <small issue>: Upon showing the action bar, a top portion of the video gets cut
-            // off. fix it here. Might need to set the style of this activity to NoActionBar and
-            // then handle all action bar stuff programmatically?
-            if (mDecorView != null) {
-                //mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        if (Build.VERSION.SDK_INT <= 23) {
+            setupOrientations();
+            if (mVideoLoaded) {
+                // Only load the player if we have a video link available
+                initializePlayer(mVideoUri);
             }
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Build.VERSION.SDK_INT <= 23) {
+            // Don't wait until onDestroy() to release player resources as navigating away from app
+            // does not call onDestroy(), so it is likely player may still be running and using
+            // resources even while user is away from app
+            // Although onStop() is called after onPause(), before API 24 there is no guarantee
+            // onStop() is called, so release the player here
+            releasePlayer();
+            restoreOrientations();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Build.VERSION.SDK_INT > 23) {
+            // Safe to release player in onStop() for API 24 and above
+            releasePlayer();
+            restoreOrientations();
+        }
+    }
 
     /**
      * Sets up the exo player with the Step video
      *
      * @param videoUri
-     * @param position
      */
-    private void initializePlayer(Uri videoUri, long position) {
+    private void initializePlayer(Uri videoUri) {
         if (mExoPlayer == null) {
             // generate exoPlayer
             RenderersFactory renderersFactory = new DefaultRenderersFactory(getContext());
@@ -370,13 +369,48 @@ public class RecipeStepFragment extends Fragment {
                     new DefaultDataSourceFactory(getContext(), userAgent))
                     .createMediaSource(videoUri);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.seekTo(position);
+            mExoPlayer.seekTo(mVideoPosition);
             // only loop by default if step is not intro
             if (mStep.getId() != 0)
                 mExoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
             mExoPlayer.setPlayWhenReady(mVideoPlaying);
-            mVideoLoaded = true;
         }
+    }
+
+    private void releasePlayer() {
+        if (mExoPlayer != null) {
+            // Since we're handling config changes ourselves, save the current video position here
+            // as savedInstanceState is not used, before releasing player
+            mVideoPosition = mExoPlayer.getCurrentPosition();
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+    }
+
+    private void setupOrientations() {
+        if (mOrientationEventListener != null) {
+            mOrientationEventListener.enable();
+        }
+        // If coming out of the app from fullscreen mode, restore system bars here
+        if (!mTabletLayout && !isLandscape() && !mActionBar.isShowing()) {
+            mActionBar.show();
+            mBtn_exoFullscreen.setImageResource(R.drawable.ic_fullscreen_white_24dp);
+            // TODO <small issue>: Upon showing the action bar, a top portion of the video gets cut
+            // off. fix it here. Might need to set the style of this activity to NoActionBar and
+            // then handle all action bar stuff programmatically?
+            if (mDecorView != null) {
+                //mDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            }
+        }
+    }
+
+    private void restoreOrientations() {
+        if (mOrientationEventListener != null) {
+            mOrientationEventListener.disable();
+        }
+        // allow system to handle rotations again after leaving the fragment
+        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     /**
@@ -390,9 +424,7 @@ public class RecipeStepFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         if (mExoPlayer != null) {
-            outState.putLong(STEP_VIDEO_POSITION_EXTRA_KEY, mExoPlayer.getCurrentPosition());
-            outState.putBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, mVideoPlaying);
-            outState.putBoolean(ORIENTATION_JITTER_EXTRA_KEY, mOrientationJitter);
+
         }
         super.onSaveInstanceState(outState);
     }
