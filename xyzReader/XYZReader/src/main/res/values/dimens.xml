@@ -7,9 +7,11 @@
     <dimen name="fab_elevation">2dp</dimen>
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
-    <dimen name="card_margin">4dp</dimen>
+    <dimen name="vertical_card_margin">4dp</dimen>
+    <dimen name="horizontal_card_margin">0dp</dimen>
     <dimen name="card_padding">16dp</dimen>
     <dimen name="card_padding_narrow">4dp</dimen>
-    <dimen name="thumbnail_width">96dp</dimen>
+    <dimen name="thumbnail_size">96dp</dimen>
+    <dimen name="thumbnail_max_height">200dp</dimen>
 
 </resources>

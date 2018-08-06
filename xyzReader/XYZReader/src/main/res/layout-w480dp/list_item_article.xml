@@ -22,15 +22,25 @@
 
         <include layout="@layout/list_item_article_author" />
 
-        <ImageView
-            android:id="@+id/article_thumbnail"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/thumbnail_max_height"
-            android:layout_marginBottom="@dimen/card_padding_narrow"
-            android:layout_marginTop="@dimen/card_padding_narrow"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <include layout="@layout/list_item_article_details" />
+            <include
+                layout="@layout/list_item_article_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/article_thumbnail"
+                android:layout_width="@dimen/thumbnail_size"
+                android:layout_height="@dimen/thumbnail_size"
+                android:layout_marginStart="@dimen/card_padding"
+                android:scaleType="centerCrop" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

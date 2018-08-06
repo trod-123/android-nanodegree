@@ -176,7 +176,13 @@ public class ArticleListActivity extends AppCompatActivity implements
             mCursor.moveToPosition(position);
             holder.authorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-            holder.bodyPreviewView.setText(mCursor.getString(ArticleLoader.Query.BODY));
+            String bodyPreview = mCursor.getString(ArticleLoader.Query.BODY);
+            int bodyCharLimit = holder.itemView.getContext().getResources().getInteger(R.integer.body_preview_upper_limit);
+            if (bodyPreview.length() > bodyCharLimit) {
+                // limit the body preview to lessen load on OS
+                bodyPreview = bodyPreview.substring(0, bodyCharLimit);
+            }
+            holder.bodyPreviewView.setText(bodyPreview);
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
 
