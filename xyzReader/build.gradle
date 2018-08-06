@@ -17,6 +17,7 @@ allprojects {
     repositories {
         jcenter()
         google()
+        mavenCentral()
     }
 }
 
@@ -25,5 +26,8 @@ task clean(type: Delete) {
 }
 
 ext {
-    androidSupportVersion = "27.1.1"
+    androidSupportVersion = '27.1.1'
+    glideVersion = '4.7.1'
+    timberVersion = '4.7.0'
+    butterknifeVersion = '8.8.1'
 }

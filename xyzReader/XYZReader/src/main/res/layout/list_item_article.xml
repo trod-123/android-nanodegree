@@ -1,51 +1,95 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:layout_marginLeft="@dimen/card_margin"
+    android:layout_marginRight="@dimen/card_margin"
+    android:layout_marginTop="@dimen/card_margin"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground">
+    android:foreground="?android:selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <!--suppress AndroidLintContentDescription -->
-        <com.example.xyzreader.ui.DynamicHeightNetworkImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@color/photo_placeholder" />
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/card_padding"
+        android:paddingLeft="@dimen/card_padding"
+        android:paddingRight="@dimen/card_padding"
+        android:paddingTop="@dimen/card_padding">
 
         <TextView
-            android:id="@+id/article_title"
-            style="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_width="match_parent"
+            android:id="@+id/article_author"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingTop="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="4dp"
-            android:textColor="@color/ltgray"
             android:ellipsize="end"
-            android:maxLines="4" />
+            android:fontFamily="sans-serif-smallcaps"
+            android:maxLines="1"
+            tools:text="Teddy Rodriguez"
+            android:textColor="@color/textColorMedium"
+            android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/article_subtitle"
-            style="@style/TextAppearance.AppCompat.Body1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp"
-            android:textColor="#6000"
-            android:maxLines="2"
-            android:ellipsize="end" />
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/article_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/card_padding_narrow"
+                    android:layout_marginTop="@dimen/card_padding_narrow"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textColor="@color/textColorDark"
+                    android:textSize="24sp"
+                    tools:text="Ebooks, Neither E, Nor Books" />
+
+                <TextView
+                    android:id="@+id/article_body_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/card_padding_narrow"
+                    android:layout_marginTop="@dimen/card_padding_narrow"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    tools:text="The Pixel 3 XL just popped up on Geekbench, so we can now set aside speculation on the specs. Microsoft will soon launch a new monthly charge for Windows 10."
+                    android:textColor="@color/textColorMedium"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/article_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/card_padding_narrow"
+                    android:layout_marginTop="@dimen/card_padding_narrow"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    tools:text="January 12, 2019"
+                    android:textColor="@color/textColorMedium"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/article_thumbnail"
+                android:layout_width="@dimen/thumbnail_width"
+                android:layout_height="@dimen/thumbnail_width"
+                android:layout_marginStart="@dimen/card_padding"
+                android:scaleType="centerCrop" />
+
+        </LinearLayout>
+
     </LinearLayout>
+
 
 </android.support.v7.widget.CardView>
