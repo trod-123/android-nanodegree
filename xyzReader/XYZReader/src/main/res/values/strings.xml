@@ -9,4 +9,6 @@
 
     <string name="up">Up</string>
 
+    <string name="author_date">%1$s, %2$s</string>
+
 </resources>

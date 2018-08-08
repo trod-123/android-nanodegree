@@ -225,11 +225,11 @@ public class ArticleListActivity extends AppCompatActivity implements
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.article_thumbnail)
         public ImageView thumbnailView;
-        @BindView(R.id.article_title)
+        @BindView(R.id.details_article_title)
         public TextView titleView;
         @BindView(R.id.article_date)
         public TextView subtitleView;
-        @BindView(R.id.article_author)
+        @BindView(R.id.details_article_author)
         public TextView authorView;
         @BindView(R.id.article_body_preview)
         public TextView bodyPreviewView;

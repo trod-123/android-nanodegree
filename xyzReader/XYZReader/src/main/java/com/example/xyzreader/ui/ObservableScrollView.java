@@ -24,6 +24,8 @@ import android.widget.ScrollView;
 
 /**
  * A custom ScrollView that can accept a scroll listener.
+ * TROD: DEPRECATED - ScrollView can itself implement a listener. This custom class is not needed
+ * see https://stackoverflow.com/questions/10713312/can-i-have-onscrolllistener-for-a-scrollview
  */
 public class ObservableScrollView extends ScrollView {
     private Callbacks mCallbacks;
