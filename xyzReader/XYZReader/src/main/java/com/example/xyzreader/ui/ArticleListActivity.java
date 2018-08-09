@@ -1,6 +1,7 @@
 package com.example.xyzreader.ui;
 
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.support.v4.content.Loader;
@@ -21,6 +22,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -120,9 +122,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
-        adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        ArticleListAdapter articleListAdapter = new ArticleListAdapter(cursor);
+        articleListAdapter.setHasStableIds(true);
+        mRecyclerView.setAdapter(articleListAdapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
         StaggeredGridLayoutManager sglm =
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
@@ -134,10 +136,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(null);
     }
 
-    private class Adapter extends RecyclerView.Adapter<ViewHolder> {
+    private class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
         private Cursor mCursor;
 
-        public Adapter(Cursor cursor) {
+        public ArticleListAdapter(Cursor cursor) {
             mCursor = cursor;
         }
 
@@ -173,7 +175,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
             holder.authorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
@@ -215,6 +217,15 @@ public class ArticleListActivity extends AppCompatActivity implements
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     holder.thumbnailView, listener);
 
+            // set-up article actions button
+            holder.ibActions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toolbox.showArticleActionsMenuPopup(ArticleListActivity.this, v,
+                            mCursor, holder.getLayoutPosition());
+                }
+            });
+
         }
 
         @Override
@@ -225,15 +236,17 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.article_thumbnail)
-        public ImageView thumbnailView;
+        ImageView thumbnailView;
         @BindView(R.id.details_article_title)
-        public TextView titleView;
+        TextView titleView;
         @BindView(R.id.article_date)
-        public TextView subtitleView;
+        TextView subtitleView;
         @BindView(R.id.details_article_author)
-        public TextView authorView;
+        TextView authorView;
         @BindView(R.id.article_body_preview)
-        public TextView bodyPreviewView;
+        TextView bodyPreviewView;
+        @BindView(R.id.ib_action_menu)
+        ImageButton ibActions;
 
         ViewHolder(View view) {
             super(view);

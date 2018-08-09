@@ -1,11 +1,14 @@
 package com.example.xyzreader.util;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -22,6 +25,7 @@ import com.example.xyzreader.GlideApp;
 import com.example.xyzreader.GlideRequest;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.example.xyzreader.ui.ArticleActionsMenuOnClickListener;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -236,7 +240,7 @@ public class Toolbox {
 
 
     /**
-     * Shows the options menu without needing an action bar
+     * General utility method that shows the options menu without needing an action bar
      * Source: https://stackoverflow.com/questions/30417223/how-to-add-menu-button-without-action-bar
      */
     public static void showMenuPopup(Context context, View view, int menuResId,
@@ -246,6 +250,18 @@ public class Toolbox {
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(menuResId, popup.getMenu());
         popup.show();
+    }
+
+    /**
+     * Shows the article actions options menu
+     * @param hostActivity
+     * @param view
+     * @param cursor
+     * @param position
+     */
+    public static void showArticleActionsMenuPopup(Activity hostActivity, View view, Cursor cursor, int position) {
+        showMenuPopup(hostActivity, view, R.menu.menu_article_actions,
+                new ArticleActionsMenuOnClickListener(hostActivity, cursor, position));
     }
 
 
@@ -284,5 +300,26 @@ public class Toolbox {
                             view.setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+
+    /**
+     * Generates a title and author string used to set a share intent
+     */
+    public static void shareArticle(Activity launchingActivity, Cursor cursor, int position) {
+        if (cursor != null) {
+            cursor.moveToPosition(position);
+            String title = cursor.getString(ArticleLoader.Query.TITLE);
+            String author = cursor.getString(ArticleLoader.Query.AUTHOR);
+            String shareString = launchingActivity.getString(R.string.share_message, title, author);
+            launchingActivity.startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(launchingActivity)
+                    .setType("text/plain")
+                    .setText(shareString)
+                    .getIntent(), launchingActivity.getString(R.string.action_share)));
+        } else {
+            Toolbox.showToast(launchingActivity,
+                    "There was an error getting story info - Cursor is null. " +
+                            "Not starting the share activity.");
+        }
     }
 }

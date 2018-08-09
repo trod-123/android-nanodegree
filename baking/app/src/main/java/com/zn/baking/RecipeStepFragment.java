@@ -131,14 +131,14 @@ public class RecipeStepFragment extends Fragment {
 
         // load up the saved video position for restoring state
         // TODO: None of this is even called since we are handing config changes ourselves. Delete
-        if (savedInstanceState != null) {
-            mVideoPosition = savedInstanceState
-                    .getLong(STEP_VIDEO_POSITION_EXTRA_KEY, DEFAULT_STEP_VIDEO_POSITION);
-            mVideoPlaying = savedInstanceState
-                    .getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
-            mOrientationJitter = savedInstanceState
-                    .getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
-        }
+//        if (savedInstanceState != null) {
+//            mVideoPosition = savedInstanceState
+//                    .getLong(STEP_VIDEO_POSITION_EXTRA_KEY, DEFAULT_STEP_VIDEO_POSITION);
+//            mVideoPlaying = savedInstanceState
+//                    .getBoolean(VIDEO_CURRENTLY_PLAYING_EXTRA_KEY, true);
+//            mOrientationJitter = savedInstanceState
+//                    .getBoolean(ORIENTATION_JITTER_EXTRA_KEY, false);
+//        }
 
         // TODO: Provide default constructor for step fragment to ensure all necessary arguments are
         // provided to set up fragment properly

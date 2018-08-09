@@ -185,10 +185,11 @@ public class ArticleDetailFragment extends Fragment implements
 
 //        mStatusBarColorDrawable = new ColorDrawable(0);
 
-        // TODO: Set this
         mShareFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // TODO: Declare an interface between detail activity and detail fragment so
+                // we don't need to keep doing this every time
                 if (getDetailActivityHost() != null) {
                     getDetailActivityHost().shareArticle();
                 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/card_padding_narrow">
+
+    <TextView
+        android:id="@+id/details_article_author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-smallcaps"
+        android:maxLines="1"
+        android:textColor="@color/textColorMedium"
+        android:textSize="16sp"
+        tools:text="Teddy Rodriguez" />
+
+    <ImageButton
+        android:id="@+id/ib_action_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/moreActions"
+        android:src="@drawable/ic_more_vert_white_24dp"
+        android:tint="@color/textColorMedium"
+        android:clickable="true"
+        android:focusable="true"/>
+
+</FrameLayout>

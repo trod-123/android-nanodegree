@@ -3,15 +3,11 @@ package com.example.xyzreader.ui;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -109,19 +105,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         mOverflowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toolbox.showMenuPopup(ArticleDetailActivity.this, v, R.menu.menu_details,
-                        new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                int id = item.getItemId();
-                                switch (id) {
-                                    case R.id.action_share:
-                                        shareArticle();
-                                        return true;
-                                }
-                                return false;
-                            }
-                        });
+                Toolbox.showArticleActionsMenuPopup(ArticleDetailActivity.this, v,
+                        mCursor, mCurrentPagerPosition);
             }
         });
 
@@ -131,6 +116,14 @@ public class ArticleDetailActivity extends AppCompatActivity
                 mSelectedItemId = mStartId;
             }
         }
+    }
+
+    /**
+     * Helper method for interfacing with ArticleDetailFragment
+     */
+    public void shareArticle() {
+        Toolbox.shareArticle(ArticleDetailActivity.this,
+                mCursor, mCurrentPagerPosition);
     }
 
     /**
@@ -151,25 +144,6 @@ public class ArticleDetailActivity extends AppCompatActivity
         setSupportActionBar(mAppBarContainer);
         // From https://stackoverflow.com/questions/7655874/how-do-you-remove-the-title-text-from-the-android-actionbar
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-    }
-
-    /**
-     * Generates a title and author string used to set a share intent
-     */
-    public void shareArticle() {
-        if (mCursor != null) {
-            mCursor.moveToPosition(mCurrentPagerPosition);
-            String title = mCursor.getString(ArticleLoader.Query.TITLE);
-            String author = mCursor.getString(ArticleLoader.Query.AUTHOR);
-            String shareString = getString(R.string.share_message, title, author);
-            startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(this)
-                    .setType("text/plain")
-                    .setText(shareString)
-                    .getIntent(), getString(R.string.action_share)));
-        } else {
-            Toolbox.showToast(this,
-                    "There was an error getting story info. Not starting the share activity.");
-        }
     }
 
     /**

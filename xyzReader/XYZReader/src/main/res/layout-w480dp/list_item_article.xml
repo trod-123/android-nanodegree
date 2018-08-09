@@ -20,7 +20,7 @@
         android:paddingRight="@dimen/card_padding"
         android:paddingTop="@dimen/card_padding">
 
-        <include layout="@layout/list_item_article_author" />
+        <include layout="@layout/list_item_article_author_actions" />
 
         <LinearLayout
             android:layout_width="match_parent"
