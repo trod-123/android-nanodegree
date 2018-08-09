@@ -1,11 +1,12 @@
 package com.example.xyzreader.ui;
 
-import android.app.LoaderManager;
+
+import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
+import android.support.v4.content.Loader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -72,7 +73,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();

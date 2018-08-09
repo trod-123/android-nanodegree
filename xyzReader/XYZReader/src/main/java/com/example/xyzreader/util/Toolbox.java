@@ -1,11 +1,17 @@
 package com.example.xyzreader.util;
 
+import android.animation.Animator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.PopupMenu;
+import android.util.TypedValue;
+import android.view.MenuInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -15,6 +21,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.example.xyzreader.GlideApp;
 import com.example.xyzreader.GlideRequest;
 import com.example.xyzreader.R;
+import com.example.xyzreader.data.ArticleLoader;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -133,5 +140,149 @@ public class Toolbox {
 
     public enum PaletteSwatch {
         VIBRANT, VIBRANT_DARK, VIBRANT_LIGHT, MUTED, MUTED_DARK, MUTED_LIGHT
+    }
+
+    /**
+     * Returns a formatted HTML body with the specified characteristics
+     *
+     * @param context
+     * @param body
+     * @param fontFileName
+     * @param fontSize
+     * @param fontAlign
+     * @param margins
+     * @param padding
+     * @param fontColor
+     * @return
+     */
+    public static String getWebViewContent(Context context, String body, String fontFileName,
+                                           float fontSize, String fontAlign, int margins,
+                                           int padding, String fontColor) {
+        return context.getString(R.string.details_body_html_prefix, fontFileName,
+                fontSize, fontAlign, margins, padding, fontColor) +
+                body +
+                context.getString(R.string.details_body_html_suffix);
+    }
+
+    /**
+     * Helper method for getting the hex color value string
+     * Source https://stackoverflow.com/questions/5026995/android-get-color-as-string-value
+     *
+     * @param context
+     * @param colorId
+     * @return
+     */
+    public static String getHexColorString(Context context, int colorId) {
+        return "#" + Integer.toHexString(ContextCompat.getColor(context, colorId));
+    }
+
+    /**
+     * Gets the height of the status bar
+     * Source: https://stackoverflow.com/questions/27856603/lollipop-draw-behind-statusbar-with-its-color-set-to-transparent
+     *
+     * @return
+     */
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height",
+                "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the height of the navigation bar
+     * Source: https://stackoverflow.com/questions/25603718/android-navigation-bar-size-in-xml
+     *
+     * @return
+     */
+    public static int getNavigationBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("navigation_bar_height",
+                "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the height of the action bar
+     * Source: https://stackoverflow.com/questions/12301510/how-to-get-the-actionbar-height
+     *
+     * @param context
+     * @return
+     */
+    public static int getActionBarHeight(Context context) {
+        TypedValue tv = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+            return TypedValue.complexToDimensionPixelSize(tv.data,
+                    context.getResources().getDisplayMetrics());
+        }
+        return 0;
+    }
+
+    /**
+     * Gets the height of the status bar and action bar combined
+     *
+     * @param context
+     * @return
+     */
+    public static int getStatusBarWithActionBarHeight(Context context) {
+        return getStatusBarHeight(context) + getActionBarHeight(context);
+    }
+
+
+    /**
+     * Shows the options menu without needing an action bar
+     * Source: https://stackoverflow.com/questions/30417223/how-to-add-menu-button-without-action-bar
+     */
+    public static void showMenuPopup(Context context, View view, int menuResId,
+                                     PopupMenu.OnMenuItemClickListener listener) {
+        PopupMenu popup = new PopupMenu(context, view);
+        popup.setOnMenuItemClickListener(listener);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(menuResId, popup.getMenu());
+        popup.show();
+    }
+
+
+    /**
+     * Shows or hides views smoothly with an alpha transition. If button, hide completely to
+     * negate potential touch events while it's not showing
+     *
+     * @param show
+     */
+    public static void showView(final View view, final boolean show, final boolean isButton) {
+        view.animate()
+                .alpha(show ? 1f : 0f)
+                .setDuration(300)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (show)
+                            view.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!show && isButton)
+                            view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        if (!show && isButton)
+                            view.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                        if (show)
+                            view.setVisibility(View.VISIBLE);
+                    }
+                });
     }
 }

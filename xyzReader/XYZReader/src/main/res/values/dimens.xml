@@ -1,7 +1,7 @@
 <resources>
     <!-- detail -->
     <dimen name="detail_title_text_size">32sp</dimen>
-    <dimen name="detail_body_text_size">22sp</dimen>
+    <dimen name="detail_body_text_size">8sp</dimen>
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
     <dimen name="fab_elevation">6dp</dimen>
@@ -17,8 +17,8 @@
     <dimen name="details_image_height">316dp</dimen>
     <dimen name="details_image_window">300dp</dimen>
 
-    <dimen name="appBarStatusBarHeight">80dp</dimen>
     <dimen name="app_bar_elevation">4dp</dimen>
+    <dimen name="collapsing_toolbar_scrim_buffer_height">1dp</dimen>
 
 
 </resources>

@@ -1,7 +1,9 @@
-<resources>
+<!-- Referencing strings within string resources
+     From: https://stackoverflow.com/questions/4746058/reference-one-string-from-another-string-in-strings-xml --><!DOCTYPE resources [<!ENTITY appName "XYZ Reader">]>
 
-    <string name="app_name">XYZ Reader</string>
-    <string name="welcome_xyz_reader">Welcome to XYZ Reader!</string>
+<resources>
+    <string name="app_name">&appName;</string>
+    <string name="welcome_xyz_reader">Welcome to &appName;!</string>
 
     <string name="action_refresh">Refresh</string>
     <string name="action_settings">Settings</string>
@@ -10,5 +12,35 @@
     <string name="up">Up</string>
 
     <string name="author_date">%1$s, %2$s</string>
+    <string name="share_message">Check out %1$s by %2$s! #&appName;</string>
+
+    <string name="details_body_html_prefix" translatable="false">
+        <![CDATA[
+        <html>
+        <head>
+        <style type="text/css">
+        @font-face {
+        font-family: xyz;
+        src: url("fonts/]]>%1$s<![CDATA[")
+        }
+        body {
+        font-family: xyz;
+        font-size: ]]>%2$f<![CDATA[;
+        text-align: ]]>%3$s<![CDATA[;
+        margin: ]]>%4$d<![CDATA[;
+        padding: ]]>%5$d<![CDATA[;
+        color: ]]>%6%s<![CDATA[
+        }
+        </style>
+        </head>
+        <body>]]>
+    </string>
+    <string name="details_body_html_suffix" translatable="false">
+        <![CDATA[
+        </body>
+        </html>
+        ]]>
+    </string>
+    <string name="moreActions">More actions</string>
 
 </resources>

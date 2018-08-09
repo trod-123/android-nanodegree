@@ -1,11 +1,8 @@
 package com.example.xyzreader.ui;
 
-import android.animation.FloatEvaluator;
-import android.animation.ObjectAnimator;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Intent;
-import android.content.Loader;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -13,13 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
-import android.text.Html;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,13 +22,11 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -49,6 +42,7 @@ import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -72,20 +66,27 @@ public class ArticleDetailFragment extends Fragment implements
     AppBarLayout mAppBar;
     @BindView(R.id.ctoolbar_detail)
     CollapsingToolbarLayout mCToolbar;
+    @BindView(R.id.toolbar_detail)
+    Toolbar mToolbar;
     @BindView(R.id.toolbar_title_details)
     TextView mTv_toolbarTitle;
     @BindView(R.id.container_details_meta)
     LinearLayout mContainerMetaDetails;
+    @BindView(R.id.fab_share)
+    FloatingActionButton mShareFab;
 
 //    private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
 //    private ColorDrawable mStatusBarColorDrawable;
 
     //    private int mTopInset;
 //    private View mPhotoContainerView;
-    private ImageView mPhotoView;
+    @BindView(R.id.iv_photo_details)
+    ImageView mPhotoView;
     private int mScrollY;
     private boolean mIsCard = false;
 //    private int mStatusBarFullOpacityBottom;
+
+    boolean mAppBarShowing;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -111,6 +112,7 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(ArticleDetailFragment.class.getSimpleName());
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
@@ -119,11 +121,19 @@ public class ArticleDetailFragment extends Fragment implements
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
 //        mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
 //                R.dimen.detail_card_top_margin);
-        setHasOptionsMenu(true);
     }
 
-    public ArticleDetailActivity getActivityCast() {
-        return (ArticleDetailActivity) getActivity();
+    /**
+     * Returns the hosting ArticleDetailActivity, if available
+     *
+     * @return
+     */
+    private ArticleDetailActivity getDetailActivityHost() {
+        if (getActivity() instanceof ArticleDetailActivity) {
+            return (ArticleDetailActivity) getActivity();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -137,31 +147,16 @@ public class ArticleDetailFragment extends Fragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
-    // A method to find height of the status bar
-    // Source: https://stackoverflow.com/questions/27856603/lollipop-draw-behind-statusbar-with-its-color-set-to-transparent
-    public int getStatusBarHeight() {
-        int result = 0;
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
-        }
-        return result;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
-        // Makes the status bar translucent (you can also set the status bar color in this way)
-        // Source: https://stackoverflow.com/questions/26702000/change-status-bar-color-with-appcompat-actionbaractivity
-        Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        // By doing the above, this means the toolbar will get drawn behind the status bar. The
-        // below code fixes that, but it results in no views behind the status bar, so the status
-        // bar could be black or white background before the views scroll up behind it
-        //mAppBar.setPadding(0, getStatusBarHeight(), 0, 0);
+        // Set the toolbar's height dynamically to account for varying bar heights across devices
+        int statusBarAppBarHeight = Toolbox.getStatusBarWithActionBarHeight(getActivity());
+        mToolbar.getLayoutParams().height = statusBarAppBarHeight;
+        mCToolbar.setScrimVisibleHeightTrigger(statusBarAppBarHeight + (int) getResources().getDimension(R.dimen.collapsing_toolbar_scrim_buffer_height));
 
         // TROD: This seems to be manual implementation of image parallax
         // TODO: But this could also be something that updates a read-progress bar somewhere,
@@ -170,7 +165,7 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onScrollChanged() {
                 mScrollY = mScrollView.getScrollY();
-//                getActivityCast().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
+//                getDetailActivityHost().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
 //                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
 //                updateStatusBar();
             }
@@ -188,18 +183,15 @@ public class ArticleDetailFragment extends Fragment implements
         });
         ((CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams()).setBehavior(behavior);
 
-        mPhotoView = mRootView.findViewById(R.id.iv_photo_details);
-
 //        mStatusBarColorDrawable = new ColorDrawable(0);
 
         // TODO: Set this
-        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        mShareFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-                        .setType("text/plain")
-                        .setText("Some sample text")
-                        .getIntent(), getString(R.string.action_share)));
+                if (getDetailActivityHost() != null) {
+                    getDetailActivityHost().shareArticle();
+                }
             }
         });
 
@@ -222,6 +214,33 @@ public class ArticleDetailFragment extends Fragment implements
 //        mStatusBarColorDrawable.setColor(color);
 //        mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
 //    }
+
+    /**
+     * Helper for setting the visibility of app bar contents, as well as the scrolling titles
+     *
+     * @param show
+     */
+    private void showAppBar(boolean show) {
+        if (show) {
+            Toolbox.showView(mTv_toolbarTitle, true, false);
+            Toolbox.showView(mContainerMetaDetails, false, false);
+            if (getDetailActivityHost() != null) {
+                getDetailActivityHost().showOverflowButton(true);
+            }
+        } else {
+            Toolbox.showView(mTv_toolbarTitle, false, false);
+            Toolbox.showView(mContainerMetaDetails, true, false);
+            if (getDetailActivityHost() != null) {
+                getDetailActivityHost().showOverflowButton(false);
+            }
+        }
+        mAppBarShowing = show;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 
     // TROD: Is this probably setting a progress indicator through the status bar? Which probably
     // fills up as the user scrolls towards the bottom of the page?
@@ -274,7 +293,6 @@ public class ArticleDetailFragment extends Fragment implements
             // show the appbar title only when toolbar is collapsed
             // source https://stackoverflow.com/questions/31662416/show-collapsingtoolbarlayout-title-only-when-collapsed
             mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                boolean isShow = true;
                 int scrollRange = -1;
 
                 @Override
@@ -283,14 +301,9 @@ public class ArticleDetailFragment extends Fragment implements
                         scrollRange = appBarLayout.getTotalScrollRange();
                     }
                     if (scrollRange + verticalOffset == 0) {
-                        mTv_toolbarTitle.setVisibility(View.VISIBLE);
-                        ObjectAnimator.ofObject(mTv_toolbarTitle, "alpha", new FloatEvaluator(), 0f, 1f).setDuration(300).start();
-                        ObjectAnimator.ofObject(mContainerMetaDetails, "alpha", new FloatEvaluator(), 1f, 0f).setDuration(300).start();
-                        isShow = true;
-                    } else if (isShow) {
-                        ObjectAnimator.ofObject(mTv_toolbarTitle, "alpha", new FloatEvaluator(), 1f, 0f).setDuration(300).start();
-                        ObjectAnimator.ofObject(mContainerMetaDetails, "alpha", new FloatEvaluator(), 0f, 1f).setDuration(300).start();
-                        isShow = false;
+                        showAppBar(true);
+                    } else if (mAppBarShowing) {
+                        showAppBar(false);
                     }
                 }
             });
@@ -323,7 +336,16 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             };
             bodyWebView.setWebViewClient(wvClient);
-            bodyWebView.loadData("<body style=\"margin: 0; padding: 0\">" + mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />") + "</body>", "text/html", "UTF-8");
+            String htmlString = Toolbox.getWebViewContent
+                    (getActivity(),
+                            mCursor.getString(ArticleLoader.Query.BODY)
+                                    .replaceAll("(\r\n|\n)", "<br />"),
+                            "Rosario-Regular.ttf",
+                            getResources().getDimension(R.dimen.detail_body_text_size), "left",
+                            0, 0,
+                            Toolbox.getHexColorString(getActivity(), R.color.textColorMedium));
+            bodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
+                    "text/html", "UTF-8", null);
 
             // Set up the image and the appbar background color
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()

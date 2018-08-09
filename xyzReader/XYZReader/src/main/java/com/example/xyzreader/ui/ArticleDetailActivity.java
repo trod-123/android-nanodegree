@@ -1,27 +1,31 @@
 package com.example.xyzreader.ui;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.LoaderManager;
-import android.content.Loader;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v13.app.FragmentStatePagerAdapter;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
+import com.example.xyzreader.util.Toolbox;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -36,21 +40,31 @@ public class ArticleDetailActivity extends AppCompatActivity
     private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
     private int mTopInset;
 
+    private int mCurrentPagerPosition;
+
     @BindView(R.id.pager)
     ViewPager mPager;
-    private MyPagerAdapter mPagerAdapter;
-    private View mUpButtonContainer;
-    private View mUpButton;
+    private DetailPagerAdapter mPagerAdapter;
+    @BindView(R.id.appbar_container_detail)
+    Toolbar mAppBarContainer;
+    @BindView(R.id.gap_status_bar)
+    View mStatusBarGap;
+    @BindView(R.id.ib_action_up)
+    ImageButton mUpButton;
+    @BindView(R.id.ib_action_menu)
+    ImageButton mOverflowButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
         ButterKnife.bind(this);
+        Timber.tag(ArticleDetailActivity.class.getSimpleName());
+        setUpStatusAppBar();
 
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
-        mPagerAdapter = new MyPagerAdapter(getFragmentManager());
+        mPagerAdapter = new DetailPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -59,28 +73,55 @@ public class ArticleDetailActivity extends AppCompatActivity
                 super.onPageScrollStateChanged(state);
                 // TROD: This allows the up button to fade in and out as the page changes
                 // (up button still works even while it's faded out for the time being)
-                mUpButton.animate()
-                        .alpha((state == ViewPager.SCROLL_STATE_IDLE) ? 1f : 0f)
-                        .setDuration(300);
+                Toolbox.showView(mUpButton, state == ViewPager.SCROLL_STATE_IDLE, false);
+
+                // TODO: This is not being called at the right time...
+                boolean isShowing = ((ArticleDetailFragment) mPagerAdapter.getItem(mCurrentPagerPosition))
+                        .mAppBarShowing;
+                // TODO: Need an additional indicator for when to hide this. Cuz it hides even if
+                // app bar is visible
+                Toolbox.showView(mOverflowButton,
+                        state == ViewPager.SCROLL_STATE_IDLE && isShowing
+                        , true);
             }
 
             @Override
             public void onPageSelected(int position) {
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
+                    mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
+                    mCurrentPagerPosition = position;
+//                    updateUpButtonPosition();
+                } else {
+                    Timber.e("Cursor is null when paging");
                 }
-                mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-//                updateUpButtonPosition();
             }
         });
 
-        mUpButtonContainer = findViewById(R.id.up_container);
+        mAppBarContainer = findViewById(R.id.appbar_container_detail);
 
-        mUpButton = findViewById(R.id.action_up);
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSupportNavigateUp();
+            }
+        });
+        mOverflowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toolbox.showMenuPopup(ArticleDetailActivity.this, v, R.menu.menu_details,
+                        new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                int id = item.getItemId();
+                                switch (id) {
+                                    case R.id.action_share:
+                                        shareArticle();
+                                        return true;
+                                }
+                                return false;
+                            }
+                        });
             }
         });
 
@@ -90,6 +131,54 @@ public class ArticleDetailActivity extends AppCompatActivity
                 mSelectedItemId = mStartId;
             }
         }
+    }
+
+    /**
+     * Helper for making the status bar translucent and setting the action bar layout
+     */
+    private void setUpStatusAppBar() {
+        // Makes the status bar translucent (you can also set the status bar color in this way)
+        // Source: https://stackoverflow.com/questions/26702000/change-status-bar-color-with-appcompat-actionbaractivity
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // By doing the above, this means the toolbar will get drawn behind the status bar. The
+        // below code fixes that, but it results in no views behind the status bar, so the status
+        // bar could be black or white background before the views scroll up behind it
+//        mAppBar.setPadding(0, Toolbox.getStatusBarHeight(getResources()), 0, 0);
+
+        // fill-in the empty view space from the translucent status bar
+        mStatusBarGap.getLayoutParams().height = Toolbox.getStatusBarHeight(this);
+        setSupportActionBar(mAppBarContainer);
+        // From https://stackoverflow.com/questions/7655874/how-do-you-remove-the-title-text-from-the-android-actionbar
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    /**
+     * Generates a title and author string used to set a share intent
+     */
+    public void shareArticle() {
+        if (mCursor != null) {
+            mCursor.moveToPosition(mCurrentPagerPosition);
+            String title = mCursor.getString(ArticleLoader.Query.TITLE);
+            String author = mCursor.getString(ArticleLoader.Query.AUTHOR);
+            String shareString = getString(R.string.share_message, title, author);
+            startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(this)
+                    .setType("text/plain")
+                    .setText(shareString)
+                    .getIntent(), getString(R.string.action_share)));
+        } else {
+            Toolbox.showToast(this,
+                    "There was an error getting story info. Not starting the share activity.");
+        }
+    }
+
+    /**
+     * Helper function for showing and hiding the action overflow button
+     *
+     * @param show
+     */
+    public void showOverflowButton(boolean show) {
+        Toolbox.showView(mOverflowButton, show, true);
     }
 
     @Override
@@ -137,8 +226,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 //        mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
 //    }
 
-    private class MyPagerAdapter extends FragmentStatePagerAdapter {
-        public MyPagerAdapter(FragmentManager fm) {
+    private class DetailPagerAdapter extends android.support.v4.app.FragmentStatePagerAdapter {
+        public DetailPagerAdapter(android.support.v4.app.FragmentManager fm) {
             super(fm);
         }
 

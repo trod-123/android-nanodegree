@@ -32,8 +32,4 @@
         <item name="android:textColor">@color/textColorLight</item>
     </style>
 
-    <style name="AppBarTitleExpanded" parent="@style/TextAppearance.AppCompat.Title">
-        <item name="android:textColor">@android:color/transparent</item>
-    </style>
-
 </resources>
