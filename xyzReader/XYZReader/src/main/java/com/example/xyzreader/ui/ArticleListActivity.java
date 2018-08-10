@@ -1,6 +1,8 @@
 package com.example.xyzreader.ui;
 
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
@@ -9,37 +11,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.view.ViewTreeObserver;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.util.Toolbox;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,21 +39,20 @@ import butterknife.ButterKnife;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, ArticleListAdapter.ArticleListClickListener {
 
-    private static final String TAG = ArticleListActivity.class.toString();
+    private static final String BOOL_INITIATED = "com.example.xyzreader.ui.initiated";
+
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
-    // Use default locale format
-    private SimpleDateFormat outputFormat = new SimpleDateFormat();
-    // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    ArticleListAdapter mListAdapter;
+    
+    // Only do certain things once (entrance animations)
+    private boolean mInitiated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +65,33 @@ public class ArticleListActivity extends AppCompatActivity implements
         getSupportLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
-            refresh();
+            // TODO: Disable this for now
+            //refresh();
+        } else {
+            if (savedInstanceState.containsKey(BOOL_INITIATED)) {
+                mInitiated = savedInstanceState.getBoolean(BOOL_INITIATED);
+            }
         }
+
+        int columnCount = getResources().getInteger(R.integer.list_column_count);
+        // TODO: Make sure this works fine across differing screen sizes
+        StaggeredGridLayoutManager sglm =
+                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(sglm);
+        mRecyclerView.setHasFixedSize(true);
+        mListAdapter = new ArticleListAdapter(this, this);
+        mListAdapter.setHasStableIds(true);
+        mRecyclerView.setAdapter(mListAdapter);
+        // TODO: We can smooth scroll here, but we need to account for app bar current size
+        //mRecyclerView.smoothScrollToPosition(1000);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
     }
 
     private void refresh() {
@@ -99,11 +111,19 @@ public class ArticleListActivity extends AppCompatActivity implements
         unregisterReceiver(mRefreshingReceiver);
     }
 
+    @Override
+    public void onClick(ImageView iv, long itemId) {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+                ItemsContract.Items.buildItemUri(itemId)));
+
+    }
+
     private boolean mIsRefreshing = false;
 
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Communicates with the update service to show the loading icon during updates
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
                 mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
                 updateRefreshingUI();
@@ -111,146 +131,84 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     };
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(BOOL_INITIATED, mInitiated);
+        super.onSaveInstanceState(outState);
+    }
+
     private void updateRefreshingUI() {
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        // TROD: Reminder, this is only called when the loader doesn't already exist. Loaders
+        // persist across rotation changes, and even through home and recents screen
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        ArticleListAdapter articleListAdapter = new ArticleListAdapter(cursor);
-        articleListAdapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(articleListAdapter);
-        int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
+        // TROD: However, this is called every time the activity comes back into focus, such as
+        // after configuration changes, etc.
+        mListAdapter.swapCursor(cursor);
+
+        // Animate the views in only if the activity has loaded the first time
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !mInitiated)
+            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    // Animate the cards once the recyclerview had laid down its views, otherwise
+                    // RecyclerView.getChildAt() will always return null
+                    // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
+                    animateCardsIn();
+
+                    // Make sure to remove the listener to ensure this only gets called once
+                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mInitiated = true;
+                }
+            });
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mRecyclerView.setAdapter(null);
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mListAdapter.swapCursor(null);
     }
 
-    private class ArticleListAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private Cursor mCursor;
+    /**
+     * Animates cards into the view from the bottom
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void animateCardsIn() {
+        int size = mRecyclerView.getAdapter().getItemCount();
+        float offset = getResources()
+                .getDimensionPixelSize(R.dimen.card_entry_animation_start_offset);
+        Interpolator interpolator = AnimationUtils.loadInterpolator(this,
+                android.R.interpolator.linear_out_slow_in);
 
-        public ArticleListAdapter(Cursor cursor) {
-            mCursor = cursor;
-        }
+        for (int i = 0; i < size; i++) {
+            View view = mRecyclerView.getChildAt(i);
+            if (view != null) {
+                // Only animate views the recycler view already laid down
+                view.setTranslationY(offset);
+                view.setAlpha(Toolbox.getFloatFromResources(
+                        getResources(), R.dimen.card_entry_animation_start_alpha));
 
-        @Override
-        public long getItemId(int position) {
-            mCursor.moveToPosition(position);
-            return mCursor.getLong(ArticleLoader.Query._ID);
-        }
+                view.animate()
+                        .translationY(getResources()
+                                .getDimensionPixelSize(R.dimen.card_entry_animation_end_offset))
+                        .alpha(Toolbox.getFloatFromResources(
+                                getResources(), R.dimen.card_entry_animation_end_alpha))
+                        .setInterpolator(interpolator)
+                        .setDuration((long) getResources().getInteger(
+                                R.integer.card_entry_animation_duration))
+                        .start();
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.list_item_article, parent, false);
-            final ViewHolder vh = new ViewHolder(view);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-                }
-            });
-            return vh;
-        }
-
-        private Date parsePublishedDate() {
-            try {
-                String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
-                return dateFormat.parse(date);
-            } catch (ParseException ex) {
-                Log.e(TAG, ex.getMessage());
-                Log.i(TAG, "passing today's date");
-                return new Date();
+                offset *= Toolbox.getFloatFromResources(
+                        getResources(), R.dimen.card_entry_animation_offset_shift);
             }
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-            mCursor.moveToPosition(position);
-            holder.authorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
-            holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-            String bodyPreview = mCursor.getString(ArticleLoader.Query.BODY);
-            int bodyCharLimit = holder.itemView.getContext().getResources().getInteger(R.integer.body_preview_upper_limit);
-            if (bodyPreview.length() > bodyCharLimit) {
-                // limit the body preview to lessen load on OS
-                bodyPreview = bodyPreview.substring(0, bodyCharLimit);
-            }
-            holder.bodyPreviewView.setText(bodyPreview);
-            Date publishedDate = parsePublishedDate();
-            if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-
-                holder.subtitleView.setText(Html.fromHtml(
-                        DateUtils.getRelativeTimeSpanString(
-                                publishedDate.getTime(),
-                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString())
-                );
-            } else {
-                holder.subtitleView.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate))
-                );
-            }
-
-            RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                    return false;
-                }
-            };
-
-            Toolbox.loadThumbnailFromUrl(holder.itemView.getContext(),
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                    holder.thumbnailView, listener);
-
-            // set-up article actions button
-            holder.ibActions.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toolbox.showArticleActionsMenuPopup(ArticleListActivity.this, v,
-                            mCursor, holder.getLayoutPosition());
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return mCursor.getCount();
-        }
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.article_thumbnail)
-        ImageView thumbnailView;
-        @BindView(R.id.details_article_title)
-        TextView titleView;
-        @BindView(R.id.article_date)
-        TextView subtitleView;
-        @BindView(R.id.details_article_author)
-        TextView authorView;
-        @BindView(R.id.article_body_preview)
-        TextView bodyPreviewView;
-        @BindView(R.id.ib_action_menu)
-        ImageButton ibActions;
-
-        ViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
         }
     }
 }

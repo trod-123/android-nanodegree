@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -254,20 +255,21 @@ public class Toolbox {
 
     /**
      * Shows the article actions options menu
-     * @param hostActivity
+     *
+     * @param context
      * @param view
      * @param cursor
      * @param position
      */
-    public static void showArticleActionsMenuPopup(Activity hostActivity, View view, Cursor cursor, int position) {
-        showMenuPopup(hostActivity, view, R.menu.menu_article_actions,
-                new ArticleActionsMenuOnClickListener(hostActivity, cursor, position));
+    public static void showArticleActionsMenuPopup(Context context, View view, Cursor cursor, int position) {
+        showMenuPopup(context, view, R.menu.menu_article_actions,
+                new ArticleActionsMenuOnClickListener(context, cursor, position));
     }
 
 
     /**
-     * Shows or hides views smoothly with an alpha transition. If button, hide completely to
-     * negate potential touch events while it's not showing
+     * General utility method that shows or hides views smoothly with an alpha transition.
+     * If button, hide completely to negate potential touch events while it's not showing
      *
      * @param show
      */
@@ -306,20 +308,37 @@ public class Toolbox {
     /**
      * Generates a title and author string used to set a share intent
      */
-    public static void shareArticle(Activity launchingActivity, Cursor cursor, int position) {
+    public static void shareArticle(Context context, Cursor cursor, int position) {
         if (cursor != null) {
             cursor.moveToPosition(position);
             String title = cursor.getString(ArticleLoader.Query.TITLE);
             String author = cursor.getString(ArticleLoader.Query.AUTHOR);
-            String shareString = launchingActivity.getString(R.string.share_message, title, author);
-            launchingActivity.startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(launchingActivity)
-                    .setType("text/plain")
-                    .setText(shareString)
-                    .getIntent(), launchingActivity.getString(R.string.action_share)));
+            String shareString = context.getString(R.string.share_message, title, author);
+
+            Intent shareIntent = new Intent()
+                    .setAction(Intent.ACTION_SEND)
+                    .putExtra(Intent.EXTRA_TEXT, shareString)
+                    .setType("text/plain");
+            context.startActivity(Intent.createChooser(
+                    shareIntent, context.getString(R.string.action_share)));
         } else {
-            Toolbox.showToast(launchingActivity,
+            Toolbox.showToast(context,
                     "There was an error getting story info - Cursor is null. " +
                             "Not starting the share activity.");
         }
+    }
+
+    /**
+     * Utility method for getting a float value from resources
+     * https://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values
+     *
+     * @param resources
+     * @param resId
+     * @return
+     */
+    public static float getFloatFromResources(Resources resources, int resId) {
+        TypedValue outValue = new TypedValue();
+        resources.getValue(resId, outValue, true);
+        return outValue.getFloat();
     }
 }

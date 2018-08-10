@@ -4,6 +4,9 @@ import android.app.Application;
 
 import timber.log.Timber;
 
+/**
+ * Extends Application class to utilize Timber
+ */
 public class XYZApp extends Application {
 
     @Override

@@ -22,13 +22,28 @@
 
         <include layout="@layout/list_item_article_author_actions" />
 
-        <ImageView
-            android:id="@+id/article_thumbnail"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/thumbnail_max_height"
-            android:layout_marginBottom="@dimen/card_padding_narrow"
-            android:layout_marginTop="@dimen/card_padding_narrow"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/article_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/thumbnail_max_height"
+                android:layout_marginBottom="@dimen/card_padding_narrow"
+                android:layout_marginTop="@dimen/card_padding_narrow"
+                android:scaleType="centerCrop"
+                android:background="@color/imageBackground"
+                android:transitionName="@string/sharedTransition_photo"/>
+
+            <ProgressBar
+                android:id="@+id/pb_article_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+        </FrameLayout>
 
         <include layout="@layout/list_item_article_details" />
 

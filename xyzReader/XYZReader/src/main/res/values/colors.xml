@@ -25,7 +25,7 @@
     <color name="textColorDark">@color/md_black_1000</color>
     <color name="textColorMedium">@color/md_grey_600</color>
 
-    <color name="imageBackground">@color/md_black_1000</color>
+    <color name="imageBackground">@color/md_grey_300</color>
 
     <color name="imageForeground_ScrimStart">#00000000</color>
     <color name="imageForeground_ScrimEnd">#60000000</color>

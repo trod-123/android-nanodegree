@@ -33,12 +33,26 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <ImageView
-                android:id="@+id/article_thumbnail"
-                android:layout_width="@dimen/thumbnail_size"
-                android:layout_height="@dimen/thumbnail_size"
-                android:layout_marginStart="@dimen/card_padding"
-                android:scaleType="centerCrop" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/card_padding">
+
+                <ImageView
+                    android:id="@+id/article_thumbnail"
+                    android:layout_width="@dimen/thumbnail_size"
+                    android:layout_height="@dimen/thumbnail_size"
+                    android:background="@color/imageBackground"
+                    android:scaleType="centerCrop"
+                    android:transitionName="@string/sharedTransition_photo"/>
+
+                <ProgressBar
+                    android:id="@+id/pb_article_thumbnail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
 
         </LinearLayout>
 

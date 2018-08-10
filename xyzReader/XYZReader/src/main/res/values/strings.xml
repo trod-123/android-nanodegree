@@ -29,7 +29,7 @@
         text-align: ]]>%3$s<![CDATA[;
         margin: ]]>%4$d<![CDATA[;
         padding: ]]>%5$d<![CDATA[;
-        color: ]]>%6%s<![CDATA[
+        color: ]]>%6$s<![CDATA[
         }
         </style>
         </head>
@@ -42,5 +42,6 @@
         ]]>
     </string>
     <string name="moreActions">More actions</string>
+    <string name="sharedTransition_photo">photo_transition</string>
 
 </resources>

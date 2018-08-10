@@ -1,6 +1,6 @@
 package com.example.xyzreader.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
@@ -14,13 +14,13 @@ import com.example.xyzreader.util.Toolbox;
  */
 public class ArticleActionsMenuOnClickListener implements PopupMenu.OnMenuItemClickListener {
 
-    private Activity mHostActivity;
+    private Context mContext;
     private Cursor mCursor;
     private int mPosition;
 
-    public ArticleActionsMenuOnClickListener(Activity hostingActivity, Cursor cursor,
+    public ArticleActionsMenuOnClickListener(Context context, Cursor cursor,
                                              int cursorPosition) {
-        mHostActivity = hostingActivity;
+        mContext = context;
         mCursor = cursor;
         mPosition = cursorPosition;
     }
@@ -30,9 +30,7 @@ public class ArticleActionsMenuOnClickListener implements PopupMenu.OnMenuItemCl
         int id = item.getItemId();
         switch (id) {
             case R.id.action_share:
-                Toolbox.shareArticle(
-                        mHostActivity,
-                        mCursor, mPosition);
+                Toolbox.shareArticle(mContext, mCursor, mPosition);
                 return true;
         }
         return false;

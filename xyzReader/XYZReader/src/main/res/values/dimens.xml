@@ -19,6 +19,15 @@
 
     <dimen name="app_bar_elevation">4dp</dimen>
     <dimen name="collapsing_toolbar_scrim_buffer_height">1dp</dimen>
+    <dimen name="list_vertical_offset_animation">600dp</dimen>
 
+    <!-- Storing "custom" types in resources:
+        Source: https://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values -->
+    <dimen name="card_entry_animation_start_offset">600dp</dimen>
+    <dimen name="card_entry_animation_end_offset">0dp</dimen>
+    <item name="card_entry_animation_start_alpha" format="float" type="dimen">0.85</item>
+    <item name="card_entry_animation_end_alpha" format="float" type="dimen">1.0</item>
+    <item name="card_entry_animation_duration" format="integer" type="integer">600</item>
+    <item name="card_entry_animation_offset_shift" format="float" type="dimen">1.5</item>
 
 </resources>
