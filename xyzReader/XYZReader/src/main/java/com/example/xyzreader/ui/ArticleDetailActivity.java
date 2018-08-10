@@ -1,6 +1,8 @@
 package com.example.xyzreader.ui;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
@@ -25,6 +27,7 @@ import timber.log.Timber;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
+ * This class is instantiated from intent actions, and is not created directly from within list
  */
 public class ArticleDetailActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -63,19 +66,19 @@ public class ArticleDetailActivity extends AppCompatActivity
         mPagerAdapter = new DetailPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
                 // TROD: This allows the up button to fade in and out as the page changes
                 // (up button still works even while it's faded out for the time being)
                 Toolbox.showView(mUpButton, state == ViewPager.SCROLL_STATE_IDLE, false);
 
-                // TODO: This is not being called at the right time...
-                boolean isShowing = ((ArticleDetailFragment) mPagerAdapter.getItem(mCurrentPagerPosition))
+                // Hide the overflow button appropriately, even after user switches pages, by
+                // directly accessing the detail fragment, and if the app bar is showing, then hide
+                // For accessing the fragment directly, use instantiateItem() on the pager adapter
+                // https://stackoverflow.com/questions/10656323/android-fragmentstatepageradapter
+                boolean isShowing = ((ArticleDetailFragment) mPagerAdapter.instantiateItem(mPager, mCurrentPagerPosition))
                         .mAppBarShowing;
-                // TODO: Need an additional indicator for when to hide this. Cuz it hides even if
-                // app bar is visible
                 Toolbox.showView(mOverflowButton,
                         state == ViewPager.SCROLL_STATE_IDLE && isShowing
                         , true);
@@ -92,6 +95,11 @@ public class ArticleDetailActivity extends AppCompatActivity
                     Timber.e("Cursor is null when paging");
                 }
             }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
         });
 
         mAppBarContainer = findViewById(R.id.appbar_container_detail);
@@ -99,7 +107,10 @@ public class ArticleDetailActivity extends AppCompatActivity
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSupportNavigateUp();
+                // This is required for preventing previous activity from being recreated needlessly
+                // Shared elements transition will not work unless we call this, instead of
+                // onSupportNavigationUp()
+                onBackPressed();
             }
         });
         mOverflowButton.setOnClickListener(new View.OnClickListener() {
@@ -200,8 +211,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 //        mUpButton.setTranslationY(Math.min(mSelectedItemUpButtonFloor - upButtonNormalBottom, 0));
 //    }
 
-    private class DetailPagerAdapter extends android.support.v4.app.FragmentStatePagerAdapter {
-        public DetailPagerAdapter(android.support.v4.app.FragmentManager fm) {
+    private class DetailPagerAdapter extends FragmentStatePagerAdapter {
+        public DetailPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -223,6 +234,8 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         @Override
         public int getCount() {
+            // This seems to rely on the cursor for returning number of pages, rather than looking
+            // at number of pages
             return (mCursor != null) ? mCursor.getCount() : 0;
         }
     }
