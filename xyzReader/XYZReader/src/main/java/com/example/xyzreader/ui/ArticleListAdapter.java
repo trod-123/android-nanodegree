@@ -2,15 +2,11 @@ package com.example.xyzreader.ui;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.view.ViewCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -28,7 +24,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.util.Toolbox;
 
 import java.text.ParseException;
@@ -49,7 +44,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
-    private Activity mActivity;
+    private Fragment mFragment;
     private Cursor mCursor;
     private ArticleListViewHolderListener mViewHolderListener;
 
@@ -77,15 +72,15 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         void onLoadCompleted(ImageView view, int adapterPosition);
     }
 
-    public ArticleListAdapter(Activity activity, Cursor cursor) {
-        mActivity = activity;
+    public ArticleListAdapter(Fragment fragment, Cursor cursor) {
+        mFragment = fragment;
         mCursor = cursor;
-        mViewHolderListener = new ArticleListViewHolderListenerImpl(activity);
+        mViewHolderListener = new ArticleListViewHolderListenerImpl();
     }
 
-    public ArticleListAdapter(Activity activity) {
-        mActivity = activity;
-        mViewHolderListener = new ArticleListViewHolderListenerImpl(activity);
+    public ArticleListAdapter(Fragment fragment) {
+        mFragment = fragment;
+        mViewHolderListener = new ArticleListViewHolderListenerImpl();
     }
 
     public void swapCursor(Cursor newCursor) {
@@ -102,7 +97,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     @NonNull
     @Override
     public ArticleListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mActivity).inflate(R.layout.list_item_article, parent, false);
+        View view = LayoutInflater.from(mFragment.getActivity()).inflate(R.layout.list_item_article, parent, false);
         return new ArticleListViewHolder(view);
     }
 
@@ -172,7 +167,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         holder.ibActions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toolbox.showArticleActionsMenuPopup(mActivity, v, mCursor, holder.getLayoutPosition());
+                Toolbox.showArticleActionsMenuPopup(mFragment.getActivity(), v, mCursor, holder.getLayoutPosition());
             }
         });
     }
@@ -187,41 +182,45 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     }
 
     private class ArticleListViewHolderListenerImpl implements ArticleListViewHolderListener {
-        private Activity activity;
         private AtomicBoolean enterTransitionStarted;
-        private SharedPreferences sp;
 
-        ArticleListViewHolderListenerImpl(Activity activity) {
-            this.activity = activity;
+        ArticleListViewHolderListenerImpl() {
             this.enterTransitionStarted = new AtomicBoolean();
-            this.sp = activity.getSharedPreferences(ArticleListActivity.SHARED_PREFERENCES,
-                    Context.MODE_PRIVATE);
         }
 
         @Override
         public void onItemClicked(ImageView iv, long itemId, int adapterPosition) {
             // Note the position needs to be updated before calling makeSceneTransitionAnimation(),
             // otherwise the old position will be used when animating the elements
-            sp.edit()
-                    .putInt(ArticleListActivity.KEY_CURRENT_POSITION, adapterPosition)
-                    .apply();
+            MainActivity.sCurrentPosition = adapterPosition;
+            MainActivity.sCurrentId = itemId;
 
-            // TROD: This intent doesn't fire up the detail activity directly. It launches it
-            // through URI
-            Intent intent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(itemId));
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity, iv, ViewCompat.getTransitionName(iv)); // after this, SharedElementCallback is triggered
+            mFragment.getFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .addSharedElement(iv, iv.getTransitionName())
+                    .replace(R.id.container_fragment_main,
+                            new ArticleDetailPagerFragment(),
+                            ArticleDetailPagerFragment.class.getSimpleName())
+                    .addToBackStack(null)
+                    .commit();
 
-            //activity.startActivity(intent, options.toBundle());
-//                startActivity(intent);
-            activity.startActivityForResult(intent, 100, options.toBundle());
+//            // TROD: This intent doesn't fire up the detail activity directly. It launches it
+//            // through URI
+//            Intent intent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(itemId));
+//            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                    activity, iv, ViewCompat.getTransitionName(iv)); // after this, SharedElementCallback is triggered
+//
+//            //activity.startActivity(intent, options.toBundle());
+////                startActivity(intent);
+//            activity.startActivityForResult(intent, 100, options.toBundle());
         }
 
         @Override
         public void onLoadCompleted(ImageView view, int adapterPosition) {
-            if (sp.getInt(ArticleListActivity.KEY_CURRENT_POSITION, 0) != adapterPosition) return;
+            if (MainActivity.sCurrentPosition != adapterPosition) return;
             if (enterTransitionStarted.getAndSet(true)) return;
-            activity.startPostponedEnterTransition();
+            mFragment.startPostponedEnterTransition();
         }
     }
 

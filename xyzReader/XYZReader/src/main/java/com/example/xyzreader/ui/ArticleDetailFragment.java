@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,19 +11,21 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -47,7 +50,7 @@ import timber.log.Timber;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
- * either contained in a {@link ArticleListActivity} in two-pane mode (on
+ * either contained in a {@link MainActivity} in two-pane mode (on
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
 public class ArticleDetailFragment extends Fragment implements
@@ -73,6 +76,10 @@ public class ArticleDetailFragment extends Fragment implements
     Toolbar mToolbar;
     @BindView(R.id.toolbar_title_details)
     TextView mTv_toolbarTitle;
+    @BindView(R.id.ib_action_up)
+    ImageButton mUpButton;
+    @BindView(R.id.ib_action_menu)
+    ImageButton mOverflowButton;
     @BindView(R.id.container_details_meta)
     LinearLayout mContainerMetaDetails;
     @BindView(R.id.fab_share)
@@ -104,11 +111,12 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    private FragmentActivity mActivity;
+    Activity mHostActivity;
 
     /**
      * TROD: Note the new fragment is created here, and then arguments are set
      * But this just returns the fragment, it doesn't start it
+     *
      * @param itemId
      * @return
      */
@@ -125,39 +133,13 @@ public class ArticleDetailFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         Timber.tag(ArticleDetailFragment.class.getSimpleName());
 
-        mActivity = getActivity();
+        mHostActivity = getActivity();
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
-//        mStatusBarFullOpacityBottom = getResources().getDimensionPixelSize(
-//                R.dimen.detail_card_top_margin);
-    }
-
-    /**
-     * Returns the hosting ArticleDetailActivity, if available
-     *
-     * @return
-     */
-    private ArticleDetailActivity getDetailActivityHost() {
-        if (getActivity() instanceof ArticleDetailActivity) {
-            return (ArticleDetailActivity) getActivity();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // In support library r8, calling initLoader for a fragment in a FragmentPagerAdapter in
-        // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
-        // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
-        // we do this in onActivityCreated.
-        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -166,23 +148,12 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
+        setupStatusAppBar();
+
         // Set the toolbar's height dynamically to account for varying bar heights across devices
         int statusBarAppBarHeight = Toolbox.getStatusBarWithActionBarHeight(getActivity());
         mToolbar.getLayoutParams().height = statusBarAppBarHeight;
         mCToolbar.setScrimVisibleHeightTrigger(statusBarAppBarHeight + (int) getResources().getDimension(R.dimen.collapsing_toolbar_scrim_buffer_height));
-
-        // TROD: This seems to be manual implementation of image parallax
-        // TODO: But this could also be something that updates a read-progress bar somewhere,
-        // probably the status bar
-        mScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                mScrollY = mScrollView.getScrollY();
-//                getDetailActivityHost().onUpButtonFloorChanged(mItemId, ArticleDetailFragment.this);
-//                mPhotoContainerView.setTranslationY((int) (mScrollY - mScrollY / PARALLAX_FACTOR));
-//                updateStatusBar();
-            }
-        });
 
         // Disable drag callback for app bar, so scrolling is limited to just the scrollview, not
         // the app bar.
@@ -201,11 +172,8 @@ public class ArticleDetailFragment extends Fragment implements
         mShareFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Declare an interface between detail activity and detail fragment so
-                // we don't need to keep doing this every time
-                if (getDetailActivityHost() != null) {
-                    getDetailActivityHost().shareArticle();
-                }
+                // Since the detail cursor contains only the article, pass in 0 for position
+                Toolbox.shareArticle(mHostActivity, mCursor, 0);
             }
         });
 
@@ -214,20 +182,43 @@ public class ArticleDetailFragment extends Fragment implements
         return mRootView;
     }
 
-//    private void updateStatusBar() {
-//        int color = 0;
-//        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
-//            float f = progress(mScrollY,
-//                    mStatusBarFullOpacityBottom - mTopInset * 3,
-//                    mStatusBarFullOpacityBottom - mTopInset);
-//            color = Color.argb((int) (255 * f),
-//                    (int) (Color.red(mMutedColor) * 0.9),
-//                    (int) (Color.green(mMutedColor) * 0.9),
-//                    (int) (Color.blue(mMutedColor) * 0.9));
-//        }
-//        mStatusBarColorDrawable.setColor(color);
-//        mDrawInsetsFrameLayout.setInsetBackground(mStatusBarColorDrawable);
-//    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    /**
+     * Helper for making the status bar translucent and setting the action bar layout
+     */
+    private void setupStatusAppBar() {
+        // Remove title from action bar
+        // From https://stackoverflow.com/questions/7655874/how-do-you-remove-the-title-text-from-the-android-actionbar
+        ((AppCompatActivity) mHostActivity).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) mHostActivity).getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // Set padding programmatically
+        int statusBarHeight = Toolbox.getStatusBarHeight(mHostActivity);
+        mTv_toolbarTitle.setPadding(0, statusBarHeight, 0, 0);
+
+        mUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // This is required for preventing previous activity from being recreated needlessly
+                // Shared elements transition will also not work unless we call this, instead of
+//                onSupportNavigateUp();
+                mHostActivity.onBackPressed();
+            }
+        });
+        mOverflowButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Since the detail cursor contains only the article, pass in 0 for position
+                Toolbox.showArticleActionsMenuPopup(mHostActivity, v, mCursor,
+                        0);
+            }
+        });
+    }
 
     /**
      * Helper for setting the visibility of app bar contents, as well as the scrolling titles
@@ -238,33 +229,14 @@ public class ArticleDetailFragment extends Fragment implements
         if (show) {
             Toolbox.showView(mTv_toolbarTitle, true, false);
             Toolbox.showView(mContainerMetaDetails, false, false);
-            if (getDetailActivityHost() != null) {
-                getDetailActivityHost().showOverflowButton(true);
-            }
+            Toolbox.showView(mOverflowButton, true, true);
         } else {
             Toolbox.showView(mTv_toolbarTitle, false, false);
             Toolbox.showView(mContainerMetaDetails, true, false);
-            if (getDetailActivityHost() != null) {
-                getDetailActivityHost().showOverflowButton(false);
-            }
+            Toolbox.showView(mOverflowButton, false, true);
+
         }
         mAppBarShowing = show;
-    }
-
-    // TROD: Is this probably setting a progress indicator through the status bar? Which probably
-    // fills up as the user scrolls towards the bottom of the page?
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
-    }
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
     }
 
     private Date parsePublishedDate() {
@@ -364,7 +336,7 @@ public class ArticleDetailFragment extends Fragment implements
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                             // begin shared elements transition. needs to be set here as well to
                             // prevent ui from hanging during failure
-                            mActivity.supportStartPostponedEnterTransition();
+                            getParentFragment().startPostponedEnterTransition();
                             return false;
                         }
 
@@ -372,7 +344,7 @@ public class ArticleDetailFragment extends Fragment implements
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                             // begin shared elements transition. needs to be set here for once
                             // image is loaded
-                            mActivity.supportStartPostponedEnterTransition();
+                            getParentFragment().startPostponedEnterTransition();
                             mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(resource,
                                     Toolbox.PaletteSwatch.MUTED,
                                     getResources().getColor(R.color.colorPrimary)));

@@ -1,7 +1,6 @@
 package com.example.xyzreader.util;
 
 import android.animation.Animator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,7 +8,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -182,7 +180,7 @@ public class Toolbox {
     }
 
     /**
-     * Gets the height of the status bar
+     * Gets the height of the status bar, in pixels
      * Source: https://stackoverflow.com/questions/27856603/lollipop-draw-behind-statusbar-with-its-color-set-to-transparent
      *
      * @return
@@ -198,7 +196,7 @@ public class Toolbox {
     }
 
     /**
-     * Gets the height of the navigation bar
+     * Gets the height of the navigation bar, in pixels
      * Source: https://stackoverflow.com/questions/25603718/android-navigation-bar-size-in-xml
      *
      * @return
@@ -214,7 +212,7 @@ public class Toolbox {
     }
 
     /**
-     * Gets the height of the action bar
+     * Gets the height of the action bar, in pixels
      * Source: https://stackoverflow.com/questions/12301510/how-to-get-the-actionbar-height
      *
      * @param context
@@ -230,7 +228,7 @@ public class Toolbox {
     }
 
     /**
-     * Gets the height of the status bar and action bar combined
+     * Gets the height of the status bar and action bar combined, in pixels
      *
      * @param context
      * @return
