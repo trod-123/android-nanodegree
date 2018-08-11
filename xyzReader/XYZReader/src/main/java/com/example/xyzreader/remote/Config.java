@@ -5,6 +5,9 @@ import android.util.Log;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * This class defines the datasource for the reader
+ */
 public class Config {
     public static final URL BASE_URL;
     private static String TAG = Config.class.toString();

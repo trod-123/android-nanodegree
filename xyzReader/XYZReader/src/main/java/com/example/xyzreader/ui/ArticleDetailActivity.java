@@ -1,12 +1,14 @@
 package com.example.xyzreader.ui;
 
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.Loader;
-import android.database.Cursor;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +22,9 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.util.Toolbox;
+
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +44,7 @@ public class ArticleDetailActivity extends AppCompatActivity
     private int mSelectedItemUpButtonFloor = Integer.MAX_VALUE;
     private int mTopInset;
 
+    private SharedPreferences mSp;
     private int mCurrentPagerPosition;
 
     @BindView(R.id.pager)
@@ -60,6 +66,8 @@ public class ArticleDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
         Timber.tag(ArticleDetailActivity.class.getSimpleName());
         setUpStatusAppBar();
+
+        mSp = getSharedPreferences(ArticleListActivity.SHARED_PREFERENCES, MODE_PRIVATE);
 
         getSupportLoaderManager().initLoader(0, null, this);
 
@@ -90,6 +98,10 @@ public class ArticleDetailActivity extends AppCompatActivity
                     mCursor.moveToPosition(position);
                     mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
                     mCurrentPagerPosition = position;
+                    mSp.edit()
+                            .putInt(ArticleListActivity.KEY_CURRENT_POSITION, position)
+                            .apply();
+
 //                    updateUpButtonPosition();
                 } else {
                     Timber.e("Cursor is null when paging");
@@ -108,8 +120,8 @@ public class ArticleDetailActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // This is required for preventing previous activity from being recreated needlessly
-                // Shared elements transition will not work unless we call this, instead of
-                // onSupportNavigationUp()
+                // Shared elements transition will also not work unless we call this, instead of
+//                onSupportNavigateUp();
                 onBackPressed();
             }
         });
@@ -121,12 +133,44 @@ public class ArticleDetailActivity extends AppCompatActivity
             }
         });
 
+
+        prepareSharedElementTransition();
+
         if (savedInstanceState == null) {
             if (getIntent() != null && getIntent().getData() != null) {
                 mStartId = ItemsContract.Items.getItemId(getIntent().getData());
                 mSelectedItemId = mStartId;
             }
+            // Even the shared element is within the fragment, this is still needed to be called
+            // in the activity, NOT in the fragment since this activity is created first.
+            // Also, calling it here when savedInstanceState is null avoids this from being
+            // called on orientation change
+            supportPostponeEnterTransition();
         }
+    }
+
+    private void prepareSharedElementTransition() {
+//        Transition transition = TransitionInflater.from(this)
+//                .inflateTransition(R.transition.image_shared_element_transition);
+        // TODO: What if this one is not called?
+        //setSharedElementEnterTransition(transition);
+
+
+        setEnterSharedElementCallback(
+                new SharedElementCallback() {
+                    @Override
+                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                        int position = mSp.getInt(ArticleListActivity.KEY_CURRENT_POSITION, 0);
+                        // Find the view for the current fragment
+                        Fragment currentFragment = (Fragment) mPagerAdapter
+                                .instantiateItem(mPager, position);
+                        View view = currentFragment.getView();
+                        if (view == null) return;
+
+                        // Map the first shared element name to the child image view
+                        sharedElements.put(names.get(0), view.findViewById(R.id.iv_photo_details));
+                    }
+                });
     }
 
     /**

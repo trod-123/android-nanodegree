@@ -43,8 +43,8 @@
                     android:layout_width="@dimen/thumbnail_size"
                     android:layout_height="@dimen/thumbnail_size"
                     android:background="@color/imageBackground"
-                    android:scaleType="centerCrop"
-                    android:transitionName="@string/sharedTransition_photo"/>
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop" />
 
                 <ProgressBar
                     android:id="@+id/pb_article_thumbnail"

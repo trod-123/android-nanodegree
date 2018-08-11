@@ -13,6 +13,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * Uses OkHttp client to grab the data online and JSONTokener to parse the Json
+ */
 public class RemoteEndpointUtil {
     private static final String TAG = "RemoteEndpointUtil";
 

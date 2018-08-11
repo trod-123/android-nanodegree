@@ -1,18 +1,19 @@
 package com.example.xyzreader.ui;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -20,8 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -29,8 +28,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.util.Toolbox;
@@ -59,7 +60,9 @@ public class ArticleDetailFragment extends Fragment implements
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
+
+//    private int mMutedColor = 0xFF333333;
+
     @BindView(R.id.scrollview_details)
     NestedScrollView mScrollView;
     @BindView(R.id.app_bar_detail)
@@ -101,6 +104,14 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
+    private FragmentActivity mActivity;
+
+    /**
+     * TROD: Note the new fragment is created here, and then arguments are set
+     * But this just returns the fragment, it doesn't start it
+     * @param itemId
+     * @return
+     */
     public static ArticleDetailFragment newInstance(long itemId) {
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
@@ -113,6 +124,8 @@ public class ArticleDetailFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(ArticleDetailFragment.class.getSimpleName());
+
+        mActivity = getActivity();
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
@@ -238,11 +251,6 @@ public class ArticleDetailFragment extends Fragment implements
         mAppBarShowing = show;
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
     // TROD: Is this probably setting a progress indicator through the status bar? Which probably
     // fills up as the user scrolls towards the bottom of the page?
     static float progress(float v, float min, float max) {
@@ -349,26 +357,30 @@ public class ArticleDetailFragment extends Fragment implements
                     "text/html", "UTF-8", null);
 
             // Set up the image and the appbar background color
-            ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
-                    .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
+            mPhotoView.setTransitionName("image" + mItemId);
+            Toolbox.loadThumbnailFromUrl(getActivity(), mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                    mPhotoView, new RequestListener<Bitmap>() {
                         @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                                Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mPhotoView.setImageBitmap(bitmap);
-                                mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(bitmap, Toolbox.PaletteSwatch.MUTED, getResources().getColor(R.color.colorPrimary)));
-                                // TODO: This probably was another way of setting the app bar color...
-//                                mRootView.findViewById(R.id.meta_bar)
-//                                        .setBackgroundColor(mMutedColor);
-//                                updateStatusBar();
-                            }
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                            // begin shared elements transition. needs to be set here as well to
+                            // prevent ui from hanging during failure
+                            mActivity.supportStartPostponedEnterTransition();
+                            return false;
                         }
 
                         @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                            // begin shared elements transition. needs to be set here for once
+                            // image is loaded
+                            mActivity.supportStartPostponedEnterTransition();
+                            mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(resource,
+                                    Toolbox.PaletteSwatch.MUTED,
+                                    getResources().getColor(R.color.colorPrimary)));
+                            // TODO: This probably was another way of setting the app bar color...
+//                                mRootView.findViewById(R.id.meta_bar)
+//                                        .setBackgroundColor(mMutedColor);
+//                                updateStatusBar();
+                            return false;
                         }
                     });
         } else {

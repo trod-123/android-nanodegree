@@ -2,16 +2,17 @@ package com.example.xyzreader.ui;
 
 
 import android.annotation.TargetApi;
-import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
 import android.content.BroadcastReceiver;
-import android.support.v4.content.Loader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -21,11 +22,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.ImageView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.util.Toolbox;
 
@@ -39,9 +38,11 @@ import butterknife.ButterKnife;
  * activity presents a grid of items as cards.
  */
 public class ArticleListActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>, ArticleListAdapter.ArticleListClickListener {
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String BOOL_INITIATED = "com.example.xyzreader.ui.initiated";
+    public static final String KEY_CURRENT_POSITION = "com.example.xyzreader.ui.adapter_position";
+    public static final String SHARED_PREFERENCES = "com.example.xyzreader.ui.sp";
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -50,15 +51,19 @@ public class ArticleListActivity extends AppCompatActivity implements
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
     ArticleListAdapter mListAdapter;
-    
+
     // Only do certain things once (entrance animations)
     private boolean mInitiated = false;
+
+    SharedPreferences mSp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
         ButterKnife.bind(this);
+
+        mSp = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE);
 
         final View toolbarContainerView = findViewById(R.id.toolbar_container);
 
@@ -67,11 +72,23 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             // TODO: Disable this for now
             //refresh();
+            mSp.edit()
+                    .remove(KEY_CURRENT_POSITION)
+                    .apply();
         } else {
             if (savedInstanceState.containsKey(BOOL_INITIATED)) {
                 mInitiated = savedInstanceState.getBoolean(BOOL_INITIATED);
             }
         }
+
+//        // TODO: This is just an option fade-in and fade-out from this activity (from guide)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Fade fade = new Fade();
+//            fade.setDuration(500);
+//
+//            getWindow().setEnterTransition(fade);
+//            getWindow().setExitTransition(fade);
+//        }
 
         int columnCount = getResources().getInteger(R.integer.list_column_count);
         // TODO: Make sure this works fine across differing screen sizes
@@ -79,7 +96,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
         mRecyclerView.setHasFixedSize(true);
-        mListAdapter = new ArticleListAdapter(this, this);
+        mListAdapter = new ArticleListAdapter(this);
         mListAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mListAdapter);
         // TODO: We can smooth scroll here, but we need to account for app bar current size
@@ -91,11 +108,15 @@ public class ArticleListActivity extends AppCompatActivity implements
                 refresh();
             }
         });
-
+        prepareSharedElementsTransition();
+        supportPostponeEnterTransition();
     }
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
+        mSp.edit()
+                .remove(KEY_CURRENT_POSITION)
+                .apply();
     }
 
     @Override
@@ -103,6 +124,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onStart();
         registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        scrollToPosition();
     }
 
     @Override
@@ -111,11 +133,27 @@ public class ArticleListActivity extends AppCompatActivity implements
         unregisterReceiver(mRefreshingReceiver);
     }
 
-    @Override
-    public void onClick(ImageView iv, long itemId) {
-        startActivity(new Intent(Intent.ACTION_VIEW,
-                ItemsContract.Items.buildItemUri(itemId)));
-
+    private void scrollToPosition() {
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                mRecyclerView.removeOnLayoutChangeListener(this);
+                final int position = mSp.getInt(KEY_CURRENT_POSITION, 0);
+                final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+                View viewAtPosition = layoutManager.findViewByPosition(position);
+                // Scroll to position if the view for the current position is null (not currently part of
+                // layout manager children), or it's not completely visible.
+                if (viewAtPosition == null || layoutManager
+                        .isViewPartiallyVisible(viewAtPosition, false, true)) {
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            layoutManager.scrollToPosition(position);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private boolean mIsRefreshing = false;
@@ -139,6 +177,26 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private void updateRefreshingUI() {
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+    }
+
+    private void prepareSharedElementsTransition() {
+//        setExitSharedElementCallback(new SharedElementCallback() {
+//            // This is called when exiting and when re-entering, and will remap the shared view
+//            // and adjust the transition for when view is changed after paging the images
+//            @Override
+//            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+//                // Get the viewholder for the current position
+//                int position = mSp.getInt(KEY_CURRENT_POSITION, 0);
+//                RecyclerView.ViewHolder selectedViewHolder = mRecyclerView.findViewHolderForAdapterPosition(position);
+//                if (selectedViewHolder == null || selectedViewHolder.itemView == null) return;
+//
+//                // We're only interested in one view transition, so we just need to adjust mapping
+//                // for the first shared element name
+//                // TODO: This is only called once... when I leave, but it is not called when I come
+//                // back
+//                sharedElements.put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.article_thumbnail));
+//            }
+//        });
     }
 
     @NonNull

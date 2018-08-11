@@ -21,6 +21,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!-- TODO: Only needs to be set for API 21 and above -->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="AppTheme.Detail">
