@@ -1,7 +1,6 @@
 package com.example.xyzreader.ui;
 
 
-import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -10,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.transition.TransitionSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,10 +56,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         /**
          * For handling click events. The purpose of this is to launch the appropriate fragment
          * pertaining to the itemId clicked, and also setting the shared element image view.
-         * @param iv
+         *
+         * @param view
          * @param itemId
          */
-        void onItemClicked(ImageView iv, long itemId, int adapterPosition);
+        void onItemClicked(View view, long itemId, int adapterPosition);
 
         /**
          * This is called for each view, after image is loaded. The purpose of this is to check
@@ -189,12 +190,15 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         }
 
         @Override
-        public void onItemClicked(ImageView iv, long itemId, int adapterPosition) {
+        public void onItemClicked(View view, long itemId, int adapterPosition) {
             // Note the position needs to be updated before calling makeSceneTransitionAnimation(),
             // otherwise the old position will be used when animating the elements
             MainActivity.sCurrentPosition = adapterPosition;
             MainActivity.sCurrentId = itemId;
 
+            //((TransitionSet) mFragment.getExitTransition()).excludeTarget(view, true);
+
+            ImageView iv = view.findViewById(R.id.article_thumbnail);
             mFragment.getFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)
@@ -249,7 +253,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
         @Override
         public void onClick(View v) {
-            mViewHolderListener.onItemClicked(thumbnailView,
+            mViewHolderListener.onItemClicked(v,
                     ArticleListAdapter.this.getItemId(getAdapterPosition()), getAdapterPosition());
         }
     }

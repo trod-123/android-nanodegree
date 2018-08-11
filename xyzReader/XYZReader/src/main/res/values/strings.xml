@@ -43,5 +43,6 @@
     </string>
     <string name="moreActions">More actions</string>
     <string name="sharedTransition_photo">photo_transition</string>
+    <string name="null_data">No data</string>
 
 </resources>
