@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="300"
+    android:interpolator="@android:interpolator/linear_out_slow_in"
+    android:startDelay="300"
+    android:transitionOrdering="together">
+    <!--<targets>-->
+    <!--<target android:excludeId="@id/detail_appbar" />-->
+    <!--</targets>-->
+    <!--<slide-->
+    <!--android:duration="600"-->
+    <!--android:slideEdge="bottom">-->
+    <!--<targets>-->
+    <!--<target android:targetId="@id/ib_detail_action_up" />-->
+    <!--<target android:targetId="@id/details_temp_article_author"/>-->
+    <!--<target android:targetId="@id/details_temp_article_title"/>-->
+    <!--<target android:targetId="@id/details_temp_article_date"/>-->
+    <!--<target android:targetId="@id/details_temp_meta_line"/>-->
+    <!--</targets>-->
+    <!--</slide>-->
+
+    <!--<fade>-->
+    <!--<targets>-->
+    <!--<target android:excludeId="@id/container_details_meta" />-->
+    <!--<target android:excludeId="@id/detail_photo" />-->
+    <!--<target android:excludeId="@id/detail_temp_photo" />-->
+    <!--</targets>-->
+    <!--</fade>-->
+
+    <!-- Can't target view groups. Needs to be individual views only -->
+    <slide android:slideEdge="bottom">
+        <targets>
+            <target android:targetId="@id/fab_share" />
+            <target android:targetId="@id/details_temp_article_author" />
+            <target android:targetId="@id/details_temp_article_title" />
+            <target android:targetId="@id/details_temp_article_date" />
+        </targets>
+    </slide>
+    <slide android:slideEdge="start" android:startDelay="100">
+        <targets>
+            <target android:targetId="@id/details_temp_meta_line" />
+        </targets>
+    </slide>
+
+    <slide android:slideEdge="start">
+        <targets>
+            <target android:targetId="@id/ib_temp_action_up" />
+        </targets>
+    </slide>
+
+    <fade>
+        <targets>
+            <target android:targetId="@id/scrim" />
+        </targets>
+    </fade>
+
+    <slide android:slideEdge="bottom">
+        <targets>
+            <target android:targetId="@id/scrollview_details" />
+        </targets>
+    </slide>
+</transitionSet>

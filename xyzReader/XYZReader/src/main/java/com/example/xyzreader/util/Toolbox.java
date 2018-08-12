@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.example.xyzreader.GlideApp;
 import com.example.xyzreader.GlideRequest;
@@ -77,6 +76,11 @@ public class Toolbox {
     /**
      * Helper for preparing the Glide request
      *
+     * For info on getting this to work with shared element transitions: https://github.com/bumptech/glide/issues/502
+     *
+     * TODO: Create another method specifically for shared elements. Keep the previous implementation
+     * as the "default" and set this for those views that do NOT require shared elements
+     *
      * @param context
      * @param sourceUrl
      * @param listener
@@ -88,12 +92,14 @@ public class Toolbox {
                 .load(sourceUrl)
                 .listener(listener)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate() // for shared element transitions, this can NOT be any crossfading or animation for it to work
+                .override(1); // for shared element transitions, this NEEDS to be overridden so that there is a "cache hit"
                 // if this is RESOURCE, then we get java.io.FileNotFoundException(No content provider) in the main app AND also in widget (first time endless loading, second time loads broken image error).
                 // if this is DATA then it works OK in the main app, but does not load in widget (if a listener is provided, onResourceReady never gets called..., and if no listener is provided, still does not load)
                 // if this is AUTOMATIC then it works OK in the main app, but always crashes the widget (if no listener is provided, otherwise onResourceReady never gets called...)
                 // if this is NONE, no images load anywhere
-                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER) // ideally, this thumbnail request points to a low-res url of the same image
-                .transition(BitmapTransitionOptions.withCrossFade());
+//                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER)// ideally, this thumbnail request points to a low-res url of the same image
+                //.transition(BitmapTransitionOptions.withCrossFade());
     }
 
     /**

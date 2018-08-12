@@ -14,8 +14,7 @@
     <dimen name="thumbnail_size">96dp</dimen>
     <dimen name="thumbnail_max_height">200dp</dimen>
     <dimen name="actionBarExpanded">168dp</dimen>
-    <dimen name="details_image_height">316dp</dimen>
-    <dimen name="details_image_window">300dp</dimen>
+    <dimen name="details_actionBarExpanded">500dp</dimen>
 
     <dimen name="app_bar_elevation">4dp</dimen>
     <dimen name="collapsing_toolbar_scrim_buffer_height">1dp</dimen>

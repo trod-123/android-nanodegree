@@ -34,7 +34,6 @@
                 android:layout_marginBottom="@dimen/card_padding_narrow"
                 android:layout_marginTop="@dimen/card_padding_narrow"
                 android:scaleType="centerCrop"
-                android:adjustViewBounds="true"
                 android:background="@color/imageBackground" />
 
             <ProgressBar

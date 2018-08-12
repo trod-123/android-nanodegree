@@ -3,6 +3,8 @@ package com.example.xyzreader.ui;
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,9 +49,7 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 /**
- * A fragment representing a single Article detail screen. This fragment is
- * either contained in a {@link MainActivity} in two-pane mode (on
- * tablets) or a {@link ArticleDetailActivity} on handsets.
+ * A fragment representing a single Article detail screen
  */
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -68,15 +69,15 @@ public class ArticleDetailFragment extends Fragment implements
 
     @BindView(R.id.scrollview_details)
     NestedScrollView mScrollView;
-    @BindView(R.id.app_bar_detail)
+    @BindView(R.id.detail_appbar)
     AppBarLayout mAppBar;
-    @BindView(R.id.ctoolbar_detail)
+    @BindView(R.id.detail_collapse_toolbar)
     CollapsingToolbarLayout mCToolbar;
-    @BindView(R.id.gap_status_bar)
+    @BindView(R.id.details_gap_status_bar)
     View mStatusBarGap;
-    @BindView(R.id.toolbar_detail)
+    @BindView(R.id.detail_toolbar)
     Toolbar mToolbar;
-    @BindView(R.id.toolbar_title_details)
+    @BindView(R.id.detail_toolbar_title)
     TextView mTv_toolbarTitle;
     @BindView(R.id.ib_action_up)
     ImageButton mUpButton;
@@ -86,8 +87,10 @@ public class ArticleDetailFragment extends Fragment implements
     FloatingActionButton mShareFab;
 
     // Details views
-    @BindView(R.id.iv_photo_details)
+    @BindView(R.id.detail_photo)
     ImageView mPhotoView;
+    @BindView(R.id.detail_photo_scrim)
+    View mPhotoScrim;
     @BindView(R.id.container_details_meta)
     LinearLayout mContainerMetaDetails;
     @BindView(R.id.details_article_title)
@@ -100,6 +103,22 @@ public class ArticleDetailFragment extends Fragment implements
     WebView mBodyWebView;
     @BindView(R.id.pb_article_body)
     ProgressBar mBodyPb;
+
+    // Temp details views (for animations)
+    @BindView(R.id.detail_temp_container)
+    FrameLayout mTempDetailsContainer;
+    @BindView(R.id.details_temp_gap_status_bar)
+    View mTempStatusBarGap;
+    @BindView(R.id.detail_temp_photo)
+    ImageView mTempPhotoView;
+    @BindView(R.id.details_temp_article_title)
+    TextView mTempTitleView;
+    @BindView(R.id.details_temp_article_author)
+    TextView mTempAuthorView;
+    @BindView(R.id.details_temp_article_date)
+    TextView mTempDateView;
+    @BindView(R.id.ib_temp_action_up)
+    ImageButton mTempUpButton;
 
     private boolean mIsCard = false;
 
@@ -136,12 +155,57 @@ public class ArticleDetailFragment extends Fragment implements
 
         mHostActivity = getActivity();
 
+        //mHostActivity.getWindow().setSharedElementsUseOverlay(false);
+
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
+        mIsCard = mHostActivity.getResources().getBoolean(R.bool.detail_is_card);
     }
+
+    public void onEnterTransitionStarted() {
+        mTempDetailsContainer.setVisibility(View.VISIBLE);
+        mTempDetailsContainer.setElevation(mHostActivity.getResources().getDimensionPixelSize(R.dimen.app_bar_elevation));
+        mPhotoScrim.setVisibility(View.GONE);
+        mToolbar.setVisibility(View.GONE);
+        mContainerMetaDetails.setVisibility(View.GONE);
+        mTempUpButton.setVisibility(View.VISIBLE);
+    }
+
+    // TODO: Create a listener between pager and detail so pager isn't calling detail directly
+
+    /**
+     * Hide the temp views and make their real counterparts visible
+     */
+    public void onEnterTransitionFinished() {
+        mTempDetailsContainer.setElevation(0);
+        mTempDetailsContainer.setVisibility(View.GONE);
+        mPhotoScrim.setVisibility(View.VISIBLE);
+        mToolbar.setVisibility(View.VISIBLE);
+        mContainerMetaDetails.setVisibility(View.VISIBLE);
+        mTempUpButton.setVisibility(View.GONE);
+    }
+
+    public void onSharedElementEnterTransitionStarted() {
+        mTempPhotoView.setVisibility(View.VISIBLE);
+        mPhotoView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Hide the animated photo and show the real photo
+     */
+    public void onSharedElementEnterTransitionFinished() {
+        mTempPhotoView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mTempPhotoView.setVisibility(View.GONE);
+        mPhotoView.setVisibility(View.VISIBLE);
+    }
+
+    public void onSharedElementReturnTransitionStarted() {
+        mPhotoView.setVisibility(View.GONE);
+        mTempPhotoView.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -182,11 +246,13 @@ public class ArticleDetailFragment extends Fragment implements
         // Set padding and margins programmatically
         // Since we have a status bar "gap view" we just need to set the height for the gap view,
         // as well as the margins for the action bar, to match the system defined status bar height
+        // https://stackoverflow.com/questions/12728255/in-android-how-do-i-set-margins-in-dp-programmatically
         int statusBarHeight = Toolbox.getStatusBarHeight(mHostActivity);
         int statusAppBarHeight = Toolbox.getStatusBarWithActionBarHeight(mHostActivity);
         CollapsingToolbarLayout.LayoutParams params =
                 (CollapsingToolbarLayout.LayoutParams) mToolbar.getLayoutParams();
         mStatusBarGap.getLayoutParams().height = statusBarHeight;
+        mTempStatusBarGap.getLayoutParams().height = statusBarHeight;
         params.setMargins(0, statusBarHeight, 0, 0);
         mToolbar.setLayoutParams(params);
 
@@ -195,7 +261,7 @@ public class ArticleDetailFragment extends Fragment implements
         // bar is, downward. If we did not have translucent status bar, then this would just be
         // the app bar height instead
         mCToolbar.setScrimVisibleHeightTrigger(statusAppBarHeight +
-                (int) getResources().getDimension(R.dimen.collapsing_toolbar_scrim_buffer_height));
+                (int) mHostActivity.getResources().getDimension(R.dimen.collapsing_toolbar_scrim_buffer_height));
 
         // Disable drag callback for app bar, so scrolling is limited to just the scrollview, not
         // the app bar.
@@ -237,12 +303,13 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         if (mCursor != null) {
-            mRootView.setAlpha(0);
-            mRootView.setVisibility(View.VISIBLE);
-            mRootView.animate().alpha(1);
+//            mRootView.setAlpha(0);
+//            mRootView.setVisibility(View.VISIBLE);
+//            mRootView.animate().alpha(1);
 
-            final String title = mCursor.getString(ArticleLoader.Query.TITLE);
+            String title = mCursor.getString(ArticleLoader.Query.TITLE);
             mTitleView.setText(title);
+            mTempTitleView.setText(title);
             mTv_toolbarTitle.setText(title);
             // show the appbar title only when toolbar is collapsed
             // source https://stackoverflow.com/questions/31662416/show-collapsingtoolbarlayout-title-only-when-collapsed
@@ -262,17 +329,23 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             });
 
-            mAuthorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
+            String author = mCursor.getString(ArticleLoader.Query.AUTHOR);
+            mAuthorView.setText(author);
+            mTempAuthorView.setText(author);
 
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-                mDateView.setText(DateUtils.getRelativeTimeSpanString(
+                CharSequence date = DateUtils.getRelativeTimeSpanString(
                         publishedDate.getTime(),
                         System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                        DateUtils.FORMAT_ABBREV_ALL));
+                        DateUtils.FORMAT_ABBREV_ALL);
+                mDateView.setText(date);
+                mTempDateView.setText(date);
             } else {
                 // If date is before 1902, just show the string
-                mDateView.setText(outputFormat.format(publishedDate));
+                String date = outputFormat.format(publishedDate);
+                mDateView.setText(date);
+                mTempDateView.setText(date);
             }
 
             // Set up the webview client with a progress bar
@@ -290,21 +363,21 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             };
             mBodyWebView.setWebViewClient(wvClient);
-            String htmlString = Toolbox.getWebViewContent
-                    (getActivity(),
-                            mCursor.getString(ArticleLoader.Query.BODY)
-                                    .replaceAll("(\r\n|\n)", "<br />"),
-                            "Rosario-Regular.ttf",
-                            getResources().getDimension(R.dimen.detail_body_text_size), "left",
-                            0, 0,
-                            Toolbox.getHexColorString(getActivity(), R.color.textColorMedium));
-            mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
-                    "text/html", "UTF-8", null);
+//            String htmlString = Toolbox.getWebViewContent
+//                    (mHostActivity,
+//                            mCursor.getString(ArticleLoader.Query.BODY)
+//                                    .replaceAll("(\r\n|\n)", "<br />"),
+//                            "Rosario-Regular.ttf",
+//                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size), "left",
+//                            0, 0,
+//                            Toolbox.getHexColorString(mHostActivity, R.color.textColorMedium));
+//            mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
+//                    "text/html", "UTF-8", null);
 
             // Set up the image and the appbar background color
-            mPhotoView.setTransitionName("image" + mItemId);
-            Toolbox.loadThumbnailFromUrl(getActivity(), mCursor.getString(ArticleLoader.Query.PHOTO_URL),
-                    mPhotoView, new RequestListener<Bitmap>() {
+            mTempPhotoView.setTransitionName("image" + mItemId);
+            Toolbox.loadThumbnailFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                    mTempPhotoView, new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                     Target<Bitmap> target, boolean isFirstResource) {
@@ -323,15 +396,17 @@ public class ArticleDetailFragment extends Fragment implements
                             getParentFragment().startPostponedEnterTransition();
                             mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(resource,
                                     Toolbox.PaletteSwatch.MUTED,
-                                    getResources().getColor(R.color.colorPrimary)));
+                                    mHostActivity.getResources().getColor(R.color.colorPrimary)));
                             return false;
                         }
                     });
+            Toolbox.loadThumbnailFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                    mPhotoView, null);
         } else {
-            mRootView.setVisibility(View.GONE);
+//            mRootView.setVisibility(View.GONE);
             mTitleView.setText(getString(R.string.null_data));
             mAuthorView.setText(getString(R.string.null_data));
-            mBodyWebView.loadData(getString(R.string.null_data), "text/html", "UTF-8");
+            mBodyWebView.loadDataWithBaseURL("", getString(R.string.null_data), "text/html", "UTF-8", null);
         }
     }
 
@@ -368,7 +443,7 @@ public class ArticleDetailFragment extends Fragment implements
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newInstanceForItemId(getActivity(), mItemId);
+        return ArticleLoader.newInstanceForItemId(mHostActivity, mItemId);
     }
 
     @Override

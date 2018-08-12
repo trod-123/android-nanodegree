@@ -17,10 +17,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.Loader;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
 import android.transition.TransitionInflater;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +56,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     private static final String BOOL_INITIATED = "com.example.xyzreader.ui.initiated";
     private static final String OFFSET = "com.example.xyzreader.ui.offset";
 
-    @BindView(R.id.gap_status_bar)
+    @BindView(R.id.details_gap_status_bar)
     View mStatusBarGap;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -59,7 +64,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     RecyclerView mRecyclerView;
     @BindView(R.id.coordinator_list)
     CoordinatorLayout mCoordinator;
-    @BindView(R.id.toolbar_container)
+    @BindView(R.id.list_appbar)
     AppBarLayout mToolbar;
     ArticleListAdapter mListAdapter;
 
@@ -105,7 +110,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
 
         setupRecyclerView();
 
-        prepareSharedElementsTransition();
+        prepareTransition();
         postponeEnterTransition();
 
         return rootView;
@@ -212,9 +217,16 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
-    private void prepareSharedElementsTransition() {
-        setExitTransition(TransitionInflater.from(getContext())
-                .inflateTransition(R.transition.grid_exit_transition));
+    private void prepareTransition() {
+        // Create transition programmatically - treat all view elements the same
+        Transition exitTransition = new Slide(Gravity.TOP)
+                .setDuration(600)
+                .setInterpolator(new FastOutLinearInInterpolator());
+        setExitTransition(new Fade());
+        // Create transition statically - treat key views differently
+        Transition reenterTransition = TransitionInflater.from(getContext())
+                .inflateTransition(R.transition.list_reenter_transition);
+        setReenterTransition(reenterTransition);
 
         setExitSharedElementCallback(new SharedElementCallback() {
             // This is called when exiting and when re-entering, and will remap the shared view

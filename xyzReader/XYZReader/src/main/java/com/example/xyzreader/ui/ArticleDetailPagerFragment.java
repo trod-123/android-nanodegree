@@ -42,17 +42,14 @@ public class ArticleDetailPagerFragment extends Fragment
 
     private Cursor mCursor;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_article_detail_pager, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Timber.tag(ArticleDetailPagerFragment.class.getSimpleName());
-        ButterKnife.bind(this, rootView);
+
         mHostActivity = getActivity();
 
-        setupViewPager();
-
-        prepareSharedElementTransition();
+        prepareEnterReturnTransitions();
 
         if (savedInstanceState == null) {
             // Even the shared element is within the fragment, this is still needed to be called
@@ -61,6 +58,15 @@ public class ArticleDetailPagerFragment extends Fragment
             // called on orientation change
             postponeEnterTransition();
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_article_detail_pager, container, false);
+        ButterKnife.bind(this, rootView);
+
+        setupViewPager();
 
         return rootView;
     }
@@ -89,10 +95,97 @@ public class ArticleDetailPagerFragment extends Fragment
         });
     }
 
-    private void prepareSharedElementTransition() {
-        Transition transition = TransitionInflater.from(mHostActivity)
-                .inflateTransition(R.transition.image_shared_element_transition);
-        setSharedElementEnterTransition(transition);
+    private void prepareEnterReturnTransitions() {
+        TransitionInflater inflater = TransitionInflater.from(mHostActivity);
+
+        Transition enterTransition = inflater.inflateTransition(R.transition.detail_enter_transition);
+        enterTransition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mPagerAdapter.getCurrentFragment().onEnterTransitionStarted();
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mPagerAdapter.getCurrentFragment().onEnterTransitionFinished();
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+            }
+        });
+        setEnterTransition(enterTransition);
+
+        Transition sharedElementEnterTransition = inflater
+                .inflateTransition(R.transition.image_shared_element_enter_transition);
+        // https://stackoverflow.com/questions/33641752/how-to-know-when-shared-element-transition-ends/33859633
+        // https://stackoverflow.com/questions/32256168/android-shared-view-transition-combined-with-fade-transition/32356093#32356093
+        sharedElementEnterTransition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mPagerAdapter.getCurrentFragment().onSharedElementEnterTransitionStarted();
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mPagerAdapter.getCurrentFragment().onSharedElementEnterTransitionFinished();
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+            }
+        });
+        setSharedElementEnterTransition(sharedElementEnterTransition);
+
+
+        setReturnTransition(inflater.inflateTransition(R.transition.detail_return_transition));
+
+        Transition sharedElementReturnTransition = inflater
+                .inflateTransition(R.transition.image_shared_element_return_transition);
+        sharedElementReturnTransition.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mPagerAdapter.getCurrentFragment().onSharedElementReturnTransitionStarted();
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
+
+        setSharedElementReturnTransition(sharedElementReturnTransition);
 
         setEnterSharedElementCallback(
                 new SharedElementCallback() {
@@ -105,7 +198,7 @@ public class ArticleDetailPagerFragment extends Fragment
                         if (view == null) return;
 
                         // Map the first shared element name to the child image view
-                        sharedElements.put(names.get(0), view.findViewById(R.id.iv_photo_details));
+                        sharedElements.put(names.get(0), view.findViewById(R.id.detail_temp_photo));
                     }
                 });
     }
@@ -144,6 +237,8 @@ public class ArticleDetailPagerFragment extends Fragment
     }
 
     private class DetailPagerAdapter extends FragmentStatePagerAdapter {
+        ArticleDetailFragment mCurrentFragment;
+
         DetailPagerAdapter(Fragment fragment) {
             // Initialize with the child fragment manager for shared elements. Allows detail
             // fragment to recognize the pager fragment as its "parent" for starting
@@ -151,11 +246,15 @@ public class ArticleDetailPagerFragment extends Fragment
             super(fragment.getChildFragmentManager());
         }
 
+        public ArticleDetailFragment getCurrentFragment() {
+            return mCurrentFragment;
+        }
+
         @Override
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
-            ArticleDetailFragment fragment = (ArticleDetailFragment) object;
-            if (fragment != null) {
+            mCurrentFragment = (ArticleDetailFragment) object;
+            if (mCurrentFragment != null) {
 //                mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
 //                updateUpButtonPosition();
             }
