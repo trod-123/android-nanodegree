@@ -6,5 +6,4 @@
     <changeClipBounds />
     <changeTransform />
     <changeBounds />
-    <fade/>
 </transitionSet>

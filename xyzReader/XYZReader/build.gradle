@@ -18,9 +18,12 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation files('libs/volley.jar')
 
-    // glide (image loading and caching)
+    // glide (image loading and caching) TODO: Figure out why glide lags a lot?
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+
+    // picasso (image loading and caching)
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
 
     // Timber (logging)
     implementation "com.jakewharton.timber:timber:$timberVersion"

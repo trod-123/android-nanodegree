@@ -217,6 +217,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
+    // Similar implementation provided in ArticleDeatilPagerFragment
     private void prepareTransition() {
         // Create transition programmatically - treat all view elements the same
         Transition exitTransition = new Slide(Gravity.TOP)
@@ -240,8 +241,6 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
 
                 // We're only interested in one view transition, so we just need to adjust mapping
                 // for the first shared element name
-                // TODO: This is only called once... when I leave, but it is not called when I come
-                // back
                 sharedElements.put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.article_thumbnail));
             }
         });

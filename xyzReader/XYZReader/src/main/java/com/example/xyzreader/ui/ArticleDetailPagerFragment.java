@@ -3,6 +3,7 @@ package com.example.xyzreader.ui;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -42,12 +43,18 @@ public class ArticleDetailPagerFragment extends Fragment
 
     private Cursor mCursor;
 
+    // This is for ensuring that only the launched article has the temp container visible
+    // for transition animations. Temp container be hidden for any other fragment created at this
+    // time
+    private int mLaunchedPosition;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Timber.tag(ArticleDetailPagerFragment.class.getSimpleName());
 
         mHostActivity = getActivity();
+        mLaunchedPosition = MainActivity.sCurrentPosition;
 
         prepareEnterReturnTransitions();
 
@@ -65,7 +72,6 @@ public class ArticleDetailPagerFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_article_detail_pager, container, false);
         ButterKnife.bind(this, rootView);
-
         setupViewPager();
 
         return rootView;
@@ -78,16 +84,14 @@ public class ArticleDetailPagerFragment extends Fragment
     }
 
     private void setupViewPager() {
-        mPagerAdapter = new DetailPagerAdapter(this);
-        mPager.setAdapter(mPagerAdapter);
+        mPager.setAdapter(mPagerAdapter = new DetailPagerAdapter(this));
 
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (mCursor != null) {
-                    mCursor.moveToPosition(position);
+                if (mCursor != null && !mCursor.isClosed()) {
+                    mCursor.moveToPosition(MainActivity.sCurrentPosition = position);
                     MainActivity.sCurrentId = mCursor.getLong(ArticleLoader.Query._ID);
-                    MainActivity.sCurrentPosition = position;
                 } else {
                     Timber.e("Cursor is null when paging");
                 }
@@ -102,12 +106,20 @@ public class ArticleDetailPagerFragment extends Fragment
         enterTransition.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(Transition transition) {
-                mPagerAdapter.getCurrentFragment().onEnterTransitionStarted();
+                // NOTE: By the time this method is called, all the views participating in the
+                // transition MUST be visible, or else they will not be animated
+                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.onEnterTransitionStarted();
+                }
             }
 
             @Override
             public void onTransitionEnd(Transition transition) {
-                mPagerAdapter.getCurrentFragment().onEnterTransitionFinished();
+                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.onEnterTransitionFinished();
+                }
             }
 
             @Override
@@ -131,12 +143,18 @@ public class ArticleDetailPagerFragment extends Fragment
         sharedElementEnterTransition.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(Transition transition) {
-                mPagerAdapter.getCurrentFragment().onSharedElementEnterTransitionStarted();
+                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.onSharedElementEnterTransitionStarted();
+                }
             }
 
             @Override
             public void onTransitionEnd(Transition transition) {
-                mPagerAdapter.getCurrentFragment().onSharedElementEnterTransitionFinished();
+                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.onSharedElementEnterTransitionFinished();
+                }
             }
 
             @Override
@@ -153,7 +171,6 @@ public class ArticleDetailPagerFragment extends Fragment
         });
         setSharedElementEnterTransition(sharedElementEnterTransition);
 
-
         setReturnTransition(inflater.inflateTransition(R.transition.detail_return_transition));
 
         Transition sharedElementReturnTransition = inflater
@@ -161,7 +178,10 @@ public class ArticleDetailPagerFragment extends Fragment
         sharedElementReturnTransition.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(Transition transition) {
-                mPagerAdapter.getCurrentFragment().onSharedElementReturnTransitionStarted();
+                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                if (fragment != null) {
+                    fragment.onSharedElementReturnTransitionStarted();
+                }
             }
 
             @Override
@@ -187,20 +207,28 @@ public class ArticleDetailPagerFragment extends Fragment
 
         setSharedElementReturnTransition(sharedElementReturnTransition);
 
-        setEnterSharedElementCallback(
-                new SharedElementCallback() {
-                    @Override
-                    public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                        // Find the view for the current fragment
-                        Fragment currentFragment = (Fragment) mPagerAdapter
-                                .instantiateItem(mPager, MainActivity.sCurrentPosition);
-                        View view = currentFragment.getView();
-                        if (view == null) return;
+        SharedElementCallback callback = new SharedElementCallback() {
+            boolean loaded = false;
 
-                        // Map the first shared element name to the child image view
-                        sharedElements.put(names.get(0), view.findViewById(R.id.detail_temp_photo));
-                    }
-                });
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                // Find the view for the current fragment
+                Fragment currentFragment = (Fragment) mPagerAdapter
+                        .instantiateItem(mPager, MainActivity.sCurrentPosition);
+                View view = currentFragment.getView();
+                if (view == null) return;
+
+                // Map the first shared element name to the child image view
+                if (!loaded) {
+                    sharedElements.put(names.get(0), view.findViewById(R.id.detail_temp_photo));
+                } else {
+                    // Map to the app bar detail image view once shared element transition is done
+                    sharedElements.put(names.get(0), view.findViewById(R.id.detail_photo));
+                }
+                loaded = true;
+            }
+        };
+        setEnterSharedElementCallback(callback);
     }
 
     @NonNull
@@ -263,7 +291,9 @@ public class ArticleDetailPagerFragment extends Fragment
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            // NOTE: This is where paged items are created
+            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID),
+                    position == mLaunchedPosition);
         }
 
         @Override
@@ -271,6 +301,18 @@ public class ArticleDetailPagerFragment extends Fragment
             // This seems to rely on the cursor for returning number of pages, rather than looking
             // at number of pages
             return (mCursor != null) ? mCursor.getCount() : 0;
+        }
+
+        // TODO: BUG, more info here: https://stackoverflow.com/questions/18642890/fragmentstatepageradapter-with-childfragmentmanager-fragmentmanagerimpl-getfra
+        // Loading details fragment and then quickly pressing back before the detail fragment is
+        // rendered causes issues when trying to load the fragment again. Overriding restoreState()
+        // without calling super seems to help avoid NPEs when loading the detail fragment, but
+        // another issue arises when pressing the back button to return to the list fragment:
+        // the user is greeted with a blank white screen. no list fragment. and pressing back again
+        // exits the app
+        @Override
+        public void restoreState(Parcelable state, ClassLoader loader) {
+            //super.restoreState(state, loader);
         }
     }
 }

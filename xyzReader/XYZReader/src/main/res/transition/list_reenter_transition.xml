@@ -4,10 +4,12 @@
     android:transitionOrdering="together">
 
     <fade
-        android:duration="600"/>
+        android:duration="300"/>
 
+    <!-- For some reason the duration needs to be played at twice the speed as everything else
+        for this slide to fall into place at the same time with the bottom slide -->
     <slide
-        android:duration="300"
+        android:duration="150"
         android:slideEdge="top">
         <targets>
             <target android:targetId="@id/list_appbar" />
@@ -16,7 +18,7 @@
     </slide>
 
     <slide
-        android:duration="600"
+        android:duration="300"
         android:slideEdge="bottom">
         <targets>
             <target android:excludeId="@id/list_appbar" />

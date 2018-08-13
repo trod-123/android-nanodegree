@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.util.Toolbox;
+import com.squareup.picasso.Callback;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -64,8 +65,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
         /**
          * This is called for each view, after image is loaded. The purpose of this is to check
-         * when the shared image has loaded. When this is the case, start the shared elements
-         * transition
+         * the adapter position if the shared image has loaded. When this is the case, start the
+         * shared elements transition
          *
          * @param view
          * @param adapterPosition
@@ -140,26 +141,52 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             );
         }
 
-        RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
-                holder.pbThumbnail.setVisibility(View.GONE);
-                Timber.e(e, "There was a problem loading the list image thumbnail");
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
-                holder.pbThumbnail.setVisibility(View.GONE);
-                return false;
-            }
-        };
+        // TODO: Glide vs Picasso
         holder.pbThumbnail.setVisibility(View.VISIBLE);
-        Toolbox.loadThumbnailFromUrl(holder.itemView.getContext(),
-                mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                holder.thumbnailView, listener);
+        int resize = mFragment.getResources().getInteger(R.integer.shared_elements_image_size_pixels);
+
+        if (mFragment.getResources().getBoolean(R.bool.loadWithGlide)) {
+            // Glide
+            RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                    holder.pbThumbnail.setVisibility(View.GONE);
+                    Timber.e(e, "There was a problem loading the list image thumbnail");
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                    mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                    holder.pbThumbnail.setVisibility(View.GONE);
+                    return false;
+                }
+            };
+            Toolbox.loadSharedElementsImageFromUrl(holder.itemView.getContext(),
+                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
+                    holder.thumbnailView, resize, listener);
+        } else {
+            // Picasso
+            // https://stackoverflow.com/questions/20181491/use-picasso-to-get-a-callback-with-a-bitmap
+            Toolbox.loadSharedElementsImageFromUrl(
+                    mCursor.getString(ArticleLoader.Query.THUMB_URL), holder.thumbnailView,
+                    resize, resize, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                            holder.pbThumbnail.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                            holder.pbThumbnail.setVisibility(View.GONE);
+                            Timber.e(e, "There was a problem loading the list image thumbnail");
+                        }
+                    });
+        }
+
         // For shared elements transitions, make sure the transition name is unique per item + view
         //ViewCompat.setTransitionName(holder.thumbnailView, "image" + getItemId(position));
         holder.thumbnailView.setTransitionName("image" + getItemId(holder.getAdapterPosition()));
@@ -196,8 +223,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             MainActivity.sCurrentPosition = adapterPosition;
             MainActivity.sCurrentId = itemId;
 
-            ImageView iv = view.findViewById(R.id.article_thumbnail);
+            // Do not animate the selected card transition
             ((Transition) mFragment.getExitTransition()).excludeTarget(view, true);
+
+            ImageView iv = view.findViewById(R.id.article_thumbnail);
             mFragment.getFragmentManager()
                     .beginTransaction()
                     .setReorderingAllowed(true)

@@ -3,9 +3,6 @@
     android:duration="300"
     android:interpolator="@android:interpolator/fast_out_linear_in"
     android:transitionOrdering="together">
-    <targets>
-        <target android:excludeId="@id/detail_temp_container"/>
-    </targets>
 
     <!-- TODO: For some reason... parents work too? -->
     <slide android:slideEdge="bottom">
@@ -14,11 +11,5 @@
         </targets>
     </slide>
 
-    <fade>
-        <targets>
-            <target android:excludeId="@id/scrollview_details"/>
-            <target android:excludeId="@id/detail_photo"/>
-            <target android:excludeId="@id/detail_temp_photo"/>
-        </targets>
-    </fade>
+
 </transitionSet>

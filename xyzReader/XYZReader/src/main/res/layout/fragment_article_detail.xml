@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO: SET STARTING HEIGHT IN RESOURCES -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/detail_appbar"
         android:layout_width="match_parent"
@@ -214,7 +213,9 @@
     <!-- Since individual children of the app bar can't be targeted for transitions, this
         "temp" container will provide the animations -->
     <!-- Do not set parent to "gone" otherwise the shared element transition with the imageview
-        will not work -->
+        will not work. Setting to "invisible" is OK, but any regular fragment transitions won't
+         work unless views are visible in the xml, even if you make them visible in the java
+          when transitions start -->
     <FrameLayout
         android:id="@+id/detail_temp_container"
         android:layout_width="match_parent"
@@ -224,7 +225,6 @@
             android:id="@+id/detail_temp_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible"
             android:scaleType="centerCrop" />
 
         <View

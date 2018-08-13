@@ -18,12 +18,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.example.xyzreader.GlideApp;
 import com.example.xyzreader.GlideRequest;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.ui.ArticleActionsMenuOnClickListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -60,46 +64,133 @@ public class Toolbox {
 //    }
 
     /**
-     * Loads a thumbnail from an image or video url into an imageview. Loads broken image thumbnail
-     * if error
+     * Loads an image from an image url into an imageview with the requested resize dimensions
+     * <p>
+     * Underlying mechanism is provided by Picasso
+     *
+     * @param sourceUrl
+     * @param imageView
+     * @param resizeWidth
+     * @param resizeHeight
+     * @param callback
+     */
+    public static void loadSharedElementsImageFromUrl(
+            @NonNull String sourceUrl, @NonNull ImageView imageView, int resizeWidth,
+            int resizeHeight, Callback callback) {
+        Picasso.get()
+                .load(sourceUrl)
+                .resize(resizeWidth, resizeHeight)
+                .centerCrop()
+                .noFade()
+                .into(imageView, callback);
+    }
+
+    /**
+     * Loads an image from an image url into a target with the requested resize dimensions
+     * <p>
+     * Underlying mechanism is provided by Picasso
+     *
+     * @param sourceUrl
+     * @param resizeWidth
+     * @param resizeHeight
+     * @param target
+     */
+    public static void loadSharedElementsImageFromUrlWithTargetCallbacks(
+            @NonNull String sourceUrl, int resizeWidth, int resizeHeight, Target target) {
+        Picasso.get()
+                .load(sourceUrl)
+                .resize(resizeWidth, resizeHeight)
+                .centerCrop()
+                .noFade()
+                .into(target);
+    }
+
+    /**
+     * Loads an image from an image or video url into an imageview. For images that will be used
+     * as shared elements, see {@code Toolbox.loadSharedElementsImageFromUrl()}
+     * <p>
+     * Underlying mechanism is provided by Glide
      *
      * @param context
      * @param sourceUrl
      * @param imageView
      */
-    public static void loadThumbnailFromUrl(@NonNull Context context, @NonNull String sourceUrl,
-                                            @NonNull ImageView imageView, RequestListener<Bitmap> listener) {
-        getGlideRequestForLoadingThumbnail(context, sourceUrl, listener)
+    public static void loadImageFromUrl(@NonNull Context context, @NonNull String sourceUrl,
+                                        @NonNull ImageView imageView, RequestListener<Bitmap> listener) {
+        getGlideRequestForLoadingImage(context, sourceUrl, listener)
                 .into(imageView);
     }
 
     /**
-     * Helper for preparing the Glide request
+     * Loads an image from an image or video url into an imageview. This method is tailored
+     * to images used for shared elements transitions.
+     * <p>
+     * This is just like {@code Toolbox.loadImageFromUrl()}, but with animations
+     * disabled, no thumbnails, and an overriding parameter that takes in pixel size
+     * {@code resizePixels}. Note {@code resizePixels} must be the same for both source and target
+     * images for there to be a "cache hit", which should help loading times
+     * <p>
+     * Underlying mechanism is provided by Glide
      *
-     * For info on getting this to work with shared element transitions: https://github.com/bumptech/glide/issues/502
-     *
-     * TODO: Create another method specifically for shared elements. Keep the previous implementation
-     * as the "default" and set this for those views that do NOT require shared elements
+     * @param context
+     * @param sourceUrl
+     * @param imageView
+     * @param resizePixels
+     * @param listener
+     */
+    public static void loadSharedElementsImageFromUrl(
+            @NonNull Context context, @NonNull String sourceUrl, @NonNull ImageView imageView,
+            int resizePixels, RequestListener<Bitmap> listener) {
+        getGlideRequestForLoadingSharedElementsImage(context, sourceUrl, resizePixels, listener)
+                .into(imageView);
+    }
+
+    /**
+     * Helper for preparing the Glide request. For images that will be used as shared elements,
+     * see {@code Toolbox.getGlideRequestForLoadingSharedElementsImage()}
      *
      * @param context
      * @param sourceUrl
      * @param listener
      * @return
      */
-    private static GlideRequest getGlideRequestForLoadingThumbnail(Context context, String sourceUrl,
-                                                                   RequestListener<Bitmap> listener) {
+    private static GlideRequest getGlideRequestForLoadingImage(Context context, String sourceUrl,
+                                                               RequestListener<Bitmap> listener) {
         return GlideApp.with(context).asBitmap()
                 .load(sourceUrl)
                 .listener(listener)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .dontAnimate() // for shared element transitions, this can NOT be any crossfading or animation for it to work
-                .override(1); // for shared element transitions, this NEEDS to be overridden so that there is a "cache hit"
                 // if this is RESOURCE, then we get java.io.FileNotFoundException(No content provider) in the main app AND also in widget (first time endless loading, second time loads broken image error).
                 // if this is DATA then it works OK in the main app, but does not load in widget (if a listener is provided, onResourceReady never gets called..., and if no listener is provided, still does not load)
                 // if this is AUTOMATIC then it works OK in the main app, but always crashes the widget (if no listener is provided, otherwise onResourceReady never gets called...)
                 // if this is NONE, no images load anywhere
-//                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER)// ideally, this thumbnail request points to a low-res url of the same image
-                //.transition(BitmapTransitionOptions.withCrossFade());
+                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER) // ideally, this thumbnail request points to a low-res url of the same image
+                .transition(BitmapTransitionOptions.withCrossFade());
+    }
+
+    /**
+     * Helper for preparing a Glide request tailored to images used for shared elements transitions.
+     * This is just like {@code Toolbox.getGlideRequestForLoadingImage()}, but with animations
+     * disabled, no thumbnails, and an overriding parameter that takes in pixel size
+     * {@code resizePixels}. Note {@code resizePixels} must be the same for both source and target
+     * images for there to be a "cache hit", which should help loading times
+     * <p>
+     * From: https://github.com/bumptech/glide/issues/502
+     *
+     * @param context
+     * @param sourceUrl
+     * @param resizePixels
+     * @param listener
+     * @return
+     */
+    private static GlideRequest getGlideRequestForLoadingSharedElementsImage(
+            Context context, String sourceUrl, int resizePixels, RequestListener<Bitmap> listener) {
+        return GlideApp.with(context).asBitmap()
+                .load(sourceUrl)
+                .listener(listener)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate()
+                .override(resizePixels);
     }
 
     /**

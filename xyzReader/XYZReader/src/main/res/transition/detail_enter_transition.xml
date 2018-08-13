@@ -34,6 +34,8 @@
             <target android:targetId="@id/details_temp_article_author" />
             <target android:targetId="@id/details_temp_article_title" />
             <target android:targetId="@id/details_temp_article_date" />
+            <target android:targetId="@id/scrollview_details" />
+
         </targets>
     </slide>
     <slide android:slideEdge="start" android:startDelay="100">
@@ -54,9 +56,4 @@
         </targets>
     </fade>
 
-    <slide android:slideEdge="bottom">
-        <targets>
-            <target android:targetId="@id/scrollview_details" />
-        </targets>
-    </slide>
 </transitionSet>

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +39,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.util.Toolbox;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,6 +57,7 @@ public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_HAS_SHARED_ELEMENTS = "has_shared_elements";
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -125,6 +128,9 @@ public class ArticleDetailFragment extends Fragment implements
     // For knowing when to show or hide the app bar
     boolean mAppBarShowing;
 
+    // For knowing whether this fragment has shared elements - hide the "temp" container if false
+    boolean mLaunchedWithSharedElements = false;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -137,12 +143,14 @@ public class ArticleDetailFragment extends Fragment implements
      * But this just returns the fragment, it doesn't start it
      *
      * @param itemId
+     * @param hasSharedElements
      * @return
      */
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId, boolean hasSharedElements) {
         Bundle arguments = new Bundle();
         // The point of setting this is so the fragment knows which id to load into the cursor
         arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putBoolean(ARG_HAS_SHARED_ELEMENTS, hasSharedElements);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -157,53 +165,80 @@ public class ArticleDetailFragment extends Fragment implements
 
         //mHostActivity.getWindow().setSharedElementsUseOverlay(false);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItemId = getArguments().getLong(ARG_ITEM_ID);
+        if (getArguments() != null) {
+            if (getArguments().containsKey(ARG_ITEM_ID)) {
+                mItemId = getArguments().getLong(ARG_ITEM_ID);
+            }
+            if (getArguments().containsKey(ARG_HAS_SHARED_ELEMENTS)) {
+                mLaunchedWithSharedElements = getArguments().getBoolean(ARG_HAS_SHARED_ELEMENTS);
+            }
         }
 
         mIsCard = mHostActivity.getResources().getBoolean(R.bool.detail_is_card);
     }
 
+    // TODO: Create a listener between pager and detail so pager isn't calling detail directly
+
     public void onEnterTransitionStarted() {
-        mTempDetailsContainer.setVisibility(View.VISIBLE);
-        mTempDetailsContainer.setElevation(mHostActivity.getResources().getDimensionPixelSize(R.dimen.app_bar_elevation));
+        // "Lift" the temp container only for transitions, so transitions are visible. This is
+        // required since app bar is elevated a bit. Setting elevation here instead of in xml
+        // avoids blocking click handling for other fragments
+        mTempDetailsContainer.setElevation(mHostActivity.getResources()
+                .getDimensionPixelSize(R.dimen.app_bar_elevation));
+
+        // These will already be populated when transitions start, so hide them for now so the
+        // temp views can create the animation illusion
         mPhotoScrim.setVisibility(View.GONE);
         mToolbar.setVisibility(View.GONE);
         mContainerMetaDetails.setVisibility(View.GONE);
-        mTempUpButton.setVisibility(View.VISIBLE);
     }
-
-    // TODO: Create a listener between pager and detail so pager isn't calling detail directly
 
     /**
      * Hide the temp views and make their real counterparts visible
      */
     public void onEnterTransitionFinished() {
-        mTempDetailsContainer.setElevation(0);
         mTempDetailsContainer.setVisibility(View.GONE);
+
+        // Display these once the temp container finished its animations, so that the user can
+        // see them respond to scroll events
         mPhotoScrim.setVisibility(View.VISIBLE);
         mToolbar.setVisibility(View.VISIBLE);
         mContainerMetaDetails.setVisibility(View.VISIBLE);
-        mTempUpButton.setVisibility(View.GONE);
     }
 
+    /**
+     * Hide the real photo view while the temp is animating
+     */
     public void onSharedElementEnterTransitionStarted() {
-        mTempPhotoView.setVisibility(View.VISIBLE);
         mPhotoView.setVisibility(View.GONE);
     }
 
     /**
-     * Hide the animated photo and show the real photo
+     * "Hide" the animated photo and show the real photo
      */
     public void onSharedElementEnterTransitionFinished() {
         mTempPhotoView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mTempPhotoView.setVisibility(View.GONE);
+
+        // NOTE: The below won't work until all animations are done, including any enter transitions.
+        // As a workaround, we're "clearing" the image from the temp view. Saving here for reference
+//        mTempPhotoView.setVisibility(View.GONE);
+
         mPhotoView.setVisibility(View.VISIBLE);
+
+        // Remap the shared animation to the app bar photo view so source shared animation
+        // correctly reflects app bar scroll changes. Remove the transition name for the temp view
+        mPhotoView.setTransitionName("image" + mItemId);
+        mTempPhotoView.setTransitionName(null);
     }
 
+    // TODO: Probably delete this
     public void onSharedElementReturnTransitionStarted() {
-        mPhotoView.setVisibility(View.GONE);
-        mTempPhotoView.setVisibility(View.VISIBLE);
+        // When coming back, it is not necessary to bring the temp photo view back to visibility
+        // Smoke and mirrors are used to "share" the images, so the image that we see resizing
+        // is actually from the image view in the list fragment. That said we can keep the temp
+        // photoview gone
+//        mPhotoView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        mTempPhotoView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
 
@@ -307,6 +342,16 @@ public class ArticleDetailFragment extends Fragment implements
 //            mRootView.setVisibility(View.VISIBLE);
 //            mRootView.animate().alpha(1);
 
+            if (!mLaunchedWithSharedElements) {
+                mTempDetailsContainer.setVisibility(View.GONE);
+                // Remap the shared animation to the app bar photo view so source shared animation
+                // correctly reflects app bar scroll changes
+                mPhotoView.setTransitionName("image" + mItemId);
+            } else {
+                // Shared element transition is in progress, expecting the temp photo view
+                mTempPhotoView.setTransitionName("image" + mItemId);
+            }
+
             String title = mCursor.getString(ArticleLoader.Query.TITLE);
             mTitleView.setText(title);
             mTempTitleView.setText(title);
@@ -363,45 +408,80 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             };
             mBodyWebView.setWebViewClient(wvClient);
-//            String htmlString = Toolbox.getWebViewContent
-//                    (mHostActivity,
-//                            mCursor.getString(ArticleLoader.Query.BODY)
-//                                    .replaceAll("(\r\n|\n)", "<br />"),
-//                            "Rosario-Regular.ttf",
-//                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size), "left",
-//                            0, 0,
-//                            Toolbox.getHexColorString(mHostActivity, R.color.textColorMedium));
-//            mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
-//                    "text/html", "UTF-8", null);
+            String htmlString = Toolbox.getWebViewContent
+                    (mHostActivity,
+                            mCursor.getString(ArticleLoader.Query.BODY)
+                                    .replaceAll("(\r\n|\n)", "<br />"),
+                            "Rosario-Regular.ttf",
+                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size), "left",
+                            0, 0,
+                            Toolbox.getHexColorString(mHostActivity, R.color.textColorMedium));
+            mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
+                    "text/html", "UTF-8", null);
 
             // Set up the image and the appbar background color
-            mTempPhotoView.setTransitionName("image" + mItemId);
-            Toolbox.loadThumbnailFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
-                    mTempPhotoView, new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                    Target<Bitmap> target, boolean isFirstResource) {
-                            // begin shared elements transition. needs to be set here as well to
-                            // prevent ui from hanging during failure
-                            getParentFragment().startPostponedEnterTransition();
-                            return false;
-                        }
 
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, Object model,
-                                                       Target<Bitmap> target, DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            // begin shared elements transition. needs to be set here for once
-                            // image is loaded
-                            getParentFragment().startPostponedEnterTransition();
-                            mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(resource,
-                                    Toolbox.PaletteSwatch.MUTED,
-                                    mHostActivity.getResources().getColor(R.color.colorPrimary)));
-                            return false;
-                        }
-                    });
-            Toolbox.loadThumbnailFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
-                    mPhotoView, null);
+            // TODO: Glide vs Picasso
+            int resize = mHostActivity.getResources().getInteger(R.integer.shared_elements_image_size_pixels);
+
+            if (mHostActivity.getResources().getBoolean(R.bool.loadWithGlide)) {
+                // Glide
+                Toolbox.loadSharedElementsImageFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                        mTempPhotoView, resize, new RequestListener<Bitmap>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                        Target<Bitmap> target, boolean isFirstResource) {
+                                // begin shared elements transition. needs to be set here as well to
+                                // prevent ui from hanging during failure
+                                getParentFragment().startPostponedEnterTransition();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Bitmap resource, Object model,
+                                                           Target<Bitmap> target, DataSource dataSource,
+                                                           boolean isFirstResource) {
+                                // begin shared elements transition. needs to be set here for once
+                                // image is loaded
+                                getParentFragment().startPostponedEnterTransition();
+                                mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(resource,
+                                        Toolbox.PaletteSwatch.MUTED,
+                                        mHostActivity.getResources().getColor(R.color.colorPrimary)));
+                                return false;
+                            }
+                        });
+                Toolbox.loadSharedElementsImageFromUrl(mHostActivity, mCursor.getString(ArticleLoader.Query.PHOTO_URL),
+                        mPhotoView, resize, null);
+            } else {
+                // Picasso
+                com.squareup.picasso.Target target = new com.squareup.picasso.Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        mTempPhotoView.setImageBitmap(bitmap);
+                        mCToolbar.setContentScrimColor(Toolbox.getBackgroundColor(bitmap,
+                                Toolbox.PaletteSwatch.MUTED,
+                                mHostActivity.getResources().getColor(R.color.colorPrimary)));
+                        getParentFragment().startPostponedEnterTransition();
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        getParentFragment().startPostponedEnterTransition();
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    }
+                };
+                // Setting the tag to the Picasso target will help guarantee loading
+                // https://stackoverflow.com/questions/24180805/onbitmaploaded-of-target-object-not-called-on-first-load
+                mTempPhotoView.setTag(target);
+                Toolbox.loadSharedElementsImageFromUrlWithTargetCallbacks(
+                        mCursor.getString(ArticleLoader.Query.PHOTO_URL), resize, resize, target);
+                Toolbox.loadSharedElementsImageFromUrl(
+                        mCursor.getString(ArticleLoader.Query.PHOTO_URL), mPhotoView,
+                        resize, resize, null);
+            }
         } else {
 //            mRootView.setVisibility(View.GONE);
             mTitleView.setText(getString(R.string.null_data));
