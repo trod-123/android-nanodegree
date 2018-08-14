@@ -17,15 +17,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.Loader;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.transition.Fade;
-import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +32,7 @@ import android.view.animation.Interpolator;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.util.BasicTouchEnablerTransitionListener;
 import com.example.xyzreader.util.Toolbox;
 
 import java.util.List;
@@ -127,6 +124,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         super.onStart();
         mHostActivity.registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
+        // TODO: Make sure this is not called when user launches the app for the first time
         scrollToPosition();
     }
 
@@ -217,16 +215,17 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
-    // Similar implementation provided in ArticleDeatilPagerFragment
+    // Similar implementation provided in ArticleDetailPagerFragment
     private void prepareTransition() {
-        // Create transition programmatically - treat all view elements the same
-        Transition exitTransition = new Slide(Gravity.TOP)
-                .setDuration(600)
-                .setInterpolator(new FastOutLinearInInterpolator());
-        setExitTransition(new Fade());
-        // Create transition statically - treat key views differently
-        Transition reenterTransition = TransitionInflater.from(getContext())
+        Transition exitTransition = TransitionInflater.from(mHostActivity)
+                .inflateTransition(R.transition.list_exit_transition);
+        setExitTransition(exitTransition);
+
+        Transition reenterTransition = TransitionInflater.from(mHostActivity)
                 .inflateTransition(R.transition.list_reenter_transition);
+        // disable touches during reentry transition
+        reenterTransition.addListener(
+                new BasicTouchEnablerTransitionListener(mHostActivity.getWindow()));
         setReenterTransition(reenterTransition);
 
         setExitSharedElementCallback(new SharedElementCallback() {
@@ -261,14 +260,17 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mListAdapter.swapCursor(cursor);
 
         // Animate the views in only if the activity has loaded the first time
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !mInitiated)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     // Animate the cards once the recyclerview had laid down its views, otherwise
                     // RecyclerView.getChildAt() will always return null
                     // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
-                    animateCardsIn();
+                    // TODO: This sometimes bugs up when user launches app for the first time
+                    // e.g. pressing back to homescreen, and then launching app again
+                    // Might end up getting fixed once I work on saving states
+                    if (!mInitiated) animateCardsIn();
 
                     // Make sure to remove the listener to ensure this only gets called once
                     mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);

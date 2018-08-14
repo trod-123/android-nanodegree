@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="300"
-    android:interpolator="@android:interpolator/fast_out_linear_in"
+    android:duration="@integer/transition_duration_detail_return"
+    android:interpolator="@android:interpolator/linear_out_slow_in"
     android:transitionOrdering="together">
 
     <!-- TODO: For some reason... parents work too? -->
-    <slide android:slideEdge="bottom">
+    <fade>
         <targets>
-            <target android:targetId="@id/scrollview_details"/>
+            <target android:targetId="@id/scrollview_details" />
+            <target android:excludeId="@id/fab_share"/>
         </targets>
-    </slide>
-
+    </fade>
 
 </transitionSet>

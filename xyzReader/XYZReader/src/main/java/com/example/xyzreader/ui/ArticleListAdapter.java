@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.format.DateUtils;
-import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -224,7 +223,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             MainActivity.sCurrentId = itemId;
 
             // Do not animate the selected card transition
-            ((Transition) mFragment.getExitTransition()).excludeTarget(view, true);
+            // Edit: Since we're now starting the shared element transition until AFTER the list
+            // exit transition is done, we don't need to exclude the below anymore
+            //((Transition) mFragment.getExitTransition()).excludeTarget(view, true);
 
             ImageView iv = view.findViewById(R.id.article_thumbnail);
             mFragment.getFragmentManager()

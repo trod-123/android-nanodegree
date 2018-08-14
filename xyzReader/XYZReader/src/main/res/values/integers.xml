@@ -2,4 +2,16 @@
 <resources>
     <integer name="body_preview_upper_limit">500</integer>
     <integer name="shared_elements_image_size_pixels">2000</integer>
+
+    <integer name="transition_duration_list_exit">300</integer>
+    <integer name="transition_duration_shared_elements_enter">300</integer>
+    <integer name="transition_duration_shared_elements_return">300</integer>
+    <integer name="transition_duration_detail_enter">300</integer>
+    <integer name="transition_duration_detail_return">300</integer>
+    <integer name="transition_duration_list_reenter">300</integer>
+    <integer name="transition_duration_list_reenter_appbar">150</integer>
+    <integer name="transition_duration_list_reenter_delay">600</integer>
+
+    <integer name="transition_duration_detail_enter_delay_meta_line">100</integer>
+
 </resources>

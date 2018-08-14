@@ -1,9 +1,11 @@
 <!-- Referencing strings within string resources
-     From: https://stackoverflow.com/questions/4746058/reference-one-string-from-another-string-in-strings-xml --><!DOCTYPE resources [<!ENTITY appName "XYZ Reader">]>
+     From: https://stackoverflow.com/questions/4746058/reference-one-string-from-another-string-in-strings-xml -->
+
+<!DOCTYPE resources [<!ENTITY appName "XYZ Reader">]>
 
 <resources>
     <string name="app_name">&appName;</string>
-    <string name="welcome_xyz_reader">Welcome to &appName;!</string>
+    <string name="message_welcome">Welcome to &appName;!</string>
 
     <string name="action_refresh">Refresh</string>
     <string name="action_settings">Settings</string>
@@ -11,7 +13,8 @@
 
     <string name="up">Up</string>
 
-    <string name="author_date">%1$s, %2$s</string>
+    <string name="author_date" translatable="false">%1$s, %2$s</string>
+    <string name="share_title">Share \"%1$s\"</string>
     <string name="share_message">Check out %1$s by %2$s! #&appName;</string>
 
     <string name="details_body_html_prefix" translatable="false">
@@ -42,7 +45,7 @@
         ]]>
     </string>
     <string name="moreActions">More actions</string>
-    <string name="sharedTransition_photo">photo_transition</string>
+    <string name="sharedTransitionId_photo" translatable="false">photo_transition</string>
     <string name="null_data">No data</string>
 
 </resources>

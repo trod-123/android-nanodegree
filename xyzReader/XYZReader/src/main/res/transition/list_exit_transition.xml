@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@integer/transition_duration_list_exit"
+    android:interpolator="@android:interpolator/anticipate_overshoot">
+
+    <fade/>
+
+</transitionSet>

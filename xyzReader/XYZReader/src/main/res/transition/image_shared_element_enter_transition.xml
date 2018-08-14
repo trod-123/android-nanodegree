@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="300"
+    android:duration="@integer/transition_duration_shared_elements_enter"
     android:interpolator="@android:interpolator/linear_out_slow_in"
+    android:startDelay="@integer/transition_duration_list_exit"
     android:transitionOrdering="together">
     <changeClipBounds />
     <changeTransform />

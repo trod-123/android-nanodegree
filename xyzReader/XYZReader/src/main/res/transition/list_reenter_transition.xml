@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <transitionSet xmlns:android="http://schemas.android.com/apk/res/android"
-    android:interpolator="@android:interpolator/linear_out_slow_in"
+    android:interpolator="@android:interpolator/fast_out_slow_in"
+    android:startDelay="@integer/transition_duration_detail_return"
     android:transitionOrdering="together">
 
-    <fade
-        android:duration="300"/>
+    <fade android:duration="@integer/transition_duration_list_reenter" />
 
     <!-- For some reason the duration needs to be played at twice the speed as everything else
         for this slide to fall into place at the same time with the bottom slide -->
     <slide
-        android:duration="150"
+        android:duration="@integer/transition_duration_list_reenter_appbar"
         android:slideEdge="top">
         <targets>
             <target android:targetId="@id/list_appbar" />
@@ -18,7 +18,7 @@
     </slide>
 
     <slide
-        android:duration="300"
+        android:duration="@integer/transition_duration_list_reenter"
         android:slideEdge="bottom">
         <targets>
             <target android:excludeId="@id/list_appbar" />

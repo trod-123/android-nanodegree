@@ -14,6 +14,8 @@ import android.support.v7.widget.PopupMenu;
 import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -415,7 +417,7 @@ public class Toolbox {
                     .putExtra(Intent.EXTRA_TEXT, shareString)
                     .setType("text/plain");
             context.startActivity(Intent.createChooser(
-                    shareIntent, context.getString(R.string.action_share)));
+                    shareIntent, context.getString(R.string.share_title, title)));
         } else {
             Toolbox.showToast(context,
                     "There was an error getting story info - Cursor is null. " +
@@ -435,5 +437,32 @@ public class Toolbox {
         TypedValue outValue = new TypedValue();
         resources.getValue(resId, outValue, true);
         return outValue.getFloat();
+    }
+
+    public static float decelerateInterpolator(float value) {
+        return 1f - (value * value);
+    }
+
+    public static float accelerateInterpolator(float value) {
+        return (1f - value) * (1f - value);
+    }
+
+    public static float linearInterpolator(float value) {
+        return 1f - value;
+    }
+
+    /**
+     * Enable touch responses
+     *
+     * @param window
+     * @param enable
+     */
+    public static void enableTouchResponse(Window window, boolean enable) {
+        if (!enable) {
+            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
     }
 }

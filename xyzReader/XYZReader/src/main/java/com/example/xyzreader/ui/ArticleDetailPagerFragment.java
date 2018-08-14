@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+import com.example.xyzreader.util.BasicTouchEnablerTransitionListener;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ArticleDetailPagerFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     @BindView(R.id.pager)
-    ViewPager mPager;
+    WebViewViewPager mPager;
     private DetailPagerAdapter mPagerAdapter;
 
     Activity mHostActivity;
@@ -102,10 +103,12 @@ public class ArticleDetailPagerFragment extends Fragment
     private void prepareEnterReturnTransitions() {
         TransitionInflater inflater = TransitionInflater.from(mHostActivity);
 
-        Transition enterTransition = inflater.inflateTransition(R.transition.detail_enter_transition);
-        enterTransition.addListener(new Transition.TransitionListener() {
+        Transition enterTransition =
+                inflater.inflateTransition(R.transition.detail_enter_transition);
+        enterTransition.addListener(new BasicTouchEnablerTransitionListener(mHostActivity.getWindow()) {
             @Override
             public void onTransitionStart(Transition transition) {
+                super.onTransitionStart(transition);
                 // NOTE: By the time this method is called, all the views participating in the
                 // transition MUST be visible, or else they will not be animated
                 ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
@@ -116,22 +119,11 @@ public class ArticleDetailPagerFragment extends Fragment
 
             @Override
             public void onTransitionEnd(Transition transition) {
+                super.onTransitionEnd(transition);
                 ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
                 if (fragment != null) {
                     fragment.onEnterTransitionFinished();
                 }
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
             }
         });
         setEnterTransition(enterTransition);
@@ -140,21 +132,42 @@ public class ArticleDetailPagerFragment extends Fragment
                 .inflateTransition(R.transition.image_shared_element_enter_transition);
         // https://stackoverflow.com/questions/33641752/how-to-know-when-shared-element-transition-ends/33859633
         // https://stackoverflow.com/questions/32256168/android-shared-view-transition-combined-with-fade-transition/32356093#32356093
-        sharedElementEnterTransition.addListener(new Transition.TransitionListener() {
+        sharedElementEnterTransition.addListener(
+                new BasicTouchEnablerTransitionListener(mHostActivity.getWindow()) {
+                    @Override
+                    public void onTransitionStart(Transition transition) {
+                        super.onTransitionStart(transition);
+                        ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                        if (fragment != null) {
+                            fragment.onSharedElementEnterTransitionStarted();
+                        }
+                    }
+
+                    @Override
+                    public void onTransitionEnd(Transition transition) {
+                        ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
+                        if (fragment != null) {
+                            fragment.onSharedElementEnterTransitionFinished();
+                        }
+                    }
+                });
+        setSharedElementEnterTransition(sharedElementEnterTransition);
+
+        // When returning to list, only block touch response from the re-enter transition in the
+        // list, not here
+        Transition returnTransition =
+                inflater.inflateTransition(R.transition.detail_return_transition);
+        returnTransition.addListener(new BasicTouchEnablerTransitionListener(mHostActivity.getWindow()) {
             @Override
             public void onTransitionStart(Transition transition) {
                 ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
                 if (fragment != null) {
-                    fragment.onSharedElementEnterTransitionStarted();
+                    fragment.onReturnTransitionStarted();
                 }
             }
 
             @Override
             public void onTransitionEnd(Transition transition) {
-                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
-                if (fragment != null) {
-                    fragment.onSharedElementEnterTransitionFinished();
-                }
             }
 
             @Override
@@ -169,42 +182,10 @@ public class ArticleDetailPagerFragment extends Fragment
             public void onTransitionResume(Transition transition) {
             }
         });
-        setSharedElementEnterTransition(sharedElementEnterTransition);
-
-        setReturnTransition(inflater.inflateTransition(R.transition.detail_return_transition));
+        setReturnTransition(returnTransition);
 
         Transition sharedElementReturnTransition = inflater
                 .inflateTransition(R.transition.image_shared_element_return_transition);
-        sharedElementReturnTransition.addListener(new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-                ArticleDetailFragment fragment = mPagerAdapter.getCurrentFragment();
-                if (fragment != null) {
-                    fragment.onSharedElementReturnTransitionStarted();
-                }
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-
-            }
-        });
-
         setSharedElementReturnTransition(sharedElementReturnTransition);
 
         SharedElementCallback callback = new SharedElementCallback() {
@@ -314,5 +295,7 @@ public class ArticleDetailPagerFragment extends Fragment
         public void restoreState(Parcelable state, ClassLoader loader) {
             //super.restoreState(state, loader);
         }
+
+
     }
 }
