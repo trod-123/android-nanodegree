@@ -339,6 +339,4 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
             }
         }
     }
-
-
 }

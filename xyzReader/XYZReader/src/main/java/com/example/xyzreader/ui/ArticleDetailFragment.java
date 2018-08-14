@@ -384,6 +384,7 @@ public class ArticleDetailFragment extends Fragment implements
             params.setAnchorId(R.id.detail_appbar);
             mShareFab.setLayoutParams(params);
         } else {
+            // TODO: This doesn't seem to work
             // Dynamically set position of view
             // https://stackoverflow.com/questions/6535648/how-can-i-dynamically-set-the-position-of-view-in-android
             mShareFab.setTranslationX(location[0]);
@@ -401,12 +402,6 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         if (mCursor != null) {
-//            mRootView.setAlpha(0);
-//            mRootView.setVisibility(View.VISIBLE);
-//            mRootView.animate().alpha(1);
-
-//            mShareFab.hide();
-
             if (!mLaunchedWithSharedElements) {
                 mTempDetailsContainer.setVisibility(View.GONE);
                 // Remap the shared animation to the app bar photo view so source shared animation
@@ -544,7 +539,6 @@ public class ArticleDetailFragment extends Fragment implements
                         resize, resize, null);
             }
         } else {
-//            mRootView.setVisibility(View.GONE);
             mTitleView.setText(getString(R.string.null_data));
             mAuthorView.setText(getString(R.string.null_data));
             mBodyWebView.loadDataWithBaseURL("", getString(R.string.null_data), "text/html",

@@ -369,7 +369,6 @@ public class Toolbox {
                 new ArticleActionsMenuOnClickListener(context, cursor, position, view));
     }
 
-
     /**
      * General utility method that shows or hides views smoothly with an alpha transition.
      * If button, hide completely to negate potential touch events while it's not showing

@@ -235,7 +235,6 @@ public class ArticleDetailPagerFragment extends Fragment
                 }
                 mCursor.moveToNext();
             }
-            // mStartId = 0;
         }
     }
 
@@ -263,10 +262,6 @@ public class ArticleDetailPagerFragment extends Fragment
         public void setPrimaryItem(ViewGroup container, int position, Object object) {
             super.setPrimaryItem(container, position, object);
             mCurrentFragment = (ArticleDetailFragment) object;
-            if (mCurrentFragment != null) {
-//                mSelectedItemUpButtonFloor = fragment.getUpButtonFloor();
-//                updateUpButtonPosition();
-            }
         }
 
         @Override
@@ -295,7 +290,5 @@ public class ArticleDetailPagerFragment extends Fragment
         public void restoreState(Parcelable state, ClassLoader loader) {
             //super.restoreState(state, loader);
         }
-
-
     }
 }
