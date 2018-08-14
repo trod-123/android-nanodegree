@@ -273,6 +273,35 @@ public class Toolbox {
     }
 
     /**
+     * Formats body by adding line breaks and removing excess spacing. Can format for both webview
+     * and textview
+     *
+     * @param body
+     * @param forWebView
+     * @return
+     */
+    public static String formatArticleBodyString(String body, boolean forWebView) {
+        String r = forWebView ? "<br />" : "\n";
+        if (forWebView) {
+            return body.replaceAll("(\r\n {11,})|(\n {11,})", r + r + r)
+                    .replaceAll("(\r\n {5,10})|(\n {5,10})", r + r)
+                    .replaceAll(" {4}", "")
+                    .replaceAll("(\r\n\r\n\r\n)|(\n\n\n)", r + r + r)
+                    .replaceAll("(\r\n\r\n)|(\n\n)", r + r)
+                    .replaceAll("(\r\n )|(\n )", "")
+                    .replaceAll("(\r\n)|(\n)", " ");
+        } else {
+            return body.replaceAll("(\r\n {11,})|(\n {11,})", r + r + r)
+                    .replaceAll("(\r\n {5,10})|(\n {5,10})", r + r)
+                    .replaceAll(" {4}", "")
+                    .replaceAll("\r\n\r\n\r\n", r + r + r)
+                    .replaceAll("\r\n\r\n", r + r)
+                    .replaceAll("\r\n ", "")
+                    .replaceAll("\r\n", " ");
+        }
+    }
+
+    /**
      * Helper method for getting the hex color value string
      * Source https://stackoverflow.com/questions/5026995/android-get-color-as-string-value
      *

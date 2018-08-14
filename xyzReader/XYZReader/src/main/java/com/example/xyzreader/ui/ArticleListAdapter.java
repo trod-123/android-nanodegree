@@ -118,7 +118,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         mCursor.moveToPosition(position);
         holder.authorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
         holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
-        String bodyPreview = mCursor.getString(ArticleLoader.Query.BODY);
+        String bodyPreview = Toolbox.formatArticleBodyString(
+                mCursor.getString(ArticleLoader.Query.BODY), false);
         int bodyCharLimit = holder.itemView.getContext().getResources().getInteger(R.integer.body_preview_upper_limit);
         if (bodyPreview.length() > bodyCharLimit) {
             // limit the body preview to lessen load on OS

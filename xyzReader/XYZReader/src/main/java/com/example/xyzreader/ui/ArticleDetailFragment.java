@@ -455,9 +455,8 @@ public class ArticleDetailFragment extends Fragment implements
             };
             mBodyWebView.setWebViewClient(wvClient);
             String htmlString = Toolbox.getWebViewContent
-                    (mHostActivity,
-                            mCursor.getString(ArticleLoader.Query.BODY)
-                                    .replaceAll("(\r\n|\n)", "<br />"),
+                    (mHostActivity, Toolbox.formatArticleBodyString(
+                            mCursor.getString(ArticleLoader.Query.BODY), true),
                             "Rosario-Regular.ttf",
                             mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size), "left",
                             0, 0,
