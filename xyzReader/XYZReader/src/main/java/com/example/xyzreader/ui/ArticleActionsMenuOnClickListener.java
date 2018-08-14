@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.util.Toolbox;
@@ -17,12 +18,14 @@ public class ArticleActionsMenuOnClickListener implements PopupMenu.OnMenuItemCl
     private Context mContext;
     private Cursor mCursor;
     private int mPosition;
+    private View mParentView;
 
     public ArticleActionsMenuOnClickListener(Context context, Cursor cursor,
-                                             int cursorPosition) {
+                                             int cursorPosition, View parentView) {
         mContext = context;
         mCursor = cursor;
         mPosition = cursorPosition;
+        mParentView = parentView;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class ArticleActionsMenuOnClickListener implements PopupMenu.OnMenuItemCl
         int id = item.getItemId();
         switch (id) {
             case R.id.action_share:
-                Toolbox.shareArticle(mContext, mCursor, mPosition);
+                Toolbox.shareArticle(mContext, mCursor, mPosition, mParentView);
                 return true;
         }
         return false;

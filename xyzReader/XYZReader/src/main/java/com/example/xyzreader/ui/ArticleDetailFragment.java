@@ -195,7 +195,7 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onClick(View view) {
                 // Since the detail cursor contains only the article, pass in 0 for position
-                Toolbox.shareArticle(mHostActivity, mCursor, 0);
+                Toolbox.shareArticle(mHostActivity, mCursor, 0, mRootView);
             }
         });
 
@@ -359,8 +359,7 @@ public class ArticleDetailFragment extends Fragment implements
             @Override
             public void onClick(View v) {
                 // Since the detail cursor contains only the article, pass in 0 for position
-                Toolbox.showArticleActionsMenuPopup(mHostActivity, v, mCursor,
-                        0);
+                Toolbox.showArticleActionsMenuPopup(mHostActivity, v, mCursor, 0);
             }
         });
     }

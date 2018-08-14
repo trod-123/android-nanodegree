@@ -47,5 +47,7 @@
     <string name="moreActions">More actions</string>
     <string name="sharedTransitionId_photo" translatable="false">photo_transition</string>
     <string name="null_data">No data</string>
+    <string name="share_error_message">There was an error getting story info. Unable to share</string>
+    <string name="log_share_error" translatable="false">There was an error getting story info for sharing: cursor is null</string>
 
 </resources>

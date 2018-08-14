@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.PopupMenu;
@@ -31,12 +32,17 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import timber.log.Timber;
+
 /**
  * Just a class of neat convenient global helper methods
  */
 public class Toolbox {
 
     private static Toast mToast;
+
+    public static int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
+    public static int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
 
     private static final float GLIDE_THUMBNAIL_MULTIPLIER = 0.1f;
 
@@ -50,7 +56,7 @@ public class Toolbox {
         if (mToast != null) {
             mToast.cancel();
         }
-        mToast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(context, message, DEFAULT_TOAST_LENGTH);
         mToast.show();
     }
 
@@ -360,7 +366,7 @@ public class Toolbox {
      */
     public static void showArticleActionsMenuPopup(Context context, View view, Cursor cursor, int position) {
         showMenuPopup(context, view, R.menu.menu_article_actions,
-                new ArticleActionsMenuOnClickListener(context, cursor, position));
+                new ArticleActionsMenuOnClickListener(context, cursor, position, view));
     }
 
 
@@ -403,9 +409,11 @@ public class Toolbox {
 
 
     /**
-     * Generates a title and author string used to set a share intent
+     * Generates a title and author string used to set a share intent. If there is an error, show
+     * a snackbar
      */
-    public static void shareArticle(Context context, Cursor cursor, int position) {
+    public static void shareArticle(Context context, Cursor cursor, int position,
+                                    @NonNull View parentView) {
         if (cursor != null) {
             cursor.moveToPosition(position);
             String title = cursor.getString(ArticleLoader.Query.TITLE);
@@ -419,9 +427,10 @@ public class Toolbox {
             context.startActivity(Intent.createChooser(
                     shareIntent, context.getString(R.string.share_title, title)));
         } else {
-            Toolbox.showToast(context,
-                    "There was an error getting story info - Cursor is null. " +
-                            "Not starting the share activity.");
+            Snackbar.make(parentView, R.string.share_error_message, DEFAULT_SNACKBAR_LENGTH)
+                    .show();
+            Timber.e(context.getString(R.string.log_share_error));
+            //throw new NullPointerException("Cursor is null");
         }
     }
 
