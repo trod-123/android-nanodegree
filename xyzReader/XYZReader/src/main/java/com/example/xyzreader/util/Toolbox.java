@@ -427,9 +427,9 @@ public class Toolbox {
             context.startActivity(Intent.createChooser(
                     shareIntent, context.getString(R.string.share_title, title)));
         } else {
-            Snackbar.make(parentView, R.string.share_error_message, DEFAULT_SNACKBAR_LENGTH)
+            Snackbar.make(parentView, R.string.error_message_share, DEFAULT_SNACKBAR_LENGTH)
                     .show();
-            Timber.e(context.getString(R.string.log_share_error));
+            Timber.e(context.getString(R.string.log_error_share));
             //throw new NullPointerException("Cursor is null");
         }
     }

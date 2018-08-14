@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SharedElementCallback;
@@ -28,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import android.widget.TextView;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -64,6 +66,9 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     @BindView(R.id.list_appbar)
     AppBarLayout mToolbar;
     ArticleListAdapter mListAdapter;
+
+    @BindView(R.id.empty_article_list_message)
+    TextView mEmptyListMessage;
 
     Activity mHostActivity;
 
@@ -258,6 +263,22 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         // TROD: However, this is called every time the activity comes back into focus, such as
         // after configuration changes, etc.
         mListAdapter.swapCursor(cursor);
+
+        if (cursor == null || cursor.getCount() == 0) {
+            // Display snackbar with error message
+            Snackbar.make(getView(), R.string.error_message_refresh,
+                    Toolbox.DEFAULT_SNACKBAR_LENGTH)
+                    .setAction(R.string.try_again, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            refresh();
+                        }
+                    })
+                    .show();
+
+        } else {
+            mEmptyListMessage.setVisibility(View.GONE);
+        }
 
         // Animate the views in only if the activity has loaded the first time
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)

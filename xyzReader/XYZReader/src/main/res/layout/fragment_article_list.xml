@@ -64,6 +64,14 @@
 
         </android.support.design.widget.AppBarLayout>
 
+        <TextView
+            android:id="@+id/empty_article_list_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/message_empty_article_list"/>
+
     </android.support.design.widget.CoordinatorLayout>
 
 </LinearLayout>
