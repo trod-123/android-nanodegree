@@ -1,9 +1,10 @@
+<!-- Cardview already provides a default elevation so no need to set it here -->
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view_article_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/card_view_article_item"
     android:layout_marginBottom="@dimen/vertical_card_margin"
     android:layout_marginLeft="@dimen/horizontal_card_margin"
     android:layout_marginRight="@dimen/horizontal_card_margin"
@@ -33,21 +34,20 @@
                 android:layout_height="@dimen/thumbnail_max_height"
                 android:layout_marginBottom="@dimen/card_padding_narrow"
                 android:layout_marginTop="@dimen/card_padding_narrow"
-                android:scaleType="centerCrop"
-                android:background="@color/imageBackground" />
+                android:background="@color/imageBackground"
+                android:scaleType="centerCrop" />
 
             <ProgressBar
                 android:id="@+id/pb_article_thumbnail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </FrameLayout>
 
         <include layout="@layout/list_item_article_details" />
 
     </LinearLayout>
-
 
 </android.support.v7.widget.CardView>

@@ -215,7 +215,7 @@ public class ArticleDetailFragment extends Fragment implements
     public void onEnterTransitionStarted() {
         // "Lift" the temp container only for transitions, so transitions are visible. This is
         // required since app bar is elevated a bit. Setting elevation here instead of in xml
-        // avoids blocking click handling for other fragments
+        // avoids blocking toolbar click handling  for other fragments
         mTempDetailsContainer.setElevation(mHostActivity.getResources()
                 .getDimensionPixelSize(R.dimen.app_bar_elevation));
 

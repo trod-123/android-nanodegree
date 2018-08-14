@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- This is for setting the elevation for the AppBarLayout. Can't do it via app:elevation since it
+    is now deprecated. App bar elevation must be manually set in this way, otherwise the elevation
+    will be 0dp
+    From: https://stackoverflow.com/questions/37144961/how-to-change-appelevation-programmatically -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <!-- TODO: This elevation thing doesn't seem to work... -->
         <objectAnimator
             android:propertyName="elevation"
             android:valueTo="@dimen/app_bar_elevation"
