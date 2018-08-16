@@ -1,13 +1,11 @@
 package com.example.xyzreader.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -129,8 +127,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         super.onStart();
         mHostActivity.registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
-        // TODO: Make sure this is not called when user launches the app for the first time
-        scrollToPosition();
+        if (mInitiated) scrollToPosition();
     }
 
     @Override
@@ -190,7 +187,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
                 }
             }
         });
-        mToolbar.setExpanded(!mInitiated);
+        mToolbar.setExpanded(false);
     }
 
     /**
@@ -262,10 +259,12 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
         // TROD: However, this is called every time the activity comes back into focus, such as
         // after configuration changes, etc.
-        mListAdapter.swapCursor(cursor);
+        mListAdapter.swapCursor(MainActivity.sCursor = cursor);
 
         if (cursor == null || cursor.getCount() == 0) {
             // Display snackbar with error message
+            // TODO: The cursor being null does NOT always mean we had issues connecting to the internet
+            // It could be null cuz it's the first time we opened the app!
             Snackbar.make(getView(), R.string.error_message_refresh,
                     Toolbox.DEFAULT_SNACKBAR_LENGTH)
                     .setAction(R.string.try_again, new View.OnClickListener() {
@@ -281,34 +280,32 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         }
 
         // Animate the views in only if the activity has loaded the first time
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    // Animate the cards once the recyclerview had laid down its views, otherwise
-                    // RecyclerView.getChildAt() will always return null
-                    // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
-                    // TODO: This sometimes bugs up when user launches app for the first time
-                    // e.g. pressing back to homescreen, and then launching app again
-                    // Might end up getting fixed once I work on saving states
-                    if (!mInitiated) animateCardsIn();
-
-                    // Make sure to remove the listener to ensure this only gets called once
-                    mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    mInitiated = true;
+        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // Animate the cards once the recyclerview had laid down its views, otherwise
+                // RecyclerView.getChildAt() will always return null
+                // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
+                if (!mInitiated) {
+                    animateCardsIn();
                 }
-            });
+
+                // Make sure to remove the listener to ensure this only gets called once
+                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mInitiated = true;
+            }
+        });
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        mListAdapter.swapCursor(null);
+        mListAdapter.swapCursor(MainActivity.sCursor = null);
     }
 
     /**
      * Animates cards into the view from the bottom
+     * (code taken from the Udacity Material Design lesson)
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void animateCardsIn() {
         int size = mRecyclerView.getAdapter().getItemCount();
         float offset = getResources()

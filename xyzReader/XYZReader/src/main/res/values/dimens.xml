@@ -22,6 +22,13 @@
         Source: https://stackoverflow.com/questions/3282390/add-floating-point-value-to-android-resources-values -->
     <dimen name="card_entry_animation_start_offset">600dp</dimen>
     <dimen name="card_entry_animation_end_offset">0dp</dimen>
+    <dimen name="toolbar_content_margin">12dp</dimen>
+    <dimen name="toolbar_button_padding">4dp</dimen>
+    <dimen name="details_author_text_size">14sp</dimen>
+    <dimen name="details_date_text_size">12sp</dimen>
+    <dimen name="details_underscore_length">128dp</dimen>
+    <dimen name="details_underscore_topMargin">16dp</dimen>
+    <dimen name="details_underscore_height">2dp</dimen>
     <item name="card_entry_animation_start_alpha" format="float" type="dimen">0.85</item>
     <item name="card_entry_animation_end_alpha" format="float" type="dimen">1.0</item>
     <item name="card_entry_animation_duration" format="integer" type="integer">300</item>

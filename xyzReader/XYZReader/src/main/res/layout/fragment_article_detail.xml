@@ -53,12 +53,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:layout_margin="12dp"
+                    android:layout_margin="@dimen/toolbar_content_margin"
                     android:background="?selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:contentDescription="@string/up"
                     android:focusable="true"
-                    android:padding="4dp"
+                    android:padding="@dimen/toolbar_button_padding"
                     android:src="@drawable/ic_arrow_back_white_24dp"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
@@ -67,7 +67,7 @@
                     style="@style/AppBarTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
+                    android:layout_margin="@dimen/toolbar_content_margin"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:visibility="gone"
@@ -78,10 +78,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_margin="12dp"
+                    android:layout_margin="@dimen/toolbar_content_margin"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/moreActions"
-                    android:padding="4dp"
+                    android:padding="@dimen/toolbar_button_padding"
                     android:src="@drawable/ic_more_vert_white_24dp"
                     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                     android:visibility="gone" />
@@ -109,7 +109,7 @@
                     android:maxLines="1"
                     android:shadowColor="@color/textColorMedium"
                     android:textColor="@color/textColorLight"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/details_author_text_size"
                     tools:text="Teddy Rodriguez" />
 
                 <TextView
@@ -118,7 +118,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
-                    android:lineSpacingMultiplier="0.9"
                     android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                     android:shadowColor="@color/textColorMedium"
                     android:textColor="@color/textColorLight"
@@ -133,13 +132,13 @@
                     android:layout_height="wrap_content"
                     android:shadowColor="@color/textColorMedium"
                     android:textColor="@color/textColorLight"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/details_date_text_size"
                     tools:text="January 12, 2019" />
 
                 <View
-                    android:layout_width="128dp"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="@dimen/details_underscore_length"
+                    android:layout_height="@dimen/details_underscore_height"
+                    android:layout_marginTop="@dimen/details_underscore_topMargin"
                     android:background="@color/md_white_1000" />
 
             </LinearLayout>

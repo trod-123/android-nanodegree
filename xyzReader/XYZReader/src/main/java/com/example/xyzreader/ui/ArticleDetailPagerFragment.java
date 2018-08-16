@@ -1,16 +1,11 @@
 package com.example.xyzreader.ui;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.app.SharedElementCallback;
-import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
@@ -32,9 +27,12 @@ import timber.log.Timber;
 /**
  * A fragment representing a single Article detail screen, letting you swipe between articles.
  * This class is instantiated from intent actions, and is not created directly from within list
+ * <p>
+ * TODO: Make this fragment extend ArticleDetailFragment, for the interface methods?
  */
-public class ArticleDetailPagerFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ArticleDetailPagerFragment extends Fragment {
+
+    private static final String KEY_PAGER_LOADED = "com.example.xyzreader.key.pager_loaded";
 
     @BindView(R.id.pager)
     WebViewViewPager mPager;
@@ -42,12 +40,11 @@ public class ArticleDetailPagerFragment extends Fragment
 
     Activity mHostActivity;
 
-    private Cursor mCursor;
-
     // This is for ensuring that only the launched article has the temp container visible
     // for transition animations. Temp container be hidden for any other fragment created at this
     // time
     private int mLaunchedPosition;
+    private boolean mLoaded = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +53,16 @@ public class ArticleDetailPagerFragment extends Fragment
 
         mHostActivity = getActivity();
         mLaunchedPosition = MainActivity.sCurrentPosition;
+        mLoaded = savedInstanceState != null && savedInstanceState.getBoolean(KEY_PAGER_LOADED, false);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_article_detail_pager, container, false);
+        ButterKnife.bind(this, rootView);
+
+        setupViewPager();
 
         prepareEnterReturnTransitions();
 
@@ -66,14 +73,6 @@ public class ArticleDetailPagerFragment extends Fragment
             // called on orientation change
             postponeEnterTransition();
         }
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_article_detail_pager, container, false);
-        ButterKnife.bind(this, rootView);
-        setupViewPager();
 
         return rootView;
     }
@@ -81,18 +80,31 @@ public class ArticleDetailPagerFragment extends Fragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        //getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_PAGER_LOADED, mLoaded);
     }
 
     private void setupViewPager() {
-        mPager.setAdapter(mPagerAdapter = new DetailPagerAdapter(this));
+        mPager.setAdapter(mPagerAdapter = new DetailPagerAdapter(this,
+                MainActivity.sCursor, mLaunchedPosition));
+
+        // If I leave this here and it works when I click on any item,
+        // that means the fragments are being recycled as proper
+        mPager.setCurrentItem(MainActivity.sCurrentPosition, false);
 
         mPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (mCursor != null && !mCursor.isClosed()) {
-                    mCursor.moveToPosition(MainActivity.sCurrentPosition = position);
-                    MainActivity.sCurrentId = mCursor.getLong(ArticleLoader.Query._ID);
+                if (MainActivity.sCursor != null && !MainActivity.sCursor.isClosed()) {
+                    // While updating position doesn't require cursor when paginating, the cursor
+                    // is necessary for updating the id
+                    MainActivity.sCursor.moveToPosition(MainActivity.sCurrentPosition = position);
+                    MainActivity.sCurrentId = MainActivity.sCursor.getLong(ArticleLoader.Query._ID);
                 } else {
                     Timber.e("Cursor is null when paging");
                 }
@@ -189,106 +201,59 @@ public class ArticleDetailPagerFragment extends Fragment
         setSharedElementReturnTransition(sharedElementReturnTransition);
 
         SharedElementCallback callback = new SharedElementCallback() {
-            boolean loaded = false;
 
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 // Find the view for the current fragment
-                Fragment currentFragment = (Fragment) mPagerAdapter
-                        .instantiateItem(mPager, MainActivity.sCurrentPosition);
+                Fragment currentFragment = mPagerAdapter.getCurrentFragment();
                 View view = currentFragment.getView();
                 if (view == null) return;
 
                 // Map the first shared element name to the child image view
-                if (!loaded) {
+                if (!mLoaded) {
                     sharedElements.put(names.get(0), view.findViewById(R.id.detail_temp_photo));
                 } else {
                     // Map to the app bar detail image view once shared element transition is done
                     sharedElements.put(names.get(0), view.findViewById(R.id.detail_photo));
                 }
-                loaded = true;
+                mLoaded = true;
             }
         };
         setEnterSharedElementCallback(callback);
     }
 
-    @NonNull
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return ArticleLoader.newAllArticlesInstance(mHostActivity);
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
-        mCursor = cursor;
-        mPagerAdapter.notifyDataSetChanged();
-
-        // Select the start ID
-        if (MainActivity.sCurrentId > 0) {
-            mCursor.moveToFirst();
-            // TODO: optimize
-            while (!mCursor.isAfterLast()) {
-                if (mCursor.getLong(ArticleLoader.Query._ID) == MainActivity.sCurrentId) {
-                    final int position = mCursor.getPosition();
-                    mPager.setCurrentItem(position, false);
-                    break;
-                }
-                mCursor.moveToNext();
-            }
-        }
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
-        mCursor = null;
-        mPagerAdapter.notifyDataSetChanged();
-    }
-
-    private class DetailPagerAdapter extends FragmentStatePagerAdapter {
-        ArticleDetailFragment mCurrentFragment;
-
-        DetailPagerAdapter(Fragment fragment) {
-            // Initialize with the child fragment manager for shared elements. Allows detail
-            // fragment to recognize the pager fragment as its "parent" for starting
-            // postponed enter transition
-            super(fragment.getChildFragmentManager());
-        }
-
-        public ArticleDetailFragment getCurrentFragment() {
-            return mCurrentFragment;
-        }
-
-        @Override
-        public void setPrimaryItem(ViewGroup container, int position, Object object) {
-            super.setPrimaryItem(container, position, object);
-            mCurrentFragment = (ArticleDetailFragment) object;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            mCursor.moveToPosition(position);
-            // NOTE: This is where paged items are created
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID),
-                    position == mLaunchedPosition);
-        }
-
-        @Override
-        public int getCount() {
-            // This seems to rely on the cursor for returning number of pages, rather than looking
-            // at number of pages
-            return (mCursor != null) ? mCursor.getCount() : 0;
-        }
-
-        // TODO: BUG, more info here: https://stackoverflow.com/questions/18642890/fragmentstatepageradapter-with-childfragmentmanager-fragmentmanagerimpl-getfra
-        // Loading details fragment and then quickly pressing back before the detail fragment is
-        // rendered causes issues when trying to load the fragment again. Overriding restoreState()
-        // without calling super seems to help avoid NPEs when loading the detail fragment, but
-        // another issue arises when pressing the back button to return to the list fragment:
-        // the user is greeted with a blank white screen. no list fragment. and pressing back again
-        // exits the app
-        @Override
-        public void restoreState(Parcelable state, ClassLoader loader) {
-            //super.restoreState(state, loader);
-        }
-    }
+//    @NonNull
+//    @Override
+//    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+//        return ArticleLoader.newAllArticlesInstance(mHostActivity);
+//    }
+//
+//    @Override
+//    public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
+//        MainActivity.sCursor = cursor;
+//        // TODO: Calling this seems to reset the pager adapter into thinking it should load from
+//        // the 0 position, even though we may have setCurrentItem() earlier
+//        // Potentially this may also be clearing out the child fragment manager of any fragments
+//        // it contains... but this happens even without calling the below...
+//        mPagerAdapter.notifyDataSetChanged();
+//
+//        // Select the start ID
+////        if (MainActivity.sCurrentId > 0) {
+////            MainActivity.sCursor.moveToFirst();
+////            // TODO: this code can be deleted, it seems OK to just set current item to sCurrentPosition
+////            while (!MainActivity.sCursor.isAfterLast()) {
+////                if (MainActivity.sCursor.getLong(ArticleLoader.Query._ID) == MainActivity.sCurrentId) {
+////                    mPager.setCurrentItem(MainActivity.sCursor.getPosition(), false);
+////                    return;
+////                }
+////                MainActivity.sCursor.moveToNext();
+////            }
+////        }
+//    }
+//
+//    @Override
+//    public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
+//        MainActivity.sCursor = null;
+//        mPagerAdapter.notifyDataSetChanged();
+//    }
 }

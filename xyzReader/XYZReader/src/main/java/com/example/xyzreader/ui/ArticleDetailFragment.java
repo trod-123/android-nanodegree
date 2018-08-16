@@ -174,12 +174,6 @@ public class ArticleDetailFragment extends Fragment implements
             }
         }
 
-        if (savedInstanceState != null) {
-            // if user returns to original fragment with shared elements after it's been
-            // recycled (e.g. via pagination, or config changes), continue hiding the temp container
-            mLaunchedWithSharedElements = false;
-        }
-
         mIsCard = mHostActivity.getResources().getBoolean(R.bool.detail_is_card);
     }
 
@@ -188,6 +182,27 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
+
+        if (savedInstanceState != null) {
+            // if user returns to original fragment with shared elements after it's been
+            // recycled (e.g. via pagination, or config changes), continue hiding the temp container
+            mTempDetailsContainer.setVisibility(View.GONE);
+            mPhotoView.setTransitionName("image" + mItemId);
+            mTempPhotoView.setTransitionName(null);
+        } else {
+            if (!mLaunchedWithSharedElements) {
+                mTempDetailsContainer.setVisibility(View.GONE);
+                // Remap the shared animation to the app bar photo view so source shared animation
+                // correctly reflects app bar scroll changes
+                mPhotoView.setTransitionName("image" + mItemId);
+
+                // anchor and show the fab in the right place (since this isn't done in xml)
+                showFab(true);
+            } else {
+                // Shared element transition is in progress, expecting the temp photo view
+                mTempPhotoView.setTransitionName("image" + mItemId);
+            }
+        }
 
         setupStatusAppBar();
 
@@ -265,7 +280,9 @@ public class ArticleDetailFragment extends Fragment implements
         mPhotoView.setVisibility(View.VISIBLE);
 
         // Remap the shared animation to the app bar photo view so source shared animation
-        // correctly reflects app bar scroll changes. Remove the transition name for the temp view
+        // correctly reflects app bar scroll changes.
+        // Also remove the transition name for the temp view. If 2 views have the same transition
+        // name, then this will not work!
         mPhotoView.setTransitionName("image" + mItemId);
         mTempPhotoView.setTransitionName(null);
     }
@@ -402,19 +419,6 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         if (mCursor != null) {
-            if (!mLaunchedWithSharedElements) {
-                mTempDetailsContainer.setVisibility(View.GONE);
-                // Remap the shared animation to the app bar photo view so source shared animation
-                // correctly reflects app bar scroll changes
-                mPhotoView.setTransitionName("image" + mItemId);
-
-                // anchor and show the fab in the right place (since this isn't done in xml)
-                showFab(true);
-            } else {
-                // Shared element transition is in progress, expecting the temp photo view
-                mTempPhotoView.setTransitionName("image" + mItemId);
-            }
-
             String title = mCursor.getString(ArticleLoader.Query.TITLE);
             mTitleView.setText(title);
             mTempTitleView.setText(title);
@@ -455,11 +459,12 @@ public class ArticleDetailFragment extends Fragment implements
             };
             mBodyWebView.setWebViewClient(wvClient);
             String htmlString = Toolbox.getWebViewContent
-                    (mHostActivity, Toolbox.formatArticleBodyString(
-                            mCursor.getString(ArticleLoader.Query.BODY), true),
+                    (mHostActivity,
+                            Toolbox.formatArticleBodyString(
+                                    mCursor.getString(ArticleLoader.Query.BODY), true),
                             "Rosario-Regular.ttf",
-                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size), "left",
-                            0, 0,
+                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size),
+                            "left", 0, 0,
                             Toolbox.getHexColorString(mHostActivity, R.color.textColorMedium));
             mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,
                     "text/html", "UTF-8", null);
