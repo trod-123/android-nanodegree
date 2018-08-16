@@ -189,6 +189,7 @@ public class ArticleDetailFragment extends Fragment implements
             mTempDetailsContainer.setVisibility(View.GONE);
             mPhotoView.setTransitionName("image" + mItemId);
             mTempPhotoView.setTransitionName(null);
+            showFab(true);
         } else {
             if (!mLaunchedWithSharedElements) {
                 mTempDetailsContainer.setVisibility(View.GONE);
