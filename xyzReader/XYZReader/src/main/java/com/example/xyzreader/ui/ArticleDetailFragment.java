@@ -187,6 +187,9 @@ public class ArticleDetailFragment extends Fragment implements
             // if user returns to original fragment with shared elements after it's been
             // recycled (e.g. via pagination, or config changes), continue hiding the temp container
             mTempDetailsContainer.setVisibility(View.GONE);
+
+            // In order for shared element transition to work, only one view can have the
+            // correct transition name, so set the temp to null since we're not showing it
             mPhotoView.setTransitionName("image" + mItemId);
             mTempPhotoView.setTransitionName(null);
             showFab(true);

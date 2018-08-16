@@ -51,7 +51,7 @@ import timber.log.Timber;
 public class ArticleListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String BOOL_INITIATED = "com.example.xyzreader.ui.initiated";
-    private static final String OFFSET = "com.example.xyzreader.ui.offset";
+    private static final String LAST_SELECTED_POSITION = "com.example.xyzreader.ui.last_selected";
 
     @BindView(R.id.details_gap_status_bar)
     View mStatusBarGap;
@@ -70,12 +70,14 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
 
     Activity mHostActivity;
 
-    // For the updating process TODO do we really need this
-    private boolean mIsRefreshing = false;
     // Only do certain things once (entrance animations)
     private boolean mInitiated = false;
-    // for keeping track of the toolbar offset
-    private int offset = 0;
+    // Only auto scroll to location of detail shared element when we're coming back  (must work with
+    // mInitiated). This is used for rotations happening while user pages through articles, and the
+    // user returns from an article that they had not clicked on (see more notes below where it is
+    // used)
+    public int mLastSelectedPosition;
+
 
     @Nullable
     @Override
@@ -86,27 +88,16 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         ButterKnife.bind(this, rootView);
         mHostActivity = getActivity();
 
-        if (savedInstanceState == null) {
-            // TODO: Disable this for now
-            //refresh();
+        if (savedInstanceState != null) {
+            // These are called during rotations, even if the rotations happen in detail
+            mInitiated = savedInstanceState.getBoolean(BOOL_INITIATED, false);
+            mLastSelectedPosition = savedInstanceState.getInt(LAST_SELECTED_POSITION, 0);
         } else {
-            if (savedInstanceState.containsKey(BOOL_INITIATED)) {
-                mInitiated = savedInstanceState.getBoolean(BOOL_INITIATED);
-            }
-            if (savedInstanceState.containsKey(OFFSET)) {
-                offset = savedInstanceState.getInt(OFFSET);
-            }
+            // When user returns from detail with rotating, savedInstanceState is null
         }
 
         // fill-in the empty view space from the translucent status bar
         mStatusBarGap.getLayoutParams().height = Toolbox.getStatusBarHeight(mHostActivity);
-
-        mToolbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                offset = verticalOffset;
-            }
-        });
 
         setupRecyclerView();
 
@@ -127,7 +118,12 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         super.onStart();
         mHostActivity.registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
-        if (mInitiated) scrollToPosition();
+        // Since Android by default keeps scrolling position upon rotations, we will only need to
+        // scroll to position when the user pages to another article that won't otherwise be already
+        // seen when the user returns to the list. If the article is unchanged, then we'll let
+        // Android handle the scrolling
+        if (mInitiated & mLastSelectedPosition != MainActivity
+                .sCurrentPosition) scrollToLastSeenArticle();
     }
 
     @Override
@@ -139,7 +135,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(BOOL_INITIATED, mInitiated);
-        outState.putInt(OFFSET, offset);
+        outState.putInt(LAST_SELECTED_POSITION, mLastSelectedPosition);
         super.onSaveInstanceState(outState);
     }
 
@@ -156,8 +152,6 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mListAdapter = new ArticleListAdapter(this);
         mListAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(mListAdapter);
-        // TODO: We can smooth scroll here, but we need to account for app bar current size
-        //mRecyclerView.smoothScrollToPosition(1000);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -167,7 +161,10 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         });
     }
 
-    private void scrollToPosition() {
+    /**
+     * Scrolls to the position of the card containing the article the user has last seen
+     */
+    private void scrollToLastSeenArticle() {
         mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -192,29 +189,31 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
 
     /**
      * For communicating with the update service to show the loading icon during updates
+     * This is called before refreshes and after refreshes. Also called when the receiver is
+     * registered in onStart()
      */
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
-                mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                updateRefreshingUI();
+                boolean isRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
+                updateRefreshingUI(isRefreshing);
             }
         }
     };
 
     /**
-     * Refreshes the recycler view
+     * Launches the service that would refresh the article database
      */
     private void refresh() {
         mHostActivity.startService(new Intent(getContext(), UpdaterService.class));
     }
 
     /**
-     * Show the loading icon in the swipe refresh layout
+     * Show or hides the loading icon in the swipe refresh layout
      */
-    private void updateRefreshingUI() {
-        mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+    private void updateRefreshingUI(boolean isRefreshing) {
+        mSwipeRefreshLayout.setRefreshing(isRefreshing);
     }
 
     // Similar implementation provided in ArticleDetailPagerFragment
@@ -259,6 +258,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
         // TROD: However, this is called every time the activity comes back into focus, such as
         // after configuration changes, etc.
+        // Keep a reference to the cursor in the MainActivity, to be used in the PagerFragment
         mListAdapter.swapCursor(MainActivity.sCursor = cursor);
 
         if (cursor == null || cursor.getCount() == 0) {

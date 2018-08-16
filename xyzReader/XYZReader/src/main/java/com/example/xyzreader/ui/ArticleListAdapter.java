@@ -223,6 +223,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             MainActivity.sCurrentPosition = adapterPosition;
             MainActivity.sCurrentId = itemId;
 
+            // Let the hosting fragment know the position clicked on so hosting fragment can
+            // decide how to scroll when user returns to it
+            ((ArticleListFragment) mFragment).mLastSelectedPosition = adapterPosition;
+
             // Do not animate the selected card transition
             // Edit: Since we're now starting the shared element transition until AFTER the list
             // exit transition is done, we don't need to exclude the below anymore
