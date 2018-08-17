@@ -1,6 +1,7 @@
 <resources>
     <!-- detail -->
     <bool name="detail_is_card">true</bool>
+    <integer name="list_column_count">3</integer>
 
     <dimen name="detail_photo_height">600dp</dimen>
     <dimen name="detail_card_top_margin">256dp</dimen>

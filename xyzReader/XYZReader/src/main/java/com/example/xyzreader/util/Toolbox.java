@@ -256,7 +256,6 @@ public class Toolbox {
      * @param context
      * @param body
      * @param fontFileName
-     * @param fontSize
      * @param fontAlign
      * @param margins
      * @param padding
@@ -264,10 +263,10 @@ public class Toolbox {
      * @return
      */
     public static String getWebViewContent(Context context, String body, String fontFileName,
-                                           float fontSize, String fontAlign, int margins,
-                                           int padding, String fontColor) {
-        return context.getString(R.string.details_body_html_prefix, fontFileName,
-                fontSize, fontAlign, margins, padding, fontColor) +
+                                           String fontAlign, int margins, int padding,
+                                           String fontColor) {
+        return context.getString(R.string.details_body_html_prefix, fontFileName, fontAlign,
+                margins, padding, fontColor) +
                 body +
                 context.getString(R.string.details_body_html_suffix);
     }

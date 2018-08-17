@@ -2,4 +2,6 @@
 <resources>
     <dimen name="list_actionBarExpanded">112dp</dimen>
     <dimen name="details_actionBarExpanded">256dp</dimen>
+    <dimen name="horizontal_card_margin">4dp</dimen>
+
 </resources>

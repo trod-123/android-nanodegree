@@ -1,7 +1,15 @@
 <resources>
     <!-- detail -->
-    <dimen name="detail_title_text_size">42sp</dimen>
-    <dimen name="detail_body_text_size">20sp</dimen>
+    <dimen name="details_title_text_size">48sp</dimen>
+    <dimen name="details_author_text_size">34sp</dimen>
+    <dimen name="details_date_text_size">24sp</dimen>
+    <dimen name="details_underscore_length">256dp</dimen>
+
+
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.3</item>
     <dimen name="fab_margin">24dp</dimen>
+
+    <dimen name="details_actionBarExpanded">500dp</dimen>
+    <dimen name="horizontal_card_margin">4dp</dimen>
+
 </resources>

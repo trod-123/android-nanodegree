@@ -4,6 +4,6 @@
 
     <include
         android:id="@+id/layout_list_item"
-        layout="@layout/layout_list_item_article_tall" />
+        layout="@layout/layout_list_item_article_wide" />
 
 </FrameLayout>

@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import timber.log.Timber;
 
 public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.ArticleListViewHolder> {
@@ -285,7 +286,9 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             view.setOnClickListener(this);
         }
 
-        @Override
+        // When the parent layout consists of just a reusable layout container, clicks would no
+        // longer be handled unless you provide the OnClick annotation with the id of the layout used
+        @Override @OnClick(R.id.layout_list_item)
         public void onClick(View v) {
             mViewHolderListener.onItemClicked(v,
                     ArticleListAdapter.this.getItemId(getAdapterPosition()), getAdapterPosition());

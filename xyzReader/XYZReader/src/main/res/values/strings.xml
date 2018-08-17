@@ -27,12 +27,11 @@
         src: url("fonts/]]>%1$s<![CDATA[")
         }
         body {
-        font-family: xyz;
-        font-size: ]]>%2$f<![CDATA[;
-        text-align: ]]>%3$s<![CDATA[;
-        margin: ]]>%4$d<![CDATA[;
-        padding: ]]>%5$d<![CDATA[;
-        color: ]]>%6$s<![CDATA[
+        font-family: xyz
+        text-align: ]]>%2$s<![CDATA[;
+        margin: ]]>%3$d<![CDATA[;
+        padding: ]]>%4$d<![CDATA[;
+        color: ]]>%5$s<![CDATA[
         }
         </style>
         </head>

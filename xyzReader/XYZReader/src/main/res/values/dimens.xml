@@ -1,7 +1,12 @@
 <resources>
     <!-- detail -->
-    <dimen name="detail_title_text_size">32sp</dimen>
-    <dimen name="detail_body_text_size">8sp</dimen>
+    <dimen name="details_title_text_size">32sp</dimen>
+    <dimen name="details_author_text_size">14sp</dimen>
+    <dimen name="details_date_text_size">12sp</dimen>
+    <dimen name="details_underscore_length">128dp</dimen>
+    <dimen name="details_underscore_topMargin">16dp</dimen>
+    <dimen name="details_underscore_height">2dp</dimen>
+
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
     <dimen name="fab_margin">24dp</dimen>
@@ -24,11 +29,7 @@
     <dimen name="card_entry_animation_end_offset">0dp</dimen>
     <dimen name="toolbar_content_margin">12dp</dimen>
     <dimen name="toolbar_button_padding">4dp</dimen>
-    <dimen name="details_author_text_size">14sp</dimen>
-    <dimen name="details_date_text_size">12sp</dimen>
-    <dimen name="details_underscore_length">128dp</dimen>
-    <dimen name="details_underscore_topMargin">16dp</dimen>
-    <dimen name="details_underscore_height">2dp</dimen>
+
     <item name="card_entry_animation_start_alpha" format="float" type="dimen">0.85</item>
     <item name="card_entry_animation_end_alpha" format="float" type="dimen">1.0</item>
     <item name="card_entry_animation_duration" format="integer" type="integer">300</item>

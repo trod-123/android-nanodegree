@@ -335,14 +335,14 @@ public class ArticleDetailFragment extends Fragment implements
         // Disable drag callback for app bar, so scrolling is limited to just the scrollview, not
         // the app bar.
         // Source https://stackoverflow.com/questions/40750005/disable-vertical-scroll-in-collapsingtoolbarlayout-appbarlayout/40750707
-        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
-        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
-            @Override
-            public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
-                return false;
-            }
-        });
-        ((CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams()).setBehavior(behavior);
+//        AppBarLayout.Behavior behavior = new AppBarLayout.Behavior();
+//        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+//            @Override
+//            public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+//                return false;
+//            }
+//        });
+//        ((CoordinatorLayout.LayoutParams) mAppBar.getLayoutParams()).setBehavior(behavior);
 
         mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             int scrollRange = -1;
@@ -467,7 +467,6 @@ public class ArticleDetailFragment extends Fragment implements
                             Toolbox.formatArticleBodyString(
                                     mCursor.getString(ArticleLoader.Query.BODY), true),
                             "Rosario-Regular.ttf",
-                            mHostActivity.getResources().getDimension(R.dimen.detail_body_text_size),
                             "left", 0, 0,
                             Toolbox.getHexColorString(mHostActivity, R.color.textColorMedium));
             mBodyWebView.loadDataWithBaseURL("file:///android_asset/", htmlString,

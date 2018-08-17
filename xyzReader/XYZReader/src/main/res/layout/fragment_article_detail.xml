@@ -121,7 +121,7 @@
                     android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                     android:shadowColor="@color/textColorMedium"
                     android:textColor="@color/textColorLight"
-                    android:textSize="@dimen/detail_title_text_size"
+                    android:textSize="@dimen/details_title_text_size"
                     android:textStyle="bold"
                     tools:text="Title of article this is a really long one" />
 
@@ -282,7 +282,7 @@
                 android:paddingBottom="@dimen/detail_metabar_title_bottom_padding"
                 android:shadowColor="@color/textColorMedium"
                 android:textColor="@color/textColorLight"
-                android:textSize="@dimen/detail_title_text_size"
+                android:textSize="@dimen/details_title_text_size"
                 android:textStyle="bold" />
 
             <TextView
