@@ -226,27 +226,6 @@ public class ArticleDetailFragment extends Fragment implements
 
         setupStatusAppBar();
 
-        mShareFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Since the detail cursor contains only the article, pass in 0 for position
-                Toolbox.shareArticle(mHostActivity, mCursor, 0, mRootView);
-            }
-        });
-
-        mTopFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mScrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mScrollView.setScrollY(0);
-                        mAppBar.setExpanded(true);
-                    }
-                });
-            }
-        });
-
         setupDetailsUI();
 
         return mRootView;
@@ -254,6 +233,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     /**
      * Helper for getting the scroll position stored in shared preferences
+     * TODO: There seems to be an issue when pressing back button while webview is loading,
+     * and then accessing the detail again. Scroll position is reset to 0
      *
      * @return
      */
@@ -506,27 +487,52 @@ public class ArticleDetailFragment extends Fragment implements
             }
 
             // Set up the webview client with a progress bar and scroll to saved position
+            // This implementation helps guarantee page is loaded 100% before hiding the pb
+            // https://stackoverflow.com/questions/6199717/how-can-i-know-that-my-webview-is-loaded-100
             mScrollPosition = getSavedScrollPosition();
             WebViewClient wvClient = new WebViewClient() {
+                boolean loadingFinished = true;
+                boolean redirect = false;
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    if (!loadingFinished) redirect = true;
+                    loadingFinished = false;
+                    view.loadUrl(url);
+                    return true;
+                }
+
                 @Override
                 public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    loadingFinished = false;
                     view.setVisibility(View.INVISIBLE);
                     mBodyPb.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    view.setVisibility(View.VISIBLE);
-                    mBodyPb.setVisibility(View.GONE);
+                    if (!redirect) loadingFinished = true;
+                    if (loadingFinished && !redirect) {
+                        view.setVisibility(View.VISIBLE);
+                        mBodyPb.setVisibility(View.GONE);
 
-                    // The delay is necessary to make the scroll working
-                    // https://stackoverflow.com/questions/6855715/maintain-webview-content-scroll-position-on-orientation-change
-                    mScrollView.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mScrollView.smoothScrollTo(0, mScrollPosition);
-                        }
-                    }, WEBVIEW_SCROLL_JITTER);
+                        // The delay is necessary to make the scroll working
+                        // https://stackoverflow.com/questions/6855715/maintain-webview-content-scroll-position-on-orientation-change
+                        mScrollView.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                // If we do this, this may potentially be called multiple times,
+                                // scrolling the view more than we need it. So we call .setScrollY()
+                                // instead
+//                                mScrollView.smoothScrollTo(0, mScrollPosition);
+
+                                mScrollView.setScrollY(mScrollPosition);
+
+                            }
+                        }, WEBVIEW_SCROLL_JITTER);
+                    } else {
+                        redirect = false;
+                    }
                 }
             };
             mBodyWebView.setWebViewClient(wvClient);
@@ -613,6 +619,27 @@ public class ArticleDetailFragment extends Fragment implements
                         mCursor.getString(ArticleLoader.Query.PHOTO_URL), mPhotoView,
                         resize, resize, null);
             }
+
+            mShareFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Since the detail cursor contains only the article, pass in 0 for position
+                    Toolbox.shareArticle(mHostActivity, mCursor, 0, mRootView);
+                }
+            });
+
+            mTopFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mScrollView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mScrollView.setScrollY(0);
+                            mAppBar.setExpanded(true);
+                        }
+                    });
+                }
+            });
         } else {
             mTitleView.setText(getString(R.string.null_data));
             mAuthorView.setText(getString(R.string.null_data));
