@@ -1,6 +1,8 @@
 package com.example.xyzreader.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,6 +15,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -59,7 +62,10 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_HAS_SHARED_ELEMENTS = "has_shared_elements";
-    private static final String BODY_SCROLL_POSITION = "body_scroll_position";
+    public static final String BODY_SCROLL_POSITION = "body_scroll_position";
+
+    // Delay for when restoring scroll state
+    private static final int WEBVIEW_SCROLL_JITTER = 800;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -134,7 +140,7 @@ public class ArticleDetailFragment extends Fragment implements
     // hide the "temp" container if false
     boolean mLaunchedWithSharedElements = false;
 
-    // Maintain scroll position upon rotation
+    // For restoring user's scroll progress. Obtained from shared preferences
     int mScrollPosition;
 
     /**
@@ -193,8 +199,11 @@ public class ArticleDetailFragment extends Fragment implements
             // correct transition name, so set the temp to null since we're not showing it
             mPhotoView.setTransitionName("image" + mItemId);
             mTempPhotoView.setTransitionName(null);
-            mScrollPosition = savedInstanceState.getInt(BODY_SCROLL_POSITION, 0);
             showFab(true);
+
+            // No need to modify scrolling for body or appbar if fragment is recreated since
+            // Android already does it
+//            animateHideAppBar(mScrollPosition != 0);
         } else {
             if (!mLaunchedWithSharedElements) {
                 mTempDetailsContainer.setVisibility(View.GONE);
@@ -204,6 +213,9 @@ public class ArticleDetailFragment extends Fragment implements
 
                 // anchor and show the fab in the right place (since this isn't done in xml)
                 showFab(true);
+
+                mScrollPosition = getSavedScrollPosition();
+                animateHideAppBar(mScrollPosition != 0);
             } else {
                 // Shared element transition is in progress, expecting the temp photo view
                 mTempPhotoView.setTransitionName("image" + mItemId);
@@ -225,6 +237,26 @@ public class ArticleDetailFragment extends Fragment implements
         return mRootView;
     }
 
+    /**
+     * Helper for getting the scroll position stored in shared preferences
+     *
+     * @return
+     */
+    private int getSavedScrollPosition() {
+        if (mHostActivity != null) {
+            int pos = mHostActivity
+                    .getSharedPreferences(getString(R.string.shared_prefs), Context.MODE_PRIVATE)
+                    .getInt(BODY_SCROLL_POSITION + mItemId, 0);
+            Timber.d("In getSavedScrollPosition(), it is a success! %s: %s", mItemId, pos);
+            return pos;
+        } else {
+            Snackbar.make(mRootView, "There was a problem loading your saved position",
+                    Snackbar.LENGTH_LONG).show();
+            Timber.e("In getSavedScrollPosition(), context was null");
+            return 0;
+        }
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -232,9 +264,11 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(BODY_SCROLL_POSITION, mScrollView.getScrollY());
-        super.onSaveInstanceState(outState);
+    public void onPause() {
+        super.onPause();
+        SharedPreferences sp = mHostActivity.getSharedPreferences(getString(R.string.shared_prefs),
+                Context.MODE_PRIVATE);
+        sp.edit().putInt(BODY_SCROLL_POSITION + mItemId, mScrollView.getScrollY()).apply();
     }
 
     // TODO: Create a listener between pager and detail so pager isn't calling detail directly
@@ -270,6 +304,7 @@ public class ArticleDetailFragment extends Fragment implements
         mContainerMetaDetails.setVisibility(View.VISIBLE);
 
         showFab(true);
+        animateHideAppBar(mScrollPosition != 0);
     }
 
     /**
@@ -393,7 +428,7 @@ public class ArticleDetailFragment extends Fragment implements
         });
     }
 
-    // Not possible to hide fab in xml, so we're doing it here
+    // Not possible to hide fab in xml while using anchor, so we're doing it here
     // https://stackoverflow.com/questions/36540951/any-way-to-hide-fabfloating-action-button-via-xml
     // https://stackoverflow.com/questions/31269958/floatingactionbutton-doesnt-hide
     public void showFab(boolean show) {
@@ -455,7 +490,8 @@ public class ArticleDetailFragment extends Fragment implements
                 mTempDateView.setText(date);
             }
 
-            // Set up the webview client with a progress bar
+            // Set up the webview client with a progress bar and scroll to saved position
+            mScrollPosition = getSavedScrollPosition();
             WebViewClient wvClient = new WebViewClient() {
                 @Override
                 public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -473,9 +509,9 @@ public class ArticleDetailFragment extends Fragment implements
                     mScrollView.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mScrollView.setScrollY(mScrollPosition);
+                            mScrollView.smoothScrollTo(0, mScrollPosition);
                         }
-                    }, 300);
+                    }, WEBVIEW_SCROLL_JITTER);
                 }
             };
             mBodyWebView.setWebViewClient(wvClient);
@@ -579,6 +615,19 @@ public class ArticleDetailFragment extends Fragment implements
         Toolbox.showView(mTv_toolbarTitle, show, false);
         Toolbox.showView(mOverflowButton, show, true);
         mAppBarShowing = show;
+    }
+
+    /**
+     * Hide the app bar if user has saved progress available
+     *
+     * @param hide
+     */
+    private void animateHideAppBar(boolean hide) {
+        if (hide) {
+            mAppBar.setExpanded(false);
+            Snackbar.make(mRootView,
+                    "Continuing from where you left off", Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private Date parsePublishedDate() {

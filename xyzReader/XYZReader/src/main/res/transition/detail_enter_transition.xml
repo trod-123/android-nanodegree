@@ -33,7 +33,10 @@
     <fade>
         <targets>
             <target android:targetId="@id/scrim" />
-            <target android:targetId="@id/article_body" />
+            <!-- Adding this here seems to hide the webview instead of showing it after content
+                gets loaded, even when going from page to page and no transitions are happening.
+                Deleting for now seems to fix it  -->
+            <!--<target android:targetId="@id/article_body" />-->
         </targets>
     </fade>
 

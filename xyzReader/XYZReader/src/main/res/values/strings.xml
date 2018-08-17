@@ -51,5 +51,6 @@
     <string name="error_message_refresh">We had trouble loading your articles online</string>
     <string name="try_again">Try again</string>
     <string name="message_empty_article_list">Your articles list is empty.\nTry swiping down to load your articles.</string>
+    <string name="shared_prefs">xyz_sp</string>
 
 </resources>
