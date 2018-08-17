@@ -59,6 +59,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_HAS_SHARED_ELEMENTS = "has_shared_elements";
+    private static final String BODY_SCROLL_POSITION = "body_scroll_position";
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -133,6 +134,9 @@ public class ArticleDetailFragment extends Fragment implements
     // hide the "temp" container if false
     boolean mLaunchedWithSharedElements = false;
 
+    // Maintain scroll position upon rotation
+    int mScrollPosition;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -166,12 +170,9 @@ public class ArticleDetailFragment extends Fragment implements
         mHostActivity = getActivity();
 
         if (getArguments() != null) {
-            if (getArguments().containsKey(ARG_ITEM_ID)) {
-                mItemId = getArguments().getLong(ARG_ITEM_ID);
-            }
-            if (getArguments().containsKey(ARG_HAS_SHARED_ELEMENTS)) {
-                mLaunchedWithSharedElements = getArguments().getBoolean(ARG_HAS_SHARED_ELEMENTS);
-            }
+            mItemId = getArguments().getLong(ARG_ITEM_ID, 0);
+            mLaunchedWithSharedElements = getArguments().getBoolean(ARG_HAS_SHARED_ELEMENTS,
+                    false);
         }
 
         mIsCard = mHostActivity.getResources().getBoolean(R.bool.detail_is_card);
@@ -192,6 +193,7 @@ public class ArticleDetailFragment extends Fragment implements
             // correct transition name, so set the temp to null since we're not showing it
             mPhotoView.setTransitionName("image" + mItemId);
             mTempPhotoView.setTransitionName(null);
+            mScrollPosition = savedInstanceState.getInt(BODY_SCROLL_POSITION, 0);
             showFab(true);
         } else {
             if (!mLaunchedWithSharedElements) {
@@ -227,6 +229,12 @@ public class ArticleDetailFragment extends Fragment implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(BODY_SCROLL_POSITION, mScrollView.getScrollY());
+        super.onSaveInstanceState(outState);
     }
 
     // TODO: Create a listener between pager and detail so pager isn't calling detail directly
@@ -459,6 +467,15 @@ public class ArticleDetailFragment extends Fragment implements
                 public void onPageFinished(WebView view, String url) {
                     view.setVisibility(View.VISIBLE);
                     mBodyPb.setVisibility(View.GONE);
+
+                    // The delay is necessary to make the scroll working
+                    // https://stackoverflow.com/questions/6855715/maintain-webview-content-scroll-position-on-orientation-change
+                    mScrollView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mScrollView.setScrollY(mScrollPosition);
+                        }
+                    }, 300);
                 }
             };
             mBodyWebView.setWebViewClient(wvClient);

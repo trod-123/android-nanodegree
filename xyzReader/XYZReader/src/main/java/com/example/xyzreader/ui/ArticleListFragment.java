@@ -59,7 +59,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
-    @BindView(R.id.coordinator_list)
+    @BindView(R.id.list_parent)
     CoordinatorLayout mCoordinator;
     @BindView(R.id.list_appbar)
     AppBarLayout mToolbar;
@@ -184,7 +184,6 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
                 }
             }
         });
-        mToolbar.setExpanded(false);
     }
 
     /**

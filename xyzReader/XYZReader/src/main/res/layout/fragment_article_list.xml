@@ -9,10 +9,13 @@
         android:id="@+id/details_gap_status_bar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary" />
 
+    <!-- Android automatically saves scroll state for app bar upon reloading, all you need to do
+        is provide an id to the CoordinatorLayout and you're set!
+        https://stackoverflow.com/questions/32563300/how-to-restore-collapsing-toolbar-layout-state-after-screen-orientation-change -->
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/coordinator_list"
+        android:id="@+id/list_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,10 +29,10 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="64dp"
                 android:clipToPadding="false"
+                android:paddingBottom="64dp"
                 android:scrollbarStyle="outsideOverlay"
-                android:scrollbars="vertical"/>
+                android:scrollbars="vertical" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -72,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="@string/message_empty_article_list"/>
+            android:text="@string/message_empty_article_list" />
 
     </android.support.design.widget.CoordinatorLayout>
 

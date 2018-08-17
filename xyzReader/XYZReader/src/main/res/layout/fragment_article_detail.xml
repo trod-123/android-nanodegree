@@ -1,4 +1,9 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Specifying an id for CoordinatorLayout is necessary for Android to automatically save scroll
+    state upon recreationg (nothing else is needed to do!)
+    https://stackoverflow.com/questions/32563300/how-to-restore-collapsing-toolbar-layout-state-after-screen-orientation-change -->
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/detail_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
