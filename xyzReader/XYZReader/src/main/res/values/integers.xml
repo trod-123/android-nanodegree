@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="body_preview_upper_limit">500</integer>
-    <integer name="shared_elements_image_size_pixels">2000</integer>
+    <integer name="body_preview_char_upper_limit">500</integer>
+    <integer name="shared_elements_image_size_pixels">1000</integer>
 
     <integer name="transition_duration_list_exit">300</integer>
     <integer name="transition_duration_shared_elements_enter">300</integer>

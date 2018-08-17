@@ -73,7 +73,7 @@ public class ArticleDetailFragment extends Fragment implements
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
-    Activity mHostActivity;
+    private Activity mHostActivity;
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
@@ -136,14 +136,14 @@ public class ArticleDetailFragment extends Fragment implements
     private boolean mIsCard = false;
 
     // For knowing when to show or hide the app bar
-    boolean mAppBarShowing;
+    private boolean mAppBarShowing;
 
     // For knowing whether this fragment has shared elements - when the fragment is loaded,
     // hide the "temp" container if false
     boolean mLaunchedWithSharedElements = false;
 
     // For restoring user's scroll progress. Obtained from shared preferences
-    int mScrollPosition;
+    private int mScrollPosition;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the

@@ -38,7 +38,7 @@ public class ArticleDetailPagerFragment extends Fragment {
     WebViewViewPager mPager;
     private DetailPagerAdapter mPagerAdapter;
 
-    Activity mHostActivity;
+    private Activity mHostActivity;
 
     // This is for ensuring that only the launched article has the temp container visible
     // for transition animations. Temp container be hidden for any other fragment created at this

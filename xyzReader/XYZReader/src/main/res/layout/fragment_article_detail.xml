@@ -1,11 +1,10 @@
 <!-- Specifying an id for CoordinatorLayout is necessary for Android to automatically save scroll
     state upon recreationg (nothing else is needed to do!)
     https://stackoverflow.com/questions/32563300/how-to-restore-collapsing-toolbar-layout-state-after-screen-orientation-change -->
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/detail_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detail_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -318,6 +317,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:contentDescription="@string/action_share"
+        app:elevation="@dimen/fab_elevation"
         android:src="@drawable/ic_share_white_24dp"
         app:layout_anchorGravity="bottom|right|end" />
 
@@ -325,11 +325,12 @@
         android:id="@+id/fab_backToTop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:contentDescription="@string/action_backToTop"
-        android:src="@drawable/ic_keyboard_arrow_up_white_24dp"
         android:layout_gravity="end|bottom"
-        android:visibility="invisible"/>
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:contentDescription="@string/action_backToTop"
+        app:elevation="@dimen/fab_elevation"
+        android:src="@drawable/ic_keyboard_arrow_up_white_24dp"
+        android:visibility="invisible" />
 
 </android.support.design.widget.CoordinatorLayout>

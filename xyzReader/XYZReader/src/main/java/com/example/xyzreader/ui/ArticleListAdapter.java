@@ -37,13 +37,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.ArticleListViewHolder> {
+public class ArticleListAdapter extends
+        RecyclerView.Adapter<ArticleListAdapter.ArticleListViewHolder> {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private GregorianCalendar START_OF_EPOCH =
+            new GregorianCalendar(2, 1, 1);
 
     private Fragment mFragment;
     private Cursor mCursor;
@@ -99,7 +101,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     @NonNull
     @Override
     public ArticleListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mFragment.getActivity()).inflate(R.layout.list_item_article, parent, false);
+        View view = LayoutInflater.from(mFragment.getActivity()).inflate(
+                R.layout.list_item_article, parent, false);
         return new ArticleListViewHolder(view);
     }
 
@@ -121,7 +124,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
         String bodyPreview = Toolbox.formatArticleBodyString(
                 mCursor.getString(ArticleLoader.Query.BODY), false);
-        int bodyCharLimit = holder.itemView.getContext().getResources().getInteger(R.integer.body_preview_upper_limit);
+        int bodyCharLimit = holder.itemView.getContext().getResources()
+                .getInteger(R.integer.body_preview_char_upper_limit);
         if (bodyPreview.length() > bodyCharLimit) {
             // limit the body preview to lessen load on OS
             bodyPreview = bodyPreview.substring(0, bodyCharLimit);
@@ -150,16 +154,20 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             // Glide
             RequestListener<Bitmap> listener = new RequestListener<Bitmap>() {
                 @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                    mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                            Target<Bitmap> target, boolean isFirstResource) {
+                    mViewHolderListener.onLoadCompleted(holder.thumbnailView,
+                            holder.getAdapterPosition());
                     holder.pbThumbnail.setVisibility(View.GONE);
                     Timber.e(e, "There was a problem loading the list image thumbnail");
                     return false;
                 }
 
                 @Override
-                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                    mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                               DataSource dataSource, boolean isFirstResource) {
+                    mViewHolderListener.onLoadCompleted(holder.thumbnailView,
+                            holder.getAdapterPosition());
                     holder.pbThumbnail.setVisibility(View.GONE);
                     return false;
                 }
@@ -175,13 +183,15 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                     resize, resize, new Callback() {
                         @Override
                         public void onSuccess() {
-                            mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                            mViewHolderListener.onLoadCompleted(holder.thumbnailView,
+                                    holder.getAdapterPosition());
                             holder.pbThumbnail.setVisibility(View.GONE);
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            mViewHolderListener.onLoadCompleted(holder.thumbnailView, holder.getAdapterPosition());
+                            mViewHolderListener.onLoadCompleted(holder.thumbnailView,
+                                    holder.getAdapterPosition());
                             holder.pbThumbnail.setVisibility(View.GONE);
                             Timber.e(e, "There was a problem loading the list image thumbnail");
                         }
@@ -196,7 +206,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         holder.ibActions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toolbox.showArticleActionsMenuPopup(mFragment.getActivity(), v, mCursor, holder.getLayoutPosition());
+                Toolbox.showArticleActionsMenuPopup(mFragment.getActivity(), v, mCursor,
+                        holder.getLayoutPosition());
             }
         });
     }

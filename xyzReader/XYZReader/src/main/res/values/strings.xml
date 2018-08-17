@@ -48,10 +48,11 @@
     <string name="null_data">No data</string>
     <string name="error_message_share">There was an error getting story info. Unable to share</string>
     <string name="log_error_share" translatable="false">There was an error getting story info for sharing: cursor is null</string>
-    <string name="error_message_refresh">We had trouble loading your articles online</string>
+    <string name="error_message_refresh">We had trouble loading your articles</string>
     <string name="try_again">Try again</string>
     <string name="message_empty_article_list">Your articles list is empty.\nTry swiping down to load your articles.</string>
-    <string name="shared_prefs">xyz_sp</string>
+    <string name="shared_prefs" translatable="false">xyz_sp</string>
     <string name="action_backToTop">Go to beginning</string>
+    <string name="error_message_no_internet">Please connect to the internet and try again</string>
 
 </resources>

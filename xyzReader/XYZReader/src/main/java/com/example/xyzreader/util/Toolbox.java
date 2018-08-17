@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -124,7 +126,8 @@ public class Toolbox {
      * @param imageView
      */
     public static void loadImageFromUrl(@NonNull Context context, @NonNull String sourceUrl,
-                                        @NonNull ImageView imageView, RequestListener<Bitmap> listener) {
+                                        @NonNull ImageView imageView,
+                                        RequestListener<Bitmap> listener) {
         getGlideRequestForLoadingImage(context, sourceUrl, listener)
                 .into(imageView);
     }
@@ -392,7 +395,8 @@ public class Toolbox {
      * @param cursor
      * @param position
      */
-    public static void showArticleActionsMenuPopup(Context context, View view, Cursor cursor, int position) {
+    public static void showArticleActionsMenuPopup(Context context, View view, Cursor cursor,
+                                                   int position) {
         showMenuPopup(context, view, R.menu.menu_article_actions,
                 new ArticleActionsMenuOnClickListener(context, cursor, position, view));
     }
@@ -500,5 +504,18 @@ public class Toolbox {
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
+    }
+
+    /**
+     * Checks if user has internet connectivity
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

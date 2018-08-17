@@ -10,8 +10,10 @@
     <item name="detail_body_line_spacing_multiplier" format="float" type="fraction">1.25</item>
 
     <dimen name="fab_margin">24dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
     <dimen name="vertical_card_margin">4dp</dimen>
     <dimen name="horizontal_card_margin">0dp</dimen>
+    <dimen name="card_elevation">1dp</dimen>
     <dimen name="card_padding">16dp</dimen>
     <dimen name="card_padding_narrow">4dp</dimen>
     <dimen name="thumbnail_size">96dp</dimen>

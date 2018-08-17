@@ -68,7 +68,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     @BindView(R.id.empty_article_list_message)
     TextView mEmptyListMessage;
 
-    Activity mHostActivity;
+    private Activity mHostActivity;
 
     // Only do certain things once (entrance animations)
     private boolean mInitiated = false;
@@ -77,13 +77,16 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     // user returns from an article that they had not clicked on (see more notes below where it is
     // used)
     public int mLastSelectedPosition;
+    // For giving one more chance for a refresh before showing error snackbar
+    private boolean refreshJitter = false;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_article_list, container, false);
+        View rootView =
+                inflater.inflate(R.layout.fragment_article_list, container, false);
         Timber.tag(ArticleListFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
         mHostActivity = getActivity();
@@ -116,6 +119,8 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onStart() {
         super.onStart();
+        // If broadcast receiver needs multiple "actions", just give it more extras rather than
+        // registering multiple filters, and handle each extra accordingly
         mHostActivity.registerReceiver(mRefreshingReceiver,
                 new IntentFilter(UpdaterService.BROADCAST_ACTION_STATE_CHANGE));
         // Since Android by default keeps scrolling position upon rotations, we will only need to
@@ -167,14 +172,17 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
     private void scrollToLastSeenArticle() {
         mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 mRecyclerView.removeOnLayoutChangeListener(this);
                 final RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-                View viewAtPosition = layoutManager.findViewByPosition(MainActivity.sCurrentPosition);
+                View viewAtPosition =
+                        layoutManager.findViewByPosition(MainActivity.sCurrentPosition);
                 // Scroll to position if the view for the current position is null (not currently part of
                 // layout manager children), or it's not completely visible.
                 if (viewAtPosition == null || layoutManager
-                        .isViewPartiallyVisible(viewAtPosition, false, true)) {
+                        .isViewPartiallyVisible(viewAtPosition, false,
+                                true)) {
                     mRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
@@ -184,6 +192,7 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
                 }
             }
         });
+        mToolbar.setExpanded(false);
     }
 
     /**
@@ -195,8 +204,22 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         @Override
         public void onReceive(Context context, Intent intent) {
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
-                boolean isRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
-                updateRefreshingUI(isRefreshing);
+                if (intent.hasExtra(UpdaterService.EXTRA_STATUS_INTERNET)) {
+                    // Verify the user has internet connection first
+                    Snackbar.make(getView(),
+                            R.string.error_message_no_internet, Snackbar.LENGTH_LONG)
+                            .setAction(R.string.try_again, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    refresh();
+                                }
+                            }).show();
+                    updateRefreshingUI(false);
+                } else {
+                    boolean isRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING,
+                            false);
+                    updateRefreshingUI(isRefreshing);
+                }
             }
         }
     };
@@ -235,12 +258,14 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 // Get the viewholder for the current position
                 RecyclerView.ViewHolder selectedViewHolder =
-                        mRecyclerView.findViewHolderForAdapterPosition(MainActivity.sCurrentPosition);
+                        mRecyclerView.findViewHolderForAdapterPosition(
+                                MainActivity.sCurrentPosition);
                 if (selectedViewHolder == null || selectedViewHolder.itemView == null) return;
 
                 // We're only interested in one view transition, so we just need to adjust mapping
                 // for the first shared element name
-                sharedElements.put(names.get(0), selectedViewHolder.itemView.findViewById(R.id.article_thumbnail));
+                sharedElements.put(names.get(0),
+                        selectedViewHolder.itemView.findViewById(R.id.article_thumbnail));
             }
         });
     }
@@ -261,39 +286,43 @@ public class ArticleListFragment extends Fragment implements LoaderManager.Loade
         mListAdapter.swapCursor(MainActivity.sCursor = cursor);
 
         if (cursor == null || cursor.getCount() == 0) {
-            // Display snackbar with error message
-            // TODO: The cursor being null does NOT always mean we had issues connecting to the internet
-            // It could be null cuz it's the first time we opened the app!
-            Snackbar.make(getView(), R.string.error_message_refresh,
-                    Toolbox.DEFAULT_SNACKBAR_LENGTH)
-                    .setAction(R.string.try_again, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            refresh();
-                        }
-                    })
-                    .show();
-
+            if (refreshJitter) {
+                Snackbar.make(getView(), R.string.error_message_refresh,
+                        Toolbox.DEFAULT_SNACKBAR_LENGTH)
+                        .setAction(R.string.try_again, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                refresh();
+                            }
+                        }).show();
+            } else {
+                // Give another chance for a refresh, in case this is user's first time loading
+                // Show error snackbar if cursor still returns empty afterwards
+                refresh();
+                refreshJitter = true;
+            }
         } else {
             mEmptyListMessage.setVisibility(View.GONE);
         }
 
         // Animate the views in only if the activity has loaded the first time
-        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // Animate the cards once the recyclerview had laid down its views, otherwise
-                // RecyclerView.getChildAt() will always return null
-                // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
-                if (!mInitiated) {
-                    animateCardsIn();
-                }
+        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        // Animate the cards once the recyclerview had laid down its views, otherwise
+                        // RecyclerView.getChildAt() will always return null
+                        // https://stackoverflow.com/questions/30397460/how-to-know-when-the-recyclerview-has-finished-laying-down-the-items
+                        if (!mInitiated) {
+                            animateCardsIn();
+                        }
 
-                // Make sure to remove the listener to ensure this only gets called once
-                mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mInitiated = true;
-            }
-        });
+                        // Make sure to remove the listener to ensure this only gets called once
+                        mRecyclerView.getViewTreeObserver()
+                                .removeOnGlobalLayoutListener(this);
+                        mInitiated = true;
+                    }
+                });
     }
 
     @Override

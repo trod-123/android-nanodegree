@@ -10,7 +10,8 @@
     android:layout_marginTop="@dimen/vertical_card_margin"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground">
+    android:foreground="?selectableItemBackground"
+    app:cardElevation="@dimen/card_elevation">
 
     <LinearLayout
         android:layout_width="match_parent"
