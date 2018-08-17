@@ -52,5 +52,6 @@
     <string name="try_again">Try again</string>
     <string name="message_empty_article_list">Your articles list is empty.\nTry swiping down to load your articles.</string>
     <string name="shared_prefs">xyz_sp</string>
+    <string name="action_backToTop">Go to beginning</string>
 
 </resources>

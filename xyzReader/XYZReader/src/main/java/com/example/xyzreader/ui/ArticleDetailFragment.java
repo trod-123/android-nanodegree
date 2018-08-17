@@ -96,6 +96,8 @@ public class ArticleDetailFragment extends Fragment implements
     ImageButton mOverflowButton;
     @BindView(R.id.fab_share)
     FloatingActionButton mShareFab;
+    @BindView(R.id.fab_backToTop)
+    FloatingActionButton mTopFab;
 
     // Details views
     @BindView(R.id.detail_photo)
@@ -199,7 +201,7 @@ public class ArticleDetailFragment extends Fragment implements
             // correct transition name, so set the temp to null since we're not showing it
             mPhotoView.setTransitionName("image" + mItemId);
             mTempPhotoView.setTransitionName(null);
-            showFab(true);
+            showShareFab(true);
 
             // No need to modify scrolling for body or appbar if fragment is recreated since
             // Android already does it
@@ -212,7 +214,7 @@ public class ArticleDetailFragment extends Fragment implements
                 mPhotoView.setTransitionName("image" + mItemId);
 
                 // anchor and show the fab in the right place (since this isn't done in xml)
-                showFab(true);
+                showShareFab(true);
 
                 mScrollPosition = getSavedScrollPosition();
                 animateHideAppBar(mScrollPosition != 0);
@@ -229,6 +231,19 @@ public class ArticleDetailFragment extends Fragment implements
             public void onClick(View view) {
                 // Since the detail cursor contains only the article, pass in 0 for position
                 Toolbox.shareArticle(mHostActivity, mCursor, 0, mRootView);
+            }
+        });
+
+        mTopFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mScrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mScrollView.setScrollY(0);
+                        mAppBar.setExpanded(true);
+                    }
+                });
             }
         });
 
@@ -288,7 +303,7 @@ public class ArticleDetailFragment extends Fragment implements
 
         // Hide the fab upon entry. Done here instead of in xml to keep fab showing in other pages
         mShareFab.setVisibility(View.GONE);
-        showFab(false);
+        showShareFab(false);
     }
 
     /**
@@ -303,7 +318,7 @@ public class ArticleDetailFragment extends Fragment implements
         mToolbar.setVisibility(View.VISIBLE);
         mContainerMetaDetails.setVisibility(View.VISIBLE);
 
-        showFab(true);
+        showShareFab(true);
         animateHideAppBar(mScrollPosition != 0);
     }
 
@@ -343,7 +358,7 @@ public class ArticleDetailFragment extends Fragment implements
 //        mTempPhotoView.setImageDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // TODO: This doesn't seem to work...
-        //showFab(false);
+        //showShareFab(false);
     }
 
     /**
@@ -431,7 +446,7 @@ public class ArticleDetailFragment extends Fragment implements
     // Not possible to hide fab in xml while using anchor, so we're doing it here
     // https://stackoverflow.com/questions/36540951/any-way-to-hide-fabfloating-action-button-via-xml
     // https://stackoverflow.com/questions/31269958/floatingactionbutton-doesnt-hide
-    public void showFab(boolean show) {
+    public void showShareFab(boolean show) {
         // Setting fab layout anchor at runtime
         // https://stackoverflow.com/questions/31596589/set-layout-anchor-at-runtime-on-floatingactionbutton
         CoordinatorLayout.LayoutParams params =
@@ -615,6 +630,19 @@ public class ArticleDetailFragment extends Fragment implements
         Toolbox.showView(mTv_toolbarTitle, show, false);
         Toolbox.showView(mOverflowButton, show, true);
         mAppBarShowing = show;
+
+        showUpFab(show);
+    }
+
+    /**
+     * Quick helper for showing and hiding the up fab
+     *
+     * @param show
+     */
+    private void showUpFab(boolean show) {
+        if (show)
+            mTopFab.show();
+        else mTopFab.hide();
     }
 
     /**
