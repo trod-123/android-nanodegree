@@ -1,8 +1,8 @@
 # XYZ Reader
 <em>(Last updated: August 17, 2018)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_list-phone-portrait-prepost.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-phone-portrait-prepost.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-tablet-landscape-prepost.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-prepost-collection.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-tablet-landscape-prepost-collection.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-collection.png"/>
 <br>
 <a href="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/video_xyz_animations-phone_compressed.mp4">Video showing animations, transitions, and features</a>
 </p>
