@@ -34,7 +34,7 @@ Enjoy!
 
 ### Popular Movies
 <em>(Last updated: November 9, 2015)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_movies-tablet-portrait.png"/><br>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_movies_collection.png"/><br>
 The first app for Android with functionality that I've made, demonstrating many firsts, but most prominently my first interaction with open database API's and handling JSON data. This app provides users with current and up-to-date movie information as provided by The Movie Database (TMDB). This also includes links to trailers and reviews posted on the TMDB website. Users can display and sort movies according to popularity, ratings, recency, and upcoming. The app also enables users to favorite a movie and add it to their own favorites list for later display. Users can also share movies with their friends via text-message or e-mail. There is also offline functionality, leveraged through use of content providers, letting users access movie information already downloaded onto their device, even when their device has no network connection. <em>Popular Movies</em> also takes advantage of Android's concept of <em>Responsive Design</em> by providing different user interface layouts for different device sizes such as phones and tablets. For example, for tablets, a well-known 2 column master-detail layout is used, displaying the list of movies on the left column, and movie details on the right.
 <ul>
 	<li>Intents</li>
@@ -54,8 +54,8 @@ The first app for Android with functionality that I've made, demonstrating many 
 
 ### Football Scores
 <em>(Last updated: January 12, 2016)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_footballscores-tablet-portrait.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books-phone-portrait.png"/><br>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_footballscores_collection.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_footballscores_widget-phone-portrait.png"/><br>
 The "Super Duo" assignment involves taking two, already-built apps and turning them from a functional to a production-ready state. <em>Football Scores</em> takes information hosted from http://football-data.org, an open database API created and maintained by Daniel Freitag, and provides users of up-to-date schedules and scores of European soccer games for each day. In the app, dates are currently limited to the current day, two days prior, and two days after, for a total of 5 days. Like <em>Popular Movies</em>, users can also share game information with their friends through messaging. Along with providing accessibility features such as content descriptions and RTL functionality, this app also demonstrates one of my first attempts at adhering to Google's <em>Material Design</em> practices. For navigation, this app displays my first exposure to working with tabs.
 <ul>
 	<li>Integration points and error case handling</li>
@@ -70,7 +70,7 @@ The "Super Duo" assignment involves taking two, already-built apps and turning t
 
 ### Alexandria (Books)
 <em>(Last updated: January 12, 2016)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books-tablet-landscape.png"/><br>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_books_collection.png"/><br>
 Also a part of the "Super Duo" assignment, <em>Alexandria</em> interacts with the Google Books API to provide users an opportunity to search for books information and save them into their own local library. To facilitate looking up information, this app also provides barcode scanning functionality so that users can easily scan the ISBN barcodes of their books to look up more information about their books. While <em>Football Scores</em> demonstrates my first use of tabs in an app, <em>Alexandria</em> uses a Navigation Drawer layout. This app also attempts to conform to <em>Material Design</em> standards.
 <ul>
 	<li>Navigation drawer layouts</li>
@@ -99,9 +99,9 @@ While <em>Baking</em> was a refresher exercise for myself to bring a functional 
 
 ### XYZ Reader
 <em>(Last updated: August 17, 2018)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_list-phone-portrait-prepost.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-phone-portrait-prepost.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-tablet-landscape-prepost.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-prepost-collection.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-tablet-landscape-prepost-collection.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-collection.png"/>
 <br>
 <a href="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/video_xyz_animations-phone_compressed.mp4">Video showing animations, transitions, and features</a>
 </p>
