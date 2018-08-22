@@ -1,8 +1,16 @@
 # Android Developer Nanodegree Projects
-I am Teddy Rodriguez, a Grow With Google scholarship recipient in Udacity's android Nanodegree program. Below showcases the projects I completed in the program, along with the wide range of skills I learned.
+I am Teddy Rodriguez, a Grow With Google scholarship recipient in Udacity's Android Nanodegree program based in the Los Angeles area. Below showcases the projects I completed in the program, along with the wide range of skills I learned.
 
-I've originally started the Nanodegree back in 2015, but stopped midway through after beginning a career in Market Research. After I got accepted in the scholarship program in January 2018, I resumed work on these projects to push for a career change as an Android developer.
+I've originally started the Nanodegree back in 2015, but stopped midway after entering a career in Market Research. After I got accepted into the scholarship program in January 2018, I resumed work on these projects to push for a career change as an Android developer.
 
+I would like to complete my career transition by continuing to develop as a profession. If you're reading this and recruiting, I would love to offer my help and expertise to create Android apps that would help grow your company and satisfy your clients. Even though I'm in Los Angeles, I am open to relocating if need be so I can hone my skills. So let's chat! You can reach me via e-mail at cia.123trod@gmail.com
+
+Thanks for looking through!
+
+Teddy
+</p>
+
+### Contents
 This repository currently contains:
 <ul>
 	<li>Movies: An informational app that pulls movie information from an open database API</li>
@@ -11,13 +19,15 @@ This repository currently contains:
 <!-- 		<li>Jokes: Integrates a Java library and Google Cloud Endpoints to provide jokes to the user</li>
 -->		<li>Baking: A small app that displays simple recipes and step-by-step videos</li>
 <li>XYZ Reader: An app that I transformed to utilize Google's Material Design specification</li>
+<li><em>Coming soon: Nanodegree Capstone Project</em></li>
 </ul>
-
-## A little about myself
-I graduated from the University of California, Santa Barbara with highest honors in June of 2014, holding a Bachelor of Arts degree in Psychology and Music and a minor in Applied Psychology. I learned to program following my graduation with Javascript as I tried to create an interactive spreadsheet in Google Sheets for my fraternity, and I really got into it. Later in the same year, I discovered Udacity, and I had my first, formalized introduction to Computer Science while learning basics of programming with Python. Afterwards, I learned Java with Udacity's Introduction to Java Programming course beginning of the following year, and finally decided to join the August 2015 Android Nanodegre cohort so that I can continue practicing and developing my programming skills by making apps for my favorite mobile platform! I am truly excited to learn about programming and see what cool stuff I come up with!
 
 ## About the apps
 Information about each app is inclued below, with long descriptions each followed by non-exhaustive lists of what I have used and learned. For sake of space, succeeding lists build upon elements of previous lists.
+
+I hope you find something interesting here and there within the weeds below. Feel free to open up the code and run an app on your device if you need a closer look.
+
+Enjoy!
 <p/>
 
 ### Popular Movies
@@ -102,6 +112,7 @@ While <em>Baking</em> was a refresher exercise for myself to bring a functional 
 	<li>Using the Android Transitions and Animations framework for traversing fragments</li>
 	<li>Parsing large amounts of text to make it readable without the additional spacing and line breaks provided in the source data</li>
 </ul>
+</p>
 
 
 ## Extra information
@@ -112,3 +123,16 @@ For security reasons, API keys used in these projects have been removed from pub
 	<li><em>Football Scores</em>: All information fetched from <a href="http://football-data.org">http://football-data.org</a>, maintained by Daniel Freitag. In the project, name the string "api_key".</li>
 	<li><em>Alexandria</em>: All information and pictures fetched from <a href="https://developers.google.com/books/?hl=en">Google Books's API</a>. In the project, name the string "API_KEY".</li>
 </ul>
+</p>
+
+
+## A little about myself
+Having explained my work so far, I'll give some more details on where I come from.
+
+I graduated from the University of California, Santa Barbara with highest honors in June of 2014, holding a Bachelor of Arts degree in Psychology and Music and a minor in Applied Psychology. I started programming after graduation with Javascript as I tried to create an interactive Google spreadsheet for my fraternity, and I really got into it. 
+
+Later in the same year, I discovered Udacity and had my first, formalized introduction to Computer Science while learning basics of programming with Python. Afterwards, I learned Java with Udacity's Introduction to Java Programming course beginning of the following year, and finally decided to join the August 2015 Android Nanodegre cohort so that I can continue practicing and developing my programming skills by making apps for my favorite mobile platform! 
+
+Unfortunately I had to drop out of the nanodegree midway through in March 2016 as I entered my first job as a Market Researcher. I wanted to spend my time with the new job. However, after experiencing the industry for a little more than 2 years, while getting some opportunities to code in the company here and there, I decided to get back with coding and work on my porfolio since I thought it was fun and I missed it. Receiving Udacity's and Google's Android Nanodegree scholarship in 2018 was the perfect timing for me to return to tech.
+
+I like building things that help people, and I like challenging myself with problems along the way. There are still a lot more that I need to learn, and I'm embracing that fact with open arms. We'll see what comes next!
