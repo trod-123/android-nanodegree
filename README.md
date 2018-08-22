@@ -10,7 +10,7 @@ Thanks for looking through!
 Teddy
 </p>
 
-### Contents
+## Contents
 This repository currently contains:
 <ul>
 	<li>Movies: An informational app that pulls movie information from an open database API</li>
