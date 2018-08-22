@@ -1,5 +1,5 @@
 # Android Developer Nanodegree Projects
-I am Teddy Rodriguez, a Grow With Google scholarship recipient in Udacity's Android Nanodegree program based in the Los Angeles area. Below showcases the projects I completed in the program, along with the wide range of skills I learned.
+I am Teddy Rodriguez, a Grow With Google scholarship recipient in Udacity's Android Nanodegree program based in the Los Angeles area. Welcome to my little corner! Below showcases the projects I completed in the program, along with the wide range of skills I learned.
 
 I've originally started the Nanodegree back in 2015, but stopped midway after entering a career in Market Research. After I got accepted into the scholarship program in January 2018, I resumed work on these projects to push for a career change as an Android developer.
 
