@@ -27,6 +27,8 @@ Information about each app is inclued below, with long descriptions each followe
 
 I hope you find something interesting here and there within the weeds below. Feel free to open up the code and run an app on your device if you need a closer look.
 
+You can find more screenshots <a href="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/">here</a>.
+
 Enjoy!
 <p/>
 
@@ -97,8 +99,9 @@ While <em>Baking</em> was a refresher exercise for myself to bring a functional 
 
 ### XYZ Reader
 <em>(Last updated: August 17, 2018)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_list-phone-portrait.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-tablet-landscape.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_list-phone-portrait-prepost.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-phone-portrait-prepost.png"/>
+<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz_detail-tablet-landscape-prepost.png"/>
 <br>
 <a href="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/video_xyz_animations-phone_compressed.mp4">Video showing animations, transitions, and features</a>
 </p>
