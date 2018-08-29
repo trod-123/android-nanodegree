@@ -117,6 +117,10 @@ While <em>Baking</em> was a refresher exercise for myself to bring a functional 
 </ul>
 </p>
 
+### Coming soon: Nanodegree Capstone Project
+Stay tuned!
+</p>
+
 
 ## Extra information
 ### API keys
