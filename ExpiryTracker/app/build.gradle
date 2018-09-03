@@ -1,0 +1,123 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.zn.expirytracker"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+    flavorDimensions "version"
+    productFlavors {
+        free {
+            dimension "version"
+            applicationIdSuffix ".free"
+            versionNameSuffix "-free"
+        }
+        paid {
+            dimension "version"
+            applicationIdSuffix ".paid"
+            versionNameSuffix "-paid"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Multidex (for API less than 21)
+    implementation "com.android.support:multidex:$multidexVersion"
+
+    // Support libraries
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+
+    // Testing
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
+    androidTestImplementation "com.android.support.test:rules:$supportTestVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$espressoVersion"
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
+    testImplementation "android.arch.core:core-testing:$lifecycleVersion"
+
+    // Room
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$roomVersion"
+    testImplementation "android.arch.persistence.room:testing:$roomVersion"
+
+    // Paging
+    implementation "android.arch.paging:runtime:$pagingVersion"
+    testImplementation "android.arch.paging:common:$pagingVersion"
+
+    // Firebase Realtime Database
+    implementation "com.google.firebase:firebase-database:$firebaseRealtimeDbVersion"
+
+    // Firebase Cloud Firestore
+    implementation "com.google.firebase:firebase-firestore:$firebaseCloudFirestoreVersion"
+
+    // Firebase Authentication
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
+
+    // Firebase x Google AdMob
+    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
+
+    // Firebase ML Kit
+    implementation "com.google.firebase:firebase-ml-vision:$firebaseMlKitVersion"
+
+    // Firebase Job Dispatcher
+    implementation "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
+
+    // Google Sign-in
+    implementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$moshiVersion"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+
+    // ButterKnife
+    implementation "com.jakewharton:butterknife:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
+    // Leak Canary
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
+    releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
+    debugImplementation "com.squareup.leakcanary:leakcanary-support-fragment:$leakCanaryVersion"
+
+    // MP Android Chart
+    implementation "com.github.PhilJay:MPAndroidChart:$mpAndroidChartVersion"
+
+    // Page Indicator View
+    implementation "com.romandanylyk:pageindicatorview:$pageIndicatorViewVersion"
+
+    // Rapid Floating Action Button
+    implementation "com.github.wangjiegulu:rfab:$rapidFabVersion"
+
+    // Discrete ScrollView
+    implementation "com.yarolegovich:discrete-scrollview:$discreteScrollViewVersion"
+}
