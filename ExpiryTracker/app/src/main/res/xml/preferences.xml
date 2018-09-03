@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_notifications_title">
+        <SwitchPreference
+            android:key="@string/pref_notifications_receive_key"
+            android:title="@string/pref_notifications_title"
+            android:summary="@string/pref_notifications_receive_summary"
+            android:defaultValue="@bool/pref_notifications_receive_default"/>
+        <MultiSelectListPreference
+            android:key="@string/pref_notifications_days_key"
+            android:title="@string/pref_notifications_days_label"
+            android:summary="@string/pref_notifications_days_summary"
+            android:entries="@array/pref_notifications_days_entries"
+            android:entryValues="@array/pref_notifications_days_values"
+            android:positiveButtonText="@string/button_ok_label"
+            android:negativeButtonText="@string/button_cancel_label"
+            android:defaultValue="@array/pref_notifications_days_values"/>
+        <ListPreference
+            android:key="@string/pref_notifications_tod_key"
+            android:title="@string/pref_notifications_tod_label"
+            android:summary="@string/pref_notifications_tod_summary"
+            android:entries="@array/pref_notifications_tod_entries"
+            android:entryValues="@array/pref_notifications_tod_values"
+            android:defaultValue="@string/pref_notifications_tod_default"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_widget_title">
+        <ListPreference
+            android:key="@string/pref_widget_num_days_key"
+            android:title="@string/pref_widget_num_days_label"
+            android:entries="@array/pref_widget_num_days_entries"
+            android:entryValues="@array/pref_widget_num_days_values"
+            android:defaultValue="@string/pref_widget_num_days_default"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_capture_title">
+        <SwitchPreference
+            android:key="@string/pref_capture_beep_key"
+            android:title="@string/pref_capture_beep_label"
+            android:defaultValue="@bool/pref_capture_beep_default"/>
+        <SwitchPreference
+            android:key="@string/pref_capture_vibrate_key"
+            android:title="@string/pref_capture_vibrate_label"
+            android:defaultValue="@bool/pref_capture_vibrate_default"/>
+        <SwitchPreference
+            android:key="@string/pref_capture_voice_input_key"
+            android:title="@string/pref_capture_voice_input_label"
+            android:summary="@string/pref_capture_voice_input_summary"
+            android:defaultValue="@bool/pref_capture_voice_input_default"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_account_title">
+        <EditTextPreference
+            android:key="@string/pref_account_display_name_key"
+            android:title="@string/pref_account_display_name_label"
+            android:summary="@string/pref_account_display_name_summary"
+            android:inputType="textCapSentences"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"/>
+        <!-- For adding buttons to preferences, need to handle in Java. See here: https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen -->
+        <Preference
+            android:key="@string/pref_account_sign_in_key"
+            android:title="@string/pref_account_sign_in_label"/>
+        <Preference
+            android:key="@string/pref_account_sign_out_key"
+            android:title="@string/pref_account_sign_out_label"/>
+        <Preference
+            android:key="@string/pref_account_sync_key"
+            android:title="@string/pref_account_sync_label"
+            android:summary="@string/pref_account_sync_summary"/>
+        <Preference
+            android:key="@string/pref_account_wipe_data_key"
+            android:title="@string/pref_account_wipe_data_label"
+            android:summary="@string/pref_account_wipe_data_summary"/>
+        <Preference
+            android:key="@string/pref_account_delete_key"
+            android:title="@string/pref_account_delete_label"
+            android:summary="@string/pref_account_delete_summary"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

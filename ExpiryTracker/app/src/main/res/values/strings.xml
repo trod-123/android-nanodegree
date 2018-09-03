@@ -1,3 +1,8 @@
+<!DOCTYPE resources [<!ENTITY appname "Expiry Tracker">]>
+
 <resources>
-    <string name="app_name">ExpiryTracker</string>
+    <string name="app_name" translatable="false">&appname;</string>
+
+    <string name="button_ok_label">OK</string>
+    <string name="button_cancel_label">Cancel</string>
 </resources>

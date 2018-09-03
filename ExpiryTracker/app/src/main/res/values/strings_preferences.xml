@@ -1,0 +1,152 @@
+<!DOCTYPE resources [<!ENTITY appname "@string/app_name">]>
+
+<resources>
+
+    <!-- region Notifications -->
+
+    <string name="pref_notifications_title">Notifications</string>
+
+    <!-- Receiving notifications -->
+    <string name="pref_notifications_receive_key" translatable="false">Receive reminder notifications</string>
+    <string name="pref_notifications_receive_label">Show reminder notifications</string>
+    <string name="pref_notifications_receive_summary">Get notified when your food is close to expiring!</string>
+
+    <!-- When to receive notifications -->
+    <string name="pref_notifications_days_key" translatable="false">Notification days</string>
+    <string name="pref_notifications_days_label">When to show notifications</string>
+    <string name="pref_notifications_days_summary">How many days before your foods expire do you want to be reminded?</string>
+    <string name="pref_notifications_days_entries_0">Day of when foods expire</string>
+    <string name="pref_notifications_days_entries_1">1 day before foods expire</string>
+    <string name="pref_notifications_days_entries_2">2 days before foods expire</string>
+    <string name="pref_notifications_days_entries_3">3 days before foods expire</string>
+    <string-array name="pref_notifications_days_entries">
+        <item>@string/pref_notifications_days_entries_0</item>
+        <item>@string/pref_notifications_days_entries_1</item>
+        <item>@string/pref_notifications_days_entries_2</item>
+        <item>@string/pref_notifications_days_entries_3</item>
+    </string-array>
+    <string-array name="pref_notifications_days_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <!-- Time of day to receive notifications -->
+    <string name="pref_notifications_tod_key" translatable="false">Notification time of day</string>
+    <string name="pref_notifications_tod_label">Time of day to get notified</string>
+    <string name="pref_notifications_tod_summary">When during the day do you want to be reminded?</string>
+    <string name="pref_notifications_tod_entries_0">Morning</string>
+    <string name="pref_notifications_tod_entries_1">Afternoon</string>
+    <string name="pref_notifications_tod_entries_2">Evening</string>
+    <string name="pref_notifications_tod_entries_3">Overnight</string>
+    <string-array name="pref_notifications_tod_entries">
+        <item>@string/pref_notifications_tod_entries_0</item>
+        <item>@string/pref_notifications_tod_entries_1</item>
+        <item>@string/pref_notifications_tod_entries_2</item>
+        <item>@string/pref_notifications_tod_entries_3</item>
+    </string-array>
+    <string-array name="pref_notifications_tod_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string name="pref_notifications_tod_default">0</string>
+
+    <!-- endregion -->
+
+    <!-- region Widget -->
+
+    <string name="pref_widget_title">Widgets</string>
+
+    <!-- Food to show based on number of days until expiry date -->
+    <string name="pref_widget_num_days_key" translatable="false">Number of days</string>
+    <string name="pref_widget_num_days_label">Food to show based on number of days before expiry date</string>
+    <string name="pref_widget_num_days_entries_0">Show only foods expiring on the day of</string>
+    <string name="pref_widget_num_days_entries_1">At most 1 day before</string>
+    <string name="pref_widget_num_days_entries_2">At most 2 days before</string>
+    <string name="pref_widget_num_days_entries_3">At most 3 days before</string>
+    <string name="pref_widget_num_days_entries_4">At most 4 days before</string>
+    <string name="pref_widget_num_days_entries_5">At most 5 days before</string>
+    <string name="pref_widget_num_days_entries_6">At most 6 days before</string>
+    <string name="pref_widget_num_days_entries_7">At most 1 week before</string>
+    <string-array name="pref_widget_num_days_entries">
+        <item>@string/pref_widget_num_days_entries_0</item>
+        <item>@string/pref_widget_num_days_entries_1</item>
+        <item>@string/pref_widget_num_days_entries_2</item>
+        <item>@string/pref_widget_num_days_entries_3</item>
+        <item>@string/pref_widget_num_days_entries_4</item>
+        <item>@string/pref_widget_num_days_entries_5</item>
+        <item>@string/pref_widget_num_days_entries_6</item>
+        <item>@string/pref_widget_num_days_entries_7</item>
+    </string-array>
+    <string-array name="pref_widget_num_days_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+    <string name="pref_widget_num_days_default">3</string>
+
+    <!-- endregion -->
+
+    <!-- region Capture -->
+
+    <string name="pref_capture_title">Capturing items</string>
+
+    <string name="pref_capture_header">When an image is captured&#8230;</string>
+
+    <!-- Beep -->
+    <string name="pref_capture_beep_key" translatable="false">Beep default</string>
+    <string name="pref_capture_beep_label">Beep (on by default)</string>
+
+    <!-- Vibrate -->
+    <string name="pref_capture_vibrate_key" translatable="false">Vibrate default</string>
+    <string name="pref_capture_vibrate_label">Vibrate (on by default)</string>
+
+    <!-- Voice input -->
+    <string name="pref_capture_voice_input_key" translatable="false">Voice input default</string>
+    <string name="pref_capture_voice_input_label">Enable voice input for item details</string>
+    <string name="pref_capture_voice_input_summary">Save time from typing by speaking directly to your Food Assistant (on by default)</string>
+
+    <!-- endregion -->
+
+    <!-- region Account -->
+
+    <string name="pref_account_title">Account</string>
+
+    <!-- Display name -->
+    <string name="pref_account_display_name_key" translatable="false">Display name</string>
+    <string name="pref_account_display_name_label">Display name</string>
+    <string name="pref_account_display_name_summary">Set a name so your Food Assistant can address you properly! Only available after making an account</string>
+
+    <!-- Sign-in/out button -->
+    <string name="pref_account_sign_in_key" translatable="false">Sign in button</string>
+    <string name="pref_account_sign_in_label">Sign in</string>
+
+    <string name="pref_account_sign_out_key" translatable="false">Sign out button</string>
+    <string name="pref_account_sign_out_label">Sign out</string>
+
+    <!-- Manual sync -->
+    <string name="pref_account_sync_key" translatable="false">Manual sync button</string>
+    <string name="pref_account_sync_label">Sync data with the cloud</string>
+    <string name="pref_account_sync_summary">&appname; keeps your data synced in the background. Click here to manually sync your data on your device with your data on the cloud</string>
+
+    <!-- Wipe device data -->
+    <string name="pref_account_wipe_data_key" translatable="false">Delete device data button</string>
+    <string name="pref_account_wipe_data_label">Wipe all &appname; data on device</string>
+    <string name="pref_account_wipe_data_summary">Delete all your food items stored on this device. This will not delete your data stored in the cloud</string>
+
+    <!-- Delete account -->
+    <string name="pref_account_delete_key" translatable="false">Delete account button</string>
+    <string name="pref_account_delete_label">Delete &appname; account</string>
+    <string name="pref_account_delete_summary">Delete your account and all &appname; data on this device and in the cloud. Warning: This action can not be undone!</string>
+
+    <!-- endregion -->
+
+</resources>
