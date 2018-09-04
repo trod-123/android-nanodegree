@@ -104,6 +104,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         boolean hasAccount = mPreferenceAccountSignOut.isVisible();
         mPreferenceAccountSync.setVisible(hasAccount);
         mPreferenceAccountDelete.setVisible(hasAccount);
+        // TODO: Scroll automatically to the newly visible settings
     }
 
     /**
@@ -116,6 +117,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // TODO: Launch the Sign-In activity here
+                AuthToolbox.signIn(true);
+                showAccountSettings(AuthToolbox.checkIfSignedIn());
                 return false;
             }
         });
@@ -123,6 +126,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // TODO: Sign out the user here
+                AuthToolbox.signIn(false);
+                showAccountSettings(AuthToolbox.checkIfSignedIn());
                 return false;
             }
         });
