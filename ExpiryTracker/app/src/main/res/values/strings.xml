@@ -1,9 +1,145 @@
 <!DOCTYPE resources [<!ENTITY appname "Expiry Tracker">]>
 
 <resources>
+
+    <!-- region App and screen names -->
+
     <string name="app_name" translatable="false">&appname;</string>
-    <string name="name_activity_settings">Settings</string>
+    <string name="activity_settings_name">Settings</string>
+    <string name="fragment_at_a_glance_name">At a glance</string>
+    <string name="fragment_food_list_name">Foods</string>
+    <string name="activity_details_name">Details</string>
+    <string name="activity_edit_item_name">Edit</string>
+
+    <!-- endregion -->
+
+    <!-- region Actions -->
+
+    <string name="action_search">Search</string>
+    <string name="action_settings">@string/activity_settings_name</string>
+    <string name="action_add_item">Add food item</string>
+    <string name="action_add_item_camera">Camera</string>
+    <string name="action_add_item_image">Image</string>
+    <string name="action_add_item_text">Text</string>
+    <string name="action_save">Save</string>
+
+    <!-- endregion -->
 
     <string name="button_ok_label">OK</string>
     <string name="button_cancel_label">Cancel</string>
+
+    <!-- region Greetings and Days of week -->
+
+    <string name="greeting_generic_1a">Hello</string>
+    <string name="greeting_generic_1b">Hello there</string>
+    <string name="greeting_generic_2a">Hi</string>
+    <string name="greeting_generic_2b">Hi there</string>
+    <string name="greeting_generic_3a">Hey</string>
+    <string name="greeting_generic_3b">Hey there</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_day">Good day</string>
+    <string name="greeting_evening">Good evening</string>
+    <string-array name="greeting_generic">
+        <item>@string/greeting_generic_1a</item>
+        <item>@string/greeting_generic_1b</item>
+        <item>@string/greeting_generic_2a</item>
+        <item>@string/greeting_generic_2b</item>
+        <item>@string/greeting_generic_3a</item>
+        <item>@string/greeting_generic_3b</item>
+    </string-array>
+    <string name="days_of_week_0">Sunday</string>
+    <string name="days_of_week_1">Monday</string>
+    <string name="days_of_week_2">Tuesday</string>
+    <string name="days_of_week_3">Wednesday</string>
+    <string name="days_of_week_4">Thursday</string>
+    <string name="days_of_week_5">Friday</string>
+    <string name="days_of_week_6">Saturday</string>
+    <string-array name="days_of_week">
+        <item>@string/days_of_week_0</item>
+        <item>@string/days_of_week_1</item>
+        <item>@string/days_of_week_2</item>
+        <item>@string/days_of_week_3</item>
+        <item>@string/days_of_week_4</item>
+        <item>@string/days_of_week_5</item>
+        <item>@string/days_of_week_6</item>
+    </string-array>
+
+    <!-- endregion -->
+
+    <!-- region At a glance -->
+
+    <string name="at_a_glance_bar_chart_label">Dates bar chart</string>
+    <string name="at_a_glance_bar_chart_empty">No expiring foods during this time</string>
+    <string name="at_a_glance_date_range_label">Set date range</string>
+
+    <string name="at_a_glance_complete_greeting">%1$s, %2$s!</string>
+    <string name="at_a_glance_summary">You have %1$d foods expiring %2$s</string>
+    <string name="at_a_glance_summary_postfix">, with %1$d foods expiring today!</string>
+    <string name="at_a_glance_summary_empty">You have no foods expiring soon</string>
+    <string name="at_a_glance_list_header">Foods expiring %1$s:</string>
+
+    <!-- Date range -->
+    <string name="at_a_glance_date_range_values_0">This week</string>
+    <string name="at_a_glance_date_range_values_1">Next 2 weeks</string>
+    <string name="at_a_glance_date_range_values_2">This month</string>
+    <string-array name="at_a_glance_date_range_values">
+        <item>@string/at_a_glance_date_range_values_0</item>
+        <item>@string/at_a_glance_date_range_values_1</item>
+        <item>@string/at_a_glance_date_range_values_2</item>
+    </string-array>
+    <string name="at_a_glance_summary_date_range_0">this week</string>
+    <string name="at_a_glance_summary_date_range_1">in the next 2 weeks</string>
+    <string name="at_a_glance_summary_date_range_2">this month</string>
+    <string-array name="at_a_glance_summary_date_ranges">
+        <item>@string/at_a_glance_summary_date_range_0</item>
+        <item>@string/at_a_glance_summary_date_range_1</item>
+        <item>@string/at_a_glance_summary_date_range_2</item>
+    </string-array>
+
+    <!-- endregion -->
+
+    <string name="expiry_msg_today">Expires today!</string>
+    <string name="expiry_msg_tomorrow">Expires tomorrow!</string>
+    <string name="expiry_msg_soon">Expires soon on %1$s</string>
+    <string name="expiry_msg_next_week">Expires on %1$s next week</string>
+    <string name="expiry_msg_ordinal">Expires on the %1$s</string>
+    <string name="expiry_msg_month_day">Expires on %1$s</string>
+
+    <string name="list_empty">You have no foods expiring soon!\n\nAdd one by pressing the + icon below</string>
+    <string name="list_registered_header">%1$s foods registered</string>
+    <string name="food_name_label" translatable="false">Food name</string>
+    <string name="food_name_none">Undefined food name</string>
+    <string name="food_expiry_date_label" translatable="false">Expiry date</string>
+    <string name="food_expiry_date_none">Undefined expiry date</string>
+    <string name="food_good_thru_date_label" translatable="false">Good thru date</string>
+    <string name="food_days_label_singular">%1$d day</string>
+    <string name="food_days_label_plural">%1$d days</string>
+    <plurals name="food_days_label">
+        <item quantity="one">@string/food_days_label_singular</item>
+        <item quantity="other">@string/food_days_label_plural</item>
+    </plurals>
+    <string name="food_storage_location_label">Stored in</string>
+    <string name="food_count_label">Count</string>
+    <string name="food_count">Count: %1$d</string>
+    <string name="food_description_label">Description</string>
+    <string name="food_other_info_label">Other info</string>
+    <string name="food_brand_label">Brand</string>
+    <string name="food_size_label">Size</string>
+    <string name="food_weight_label">Weight</string>
+    <string name="food_notes_label">Notes</string>
+    <string name="food_meta_data_label">Meta-data</string>
+    <string name="food_barcode_label">Barcode</string>
+    <string name="food_tags_label">Tags</string>
+    <string name="food_capture_label">Capture mode</string>
+    <string name="food_capture_barcode_label">Barcode</string>
+    <string name="food_capture_barcode">Scanned by barcode</string>
+    <string name="food_capture_imgrec_label">Image rec</string>
+    <string name="food_capture_imgrec">Extracted by image</string>
+    <string name="food_capture_imgonly_label">Image only</string>
+    <string name="food_capture_imgonly">Photo input</string>
+    <string name="food_capture_textonly_label">Text only</string>
+    <string name="food_capture_textonly">Input by text only</string>
+    <string name="data_attribution_upcitemdb">Barcode data provided by upcitemdb</string>
+    <string name="data_attribution_google_imgrec">Image data provided by Google Image Labeling</string>
 </resources>

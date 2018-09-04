@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".settings.SettingsActivity"
-            android:label="@string/name_activity_settings"></activity>
+            android:label="@string/activity_settings_name"></activity>
     </application>
 
 </manifest>
