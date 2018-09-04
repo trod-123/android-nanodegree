@@ -43,10 +43,13 @@ dependencies {
     implementation "com.android.support:multidex:$multidexVersion"
 
     // Support libraries
+    implementation "com.android.support:design:$supportLibVersion"
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "com.android.support:preference-v7:$supportLibVersion"
 
     // Testing
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
     androidTestImplementation "com.android.support.test:rules:$supportTestVersion"
@@ -85,7 +88,7 @@ dependencies {
     implementation "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
 
     // Google Sign-in
-    implementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+    //implementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"

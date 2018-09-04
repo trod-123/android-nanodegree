@@ -16,6 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".settings.SettingsActivity"
+            android:label="@string/name_activity_settings"></activity>
     </application>
 
 </manifest>

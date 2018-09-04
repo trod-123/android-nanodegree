@@ -1,6 +1,8 @@
-<!DOCTYPE resources [<!ENTITY appname "@string/app_name">]>
+<!DOCTYPE resources [<!ENTITY appname "Expiry Tracker">]>
 
 <resources>
+
+    <string name="pref_multi_select_empty">Not set</string>
 
     <!-- region Notifications -->
 
@@ -36,7 +38,7 @@
     <string name="pref_notifications_tod_key" translatable="false">Notification time of day</string>
     <string name="pref_notifications_tod_label">Time of day to get notified</string>
     <string name="pref_notifications_tod_summary">When during the day do you want to be reminded?</string>
-    <string name="pref_notifications_tod_entries_0">Morning</string>
+    <string name="pref_notifications_tod_entries_0">Morning (default)</string>
     <string name="pref_notifications_tod_entries_1">Afternoon</string>
     <string name="pref_notifications_tod_entries_2">Evening</string>
     <string name="pref_notifications_tod_entries_3">Overnight</string>
@@ -62,11 +64,12 @@
 
     <!-- Food to show based on number of days until expiry date -->
     <string name="pref_widget_num_days_key" translatable="false">Number of days</string>
-    <string name="pref_widget_num_days_label">Food to show based on number of days before expiry date</string>
-    <string name="pref_widget_num_days_entries_0">Show only foods expiring on the day of</string>
+    <string name="pref_widget_num_days_label">Show only foods expiring</string>
+    <string name="pref_widget_num_days_summary">Food to show based on number of days before expiry date</string>
+    <string name="pref_widget_num_days_entries_0">On their day of expiration</string>
     <string name="pref_widget_num_days_entries_1">At most 1 day before</string>
     <string name="pref_widget_num_days_entries_2">At most 2 days before</string>
-    <string name="pref_widget_num_days_entries_3">At most 3 days before</string>
+    <string name="pref_widget_num_days_entries_3">At most 3 days before (default)</string>
     <string name="pref_widget_num_days_entries_4">At most 4 days before</string>
     <string name="pref_widget_num_days_entries_5">At most 5 days before</string>
     <string name="pref_widget_num_days_entries_6">At most 6 days before</string>

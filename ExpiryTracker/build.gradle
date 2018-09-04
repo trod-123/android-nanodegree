@@ -8,6 +8,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.google.gms:google-services:3.2.1'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -36,7 +37,7 @@ ext {
     espressoVersion = '3.0.2'
     lifecycleVersion = '1.1.1'
     roomVersion = '1.1.1'
-    pagingVersion = '1.0.0'
+    pagingVersion = '1.0.1'
     firebaseRealtimeDbVersion = '16.0.1'
     firebaseCloudFirestoreVersion = '17.1.0'
     firebaseStorageVersion = '16.0.1'

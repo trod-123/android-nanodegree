@@ -2,6 +2,7 @@
 
 <resources>
     <string name="app_name" translatable="false">&appname;</string>
+    <string name="name_activity_settings">Settings</string>
 
     <string name="button_ok_label">OK</string>
     <string name="button_cancel_label">Cancel</string>
