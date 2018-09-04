@@ -4,4 +4,14 @@
     <color name="colorPrimaryDark">#003d00</color>
     <color name="colorAccent">@color/md_purple_500</color>
     <color name="textColorPrimary">@color/md_blue_grey_800</color>
+
+    <!-- Expiration alerts -->
+    <color name="expires_alert_high">@color/md_red_500</color>
+    <color name="expires_alert_med">@color/md_orange_500</color>
+    <color name="expires_alert_low">@color/md_yellow_500</color>
+    <color name="expires_alert_none">@color/md_blue_grey_900</color>
+
+    <color name="background_list_item_delete">@color/colorPrimaryDark</color>
+    <color name="icon_tint">@color/textColorPrimary</color>
+
 </resources>
