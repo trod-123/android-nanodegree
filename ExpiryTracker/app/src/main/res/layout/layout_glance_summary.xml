@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_at_a_glance_greeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Hello, Teddy!"
+        android:textColor="@color/colorPrimary"
+        android:textSize="28sp" />
+
+    <TextView
+        android:id="@+id/tv_at_a_glance_summary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="You have 13 foods expiring this week, and 3 expiring today!"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/tv_at_a_glance_list_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Foods expiring in the next 7 days:"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="24sp" />
+</LinearLayout>
