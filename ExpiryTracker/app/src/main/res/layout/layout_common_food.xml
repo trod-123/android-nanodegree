@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_item_height"
+    android:padding="@dimen/list_item_padding">
+
+    <include
+        android:id="@+id/list_item_count_days"
+        layout="@layout/layout_number_circle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_list_item_food_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_item_name_padding"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/list_item_count_days"
+        app:layout_constraintTop_toTopOf="@+id/list_item_count_days"
+        tools:text="Lettuce" />
+
+    <TextView
+        android:id="@+id/tv_list_item_expiry_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_list_item_food_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_list_item_food_name"
+        tools:text="Expires today!" />
+
+    <ImageView
+        android:id="@+id/iv_list_item_storage_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_item_icon_padding"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_list_item_food_name"
+        app:layout_constraintStart_toEndOf="@+id/tv_list_item_food_name"
+        app:layout_constraintTop_toTopOf="@+id/tv_list_item_food_name"
+        tools:src="@drawable/ic_fridge_black_24dp"
+        android:tint="@color/icon_tint"/>
+
+    <ImageView
+        android:id="@+id/iv_list_item_image"
+        android:layout_width="@dimen/list_item_image_size"
+        android:layout_height="@dimen/list_item_image_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@color/textColorPrimary" />
+
+</android.support.constraint.ConstraintLayout>
