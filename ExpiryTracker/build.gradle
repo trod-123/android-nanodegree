@@ -56,4 +56,5 @@ ext {
     pageIndicatorViewVersion = '1.0.1'
     rapidFabVersion = '2.0.0'
     discreteScrollViewVersion = '1.4.9'
+    jodatimeVersion = '2.10'
 }

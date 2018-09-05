@@ -102,9 +102,10 @@
     <string name="expiry_msg_today">Expires today!</string>
     <string name="expiry_msg_tomorrow">Expires tomorrow!</string>
     <string name="expiry_msg_soon">Expires soon on %1$s</string>
-    <string name="expiry_msg_next_week">Expires on %1$s next week</string>
+    <string name="expiry_msg_next_dow">Expires next %1$s</string>
     <string name="expiry_msg_ordinal">Expires on the %1$s</string>
-    <string name="expiry_msg_month_day">Expires on %1$s</string>
+    <string name="expiry_msg_month_day">Expires on %1$s %2$d</string>
+    <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
 
     <string name="list_empty">You have no foods expiring soon!\n\nAdd one by pressing the + icon below</string>
     <string name="list_registered_header">%1$s foods registered</string>

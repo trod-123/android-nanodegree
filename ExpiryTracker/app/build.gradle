@@ -126,4 +126,7 @@ dependencies {
 
     // Discrete ScrollView
     implementation "com.yarolegovich:discrete-scrollview:$discreteScrollViewVersion"
+
+    // Joda time
+    implementation "joda-time:joda-time:$jodatimeVersion"
 }
