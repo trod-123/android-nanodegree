@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/chart_header_num_foods"
+        android:id="@+id/tv_chart_header_num_foods"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="3 expiring foods"
@@ -17,21 +17,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/chart_header_date"
+        android:id="@+id/tv_chart_header_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Wed, Aug 29"
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/chart_header_num_foods"
-        app:layout_constraintTop_toBottomOf="@+id/chart_header_num_foods"
-        android:text="Wed, Aug 29" />
+        app:layout_constraintStart_toStartOf="@+id/tv_chart_header_num_foods"
+        app:layout_constraintTop_toBottomOf="@+id/tv_chart_header_num_foods" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart_at_a_glance"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fab_chart_date_range" />
@@ -43,16 +43,17 @@
         android:layout_height="30dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/button_sq_rect"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/chart_at_a_glance"
-        app:layout_constraintTop_toBottomOf="@+id/chart_header_date"
         android:clickable="true"
+        android:elevation="@dimen/fab_elevation_rest"
         android:focusable="true"
         android:foreground="?selectableItemBackground"
-        android:elevation="@dimen/fab_elevation_rest"
-        android:stateListAnimator="@animator/fab_elevation">
+        android:orientation="horizontal"
+        android:stateListAnimator="@animator/fab_elevation"
+        app:layout_constraintEnd_toEndOf="@+id/chart_at_a_glance"
+        app:layout_constraintTop_toBottomOf="@+id/tv_chart_header_date">
 
         <TextView
+            android:id="@+id/tv_fab_chart_date_range"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -60,7 +61,7 @@
             android:text="@string/at_a_glance_date_range_label"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            tools:text="Wed, Aug 23 - Thu, Sep 10" />
+            tools:text="Next 7 days" />
 
         <ImageView
             android:layout_width="wrap_content"

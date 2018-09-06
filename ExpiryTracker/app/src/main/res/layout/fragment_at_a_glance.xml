@@ -22,9 +22,9 @@
             android:layout_margin="16dp" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_food_list"
+            android:id="@+id/rv_glance_food_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/item_food" />
 
     </LinearLayout>

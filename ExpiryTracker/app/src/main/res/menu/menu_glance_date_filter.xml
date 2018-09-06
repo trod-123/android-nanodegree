@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_filter_7_days"
+        android:title="@string/date_weekly_filter_7_days"/>
+    <item
+        android:id="@+id/action_filter_14_days"
+        android:title="@string/date_weekly_filter_14_days"/>
+    <item
+        android:id="@+id/action_filter_21_days"
+        android:title="@string/date_weekly_filter_21_days"/>
+
+</menu>

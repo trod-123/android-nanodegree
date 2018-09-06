@@ -3,6 +3,9 @@ package com.zn.expirytracker.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.PopupMenu;
+import android.view.MenuInflater;
+import android.view.View;
 import android.widget.Toast;
 
 /**
@@ -27,5 +30,18 @@ public class Toolbox {
         }
         mToast = Toast.makeText(context, message, DEFAULT_TOAST_LENGTH);
         mToast.show();
+    }
+
+    /**
+     * General utility method that shows the options menu without needing an action bar
+     * Source: https://stackoverflow.com/questions/30417223/how-to-add-menu-button-without-action-bar
+     */
+    public static void showMenuPopup(Context context, View view, int menuResId,
+                                     PopupMenu.OnMenuItemClickListener listener) {
+        PopupMenu popup = new PopupMenu(context, view);
+        popup.setOnMenuItemClickListener(listener);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(menuResId, popup.getMenu());
+        popup.show();
     }
 }

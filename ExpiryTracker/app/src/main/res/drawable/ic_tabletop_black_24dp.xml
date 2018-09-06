@@ -6,8 +6,7 @@
     <path
         android:fillColor="#000"
         android:pathData="
-        M3,5 H21 V3 H3
-        M19,13 H21 V3 H19
-        M3,13 H5 V3 H3
-        Z" />
+        M3,10 V8 H21 V10
+        M3,8 H5 V16 H3
+        M19,8 H21 V16 H19" />
 </vector>

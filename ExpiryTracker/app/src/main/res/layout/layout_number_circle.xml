@@ -9,7 +9,7 @@
         android:id="@+id/iv_number_circle_rim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/number_circle" />
+        android:background="@drawable/number_circle" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

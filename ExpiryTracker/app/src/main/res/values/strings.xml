@@ -11,6 +11,8 @@
     <string name="activity_details_name">Details</string>
     <string name="activity_edit_item_name">Edit</string>
 
+    <string name="undefined_generic">Undefined</string>
+
     <!-- endregion -->
 
     <!-- region Actions -->
@@ -25,11 +27,22 @@
 
     <!-- endregion -->
 
-    <string name="button_ok_label">OK</string>
-    <string name="button_cancel_label">Cancel</string>
+    <!-- region At a glance -->
 
-    <!-- region Greetings and Days of week -->
+    <!-- Bar chart -->
+    <string name="at_a_glance_bar_chart_label">Dates bar chart</string>
+    <string name="at_a_glance_bar_chart_empty">No expiring foods during this time</string>
+    <string name="at_a_glance_date_range_label">Set date range</string>
+    <string name="at_a_glance_bar_chart_header_count_none">No foods expiring %2$s</string>
+    <string name="at_a_glance_bar_chart_header_count_one">1 food expiring %2$s</string>
+    <string name="at_a_glance_bar_chart_header_count_many">%1$s foods expiring %2$s</string>
+    <plurals name="at_a_glance_bar_chart_header_count">
+        <item quantity="zero">@string/at_a_glance_bar_chart_header_count_none</item>
+        <item quantity="one">@string/at_a_glance_bar_chart_header_count_one</item>
+        <item quantity="other">@string/at_a_glance_bar_chart_header_count_many</item>
+    </plurals>
 
+    <!-- Greeting and Summary -->
     <string name="greeting_generic_1a">Hello</string>
     <string name="greeting_generic_1b">Hello there</string>
     <string name="greeting_generic_2a">Hi</string>
@@ -48,57 +61,50 @@
         <item>@string/greeting_generic_3a</item>
         <item>@string/greeting_generic_3b</item>
     </string-array>
-    <string name="days_of_week_0">Sunday</string>
-    <string name="days_of_week_1">Monday</string>
-    <string name="days_of_week_2">Tuesday</string>
-    <string name="days_of_week_3">Wednesday</string>
-    <string name="days_of_week_4">Thursday</string>
-    <string name="days_of_week_5">Friday</string>
-    <string name="days_of_week_6">Saturday</string>
-    <string-array name="days_of_week">
-        <item>@string/days_of_week_0</item>
-        <item>@string/days_of_week_1</item>
-        <item>@string/days_of_week_2</item>
-        <item>@string/days_of_week_3</item>
-        <item>@string/days_of_week_4</item>
-        <item>@string/days_of_week_5</item>
-        <item>@string/days_of_week_6</item>
+    <string-array name="greeting_noon_day">
+        <item>@string/greeting_afternoon</item>
+        <item>@string/greeting_day</item>
     </string-array>
+    <string name="complete_greeting">%1$s, %2$s!</string>
+    <string name="greeting_no_name">%1$s!</string>
+
+    <string name="at_a_glance_summary_none">You have no foods expiring in the %2$s</string>
+    <string name="at_a_glance_summary_one">You have only %1$d food expiring in the %2$s</string>
+    <string name="at_a_glance_summary_many">You have %1$d foods expiring in the %2$s</string>
+    <plurals name="at_a_glance_summary">
+        <item quantity="zero">@string/at_a_glance_summary_none</item>
+        <item quantity="one">@string/at_a_glance_summary_one</item>
+        <item quantity="other">@string/at_a_glance_summary_many</item>
+    </plurals>
+    <string name="at_a_glance_summary_postfix_none">, with no foods expiring %2$s</string>
+    <string name="at_a_glance_summary_postfix_one">, with only 1 food expiring %2$s</string>
+    <string name="at_a_glance_summary_postfix_many">, with %1$d foods expiring %2$s</string>
+    <plurals name="at_a_glance_summary_postfix">
+        <item quantity="zero">@string/at_a_glance_summary_postfix_none</item>
+        <item quantity="one">@string/at_a_glance_summary_postfix_one</item>
+        <item quantity="other">@string/at_a_glance_summary_postfix_many</item>
+    </plurals>
+    <string name="at_a_glance_summary_super_postfix_none">\u0020and no foods expiring %2$s</string>
+    <string name="at_a_glance_summary_super_postfix_one">\u0020and only 1 food expiring %2$s</string>
+    <string name="at_a_glance_summary_super_postfix_many">\u0020and %1$d foods expiring %2$s</string>
+    <plurals name="at_a_glance_summary_super_postfix">
+        <item quantity="zero">@string/at_a_glance_summary_super_postfix_none</item>
+        <item quantity="one">@string/at_a_glance_summary_super_postfix_one</item>
+        <item quantity="other">@string/at_a_glance_summary_super_postfix_many</item>
+    </plurals>
+    <string name="at_a_glance_list_header">Foods expiring in the %1$s:</string>
+
+    <!-- Date range. To be used with WeeklyDateFilter.class  -->
+    <string name="date_weekly_filter_7_days">Next 7 days</string>
+    <string name="date_weekly_filter_14_days">Next 14 days</string>
+    <string name="date_weekly_filter_21_days">Next 21 days</string>
 
     <!-- endregion -->
 
-    <!-- region At a glance -->
+    <string name="button_ok_label">OK</string>
+    <string name="button_cancel_label">Cancel</string>
 
-    <string name="at_a_glance_bar_chart_label">Dates bar chart</string>
-    <string name="at_a_glance_bar_chart_empty">No expiring foods during this time</string>
-    <string name="at_a_glance_date_range_label">Set date range</string>
-
-    <string name="at_a_glance_complete_greeting">%1$s, %2$s!</string>
-    <string name="at_a_glance_summary">You have %1$d foods expiring %2$s</string>
-    <string name="at_a_glance_summary_postfix">, with %1$d foods expiring today!</string>
-    <string name="at_a_glance_summary_empty">You have no foods expiring soon</string>
-    <string name="at_a_glance_list_header">Foods expiring %1$s:</string>
-
-    <!-- Date range -->
-    <string name="at_a_glance_date_range_values_0">This week</string>
-    <string name="at_a_glance_date_range_values_1">Next 2 weeks</string>
-    <string name="at_a_glance_date_range_values_2">This month</string>
-    <string-array name="at_a_glance_date_range_values">
-        <item>@string/at_a_glance_date_range_values_0</item>
-        <item>@string/at_a_glance_date_range_values_1</item>
-        <item>@string/at_a_glance_date_range_values_2</item>
-    </string-array>
-    <string name="at_a_glance_summary_date_range_0">this week</string>
-    <string name="at_a_glance_summary_date_range_1">in the next 2 weeks</string>
-    <string name="at_a_glance_summary_date_range_2">this month</string>
-    <string-array name="at_a_glance_summary_date_ranges">
-        <item>@string/at_a_glance_summary_date_range_0</item>
-        <item>@string/at_a_glance_summary_date_range_1</item>
-        <item>@string/at_a_glance_summary_date_range_2</item>
-    </string-array>
-
-    <!-- endregion -->
-
+    <!-- region Date messages -->
     <string name="expiry_msg_today">Expires today!</string>
     <string name="expiry_msg_tomorrow">Expires tomorrow!</string>
     <string name="expiry_msg_soon">Expires soon on %1$s</string>
@@ -107,6 +113,16 @@
     <string name="expiry_msg_month_day">Expires on %1$s %2$d</string>
     <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
 
+    <string name="date_today">today</string>
+    <string name="date_tomorrow">tomorrow</string>
+    <string name="date_soon">soon</string>
+    <string name="date_next_week">next week</string>
+    <string name="date_this_week">this week</string>
+    <string name="date_next">next %1$s</string>
+    <string name="date_generic">on this day</string>
+
+    <!-- endregion -->
+
     <string name="list_empty">You have no foods expiring soon!\n\nAdd one by pressing the + icon below</string>
     <string name="list_registered_header">%1$s foods registered</string>
     <string name="food_name_label" translatable="false">Food name</string>
@@ -114,8 +130,8 @@
     <string name="food_expiry_date_label" translatable="false">Expiry date</string>
     <string name="food_expiry_date_none">Undefined expiry date</string>
     <string name="food_good_thru_date_label" translatable="false">Good thru date</string>
-    <string name="food_days_label_singular">%1$d day</string>
-    <string name="food_days_label_plural">%1$d days</string>
+    <string name="food_days_label_singular">day</string>
+    <string name="food_days_label_plural">days</string>
     <plurals name="food_days_label">
         <item quantity="one">@string/food_days_label_singular</item>
         <item quantity="other">@string/food_days_label_plural</item>
@@ -143,4 +159,12 @@
     <string name="food_capture_textonly">Input by text only</string>
     <string name="data_attribution_upcitemdb">Barcode data provided by upcitemdb</string>
     <string name="data_attribution_google_imgrec">Image data provided by Google Image Labeling</string>
+
+    <string name="storage_location_fridge_label">Fridge</string>
+    <string name="storage_location_freezer_label">Freezer</string>
+    <string name="storage_location_pantry_label">Pantry</string>
+    <string name="storage_location_counter_label">Counter</string>
+    <string name="storage_location_custom_label">Custom</string>
+    <string name="storage_location_content_description">Stored in the %1$s</string>
+
 </resources>
