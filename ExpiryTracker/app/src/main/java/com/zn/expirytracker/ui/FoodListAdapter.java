@@ -30,17 +30,19 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.FoodVi
     private long[] mExpiryDates;
     private int[] mCounts;
     private Storage[] mStorageLocs;
+    private int[] mColors;
 
     private Context mContext;
     private long mCurrentTime;
 
-    FoodListAdapter(String[] names, long[] dates, int[] counts, Storage[] locs) {
+    FoodListAdapter(String[] names, long[] dates, int[] counts, Storage[] locs, int[] colors) {
         // TODO: Replace with Paging and LiveData implementation
         mFoodNames = names;
         Arrays.sort(dates);
         mExpiryDates = dates;
         mCounts = counts;
         mStorageLocs = locs;
+        mColors = colors;
 
         mCurrentTime = System.currentTimeMillis();
     }
@@ -57,7 +59,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.FoodVi
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         // TODO: Access Food objects
         holder.bind(mFoodNames[position], mExpiryDates[position], mCounts[position],
-                mStorageLocs[position]);
+                mStorageLocs[position], mColors[position]);
     }
 
     @Override
@@ -89,7 +91,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.FoodVi
             ButterKnife.bind(this, itemView);
         }
 
-        private void bind(String name, long date, int count, Storage storage) {
+        private void bind(String name, long date, int count, Storage storage, int color) {
             mName.setText(name);
             mExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, date));
@@ -99,6 +101,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.FoodVi
             mExpiryDaysNum.setText(String.valueOf(daysUntilExpiry));
             mExpiryDaysLabel.setText(mContext.getResources().getQuantityString(
                     R.plurals.food_days_label, daysUntilExpiry));
+            mImage.setBackgroundColor(color);
 
             // Set the color of a drawable
             // https://stackoverflow.com/questions/17823451/set-android-shape-color-programmatically

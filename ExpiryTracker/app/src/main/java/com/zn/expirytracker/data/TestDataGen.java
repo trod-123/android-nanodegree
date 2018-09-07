@@ -1,5 +1,7 @@
 package com.zn.expirytracker.data;
 
+import android.graphics.Color;
+
 import com.github.mikephil.charting.data.BarEntry;
 import com.zn.expirytracker.data.model.Storage;
 
@@ -128,6 +130,7 @@ public class TestDataGen {
     private long[] mExpiryDates;
     private int[] mCounts;
     private Storage[] mLocs;
+    private int[] mColors;
 
     private TestDataGen(int numChartEntries, int numFoodData, int dateBounds, int countBounds) {
         mBarEntries = generateTestChartValues(numChartEntries, countBounds);
@@ -135,6 +138,7 @@ public class TestDataGen {
         mExpiryDates = generateExpiryDates(numFoodData, dateBounds);
         mCounts = generateCounts(numFoodData, countBounds);
         mLocs = generateStorageLocs(numFoodData);
+        mColors = generateColors(numFoodData);
     }
 
     /**
@@ -238,6 +242,13 @@ public class TestDataGen {
     }
 
     /**
+     * Returns the array of randomly generated color values. Note these are color values and can
+     * be handled directly, without having to go through {@code Context.getResources().getColor()}
+     * @return
+     */
+    public int[] getColors() { return mColors; }
+
+    /**
      * Generates random values for a bar chart with {@code numChartEntries} data points and a
      * y-axis limit of {@code countBounds}
      *
@@ -313,5 +324,19 @@ public class TestDataGen {
             locs[i] = storageValues[randomizer.nextInt(numStorageValues)];
         }
         return locs;
+    }
+
+    /**
+     * Generates a list of random color values. Note these are actual colors, not resources
+     * @param numFoodData
+     * @return
+     */
+    private int[] generateColors(int numFoodData) {
+        int[] colors = new int[numFoodData];
+        for (int i = 0; i < numFoodData; i++) {
+            colors[i] = Color.argb(255, randomizer.nextInt(256),
+                    randomizer.nextInt(256), randomizer.nextInt(256));
+        }
+        return colors;
     }
 }

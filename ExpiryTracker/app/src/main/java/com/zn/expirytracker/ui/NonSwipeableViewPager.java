@@ -25,7 +25,7 @@ public class NonSwipeableViewPager extends ViewPager {
                 0, 0);
 
         try {
-            mPagingEnabled = a.getBoolean(R.styleable.NonSwipeableViewPager_enablePaging, 
+            mPagingEnabled = a.getBoolean(R.styleable.NonSwipeableViewPager_enablePaging,
                     true);
         } finally {
             a.recycle();

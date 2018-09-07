@@ -281,7 +281,7 @@ public class AtAGlanceFragment extends Fragment {
         // TODO: Implement under LiveData
         mListAdapter = new FoodListAdapter(mDataGenerator.getFoodNames(),
                 mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
-                mDataGenerator.getLocs());
+                mDataGenerator.getLocs(), mDataGenerator.getColors());
         mRvFoodList.setAdapter(mListAdapter);
         ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
     }
