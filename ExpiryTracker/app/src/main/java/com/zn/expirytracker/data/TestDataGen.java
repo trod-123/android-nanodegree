@@ -244,9 +244,12 @@ public class TestDataGen {
     /**
      * Returns the array of randomly generated color values. Note these are color values and can
      * be handled directly, without having to go through {@code Context.getResources().getColor()}
+     *
      * @return
      */
-    public int[] getColors() { return mColors; }
+    public int[] getColors() {
+        return mColors;
+    }
 
     /**
      * Generates random values for a bar chart with {@code numChartEntries} data points and a
@@ -328,6 +331,9 @@ public class TestDataGen {
 
     /**
      * Generates a list of random color values. Note these are actual colors, not resources
+     * <p>
+     * Source: https://stackoverflow.com/questions/5280367/android-generate-random-color-on-click
+     *
      * @param numFoodData
      * @return
      */
