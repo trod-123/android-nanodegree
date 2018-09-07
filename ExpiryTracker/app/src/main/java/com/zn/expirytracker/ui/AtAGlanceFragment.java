@@ -28,7 +28,6 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.TestDataGen;
 import com.zn.expirytracker.data.WeeklyDateFilter;
-import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -67,10 +66,7 @@ public class AtAGlanceFragment extends Fragment {
     private List<BarEntry> mBarChartEntries;
 
     private FoodListAdapter mListAdapter;
-    private String[] mNames;
-    private long[] mDates;
-    private int[] mCounts;
-    private Storage[] mLocs;
+    private TestDataGen mDataGenerator;
 
     private Activity mHostActivity;
     private DateTime mCurrentDateTimeStartOfDay; // for dates calculations
@@ -99,6 +95,7 @@ public class AtAGlanceFragment extends Fragment {
         mCurrentDateTime = System.currentTimeMillis();
         mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(mCurrentDateTime);
         mCurrentFilter = WeeklyDateFilter.NEXT_7;
+        mDataGenerator = TestDataGen.getInstance();
     }
 
     @Override
@@ -108,11 +105,6 @@ public class AtAGlanceFragment extends Fragment {
                 inflater.inflate(R.layout.fragment_at_a_glance, container, false);
         Timber.tag(AtAGlanceFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
-
-        mNames = TestDataGen.getFoodNames();
-        mDates = TestDataGen.getExpiryDates();
-        mCounts = TestDataGen.getCounts();
-        mLocs = TestDataGen.getStorageLocs();
 
         // Set up the listener for the extended fab. Only take action if the filter changes
         mFabChartDateRange.setOnClickListener(new View.OnClickListener() {
@@ -178,7 +170,8 @@ public class AtAGlanceFragment extends Fragment {
         // are consistent in all screens, but still up to date, in case user is using the app
         // through midnight
         // TODO: Implement under LiveData (data should already be filtered before it goes here)
-        mBarChartEntries = DataToolbox.getTestChartValues(mDates, mCurrentDateTimeStartOfDay.getMillis());
+        mBarChartEntries = DataToolbox.getTestChartValues(mDataGenerator.getExpiryDates(),
+                mCurrentDateTimeStartOfDay.getMillis());
         BarDataSet dataSet = new BarDataSet(mBarChartEntries, null);
         dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.colorAccent)); // set color of bars
         dataSet.setDrawValues(false); // don't show values for each point
@@ -286,7 +279,9 @@ public class AtAGlanceFragment extends Fragment {
                 LinearLayoutManager.VERTICAL, false));
         mRvFoodList.setHasFixedSize(true);
         // TODO: Implement under LiveData
-        mListAdapter = new FoodListAdapter(mNames, mDates, mCounts, mLocs);
+        mListAdapter = new FoodListAdapter(mDataGenerator.getFoodNames(),
+                mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
+                mDataGenerator.getLocs());
         mRvFoodList.setAdapter(mListAdapter);
         ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
     }
