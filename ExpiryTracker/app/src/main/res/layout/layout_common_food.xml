@@ -4,19 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/list_item_padding"
-    android:paddingEnd="@dimen/list_item_padding"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
     android:background="?selectableItemBackground"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:paddingBottom="@dimen/list_item_padding_vertical"
+    android:paddingEnd="@dimen/list_item_padding_horizontal"
+    android:paddingStart="@dimen/list_item_padding_horizontal"
+    android:paddingTop="@dimen/list_item_padding_vertical">
 
-    <include
-        android:id="@+id/list_item_count_days"
-        layout="@layout/layout_number_circle"
-        android:layout_height="@dimen/number_circle_size"
+    <com.zn.expirytracker.ui.NumberCircleView
+        android:id="@+id/ncv_list_item_count_days"
         android:layout_width="@dimen/number_circle_size"
+        android:layout_height="@dimen/number_circle_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,8 +27,8 @@
         android:layout_marginStart="@dimen/list_item_name_padding"
         android:textColor="@color/textColorPrimary"
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/list_item_count_days"
-        app:layout_constraintTop_toTopOf="@+id/list_item_count_days"
+        app:layout_constraintStart_toEndOf="@+id/ncv_list_item_count_days"
+        app:layout_constraintTop_toTopOf="@+id/ncv_list_item_count_days"
         tools:text="Lettuce" />
 
     <TextView
@@ -46,8 +45,7 @@
         android:id="@+id/iv_list_item_storage_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginStart="@dimen/list_item_icon_padding"
+        android:layout_marginStart="@dimen/icon_padding"
         android:tint="@color/icon_tint"
         app:layout_constraintBottom_toBottomOf="@+id/tv_list_item_food_name"
         app:layout_constraintStart_toEndOf="@+id/tv_list_item_food_name"
@@ -58,7 +56,7 @@
         android:id="@+id/tv_list_item_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="@dimen/icon_padding_narrow"
         android:textColor="@color/textColorPrimaryLight"
         app:layout_constraintBottom_toBottomOf="@+id/iv_list_item_storage_icon"
         app:layout_constraintStart_toEndOf="@+id/iv_list_item_storage_icon"

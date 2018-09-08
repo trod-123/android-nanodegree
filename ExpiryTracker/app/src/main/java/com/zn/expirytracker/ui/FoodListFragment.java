@@ -66,7 +66,7 @@ public class FoodListFragment extends Fragment {
                 LinearLayoutManager.VERTICAL, false));
         mRvFoodList.setHasFixedSize(true);
         // TODO: Implement under LiveData
-        mListAdapter = new FoodListAdapter(mDataGenerator.getFoodNames(),
+        mListAdapter = new FoodListAdapter(mHostActivity, mDataGenerator.getFoodNames(),
                 mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
                 mDataGenerator.getLocs(), mDataGenerator.getColors());
         mRvFoodList.setAdapter(mListAdapter);
