@@ -132,6 +132,8 @@ public class TestDataGen {
     private Storage[] mLocs;
     private int[] mColors;
 
+    private int mDatabaseSize;
+
     private TestDataGen(int numChartEntries, int numFoodData, int dateBounds, int countBounds) {
         mBarEntries = generateTestChartValues(numChartEntries, countBounds);
         mFoodNames = generateFoodNames(numFoodData);
@@ -139,6 +141,8 @@ public class TestDataGen {
         mCounts = generateCounts(numFoodData, countBounds);
         mLocs = generateStorageLocs(numFoodData);
         mColors = generateColors(numFoodData);
+
+        mDatabaseSize = numFoodData;
     }
 
     /**
@@ -197,6 +201,15 @@ public class TestDataGen {
     }
 
     /**
+     * Returns the size of the generated database
+     *
+     * @return
+     */
+    public int getDatabaseSize() {
+        return mDatabaseSize;
+    }
+
+    /**
      * Returns the list of generated {@link BarEntry} values
      *
      * @return
@@ -249,6 +262,56 @@ public class TestDataGen {
      */
     public int[] getColors() {
         return mColors;
+    }
+
+    /**
+     * Gets the food name at the specified position
+     *
+     * @param position
+     * @return
+     */
+    public String getFoodNameAt(int position) {
+        return mFoodNames[position];
+    }
+
+    /**
+     * Gets the expiry date at the specified position
+     *
+     * @param position
+     * @return
+     */
+    public long getExpiryDateAt(int position) {
+        return mExpiryDates[position];
+    }
+
+    /**
+     * Gets the count at the specified position
+     *
+     * @param position
+     * @return
+     */
+    public int getCountAt(int position) {
+        return mCounts[position];
+    }
+
+    /**
+     * Gets the storage location at the specified position
+     *
+     * @param position
+     * @return
+     */
+    public Storage getStorageLocAt(int position) {
+        return mLocs[position];
+    }
+
+    /**
+     * Gets the color at the specified position
+     *
+     * @param position
+     * @return
+     */
+    public int getColorAt(int position) {
+        return mColors[position];
     }
 
     /**
