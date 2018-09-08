@@ -44,4 +44,16 @@ public class Toolbox {
         inflater.inflate(menuResId, popup.getMenu());
         popup.show();
     }
+
+    /**
+     * Creates a uniformly structured key with the provided {@code name}, prepending the app's
+     * package name. Package name explicitly declared here to allow this method to be called outside
+     * the target's scope
+     *
+     * @param name
+     * @return
+     */
+    public static String createStaticKeyString(String name) {
+        return String.format("com.zn.expirytracker.%s", name);
+    }
 }

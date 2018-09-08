@@ -24,6 +24,7 @@
     <string name="action_add_item_image">Image</string>
     <string name="action_add_item_text">Text</string>
     <string name="action_save">Save</string>
+    <string name="action_delete">Delete this item</string>
 
     <!-- endregion -->
 
@@ -148,15 +149,15 @@
     <string name="food_meta_data_label">Meta-data</string>
     <string name="food_barcode_label">Barcode</string>
     <string name="food_tags_label">Tags</string>
-    <string name="food_capture_label">Capture mode</string>
-    <string name="food_capture_barcode_label">Barcode</string>
-    <string name="food_capture_barcode">Scanned by barcode</string>
-    <string name="food_capture_imgrec_label">Image rec</string>
-    <string name="food_capture_imgrec">Extracted by image</string>
-    <string name="food_capture_imgonly_label">Image only</string>
-    <string name="food_capture_imgonly">Photo input</string>
-    <string name="food_capture_textonly_label">Text only</string>
-    <string name="food_capture_textonly">Input by text only</string>
+    <string name="food_input_type_label">Input type</string>
+    <string name="food_input_type_capture_barcode_label">Barcode</string>
+    <string name="food_input_type_barcode">Scanned by barcode</string>
+    <string name="food_input_type_imgrec_label">Image rec</string>
+    <string name="food_input_type_imgrec">Extracted by image</string>
+    <string name="food_input_type_imgonly_label">Image only</string>
+    <string name="food_input_type_imgonly">Photo input</string>
+    <string name="food_input_type_textonly_label">Text only</string>
+    <string name="food_input_type_textonly">Input by text only</string>
     <string name="data_attribution_upcitemdb">Barcode data provided by upcitemdb</string>
     <string name="data_attribution_google_imgrec">Image data provided by Google Image Labeling</string>
 
