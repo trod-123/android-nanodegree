@@ -1,11 +1,16 @@
 package com.zn.expirytracker.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.settings.SettingsActivity;
+import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +40,25 @@ public class MainActivity extends AppCompatActivity {
         setupTabs();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                launchSettings();
+                return true;
+            case R.id.action_search:
+                launchSearch();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     /**
      * Helper for setting up tab decor
      */
@@ -57,5 +81,14 @@ public class MainActivity extends AppCompatActivity {
 
         // For changing selected icon color in TabLayout
         // https://stackoverflow.com/questions/34562117/how-do-i-change-the-color-of-icon-of-the-selected-tab-of-tablayout
+    }
+
+    private void launchSettings() {
+        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+    }
+
+    private void launchSearch() {
+        // TODO: Implement
+        Toolbox.showToast(this, "This will launch Search!");
     }
 }
