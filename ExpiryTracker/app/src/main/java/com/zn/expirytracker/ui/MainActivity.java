@@ -42,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
         TabLayout.Tab tabAtAGlance = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_AT_A_GLANCE);
         if (tabAtAGlance != null) {
             tabAtAGlance.setText(R.string.fragment_at_a_glance_name);
-            tabAtAGlance.setIcon(R.drawable.ic_chart_bar_black_24dp);
+            tabAtAGlance.setIcon(R.drawable.ic_chart_bar_white_24dp);
         } else {
             Timber.e("At a glance tab was null! Not setting tab elements...");
         }
         TabLayout.Tab tabList = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_LIST);
         if (tabList != null) {
             tabList.setText(R.string.fragment_food_list_name);
-            tabList.setIcon(R.drawable.ic_format_list_bulleted_black_24dp);
+            tabList.setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
         } else {
             Timber.e("List tab was null! Not setting tab elements...");
         }
