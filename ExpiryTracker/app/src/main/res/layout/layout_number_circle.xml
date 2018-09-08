@@ -1,51 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<!-- More on merge: https://developer.android.com/training/improving-layouts/reusing-layouts
+     Merge takes the layout of the parent view and uses it as the root layout for this view
+     This helps reduce redundant nested view elements -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/number_circle_size"
-    android:layout_height="@dimen/number_circle_size">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
-        android:id="@+id/iv_number_circle_rim"
+        android:id="@+id/iv_number_circle_outline"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/number_circle" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_number_circle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/number_circle_outline_width">
 
-        <TextView
-            android:id="@+id/tv_number_circle_num_days"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <!-- Android has autosizing textviews: https://developer.android.com/guide/topics/ui/look-and-feel/autosizing-textview -->
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tv_number_circle_value"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
-            android:gravity="bottom"
             android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
+            android:includeFontPadding="false"
             android:textColor="@color/textColorPrimary"
-            android:textSize="18sp"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/ncv_guideline_center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ncv_guideline_top"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="0" />
 
-        <TextView
-            android:id="@+id/tv_number_circle_days_label"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tv_number_circle_label"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textColor="@color/textColorPrimary"
+            app:autoSizeTextType="uniform"
+            app:layout_constraintBottom_toTopOf="@+id/ncv_guideline_bottom"
+            app:layout_constraintEnd_toStartOf="@+id/ncv_guideline_right"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/ncv_guideline_left"
+            app:layout_constraintTop_toTopOf="@+id/ncv_guideline_above_center"
+            tools:text="count" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/number_circle_label_padding"
-            android:fontFamily="sans-serif-smallcaps"
-            android:gravity="top"
-            android:textColor="@color/textColorPrimary"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="days" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".50" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".825" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.075" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.03" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.97" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/ncv_guideline_above_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.45" />
 
     </android.support.constraint.ConstraintLayout>
 
-
-</FrameLayout>
+</merge>

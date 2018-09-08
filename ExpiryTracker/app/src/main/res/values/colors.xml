@@ -16,5 +16,12 @@
 
     <color name="background_list_item_delete">@color/colorPrimaryDark</color>
     <color name="icon_tint">@color/textColorPrimary</color>
+    <color name="border">@color/textColorPrimaryLight</color>
+
+    <color name="imageForeground_scrimStart">#00000000</color>
+    <color name="imageForeground_scrimEnd">#30000000</color>
+    <color name="imageBackground_none">@color/textColorPrimaryDark</color>
+
+    <color name="number_circle_outline_default">@color/textColorPrimaryDark</color>
 
 </resources>

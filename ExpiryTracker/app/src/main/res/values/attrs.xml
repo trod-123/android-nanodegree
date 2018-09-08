@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="NonSwipeableViewPager">
-        <attr name="enablePaging" format="boolean"/>
+        <attr name="enablePaging" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="NumberCircleView">
+        <attr name="value" format="integer" />
+        <attr name="valueTextSize" format="dimension" />
+        <attr name="valueTextColor" format="color" />
+        <attr name="valueLabel" format="string" />
+        <attr name="valueLabelTextSize" format="dimension" />
+        <attr name="valueLabelTextColor" format="color" />
+        <attr name="outlineWidth" format="dimension" />
+        <attr name="outlineColor" format="color" />
     </declare-styleable>
 </resources>
