@@ -26,6 +26,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     static Preference mPreferenceAccountSignOut;
     static Preference mPreferenceAccountSync;
     static Preference mPreferenceAccountDelete;
+    static Preference mPreferenceDisplayName;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -40,6 +41,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         mPreferenceAccountSignOut = findPreference(getString(R.string.pref_account_sign_out_key));
         mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
+        mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(findPreference(
@@ -99,6 +101,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
      * Helper to show account settings only if user is currently logged in
      */
     private void showAccountSettings(boolean show) {
+        // TODO: Only show display name if user is logged in
+        mPreferenceDisplayName.setVisible(show);
         mPreferenceAccountSignIn.setVisible(!show);
         mPreferenceAccountSignOut.setVisible(show);
         boolean hasAccount = mPreferenceAccountSignOut.isVisible();
@@ -117,7 +121,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // TODO: Launch the Sign-In activity here
-                AuthToolbox.signIn(true);
+                AuthToolbox.signIn(preference.getContext(), true);
                 showAccountSettings(AuthToolbox.checkIfSignedIn());
                 return false;
             }
@@ -126,7 +130,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // TODO: Sign out the user here
-                AuthToolbox.signIn(false);
+                AuthToolbox.signIn(preference.getContext(), false);
                 showAccountSettings(AuthToolbox.checkIfSignedIn());
                 return false;
             }
@@ -171,6 +175,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         // Sync the display name with the database
                         String displayName = (String) value;
                         AuthToolbox.updateDisplayName(displayName);
+
+                        // If there is no name, set the summary to the default
+                        if (displayName.trim().isEmpty())
+                            preference.setSummary(R.string.pref_account_display_name_summary);
                     }
                     return true;
                 }

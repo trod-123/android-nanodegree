@@ -135,6 +135,8 @@
     <string name="pref_account_sign_out_key" translatable="false">Sign out button</string>
     <string name="pref_account_sign_out_label">Sign out</string>
 
+    <string name="pref_account_signed_in_key" translatable="false">Currently signed in</string>
+
     <!-- Manual sync -->
     <string name="pref_account_sync_key" translatable="false">Manual sync button</string>
     <string name="pref_account_sync_label">Sync data with the cloud</string>

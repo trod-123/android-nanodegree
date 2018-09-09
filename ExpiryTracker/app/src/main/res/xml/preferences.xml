@@ -52,6 +52,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_account_title">
+        <Preference
+            android:key="@string/pref_account_sign_in_key"
+            android:title="@string/pref_account_sign_in_label" />
+        <Preference
+            android:key="@string/pref_account_sign_out_key"
+            android:title="@string/pref_account_sign_out_label" />
         <EditTextPreference
             android:inputType="textCapSentences"
             android:key="@string/pref_account_display_name_key"
@@ -59,17 +65,6 @@
             android:singleLine="true"
             android:summary="@string/pref_account_display_name_summary"
             android:title="@string/pref_account_display_name_label" />
-        <!-- For adding buttons to preferences, need to handle in Java. See here: https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen -->
-        <Preference
-            android:key="@string/pref_account_wipe_data_key"
-            android:summary="@string/pref_account_wipe_data_summary"
-            android:title="@string/pref_account_wipe_data_label" />
-        <Preference
-            android:key="@string/pref_account_sign_in_key"
-            android:title="@string/pref_account_sign_in_label" />
-        <Preference
-            android:key="@string/pref_account_sign_out_key"
-            android:title="@string/pref_account_sign_out_label" />
         <Preference
             android:key="@string/pref_account_sync_key"
             android:summary="@string/pref_account_sync_summary"
@@ -78,6 +73,11 @@
             android:key="@string/pref_account_delete_key"
             android:summary="@string/pref_account_delete_summary"
             android:title="@string/pref_account_delete_label" />
+        <!-- For adding buttons to preferences, need to handle in Java. See here: https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen -->
+        <Preference
+            android:key="@string/pref_account_wipe_data_key"
+            android:summary="@string/pref_account_wipe_data_summary"
+            android:title="@string/pref_account_wipe_data_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>

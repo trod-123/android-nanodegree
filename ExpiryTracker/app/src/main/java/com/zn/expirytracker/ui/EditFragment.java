@@ -26,6 +26,7 @@ import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
 import com.zn.expirytracker.ui.dialog.FormChangedDialog;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialog;
+import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.FormChangedDetector;
 import com.zn.expirytracker.utils.Toolbox;
@@ -487,10 +488,8 @@ public class EditFragment extends Fragment implements
      * Prompts the user to confirm whether the current item should be deleted
      */
     private void showConfirmDeleteDialog() {
-        // TODO: Implement
-        boolean isLoggedIn = true;
         ConfirmDeleteDialog dialog = ConfirmDeleteDialog.newInstance(
-                mDataGenerator.getFoodNameAt(mItemPosition), isLoggedIn);
+                mDataGenerator.getFoodNameAt(mItemPosition), AuthToolbox.checkIfSignedIn());
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
     }

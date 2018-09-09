@@ -63,7 +63,7 @@ public class DataToolbox {
             String[] genericGreetings = context.getResources().getStringArray(R.array.greeting_generic);
             greeting = genericGreetings[mRandomizer.nextInt(genericGreetings.length)];
         }
-        if (name != null) {
+        if (name != null && !name.trim().isEmpty()) {
             return context.getString(R.string.complete_greeting, greeting, name);
         } else {
             return context.getString(R.string.greeting_no_name, greeting);

@@ -1,7 +1,9 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
@@ -28,6 +30,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.TestDataGen;
 import com.zn.expirytracker.data.WeeklyDateFilter;
+import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -42,7 +45,8 @@ import timber.log.Timber;
 /**
  * Provides summary information
  */
-public class AtAGlanceFragment extends Fragment {
+public class AtAGlanceFragment extends Fragment
+        implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @BindView(R.id.chart_at_a_glance)
     BarChart mBarChart;
@@ -157,6 +161,21 @@ public class AtAGlanceFragment extends Fragment {
         updateListHeader();
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        sp.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Register in onDestroy() so change can still be "heard" when fragment is in background
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -303,7 +322,16 @@ public class AtAGlanceFragment extends Fragment {
     }
 
     private void updateGreeting() {
-        mTvGreeting.setText(DataToolbox.getGreeting(mHostActivity, "Teddy",
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        String name;
+        if (AuthToolbox.checkIfSignedIn()) {
+            // Only show the display name if user is signed in. User is signed in if the "sign out"
+            // preference is visible (true)
+            name = sp.getString(getString(R.string.pref_account_display_name_key), null);
+        } else {
+            name = null;
+        }
+        mTvGreeting.setText(DataToolbox.getGreeting(mHostActivity, name,
                 mCurrentDateTime));
     }
 
@@ -333,5 +361,13 @@ public class AtAGlanceFragment extends Fragment {
 
     private void updateListHeader() {
         mTvListHeader.setText(DataToolbox.getAtAGlanceListHeader(mHostActivity, mCurrentFilter));
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_account_display_name_key)) ||
+                key.equals(getString(R.string.pref_account_signed_in_key))) {
+            updateGreeting();
+        }
     }
 }
