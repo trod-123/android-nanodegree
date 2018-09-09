@@ -165,7 +165,25 @@
     <string name="storage_location_freezer_label">Freezer</string>
     <string name="storage_location_pantry_label">Pantry</string>
     <string name="storage_location_counter_label">Counter</string>
-    <string name="storage_location_custom_label">Custom</string>
-    <string name="storage_location_content_description">Stored in the %1$s</string>
+    <string name="storage_location_other_label">Other</string>
+    <string-array name="storage_location_labels">
+        <item>@string/storage_location_fridge_label</item>
+        <item>@string/storage_location_freezer_label</item>
+        <item>@string/storage_location_pantry_label</item>
+        <item>@string/storage_location_counter_label</item>
+        <item>@string/storage_location_other_label</item>
+    </string-array>
+    <string name="storage_location_description">Stored in the %1$s</string>
+    <string name="storage_location_dialog">Where is this item stored?</string>
+
+    <string name="edit_food_name_label_required">Food name (required)</string>
+    <string name="edit_food_count_label_required">Count (required)</string>
+    <string name="edit_error_saving">Please fix the errors first before saving</string>
+    <string name="edit_error_required">This field is required</string>
+    <string name="edit_error_count">Count must be larger than 0</string>
+    <string name="edit_error_date_expiry">The selected date must be today or later</string>
+    <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
+
+    <string name="edit_good_thru_date_default">%1$s (same as Expiry date)</string>
 
 </resources>

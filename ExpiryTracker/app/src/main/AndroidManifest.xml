@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zn.expirytracker">
 
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
     <application
         android:name=".ExpiryTrackerApplication"
         android:allowBackup="true"
@@ -27,6 +29,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.EditActivity"
+            android:label="@string/activity_edit_item_name"
+            android:parentActivityName=".ui.DetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.DetailActivity" />
         </activity>
     </application>
 

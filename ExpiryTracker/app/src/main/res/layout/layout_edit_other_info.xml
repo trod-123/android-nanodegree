@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_edit_other_info_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_other_info_label"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_edit_brand"
+        style="@style/AppTheme.Icon"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
+        app:srcCompat="@drawable/ic_domain_black_24dp" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_edit_brand"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_other_info_label">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tiEt_edit_brand"
+            style="@style/AppTheme.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/food_brand_label"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/iv_edit_brand_clear"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_edit_size"
+        style="@style/AppTheme.Icon"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
+        app:layout_constraintStart_toStartOf="@+id/iv_edit_brand"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_size"
+        app:srcCompat="@drawable/ic_ruler_black_24dp" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_edit_size"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+        app:layout_constraintTop_toBottomOf="@+id/til_edit_brand">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tiEt_edit_size"
+            style="@style/AppTheme.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/food_size_label"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/iv_edit_size_clear"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_size"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_edit_weight"
+        style="@style/AppTheme.Icon"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
+        app:layout_constraintStart_toStartOf="@+id/iv_edit_size"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
+        app:srcCompat="@drawable/ic_scale_black_24dp" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_edit_weight"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+        app:layout_constraintTop_toBottomOf="@+id/til_edit_size">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tiEt_edit_weight"
+            style="@style/AppTheme.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/food_weight_label"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/iv_edit_weight_clear"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_edit_notes"
+        style="@style/AppTheme.Icon"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
+        app:layout_constraintStart_toStartOf="@+id/iv_edit_weight"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
+        app:srcCompat="@drawable/ic_clipboard_outline_black_24dp" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_edit_notes"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+        app:layout_constraintTop_toBottomOf="@+id/til_edit_weight">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tiEt_edit_notes"
+            style="@style/AppTheme.TextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/food_notes_label"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/iv_edit_notes_clear"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+        app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/edit_guideline_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".15" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/edit_guideline_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".85" />
+
+</android.support.constraint.ConstraintLayout>

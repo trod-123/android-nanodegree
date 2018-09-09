@@ -298,6 +298,29 @@ public class DataToolbox {
     }
 
     /**
+     * Returns the string label for the provided Storage location
+     *
+     * @param storage
+     * @param context
+     * @return
+     */
+    public static String getStorageIconString(Storage storage, Context context) {
+        switch (storage) {
+            case FRIDGE:
+                return context.getString(R.string.storage_location_fridge_label);
+            case FREEZER:
+                return context.getString(R.string.storage_location_freezer_label);
+            case PANTRY:
+                return context.getString(R.string.storage_location_pantry_label);
+            case COUNTER:
+                return context.getString(R.string.storage_location_counter_label);
+            case CUSTOM:
+            default:
+                return context.getString(R.string.storage_location_other_label);
+        }
+    }
+
+    /**
      * Returns a readable date string formatted based on number of days between 2 dates, with
      * dates provided in {@code MILLISECONDS}. Assumes the second date is equal to or greater
      * than the first
@@ -428,6 +451,27 @@ public class DataToolbox {
     }
 
     /**
+     * Helper that gets a field-friendly date string
+     *
+     * @param dateTime
+     * @return
+     */
+    public static String getFieldFormattedDate(DateTime dateTime) {
+        return dateTime.toString("M/d/yyyy", null);
+    }
+
+    /**
+     * Helper that gets a field-friendly date string
+     *
+     * @param dateInMillis
+     * @return
+     */
+    public static String getFieldFormattedDate(long dateInMillis) {
+        DateTime dateTime = new DateTime(dateInMillis);
+        return getFieldFormattedDate(dateTime);
+    }
+
+    /**
      * General utility function that returns the passed integer into its ordinal representation
      * From: https://stackoverflow.com/questions/6810336/is-there-a-way-in-java-to-convert-an-integer-to-its-ordinal
      *
@@ -524,5 +568,16 @@ public class DataToolbox {
      */
     public static DateTime getDateTimeStartOfDay(long timeInMillis) {
         return new DateTime(timeInMillis).withTimeAtStartOfDay();
+    }
+
+    /**
+     * Helper for neutralizing hours, minutes, seconds, and milliseconds. The time component
+     * otherwise confounds date comparisons and calculating the number of days between dates
+     *
+     * @param timeInMillis
+     * @return
+     */
+    public static long getTimeInMillisStartOfDay(long timeInMillis) {
+        return getDateTimeStartOfDay(timeInMillis).getMillis();
     }
 }

@@ -7,6 +7,7 @@
     <color name="textColorPrimary">@color/md_blue_grey_800</color>
     <color name="textColorPrimaryDark">@color/md_blue_grey_900</color>
     <color name="textColorPrimaryLight">@color/md_blue_grey_600</color>
+    <color name="textColorError">@color/md_red_700</color>
 
     <!-- Expiration alerts -->
     <color name="expires_alert_high">@color/md_red_500</color>
@@ -16,7 +17,7 @@
 
     <color name="background_list_item_delete">@color/colorPrimaryDark</color>
     <color name="icon_tint">@color/textColorPrimary</color>
-    <color name="border">@color/textColorPrimaryLight</color>
+    <color name="border">@color/md_grey_500</color>
 
     <color name="imageForeground_scrimStart">#00000000</color>
     <color name="imageForeground_scrimEnd">#30000000</color>

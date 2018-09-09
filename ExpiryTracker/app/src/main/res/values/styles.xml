@@ -11,4 +11,47 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="AppTheme.Icon" parent="AppTheme">
+        <item name="android:tint">@color/icon_tint</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="AppTheme.Icon.ClickableIcon" parent="AppTheme.Icon">
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <item name="android:layout_width">@dimen/icon_clickable_size</item>
+        <item name="android:layout_height">@dimen/icon_clickable_size</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:padding">@dimen/icon_clickable_padding</item>
+    </style>
+
+    <style name="AppTheme.TextInputLayout" parent="AppTheme">
+        <item name="android:textColorHint">@color/textColorPrimaryLight</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditText" parent="AppTheme">
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditText.Numeric" parent="AppTheme.TextInputEditText">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:inputType">number</item>
+        <item name="android:maxLength">2</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditText.NonClickable" parent="AppTheme.TextInputEditText">
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:longClickable">false</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditText.Error" parent="AppTheme.TextInputEditText.NonClickable">
+        <item name="android:background">@null</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>
