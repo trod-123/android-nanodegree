@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import com.zn.expirytracker.R;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,8 +55,7 @@ public class EditActivity extends AppCompatActivity {
                 if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                     // keyboard is opened
                     mFabVoice.hide();
-                }
-                else {
+                } else {
                     // keyboard is closed
                     mFabVoice.show();
                 }
@@ -72,5 +74,22 @@ public class EditActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments.size() == 0) {
+            super.onBackPressed();
+        } else {
+            Fragment topFragment = fragments.get(fragments.size() - 1);
+            if (topFragment instanceof EditFragment &&
+                    ((EditFragment) topFragment).haveFieldsChanged()) {
+                // don't do anything. at this point the EditFragment is showing the
+                // FormChangedDialog
+            } else {
+                super.onBackPressed();
+            }
+        }
     }
 }

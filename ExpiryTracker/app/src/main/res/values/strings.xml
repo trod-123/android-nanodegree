@@ -178,12 +178,14 @@
 
     <string name="edit_food_name_label_required">Food name (required)</string>
     <string name="edit_food_count_label_required">Count (required)</string>
+    <string name="edit_good_thru_date_default">%1$s (same as Expiry date)</string>
     <string name="edit_error_saving">Please fix the errors first before saving</string>
     <string name="edit_error_required">This field is required</string>
     <string name="edit_error_count">Count must be larger than 0</string>
     <string name="edit_error_date_expiry">The selected date must be today or later</string>
     <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
-
-    <string name="edit_good_thru_date_default">%1$s (same as Expiry date)</string>
+    <string name="edit_dialog_changes_not_saved">Your changes have not been saved</string>
+    <string name="edit_dialog_changes_not_saved_discard">Discard</string>
+    <string name="edit_dialog_changes_not_saved_save">Save</string>
 
 </resources>

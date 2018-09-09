@@ -2,9 +2,11 @@ package com.zn.expirytracker.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -21,13 +23,16 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.TestDataGen;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
+import com.zn.expirytracker.ui.dialog.FormChangedDialog;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialog;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.FormChangedDetector;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -39,7 +44,8 @@ import timber.log.Timber;
  */
 public class EditFragment extends Fragment implements
         StorageLocationDialog.OnStorageLocationSelectedListener,
-        ExpiryDatePickerDialog.OnDateSelectedListener {
+        ExpiryDatePickerDialog.OnDateSelectedListener,
+        FormChangedDialog.OnFormChangedButtonClickListener {
 
     public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
             "edit_fragment.item_position_int");
@@ -99,7 +105,7 @@ public class EditFragment extends Fragment implements
 
     private Activity mHostActivity;
     private TestDataGen mDataGenerator;
-    private DateTime mCurrentDateTimeStartOfDay;
+    private FormChangedDetector mFormChangedDetector;
     private int mItemPosition;
 
     private long mExpiryDate;
@@ -124,7 +130,6 @@ public class EditFragment extends Fragment implements
 
         mHostActivity = getActivity();
         mDataGenerator = TestDataGen.getInstance();
-        mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
 
         Bundle args = getArguments();
         if (args != null) {
@@ -136,7 +141,8 @@ public class EditFragment extends Fragment implements
         // from the generated data.
         mExpiryDate = DataToolbox
                 .getTimeInMillisStartOfDay(mDataGenerator.getExpiryDateAt(mItemPosition));
-        // By default, goodThruDate is the same as expiryDate
+        // TODO: By default, goodThruDate is the same as expiryDate. But once real data comes in, do
+        // NOT do this
         mGoodThruDate = mExpiryDate;
     }
 
@@ -151,6 +157,9 @@ public class EditFragment extends Fragment implements
         populateFields();
         setTextChangedListeners();
         setClickListeners();
+
+        // this needs to be done AFTER fields are populated
+        mFormChangedDetector = getFormChangedDetector();
 
         return rootView;
     }
@@ -335,24 +344,24 @@ public class EditFragment extends Fragment implements
 
         String description = "The current item position is: " + mItemPosition;
         mEtDescription.setText(description);
-        showViewBasedOnString(description, mIvDescriptionClear);
+        hideViewIfEmptyString(description, mIvDescriptionClear);
 
         // Other info layout
         String brand = "Kellogg's";
         mEtBrand.setText(brand);
-        showViewBasedOnString(brand, mIvBrandClear);
+        hideViewIfEmptyString(brand, mIvBrandClear);
 
         String size = "12\" x 10\"";
         mEtSize.setText(size);
-        showViewBasedOnString(size, mIvSizeClear);
+        hideViewIfEmptyString(size, mIvSizeClear);
 
         String weight = "200 lbs";
         mEtWeight.setText(weight);
-        showViewBasedOnString(weight, mIvWeightClear);
+        hideViewIfEmptyString(weight, mIvWeightClear);
 
         String notes = "What is 1 plus " + mItemPosition;
         mEtNotes.setText(notes);
-        showViewBasedOnString(notes, mIvNotesClear);
+        hideViewIfEmptyString(notes, mIvNotesClear);
 
     }
 
@@ -362,8 +371,8 @@ public class EditFragment extends Fragment implements
      * @param string
      * @param view
      */
-    private void showViewBasedOnString(String string, View view) {
-        view.setVisibility(string != null && string.length() > 0 ? View.VISIBLE : View.GONE);
+    private void hideViewIfEmptyString(@Nullable String string, View view) {
+        view.setVisibility(string != null && !string.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -420,13 +429,22 @@ public class EditFragment extends Fragment implements
             showSaveErrorMessage();
         } else {
             // TODO: Implement
+            mFormChangedDetector.updateCachedFields();
             Toolbox.showToast(mHostActivity, "This will save the current item!");
+            mHostActivity.onBackPressed();
         }
     }
 
     private void deleteItem() {
         // TODO: Implement
+        mFormChangedDetector.updateCachedFields();
         Toolbox.showToast(mHostActivity, "This will delete the current item!");
+        mHostActivity.onBackPressed();
+    }
+
+    private void discardChanges() {
+        mFormChangedDetector.updateCachedFields(); // but won't be saved
+        mHostActivity.onBackPressed();
     }
 
     // region Dialogs
@@ -602,6 +620,10 @@ public class EditFragment extends Fragment implements
 
     // endregion
 
+    /**
+     * Custom {@link TextWatcher} that hides a given view if the hosting {@link EditText} is currently
+     * empty
+     */
     private class HideViewTextWatcher implements TextWatcher {
         private View mView;
 
@@ -616,7 +638,7 @@ public class EditFragment extends Fragment implements
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            showViewBasedOnString(charSequence.toString(), mView);
+            hideViewIfEmptyString(charSequence.toString(), mView);
         }
 
         @Override
@@ -625,6 +647,9 @@ public class EditFragment extends Fragment implements
         }
     }
 
+    /**
+     * Custom {@link View.OnClickListener} that clears a given {@link EditText}
+     */
     private class ClearTextClickListener implements View.OnClickListener {
         private EditText mEditText;
 
@@ -637,4 +662,61 @@ public class EditFragment extends Fragment implements
             mEditText.setText("");
         }
     }
+
+    // region Checking for form changes
+
+    /**
+     * Generates a {@link FormChangedDetector} with this fragment's list of edit texts
+     *
+     * @return
+     */
+    private FormChangedDetector<TextInputEditText> getFormChangedDetector() {
+        List<TextInputEditText> editTexts = new ArrayList<>(
+                Arrays.asList(
+                        mEtFoodName,
+                        mEtDateExpiry,
+                        mEtDateGood,
+                        mEtCount,
+                        mEtLoc,
+                        mEtDescription,
+                        mEtBrand,
+                        mEtSize,
+                        mEtWeight,
+                        mEtNotes)
+        );
+        return new FormChangedDetector<>(editTexts);
+    }
+
+    /**
+     * Helper that checks and actions on whether fields have changed
+     */
+    public boolean haveFieldsChanged() {
+        boolean changed = mFormChangedDetector.haveFieldsChanged();
+        if (changed) {
+            showFormChangedDialog();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void showFormChangedDialog() {
+        FormChangedDialog dialog = new FormChangedDialog();
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), FormChangedDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onButtonClicked(int position) {
+        switch (position) {
+            case AlertDialog.BUTTON_NEGATIVE: // dismiss
+                discardChanges();
+                break;
+            case AlertDialog.BUTTON_POSITIVE: // save
+                saveItem();
+                break;
+        }
+    }
+
+    // endregion
 }
