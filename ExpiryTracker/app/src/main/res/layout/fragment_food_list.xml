@@ -20,12 +20,14 @@
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_food_list_share"
+        android:id="@+id/fab_food_list_add"
         android:layout_width="@dimen/fab_size"
         android:layout_height="@dimen/fab_size"
         app:srcCompat="@drawable/ic_add_black_24dp"
         android:tint="@android:color/white"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"/>
+        android:layout_margin="@dimen/fab_margin"
+        android:focusable="true"
+        android:clickable="true"/>
 
 </android.support.design.widget.CoordinatorLayout>

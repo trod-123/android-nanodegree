@@ -10,6 +10,7 @@
     <string name="fragment_food_list_name">Foods</string>
     <string name="activity_details_name">Details</string>
     <string name="activity_edit_item_name">Edit</string>
+    <string name="activity_add_item_name">Add new food item</string>
 
     <string name="undefined_generic">Undefined</string>
 

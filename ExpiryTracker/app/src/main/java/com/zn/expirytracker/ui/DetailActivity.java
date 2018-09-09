@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.TestDataGen;
-import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -66,18 +65,11 @@ public class DetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_settings:
-                launchSettings();
-                return true;
             case R.id.action_delete:
                 deleteItem();
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void launchSettings() {
-        startActivity(new Intent(DetailActivity.this, SettingsActivity.class));
     }
 
     private void deleteItem() {

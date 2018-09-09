@@ -1,7 +1,9 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +22,8 @@ public class FoodListFragment extends Fragment {
 
     @BindView(R.id.rv_food_list)
     RecyclerView mRvFoodList;
+    @BindView(R.id.fab_food_list_add)
+    FloatingActionButton mFabAdd;
 
     private Activity mHostActivity;
 
@@ -58,6 +62,14 @@ public class FoodListFragment extends Fragment {
 
         setupRecyclerView();
 
+        mFabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Include scanning and image picker
+                startAddActivity();
+            }
+        });
+
         return rootView;
     }
 
@@ -70,5 +82,10 @@ public class FoodListFragment extends Fragment {
                 mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
                 mDataGenerator.getLocs(), mDataGenerator.getColors());
         mRvFoodList.setAdapter(mListAdapter);
+    }
+
+    private void startAddActivity() {
+        Intent intent = new Intent(mHostActivity, AddActivity.class);
+        startActivity(intent);
     }
 }

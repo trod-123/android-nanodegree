@@ -1,8 +1,10 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -15,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -52,6 +55,15 @@ public class EditFragment extends Fragment implements
 
     public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
             "edit_fragment.item_position_int");
+    public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
+
+    public static final int DEFAULT_STARTING_COUNT = 1;
+    public static final Storage DEFAULT_STARTING_STORAGE = Storage.FRIDGE;
+
+    @BindView(R.id.layout_edit_root)
+    View mRootLayout;
+    @BindView(R.id.fab_edit_voice)
+    FloatingActionButton mFabVoice;
 
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
@@ -140,13 +152,20 @@ public class EditFragment extends Fragment implements
             mItemPosition = args.getInt(ARG_ITEM_POSITION_INT, 0);
         }
 
-        // TODO: By default, dates are saved at 00:00, but for debugging this is not guaranteed
-        // from the generated data.
-        mExpiryDate = DataToolbox
-                .getTimeInMillisStartOfDay(mDataGenerator.getExpiryDateAt(mItemPosition));
+        // Set the dates
+        if (mItemPosition != POSITION_ADD_MODE) {
+            // TODO: By default, dates are saved at 00:00, but for debugging this is not guaranteed
+            // from the generated data.
+            mExpiryDate = DataToolbox
+                    .getTimeInMillisStartOfDay(mDataGenerator.getExpiryDateAt(mItemPosition));
+        } else {
+            // By default, load up the current day as the initial expiry date
+            mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+        }
         // TODO: By default, goodThruDate is the same as expiryDate. But once real data comes in, do
         // NOT do this
         mGoodThruDate = mExpiryDate;
+
     }
 
     @Override
@@ -157,7 +176,46 @@ public class EditFragment extends Fragment implements
         Timber.tag(EditFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
-        populateFields();
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                // Keep the current selected position in sync between ViewPager and PageIndicator
+                mPageIndicatorView.setSelection(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        // Hide the fab when the keyboard is opened
+        // https://stackoverflow.com/questions/4745988/how-do-i-detect-if-software-keyboard-is-visible-on-android-device
+        mRootLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                mRootLayout.getWindowVisibleDisplayFrame(r);
+                int screenHeight = mRootLayout.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
+                    mFabVoice.hide();
+                } else {
+                    // keyboard is closed
+                    mFabVoice.show();
+                }
+            }
+        });
+
+        populateFields(mItemPosition);
         setTextChangedListeners();
         setClickListeners();
 
@@ -169,7 +227,11 @@ public class EditFragment extends Fragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_edit, menu);
+        if (mItemPosition == POSITION_ADD_MODE) {
+            inflater.inflate(R.menu.menu_add, menu);
+        } else {
+            inflater.inflate(R.menu.menu_edit, menu);
+        }
     }
 
     @Override
@@ -183,6 +245,64 @@ public class EditFragment extends Fragment implements
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Helper that pre-populates all fields. Does not pre-populate if
+     * {@code itemPosition == POSITION_ADD_MODE}
+     */
+    private void populateFields(int itemPosition) {
+        // Only load from database if in ADD_MODE
+        if (itemPosition != POSITION_ADD_MODE) {
+            // Image adapter
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(),
+                    mDataGenerator.getColors());
+
+            // Main layout
+            mEtFoodName.setText(mDataGenerator.getFoodNameAt(itemPosition));
+            mEtCount.setText(String.valueOf(mDataGenerator.getCountAt(itemPosition)));
+
+            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
+                    mDataGenerator.getStorageLocAt(itemPosition)));
+            mEtLoc.setText(DataToolbox.getStorageIconString
+                    (mDataGenerator.getStorageLocAt(itemPosition), mHostActivity));
+
+            String description = "The current item position is: " + itemPosition;
+            mEtDescription.setText(description);
+            hideViewIfEmptyString(description, mIvDescriptionClear);
+
+            // Other info layout
+            String brand = "Kellogg's";
+            mEtBrand.setText(brand);
+            hideViewIfEmptyString(brand, mIvBrandClear);
+
+            String size = "12\" x 10\"";
+            mEtSize.setText(size);
+            hideViewIfEmptyString(size, mIvSizeClear);
+
+            String weight = "200 lbs";
+            mEtWeight.setText(weight);
+            hideViewIfEmptyString(weight, mIvWeightClear);
+
+            String notes = "What is 1 plus " + itemPosition;
+            mEtNotes.setText(notes);
+            hideViewIfEmptyString(notes, mIvNotesClear);
+        } else {
+            // Set ADD_MODE defaults
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), new int[]{});
+            showFieldError(true, FieldError.REQUIRED_NAME);
+            mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
+            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
+                    DEFAULT_STARTING_STORAGE));
+            mEtLoc.setText(DataToolbox.getStorageIconString
+                    (DEFAULT_STARTING_STORAGE, mHostActivity));
+        }
+
+        // Common fields
+        mViewPager.setAdapter(mPagerAdapter);
+        mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
+        mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
+        setGoodThruDateViewAttributes();
     }
 
     /**
@@ -241,6 +361,13 @@ public class EditFragment extends Fragment implements
      * Helper that sets the OnClickListeners
      */
     private void setClickListeners() {
+        mFabVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Start speech input
+                Toolbox.showToast(mHostActivity, "This will start the speech input!");
+            }
+        });
         mEtFoodNameError.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,70 +429,6 @@ public class EditFragment extends Fragment implements
         mIvSizeClear.setOnClickListener(new ClearTextClickListener(mEtSize));
         mIvWeightClear.setOnClickListener(new ClearTextClickListener(mEtWeight));
         mIvNotesClear.setOnClickListener(new ClearTextClickListener(mEtNotes));
-    }
-
-    /**
-     * Helper that pre-populates all fields
-     */
-    private void populateFields() {
-        // Image pager
-        // TODO: Since the exact same pager is used between Detail and Edit, try finding a way to
-        // "extract" all of this outside
-        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(),
-                mDataGenerator.getColors());
-        mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                // Keep the current selected position in sync between ViewPager and PageIndicator
-                mPageIndicatorView.setSelection(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-
-        // Main layout
-        mEtFoodName.setText(mDataGenerator.getFoodNameAt(mItemPosition));
-
-        mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
-
-        mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
-        setGoodThruDateViewAttributes();
-
-        mEtCount.setText(String.valueOf(mDataGenerator.getCountAt(mItemPosition)));
-
-        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
-                mDataGenerator.getStorageLocAt(mItemPosition)));
-        mEtLoc.setText(DataToolbox.getStorageIconString
-                (mDataGenerator.getStorageLocAt(mItemPosition), mHostActivity));
-
-        String description = "The current item position is: " + mItemPosition;
-        mEtDescription.setText(description);
-        hideViewIfEmptyString(description, mIvDescriptionClear);
-
-        // Other info layout
-        String brand = "Kellogg's";
-        mEtBrand.setText(brand);
-        hideViewIfEmptyString(brand, mIvBrandClear);
-
-        String size = "12\" x 10\"";
-        mEtSize.setText(size);
-        hideViewIfEmptyString(size, mIvSizeClear);
-
-        String weight = "200 lbs";
-        mEtWeight.setText(weight);
-        hideViewIfEmptyString(weight, mIvWeightClear);
-
-        String notes = "What is 1 plus " + mItemPosition;
-        mEtNotes.setText(notes);
-        hideViewIfEmptyString(notes, mIvNotesClear);
-
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.zn.expirytracker.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,22 +11,18 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
-public class EditActivity extends AppCompatActivity {
+public class AddActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit);
+        setContentView(R.layout.activity_add);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
-        if (intent != null) {
-            int position = intent.getIntExtra(DetailActivity.ARG_ITEM_POSITION_INT, 0);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_edit_fragment, EditFragment.newInstance(position),
-                            EditFragment.class.getSimpleName())
-                    .commit();
-        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_edit_fragment, EditFragment.newInstance(EditFragment.POSITION_ADD_MODE),
+                        EditFragment.class.getSimpleName())
+                .commit();
     }
 
     @Override
