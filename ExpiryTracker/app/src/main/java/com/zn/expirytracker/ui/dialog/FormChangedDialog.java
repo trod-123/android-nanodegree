@@ -14,7 +14,7 @@ public class FormChangedDialog extends DialogFragment {
     private OnFormChangedButtonClickListener callback;
 
     public interface OnFormChangedButtonClickListener {
-        void onButtonClicked(int position);
+        void onFormChangedButtonClicked(int position);
     }
 
     @Override
@@ -37,14 +37,14 @@ public class FormChangedDialog extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                callback.onButtonClicked(i);
+                                callback.onFormChangedButtonClicked(i);
                             }
                         })
                 .setPositiveButton(R.string.edit_dialog_changes_not_saved_save,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                callback.onButtonClicked(i);
+                                callback.onFormChangedButtonClicked(i);
                             }
                         });
         return builder.create();

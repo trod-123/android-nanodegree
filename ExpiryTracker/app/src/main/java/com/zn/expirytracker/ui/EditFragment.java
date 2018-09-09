@@ -22,6 +22,7 @@ import com.rd.PageIndicatorView;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.TestDataGen;
 import com.zn.expirytracker.data.model.Storage;
+import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
 import com.zn.expirytracker.ui.dialog.FormChangedDialog;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialog;
@@ -45,7 +46,8 @@ import timber.log.Timber;
 public class EditFragment extends Fragment implements
         StorageLocationDialog.OnStorageLocationSelectedListener,
         ExpiryDatePickerDialog.OnDateSelectedListener,
-        FormChangedDialog.OnFormChangedButtonClickListener {
+        FormChangedDialog.OnFormChangedButtonClickListener,
+        ConfirmDeleteDialog.OnConfirmDeleteButtonClickListener {
 
     public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
             "edit_fragment.item_position_int");
@@ -176,7 +178,7 @@ public class EditFragment extends Fragment implements
                 saveItem();
                 return true;
             case R.id.action_delete:
-                deleteItem();
+                showConfirmDeleteDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -473,6 +475,27 @@ public class EditFragment extends Fragment implements
     }
 
     /**
+     * Prompts the user to either discard or save changes
+     */
+    private void showFormChangedDialog() {
+        FormChangedDialog dialog = new FormChangedDialog();
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), FormChangedDialog.class.getSimpleName());
+    }
+
+    /**
+     * Prompts the user to confirm whether the current item should be deleted
+     */
+    private void showConfirmDeleteDialog() {
+        // TODO: Implement
+        boolean isLoggedIn = true;
+        ConfirmDeleteDialog dialog = ConfirmDeleteDialog.newInstance(
+                mDataGenerator.getFoodNameAt(mItemPosition), isLoggedIn);
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
+    }
+
+    /**
      * Handles the {@link Storage} selection from  {@link StorageLocationDialog}
      *
      * @param position
@@ -526,6 +549,37 @@ public class EditFragment extends Fragment implements
                 mGoodThruDate = mExpiryDate;
                 mEtDateGood.setText(fieldFormattedDate);
                 setGoodThruDateViewAttributes();
+        }
+    }
+
+    /**
+     * Handles the button clicked from {@link FormChangedDialog}
+     *
+     * @param position
+     */
+    @Override
+    public void onFormChangedButtonClicked(int position) {
+        switch (position) {
+            case AlertDialog.BUTTON_NEGATIVE: // dismiss
+                discardChanges();
+                break;
+            case AlertDialog.BUTTON_POSITIVE: // save
+                saveItem();
+                break;
+        }
+    }
+
+    /**
+     * Handles the button clicked from {@link ConfirmDeleteDialog}
+     *
+     * @param position
+     */
+    @Override
+    public void onConfirmDeleteButtonClicked(int position) {
+        switch (position) {
+            case AlertDialog.BUTTON_POSITIVE: // delete
+                deleteItem();
+                break;
         }
     }
 
@@ -697,24 +751,6 @@ public class EditFragment extends Fragment implements
             return true;
         } else {
             return false;
-        }
-    }
-
-    private void showFormChangedDialog() {
-        FormChangedDialog dialog = new FormChangedDialog();
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), FormChangedDialog.class.getSimpleName());
-    }
-
-    @Override
-    public void onButtonClicked(int position) {
-        switch (position) {
-            case AlertDialog.BUTTON_NEGATIVE: // dismiss
-                discardChanges();
-                break;
-            case AlertDialog.BUTTON_POSITIVE: // save
-                saveItem();
-                break;
         }
     }
 

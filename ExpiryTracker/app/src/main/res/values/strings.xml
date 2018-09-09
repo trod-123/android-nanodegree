@@ -187,5 +187,12 @@
     <string name="edit_dialog_changes_not_saved">Your changes have not been saved</string>
     <string name="edit_dialog_changes_not_saved_discard">Discard</string>
     <string name="edit_dialog_changes_not_saved_save">Save</string>
+    <string name="edit_dialog_delete_confirm_title">Delete this food item?</string>
+    <string name="edit_dialog_delete_confirm_generic_food_name">This food item</string>
+    <string name="edit_dialog_delete_confirm_message_has_account">%1$s will be removed from your device and all your synced devices</string>
+    <string name="edit_dialog_delete_confirm_message_no_account">%1$s will be removed from your device</string>
+    <string name="edit_dialog_delete_confirm_cancel">Cancel</string>
+    <string name="edit_dialog_delete_confirm_delete">Delete</string>
+    <string name="edit_dialog_delete_done">%1$s has been deleted</string>
 
 </resources>
