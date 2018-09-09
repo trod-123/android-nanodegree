@@ -25,11 +25,6 @@ import timber.log.Timber;
 
 public class DetailFragment extends Fragment {
 
-    private static final long PAGE_INDICATOR_FADE_IN_DURATION = 250;
-    private static final long PAGE_INDICATOR_FADE_IN_DELAY = 0;
-    private static final long PAGE_INDICATOR_FADE_OUT_DURATION = 1000;
-    private static final long PAGE_INDICATOR_FADE_OUT_DELAY = 500;
-
     public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
             "detail_fragment.item_position_int");
 
@@ -68,7 +63,7 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.tv_detail_credit_googleimgrec)
     TextView mTvCreditGoogleImgRec;
 
-    DetailImagePagerAdapter mPagerAdapter;
+    private DetailImagePagerAdapter mPagerAdapter;
 
     private Activity mHostActivity;
     private TestDataGen mDataGenerator;
@@ -137,13 +132,13 @@ public class DetailFragment extends Fragment {
                 switch (state) {
                     case ViewPager.SCROLL_STATE_DRAGGING:
                         // Fade in the indicator view while dragging
-                        showPageIndicator(true);
+                        Toolbox.showPageIndicator(true, mImageScrim, mPageIndicatorView);
                         break;
                     case ViewPager.SCROLL_STATE_SETTLING:
                         break;
                     default:
                         // Fade out when idle
-                        showPageIndicator(false);
+                        Toolbox.showPageIndicator(false, mImageScrim, mPageIndicatorView);
                         break;
                 }
             }
@@ -180,24 +175,5 @@ public class DetailFragment extends Fragment {
         // Meta data layout
         mTvBarcode.setText("123123123");
         mTvInput.setText("Scanned by WHAT??");
-    }
-
-    /**
-     * Helper to show or hide the page indicator
-     *
-     * @param show
-     */
-    private void showPageIndicator(boolean show) {
-        if (show) {
-            mImageScrim.animate().setStartDelay(PAGE_INDICATOR_FADE_IN_DELAY)
-                    .setDuration(PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
-            mPageIndicatorView.animate().setStartDelay(PAGE_INDICATOR_FADE_IN_DELAY)
-                    .setDuration(PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
-        } else {
-            mImageScrim.animate().setStartDelay(PAGE_INDICATOR_FADE_OUT_DELAY)
-                    .setDuration(PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
-            mPageIndicatorView.animate().setStartDelay(PAGE_INDICATOR_FADE_OUT_DELAY)
-                    .setDuration(PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
-        }
     }
 }
