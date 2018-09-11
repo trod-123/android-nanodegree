@@ -2,6 +2,7 @@ package com.zn.expirytracker.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.util.SparseIntArray;
 
 import com.github.mikephil.charting.data.BarEntry;
@@ -35,7 +36,7 @@ public class DataToolbox {
     private static final int GREETING_MORNING_BOUNDS = 5;
     private static final int GREETING_AFTERNOON_BOUNDS = 12;
 
-    private static final int INVALID_POSITION = -1;
+    public static final int POSITION_NO_FOOD = -1;
 
     /**
      * Returns a customized greeting based on the time of day
@@ -157,7 +158,7 @@ public class DataToolbox {
                 if (foodsList.get(i).get_id() == id) return i;
             }
         }
-        return INVALID_POSITION;
+        return POSITION_NO_FOOD;
     }
 
     /**
@@ -187,6 +188,36 @@ public class DataToolbox {
     }
 
     /**
+     * Returns the total number of food expiring within the given {@code filter}, based on the
+     * {@code barChartEntries}. {@code barChartEntries} need not be pre-filtered; the full scope
+     * of entries can be passed
+     *
+     * @param filter
+     * @param barChartEntries
+     * @return
+     */
+    public static int getTotalFoodsCountFromFilter(WeeklyDateFilter filter,
+                                                   @NonNull List<BarEntry> barChartEntries) {
+        int limit;
+        switch (filter) {
+            case NEXT_7:
+                limit = 7;
+                break;
+            case NEXT_14:
+                limit = 14;
+                break;
+            case NEXT_21:
+            default:
+                limit = 21;
+        }
+        int totalFoodsCountFromFilter = 0;
+        for (int i = 0; i < limit && i < barChartEntries.size(); i++) {
+            totalFoodsCountFromFilter += barChartEntries.get(i).getY();
+        }
+        return totalFoodsCountFromFilter;
+    }
+
+    /**
      * Gets a list of {@link BarEntry} xy mappings, where x is numDays, and y is the frequency of
      * each numDays
      *
@@ -198,15 +229,11 @@ public class DataToolbox {
         long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
         SparseIntArray data = getIntFrequencies(numDaysUntilCurrent, true);
-        if (data != null) {
-            List<BarEntry> entries = new ArrayList<>();
-            for (int i = 0; i < data.size(); i++) {
-                entries.add(new BarEntry(data.keyAt(i), data.valueAt(i)));
-            }
-            return entries;
-        } else {
-            return null;
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < data.size(); i++) {
+            entries.add(new BarEntry(data.keyAt(i), data.valueAt(i)));
         }
+        return entries;
     }
 
     /**
@@ -270,9 +297,61 @@ public class DataToolbox {
             }
             return array;
         } else {
-            return null;
+            return new SparseIntArray();
         }
     }
+
+    /**
+     * General utility function that returns the frequencies of each element of a dataset as a
+     * {@link SparseIntArray}, where the {@code key} is the element, and the {@code value} is that
+     * element's frequency in the dataset
+     * <p>
+     * If {@code fillInGaps} is true, then all gaps in the dataset will be filled in and set to 0
+     * More on SparseArray: https://stackoverflow.com/questions/25560629/sparsearray-vs-hashmap
+     *
+     * @param foods
+     * @param baseDateInMillis
+     * @param fillInGaps
+     * @return
+     */
+    private static SparseIntArray getIntFrequencies(List<Food> foods, long baseDateInMillis, boolean fillInGaps) {
+        long[] dates = getAllExpiryDatesFromFood(foods);
+        int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
+        return getIntFrequencies(numDaysUntilCurrent, fillInGaps);
+    }
+
+    /**
+     * Returns the highest number of items expiring in a single day from a {@link List} of
+     * {@link Food}
+     *
+     * @param foods
+     * @param baseDateInMillis
+     * @return
+     */
+    private static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis, boolean fillInGaps) {
+        SparseIntArray frequencies = getIntFrequencies(foods, baseDateInMillis, fillInGaps);
+        int highest = 0;
+        for (int i = 0; i < frequencies.size(); i++) {
+            int current = frequencies.get(i);
+            if (current > highest) {
+                highest = current;
+            }
+        }
+        return highest;
+    }
+
+    /**
+     * Returns the highest number of items expiring in a single day from a {@link List} of
+     * {@link Food}
+     *
+     * @param foods
+     * @param baseDateInMillis
+     * @return
+     */
+    public static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis) {
+        return getHighestDailyFrequency(foods, baseDateInMillis, true);
+    }
+
 
     /**
      * Returns an array of just the dates from the provided food list

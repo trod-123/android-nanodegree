@@ -13,24 +13,28 @@ import com.zn.expirytracker.utils.Toolbox;
 
 public class ConfirmDeleteDialog extends DialogFragment {
 
-    private static final String ARG_FOOD_NAME =
+    private static final String ARG_FOOD_NAME_STRING =
             Toolbox.createStaticKeyString("confirm_delete_dialog.food_name");
-    private static final String ARG_IS_LOGGED_IN =
+    private static final String ARG_IS_LOGGED_IN_BOOL =
             Toolbox.createStaticKeyString("confirm_delete_dialog.is_logged_in");
+    private static final String ARG_WIPE_ALL_BOOL =
+            Toolbox.createStaticKeyString("confirm_delete_dialog.wipe_all");
 
     private OnConfirmDeleteButtonClickListener callback;
     private String foodName;
     private int messageResId;
+    private boolean mWipeAll = false;
 
     public interface OnConfirmDeleteButtonClickListener {
         void onConfirmDeleteButtonClicked(int position);
     }
 
-    public static ConfirmDeleteDialog newInstance(String foodName, boolean isLoggedIn) {
+    public static ConfirmDeleteDialog newInstance(String foodName, boolean isLoggedIn, boolean wipeAll) {
         ConfirmDeleteDialog fragment = new ConfirmDeleteDialog();
         Bundle args = new Bundle();
-        args.putString(ARG_FOOD_NAME, foodName);
-        args.putBoolean(ARG_IS_LOGGED_IN, isLoggedIn);
+        args.putString(ARG_FOOD_NAME_STRING, foodName);
+        args.putBoolean(ARG_IS_LOGGED_IN_BOOL, isLoggedIn);
+        args.putBoolean(ARG_WIPE_ALL_BOOL, wipeAll);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,12 +51,13 @@ public class ConfirmDeleteDialog extends DialogFragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            foodName = args.getString(ARG_FOOD_NAME,
+            foodName = args.getString(ARG_FOOD_NAME_STRING,
                     getString(R.string.edit_dialog_delete_confirm_generic_food_name));
-            boolean isLoggedIn = args.getBoolean(ARG_IS_LOGGED_IN, false);
+            boolean isLoggedIn = args.getBoolean(ARG_IS_LOGGED_IN_BOOL, false);
             messageResId = isLoggedIn ?
                     R.string.edit_dialog_delete_confirm_message_has_account :
                     R.string.edit_dialog_delete_confirm_message_no_account;
+            mWipeAll = args.getBoolean(ARG_WIPE_ALL_BOOL, false);
         } else {
             foodName = getString(R.string.edit_dialog_delete_confirm_generic_food_name);
             messageResId = R.string.edit_dialog_delete_confirm_message_no_account;
@@ -63,8 +68,10 @@ public class ConfirmDeleteDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.edit_dialog_delete_confirm_title)
-                .setMessage(getString(messageResId, foodName))
+        builder.setTitle(mWipeAll ? R.string.edit_dialog_delete_device_data_title :
+                R.string.edit_dialog_delete_confirm_title)
+                .setMessage(mWipeAll ? getString(R.string.edit_dialog_delete_device_data_message) :
+                        getString(messageResId, foodName))
                 .setNeutralButton(R.string.edit_dialog_delete_confirm_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override

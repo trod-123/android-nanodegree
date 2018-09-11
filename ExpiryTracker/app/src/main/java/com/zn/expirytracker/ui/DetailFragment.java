@@ -140,8 +140,16 @@ public class DetailFragment extends Fragment {
         mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
-                mPagerAdapter.setImageUris(food.getImages());
-                populateViewElements(food);
+                if (food != null) {
+                    mPagerAdapter.setImageUris(food.getImages());
+                    mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
+                    populateViewElements(food);
+                } else {
+                    // When other fragments are removed from the pager dynamically, while
+                    // onChanged() is called since the database changes, this block never gets
+                    // called because this fragment is recreated with a new slate
+
+                }
             }
         });
 

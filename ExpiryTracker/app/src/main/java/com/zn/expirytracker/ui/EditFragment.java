@@ -559,7 +559,7 @@ public class EditFragment extends Fragment implements
      */
     private void showConfirmDeleteDialog() {
         ConfirmDeleteDialog dialog = ConfirmDeleteDialog.newInstance(
-                mFood.getFoodName(), AuthToolbox.checkIfSignedIn());
+                mFood.getFoodName(), AuthToolbox.checkIfSignedIn(), false);
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
     }

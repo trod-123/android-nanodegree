@@ -1,5 +1,6 @@
 package com.zn.expirytracker.ui;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -8,6 +9,7 @@ import com.zn.expirytracker.data.model.Food;
 
 import java.util.List;
 
+// TODO: After submission, animate deleting items
 public class DetailPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final float DEFAULT_PAGE_WIDTH = 0.98f;
@@ -26,6 +28,13 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         return DetailFragment.newInstance(mFoodsList.get(position).get_id());
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        // Necessary to call, along with .notifyDataSetChanged(), to reload all the fragments
+        // https://stackoverflow.com/questions/10396321/remove-fragment-page-from-viewpager-in-android
+        return FragmentStatePagerAdapter.POSITION_NONE;
     }
 
     @Override

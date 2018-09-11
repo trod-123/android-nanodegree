@@ -1,5 +1,7 @@
 package com.zn.expirytracker.settings;
 
+import android.app.Dialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v14.preference.MultiSelectListPreference;
@@ -12,13 +14,16 @@ import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
 import com.zn.expirytracker.utils.AuthToolbox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat
+        implements ConfirmDeleteDialog.OnConfirmDeleteButtonClickListener {
 
     static Preference mPreferenceNotificationsNumDays;
     static Preference mPreferenceNotificationsTod;
@@ -27,6 +32,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     static Preference mPreferenceAccountSync;
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
+    static Preference mPreferenceWipeDeviceData;
+
+    private static FoodViewModel mViewModel;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -42,6 +56,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
+        mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(findPreference(
@@ -149,6 +164,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 return false;
             }
         });
+        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showWipeDeviceDataConfirmationDialog();
+                return true;
+            }
+        });
     }
 
     /**
@@ -246,6 +268,25 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             boolean enabled = (boolean) value;
             mPreferenceNotificationsNumDays.setEnabled(enabled);
             mPreferenceNotificationsTod.setEnabled(enabled);
+        }
+    }
+
+    /**
+     * Shows a dialog for the user to confirm wiping device data
+     */
+    private void showWipeDeviceDataConfirmationDialog() {
+        ConfirmDeleteDialog dialog = ConfirmDeleteDialog
+                .newInstance(null, false, true);
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
+    }
+
+    @Override
+    public void onConfirmDeleteButtonClicked(int position) {
+        switch (position) {
+            case Dialog.BUTTON_POSITIVE:
+                mViewModel.deleteAllFoods();
+                break;
         }
     }
 }

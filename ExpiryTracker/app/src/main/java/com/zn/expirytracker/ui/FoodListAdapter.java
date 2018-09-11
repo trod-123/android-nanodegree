@@ -147,6 +147,8 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                         return false;
                     }
                 });
+            } else {
+                mImage.setImageDrawable(null);
             }
 
             // Set the color of a drawable

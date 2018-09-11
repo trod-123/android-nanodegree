@@ -71,6 +71,7 @@ public class DetailImageFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         if (mImageUriString != null) {
+            mImageView.setImageDrawable(null);
             Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView, new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -82,20 +83,18 @@ public class DetailImageFragment extends Fragment {
                     return false;
                 }
             });
-            mImageView.setImageDrawable(null);
-            mIvAddIcon.setVisibility(View.GONE);
         } else {
             // Set the add fragment
             mImageView.setBackgroundColor(getContext().getResources()
                     .getColor(R.color.imageBackground_none));
             mIvAddIcon.setVisibility(View.VISIBLE);
+            mIvAddIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toolbox.showToast(getContext(), "This will add an image");
+                }
+            });
         }
-        mIvAddIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toolbox.showToast(getContext(), "This will add an image");
-            }
-        });
 
         return rootView;
     }

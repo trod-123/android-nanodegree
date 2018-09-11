@@ -185,6 +185,9 @@
     <string name="edit_error_count">Count must be larger than 0</string>
     <string name="edit_error_date_expiry">The selected date must be today or later</string>
     <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
+
+    <!-- region Delete dialog -->
+
     <string name="edit_dialog_changes_not_saved">Your changes have not been saved</string>
     <string name="edit_dialog_changes_not_saved_discard">Discard</string>
     <string name="edit_dialog_changes_not_saved_save">Save</string>
@@ -195,5 +198,9 @@
     <string name="edit_dialog_delete_confirm_cancel">Cancel</string>
     <string name="edit_dialog_delete_confirm_delete">Delete</string>
     <string name="edit_dialog_delete_done">%1$s has been deleted</string>
+    <string name="edit_dialog_delete_device_data_title">Delete all &appname; data on device</string>
+    <string name="edit_dialog_delete_device_data_message">Are you sure you want to delete all of your food items on this device? This cannot be undone!</string>
+
+    <!-- endregion -->
 
 </resources>

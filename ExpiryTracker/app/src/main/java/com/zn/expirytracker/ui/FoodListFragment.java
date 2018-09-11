@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,6 +93,24 @@ public class FoodListFragment extends Fragment {
         mRvFoodList.setHasFixedSize(true);
         mListAdapter = new FoodListAdapter(mHostActivity);
         mRvFoodList.setAdapter(mListAdapter);
+
+        // Remove items by swipe
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Food food = mListAdapter.getFoodAtPosition(position);
+                mViewModel.delete(food.get_id());
+                Toolbox.showToast(mHostActivity, "Removed " + food.getFoodName());
+            }
+        });
+        helper.attachToRecyclerView(mRvFoodList);
     }
 
     private void startAddActivity() {
