@@ -59,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mViewPager.getCurrentItem() == MainPagerAdapter.FRAGMENT_LIST) {
+            // Go back to At A Glance if currently in List
+            mViewPager.setCurrentItem(MainPagerAdapter.FRAGMENT_AT_A_GLANCE);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /**
      * Helper for setting up tab decor
      */
