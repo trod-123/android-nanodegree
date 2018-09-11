@@ -3,6 +3,7 @@
     package="com.zn.expirytracker">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name=".ExpiryTrackerApplication"

@@ -1,9 +1,13 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
@@ -28,8 +32,9 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.TestDataGen;
 import com.zn.expirytracker.data.WeeklyDateFilter;
+import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -48,6 +53,8 @@ import timber.log.Timber;
 public class AtAGlanceFragment extends Fragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    @BindView(R.id.layout_at_a_glance_root)
+    View mRootLayout;
     @BindView(R.id.chart_at_a_glance)
     BarChart mBarChart;
     @BindView(R.id.rv_glance_food_list)
@@ -70,7 +77,7 @@ public class AtAGlanceFragment extends Fragment
     private List<BarEntry> mBarChartEntries;
 
     private FoodListAdapter mListAdapter;
-    private TestDataGen mDataGenerator;
+    private FoodViewModel mViewModel;
 
     private Activity mHostActivity;
     private DateTime mCurrentDateTimeStartOfDay; // for dates calculations
@@ -99,7 +106,7 @@ public class AtAGlanceFragment extends Fragment
         mCurrentDateTime = System.currentTimeMillis();
         mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(mCurrentDateTime);
         mCurrentFilter = WeeklyDateFilter.NEXT_7;
-        mDataGenerator = TestDataGen.getInstance();
+        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
     }
 
     @Override
@@ -122,28 +129,22 @@ public class AtAGlanceFragment extends Fragment
                                     case R.id.action_filter_7_days:
                                         if (mCurrentFilter != WeeklyDateFilter.NEXT_7) {
                                             mCurrentFilter = WeeklyDateFilter.NEXT_7;
-                                            resetChartXAxisMaximum();
-                                            updateFabText();
-                                            updateSummary();
-                                            updateListHeader();
+                                            updateUI();
+                                            updateViewModel();
                                         }
                                         return true;
                                     case R.id.action_filter_14_days:
                                         if (mCurrentFilter != WeeklyDateFilter.NEXT_14) {
                                             mCurrentFilter = WeeklyDateFilter.NEXT_14;
-                                            resetChartXAxisMaximum();
-                                            updateFabText();
-                                            updateSummary();
-                                            updateListHeader();
+                                            updateUI();
+                                            updateViewModel();
                                         }
                                         return true;
                                     case R.id.action_filter_21_days:
                                         if (mCurrentFilter != WeeklyDateFilter.NEXT_21) {
                                             mCurrentFilter = WeeklyDateFilter.NEXT_21;
-                                            resetChartXAxisMaximum();
-                                            updateFabText();
-                                            updateSummary();
-                                            updateListHeader();
+                                            updateUI();
+                                            updateViewModel();
                                         }
                                         return true;
                                 }
@@ -152,12 +153,24 @@ public class AtAGlanceFragment extends Fragment
                         });
             }
         });
+        mRootLayout.setAlpha(0f); // hide the views until data is ready
+        mViewModel.getAllFoods(true).observe(this, new Observer<PagedList<Food>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<Food> foods) {
+                // This should only be called once
+                if (foods != null && foods.size() > 0) {
+                    setupBarChart(foods);
+                    resetChartXAxisMaximum();
+                    updateSummary(mCurrentFilter, mBarChartEntries);
+                    mRootLayout.animate().setDuration(500).alpha(1f);
+                }
+            }
+        });
+        updateViewModel();
 
-        setupBarChart();
-        updateFabText();
+        // Prepare the UI elements first - these can be done independently of data
         setupRecyclerView();
         updateGreeting();
-        updateSummary();
         updateListHeader();
 
         return rootView;
@@ -178,27 +191,29 @@ public class AtAGlanceFragment extends Fragment
         sp.unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    private void updateViewModel() {
+        mViewModel.getAllFoodsExpiringBeforeDate(
+                DataToolbox.getDateBoundsFromFilter(mCurrentFilter, mCurrentDateTimeStartOfDay),
+                true).observe(this, new Observer<PagedList<Food>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<Food> foods) {
+                mListAdapter.submitList(foods);
+                updateSummary(mCurrentFilter, mBarChartEntries); // this requires data
+            }
+        });
+    }
+
     /**
      * Helper for setting up the bar chart
      * Documentation and instructions: https://github.com/PhilJay/MPAndroidChart
      */
-    private void setupBarChart() {
-        // Data elements
-        // TODO: Figure out how to handle the app calling System.currentTimeMillis() from different places
-        // Need to find a viable and consistent way of reading this value across the app so counts
-        // are consistent in all screens, but still up to date, in case user is using the app
-        // through midnight
-        // TODO: Implement under LiveData (data should already be filtered before it goes here)
-        mBarChartEntries = DataToolbox.getTestChartValues(mDataGenerator.getExpiryDates(),
-                mCurrentDateTimeStartOfDay.getMillis());
+    private void setupBarChart(List<Food> allFoods) {
+        mBarChartEntries = DataToolbox.getBarEntries(allFoods, mCurrentDateTimeStartOfDay.getMillis());
         BarDataSet dataSet = new BarDataSet(mBarChartEntries, null);
         dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.colorAccent)); // set color of bars
         dataSet.setDrawValues(false); // don't show values for each point
         BarData barData = new BarData(dataSet);
         barData.setBarWidth(0.6f);
-
-        // TODO: TEMP, FIGURE OUT HOW TO REDUCE THE LOADING LAG
-        mBarChart.setLogEnabled(true);
 
         mBarChart.setData(barData);
         mBarChart.setNoDataText(getString(R.string.at_a_glance_bar_chart_empty));
@@ -225,7 +240,7 @@ public class AtAGlanceFragment extends Fragment
 
         XAxis xAxis = mBarChart.getXAxis();
         xAxis.setAxisMinimum(-0.5f); // overshoot to add padding for first day
-        xAxis.setAxisMaximum(6.5f); // overshoot to add padding for last day
+//        xAxis.setAxisMaximum(6.5f); // overshoot to add padding for last day
         xAxis.setDrawGridLines(false); // hide the vertical lines for each x axis value
         xAxis.setAxisLineWidth(2); // make the x axis thicker than others
         xAxis.setAxisLineColor(ContextCompat.getColor(mHostActivity, R.color.colorPrimary));
@@ -252,25 +267,21 @@ public class AtAGlanceFragment extends Fragment
             }
         });
         mBarChart.highlightValue(0, 0); // Automatically highlight the first value
-        mBarChart.animateY(500);
     }
 
-    private void updateFabText() {
-        String text;
-        switch (mCurrentFilter) {
-            case NEXT_7:
-                text = getString(R.string.date_weekly_filter_7_days);
-                break;
-            case NEXT_14:
-                text = getString(R.string.date_weekly_filter_14_days);
-                break;
-            case NEXT_21:
-                text = getString(R.string.date_weekly_filter_21_days);
-                break;
-            default:
-                text = getString(R.string.at_a_glance_date_range_label);
-        }
-        mTvChartDateRange.setText(text);
+    private void setupRecyclerView() {
+        mRvFoodList.setLayoutManager(new LinearLayoutManager(mHostActivity,
+                LinearLayoutManager.VERTICAL, false));
+        mRvFoodList.setHasFixedSize(false); // since size dynamically changes, this should be false
+        mListAdapter = new FoodListAdapter(mHostActivity);
+        mRvFoodList.setAdapter(mListAdapter);
+        ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
+    }
+
+    private void updateUI() {
+        resetChartXAxisMaximum();
+        updateFabText();
+        updateListHeader();
     }
 
     private void resetChartXAxisMaximum() {
@@ -293,19 +304,27 @@ public class AtAGlanceFragment extends Fragment
         mBarChart.animateY(1000);
     }
 
-    private void setupRecyclerView() {
-        mRvFoodList.setLayoutManager(new LinearLayoutManager(mHostActivity,
-                LinearLayoutManager.VERTICAL, false));
-        mRvFoodList.setHasFixedSize(true);
-        // TODO: Implement under LiveData
-        mListAdapter = new FoodListAdapter(mHostActivity, mDataGenerator.getFoodNames(),
-                mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
-                mDataGenerator.getLocs(), mDataGenerator.getColors());
-        mRvFoodList.setAdapter(mListAdapter);
-        ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
+    private void updateFabText() {
+        String text;
+        switch (mCurrentFilter) {
+            case NEXT_7:
+                text = getString(R.string.date_weekly_filter_7_days);
+                break;
+            case NEXT_14:
+                text = getString(R.string.date_weekly_filter_14_days);
+                break;
+            case NEXT_21:
+                text = getString(R.string.date_weekly_filter_21_days);
+                break;
+            default:
+                text = getString(R.string.at_a_glance_date_range_label);
+        }
+        mTvChartDateRange.setText(text);
     }
 
     private void updateChartHeader(int daysFromCurrent, int foodsCount) {
+        mTvChartHeaderDate.animate().alpha(1f);
+        mTvChartHeaderNumFoods.animate().alpha(1f);
         mTvChartHeaderDate.setText(
                 DataToolbox.getFormattedLessShortDateString(mCurrentDateTimeStartOfDay, daysFromCurrent));
         if (foodsCount != 0) {
@@ -335,9 +354,12 @@ public class AtAGlanceFragment extends Fragment
                 mCurrentDateTime));
     }
 
-    private void updateSummary() {
+    private void updateSummary(WeeklyDateFilter filter, List<BarEntry> barChartEntries) {
+        if (barChartEntries == null) {
+            return;
+        }
         int limit;
-        switch (mCurrentFilter) {
+        switch (filter) {
             case NEXT_7:
                 limit = 7;
                 break;
@@ -349,13 +371,13 @@ public class AtAGlanceFragment extends Fragment
                 limit = 21;
         }
         int totalFoodsCountFromFilter = 0;
-        for (int i = 0; i < limit && i < mBarChartEntries.size(); i++) {
-            totalFoodsCountFromFilter += mBarChartEntries.get(i).getY();
+        for (int i = 0; i < limit && i < barChartEntries.size(); i++) {
+            totalFoodsCountFromFilter += barChartEntries.get(i).getY();
         }
-        int foodsCountCurrent = (int) mBarChartEntries.get(0).getY();
-        int foodsCountNextDay = (int) mBarChartEntries.get(1).getY();
+        int foodsCountCurrent = (int) barChartEntries.get(0).getY();
+        int foodsCountNextDay = (int) barChartEntries.get(1).getY();
 
-        mTvSummary.setText(DataToolbox.getFullSummary(mHostActivity, mCurrentFilter,
+        mTvSummary.setText(DataToolbox.getFullSummary(mHostActivity, filter,
                 totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay));
     }
 

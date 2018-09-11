@@ -4,30 +4,41 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.List;
+
 public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
 
-    // TODO: For testing, get an array of color ids instead of images
-    private int[] mColorResIds;
+    private List<String> mImageUris;
 
-    public DetailImagePagerAdapter(FragmentManager fm, int[] colorResIds) {
+    public DetailImagePagerAdapter(FragmentManager fm) {
         // This is where you pass in what's needed to create each of the fragments
         super(fm);
-        mColorResIds = colorResIds;
+    }
+
+    public void setImageUris(List<String> imageUris) {
+        mImageUris = imageUris;
+        notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position) {
         // This is where we create paged items
-        if (position < mColorResIds.length) {
-            return DetailImageFragment.newInstance(-1, mColorResIds[position]);
+        if (mImageUris != null) {
+            if (position < mImageUris.size()) {
+                return DetailImageFragment.newInstance(-1, mImageUris.get(position));
+            } else {
+                // Guaranteed to always be the last position
+                return DetailImageFragment.newInstance(-1, null);
+            }
         } else {
-            return DetailImageFragment.newInstance(-1, -1);
+            // Don't create anything if null
+            return null;
         }
     }
 
     @Override
     public int getCount() {
         // Add one for the dedicated add image fragment
-        return mColorResIds.length + 1;
+        return mImageUris != null ? mImageUris.size() + 1 : 0;
     }
 }

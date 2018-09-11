@@ -22,9 +22,9 @@ public class EditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-            int position = intent.getIntExtra(DetailActivity.ARG_ITEM_POSITION_INT, 0);
+            long id = intent.getLongExtra(DetailActivity.ARG_ITEM_ID_LONG, 0);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_edit_fragment, EditFragment.newInstance(position),
+                    .replace(R.id.container_edit_fragment, EditFragment.newInstance(id),
                             EditFragment.class.getSimpleName())
                     .commit();
         }

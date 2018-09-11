@@ -1,8 +1,10 @@
 package com.zn.expirytracker;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
 
-import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.utils.AuthToolbox;
 
 import timber.log.Timber;
 
@@ -20,12 +22,12 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean loggedIn = sp.getBoolean(getString(R.string.pref_account_signed_in_key), false);
+        AuthToolbox.signIn(this, loggedIn);
+
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-            // Generate random data. Accessible anywhere in the app
-            TestDataGen.generateInstance(TestDataGen.DEFAULT_NUM_CHART_ENTRIES,
-                    TestDataGen.DEFAULT_NUM_FOOD_DATA, TestDataGen.DEFAULT_DATE_BOUNDS,
-                    TestDataGen.DEFAULT_COUNT_BOUNDS);
         } else {
             // TODO: Initialize a crash reporting tree
             // https://github.com/JakeWharton/timber/blob/master/sample/src/main/java/com/example/timber/ExampleApp.java

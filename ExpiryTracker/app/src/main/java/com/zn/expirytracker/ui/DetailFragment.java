@@ -1,7 +1,10 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -13,7 +16,9 @@ import android.widget.TextView;
 
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.model.Storage;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -25,8 +30,8 @@ import timber.log.Timber;
 
 public class DetailFragment extends Fragment {
 
-    public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
-            "detail_fragment.item_position_int");
+    public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
+            "detail_fragment.item_id_long");
 
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
@@ -38,6 +43,8 @@ public class DetailFragment extends Fragment {
     TextView mTvFoodName;
     @BindView(R.id.tv_detail_expiry_date)
     TextView mTvExpiryDate;
+    @BindView(R.id.tv_detail_storage_label)
+    TextView mTvStorage;
     @BindView(R.id.iv_detail_storage_icon)
     ImageView mIvStorageIcon;
     @BindView(R.id.ncv_detail_count_days)
@@ -46,16 +53,42 @@ public class DetailFragment extends Fragment {
     NumberCircleView mNcvCount;
     @BindView(R.id.tv_detail_description)
     TextView mTvDescription;
+
     @BindView(R.id.tv_detail_brand)
     TextView mTvBrand;
+    @BindView(R.id.iv_detail_brand)
+    ImageView mIvBrand;
+    @BindView(R.id.tv_detail_brand_label)
+    TextView mTvBrandLabel;
+
     @BindView(R.id.tv_detail_size)
     TextView mTvSize;
+    @BindView(R.id.iv_detail_size)
+    ImageView mIvSize;
+    @BindView(R.id.tv_detail_size_label)
+    TextView mTvSizeLabel;
+
     @BindView(R.id.tv_detail_weight)
     TextView mTvWeight;
+    @BindView(R.id.iv_detail_weight)
+    ImageView mIvWeight;
+    @BindView(R.id.tv_detail_weight_label)
+    TextView mTvWeightLabel;
+
     @BindView(R.id.tv_detail_notes)
     TextView mTvNotes;
+    @BindView(R.id.iv_detail_notes)
+    ImageView mIvNotes;
+    @BindView(R.id.tv_detail_notes_label)
+    TextView mTvNotesLabel;
+
     @BindView(R.id.tv_detail_barcode)
     TextView mTvBarcode;
+    @BindView(R.id.iv_detail_barcode)
+    ImageView mIvBarcode;
+    @BindView(R.id.tv_detail_barcode_label)
+    TextView mTvBarcodeLabel;
+
     @BindView(R.id.tv_detail_input)
     TextView mTvInput;
     @BindView(R.id.tv_detail_credit_upcitemdb)
@@ -66,18 +99,18 @@ public class DetailFragment extends Fragment {
     private DetailImagePagerAdapter mPagerAdapter;
 
     private Activity mHostActivity;
-    private TestDataGen mDataGenerator;
+    private FoodViewModel mViewModel;
     private DateTime mCurrentDateTimeStartOfDay;
-    private int mItemPosition;
+    private long mItemId;
 
     public DetailFragment() {
         // Required empty public constructor
     }
 
-    public static DetailFragment newInstance(int itemPosition) {
+    public static DetailFragment newInstance(long itemId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_POSITION_INT, itemPosition);
+        args.putLong(ARG_ITEM_ID_LONG, itemId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,13 +120,12 @@ public class DetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mHostActivity = getActivity();
-        mDataGenerator = TestDataGen.getInstance();
+        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
         mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
 
         Bundle args = getArguments();
         if (args != null) {
-            // The position will determine the populated elements
-            mItemPosition = args.getInt(ARG_ITEM_POSITION_INT, 0);
+            mItemId = args.getLong(ARG_ITEM_ID_LONG, 0);
         }
     }
 
@@ -105,15 +137,16 @@ public class DetailFragment extends Fragment {
         Timber.tag(DetailFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
-        populateViewElements();
+        mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
+            @Override
+            public void onChanged(@Nullable Food food) {
+                mPagerAdapter.setImageUris(food.getImages());
+                populateViewElements(food);
+            }
+        });
 
-        return rootView;
-    }
-
-    private void populateViewElements() {
         // Image pager
-        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(),
-                mDataGenerator.getColors());
+        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -144,19 +177,24 @@ public class DetailFragment extends Fragment {
             }
         });
 
-        // Main layout
-        mTvFoodName.setText(mDataGenerator.getFoodNameAt(mItemPosition));
-        mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
-                mHostActivity, mCurrentDateTimeStartOfDay.getMillis(),
-                mDataGenerator.getExpiryDateAt(mItemPosition)));
-        mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(
-                mDataGenerator.getStorageLocAt(mItemPosition)));
+        return rootView;
+    }
 
-        mNcvCount.mTvValue.setText(String.valueOf(mDataGenerator.getCountAt(mItemPosition)));
+    private void populateViewElements(Food food) {
+        // Main layout
+        mTvFoodName.setText(food.getFoodName());
+        mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
+                mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
+        Storage storage = food.getStorageLocation();
+        mTvStorage.setText(getString(R.string.storage_location_description,
+                DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
+        mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
+
+        mNcvCount.mTvValue.setText(String.valueOf(food.getCount()));
         mNcvCount.mTvLabel.setText(getString(R.string.food_count_label));
         int daysUntilExpiry = DataToolbox.getNumDaysBetweenDates(
                 mCurrentDateTimeStartOfDay.getMillis(),
-                mDataGenerator.getExpiryDateAt(mItemPosition));
+                food.getDateExpiry());
         mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));
         mNcvCountDays.mTvLabel.setText(mHostActivity.getResources().getQuantityString(
                 R.plurals.food_days_label, daysUntilExpiry));
@@ -164,16 +202,44 @@ public class DetailFragment extends Fragment {
                         .getDimensionPixelSize(R.dimen.number_circle_outline_width),
                 ContextCompat.getColor(mHostActivity, DataToolbox.getAlertColorResource(
                         daysUntilExpiry, DataToolbox.DEFAULT_ALERT_THRESHOLD)));
-        mTvDescription.setText("The current item position is: " + mItemPosition);
+
+        String description = food.getDescription();
+        mTvDescription.setText(description);
+//        mTvDescription.setVisibility(description.isEmpty() ? View.GONE : View.VISIBLE);
 
         // Other info layout
-        mTvBrand.setText("Kellogg's");
-        mTvSize.setText("12\" x 10\"");
-        mTvWeight.setText("200 lbs");
-        mTvNotes.setText("What is 1 plus " + mItemPosition);
+        String brandName = food.getBrandName();
+        mTvBrand.setText(brandName);
+//        setInfoVisibility(mIvBrand, mTvBrandLabel, mTvBrand, !brandName.isEmpty());
+        String size = food.getSize();
+        mTvSize.setText(size);
+//        setInfoVisibility(mIvSize, mTvSizeLabel, mTvSize, !size.isEmpty());
+        String weight = food.getWeight();
+        mTvWeight.setText(weight);
+//        setInfoVisibility(mIvWeight, mTvWeightLabel, mTvWeight, !weight.isEmpty());
+        String notes = food.getNotes();
+        mTvNotes.setText(notes);
+//        setInfoVisibility(mIvNotes, mTvNotesLabel, mTvNotes, !notes.isEmpty());
 
         // Meta data layout
-        mTvBarcode.setText("123123123");
-        mTvInput.setText("Scanned by WHAT??");
+        String barcode = food.getBarcode();
+        mTvBarcode.setText(barcode);
+//        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode, !barcode.isEmpty());
+        mTvInput.setText(food.getInputType().toString());
+//        switch (food.getInputType()) {
+//            case BARCODE:
+//                mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
+//                break;
+//            case IMG_REC:
+//                mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
+//                break;
+//        }
+    }
+
+    private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView, boolean show) {
+        int visibility = show ? View.VISIBLE : View.INVISIBLE;
+        iconView.setVisibility(visibility);
+        labelView.setVisibility(visibility);
+        valueView.setVisibility(visibility);
     }
 }

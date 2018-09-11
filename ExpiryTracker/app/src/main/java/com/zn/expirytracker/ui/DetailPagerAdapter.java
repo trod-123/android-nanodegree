@@ -4,27 +4,33 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.data.model.Food;
+
+import java.util.List;
 
 public class DetailPagerAdapter extends FragmentStatePagerAdapter {
 
     private static final float DEFAULT_PAGE_WIDTH = 0.98f;
 
-    private TestDataGen mDataGenerator;
+    private List<Food> mFoodsList;
 
-    public DetailPagerAdapter(FragmentManager fm, TestDataGen dataGenerator) {
+    public DetailPagerAdapter(FragmentManager fm) {
         super(fm);
-        mDataGenerator = dataGenerator;
+    }
+
+    public void setFoodsList(List<Food> foodsList) {
+        mFoodsList = foodsList;
+        notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position) {
-        return DetailFragment.newInstance(position);
+        return DetailFragment.newInstance(mFoodsList.get(position).get_id());
     }
 
     @Override
     public int getCount() {
-        return mDataGenerator.getDatabaseSize();
+        return mFoodsList != null ? mFoodsList.size() : 0;
     }
 
     @Override

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <TextView
@@ -9,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Hello, Teddy!"
+        tools:text="Hello, Teddy!"
         android:textColor="@color/colorPrimary"
         android:textSize="28sp" />
 
@@ -18,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="You have 13 foods expiring this week, and 3 expiring today!"
+        tools:text="You have 13 foods expiring this week, and 3 expiring today!"
         android:textColor="@color/textColorPrimary"
         android:textSize="24sp" />
 
@@ -27,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Foods expiring in the next 7 days:"
+        tools:text="Foods expiring in the next 7 days:"
         android:textColor="@color/textColorPrimary"
         android:textSize="24sp" />
 </LinearLayout>

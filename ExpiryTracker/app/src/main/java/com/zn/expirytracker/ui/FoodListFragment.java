@@ -1,8 +1,12 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,7 +33,7 @@ public class FoodListFragment extends Fragment {
     private Activity mHostActivity;
 
     private FoodListAdapter mListAdapter;
-    private TestDataGen mDataGenerator;
+    private FoodViewModel mViewModel;
 
     public FoodListFragment() {
         // Required empty public constructor
@@ -49,7 +54,7 @@ public class FoodListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mHostActivity = getActivity();
-        mDataGenerator = TestDataGen.getInstance();
+        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
     }
 
     @Override
@@ -61,6 +66,13 @@ public class FoodListFragment extends Fragment {
         ButterKnife.bind(this, rootView);
 
         setupRecyclerView();
+
+        mViewModel.getAllFoods(true).observe(this, new Observer<PagedList<Food>>() {
+            @Override
+            public void onChanged(@Nullable PagedList<Food> foods) {
+                mListAdapter.submitList(foods);
+            }
+        });
 
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,10 +89,7 @@ public class FoodListFragment extends Fragment {
         mRvFoodList.setLayoutManager(new LinearLayoutManager(mHostActivity,
                 LinearLayoutManager.VERTICAL, false));
         mRvFoodList.setHasFixedSize(true);
-        // TODO: Implement under LiveData
-        mListAdapter = new FoodListAdapter(mHostActivity, mDataGenerator.getFoodNames(),
-                mDataGenerator.getExpiryDates(), mDataGenerator.getCounts(),
-                mDataGenerator.getLocs(), mDataGenerator.getColors());
+        mListAdapter = new FoodListAdapter(mHostActivity);
         mRvFoodList.setAdapter(mListAdapter);
     }
 

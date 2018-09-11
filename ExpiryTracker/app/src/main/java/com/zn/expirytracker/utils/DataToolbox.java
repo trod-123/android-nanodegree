@@ -7,6 +7,7 @@ import android.util.SparseIntArray;
 import com.github.mikephil.charting.data.BarEntry;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.WeeklyDateFilter;
+import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.Storage;
 
 import org.joda.time.DateTime;
@@ -33,6 +34,8 @@ public class DataToolbox {
     private static final int GREETING_EVENING_BOUNDS = 17; // 24 hours
     private static final int GREETING_MORNING_BOUNDS = 5;
     private static final int GREETING_AFTERNOON_BOUNDS = 12;
+
+    private static final int INVALID_POSITION = -1;
 
     /**
      * Returns a customized greeting based on the time of day
@@ -148,22 +151,62 @@ public class DataToolbox {
         }
     }
 
+    public static int getFoodPositionFromId(List<Food> foodsList, long id) {
+        if (foodsList != null) {
+            for (int i = 0; i < foodsList.size(); i++) {
+                if (foodsList.get(i).get_id() == id) return i;
+            }
+        }
+        return INVALID_POSITION;
+    }
+
+    /**
+     * Gets the date in millis of the {@code filter} added to the {@code currentDateTimeStartOfDay}
+     *
+     * @param filter
+     * @param currentDateTimeStartOfDay
+     * @return
+     */
+    public static long getDateBoundsFromFilter(WeeklyDateFilter filter,
+                                               DateTime currentDateTimeStartOfDay) {
+        int plusDays;
+        switch (filter) {
+            case NEXT_7:
+                plusDays = 7;
+                break;
+            case NEXT_14:
+                plusDays = 14;
+                break;
+            case NEXT_21:
+                plusDays = 21;
+                break;
+            default:
+                plusDays = 0;
+        }
+        return currentDateTimeStartOfDay.plusDays(plusDays).getMillis();
+    }
+
     /**
      * Gets a list of {@link BarEntry} xy mappings, where x is numDays, and y is the frequency of
      * each numDays
      *
-     * @param dates
+     * @param foods
+     * @param baseDateInMillis
      * @return
      */
-    public static List<BarEntry> getTestChartValues(long[] dates, long baseDateInMillis) {
+    public static List<BarEntry> getBarEntries(List<Food> foods, long baseDateInMillis) {
+        long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
         SparseIntArray data = getIntFrequencies(numDaysUntilCurrent, true);
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < data.size(); i++) {
-            entries.add(new BarEntry(data.keyAt(i), data.valueAt(i)));
+        if (data != null) {
+            List<BarEntry> entries = new ArrayList<>();
+            for (int i = 0; i < data.size(); i++) {
+                entries.add(new BarEntry(data.keyAt(i), data.valueAt(i)));
+            }
+            return entries;
+        } else {
+            return null;
         }
-
-        return entries;
     }
 
     /**
@@ -203,28 +246,32 @@ public class DataToolbox {
      * @return
      */
     private static SparseIntArray getIntFrequencies(int[] data, boolean fillInGaps) {
-        Arrays.sort(data);
-        SparseIntArray array = new SparseIntArray();
-        if (fillInGaps) {
-            for (int i = 0; i < data[data.length - 1]; i++) {
-                // create a key for every element in data, including for those elements that
-                // don't exist. initialize each value to 0
-                array.put(i, 0);
+        if (data.length > 0) {
+            Arrays.sort(data);
+            SparseIntArray array = new SparseIntArray();
+            if (fillInGaps) {
+                for (int i = 0; i < data[data.length - 1]; i++) {
+                    // create a key for every element in data, including for those elements that
+                    // don't exist. initialize each value to 0
+                    array.put(i, 0);
+                }
             }
-        }
-        for (int element : data) {
-            if (array.get(element, NO_MAPPING_FOUND) == NO_MAPPING_FOUND) {
-                // Add the key if it doesn't already exist, setting its initial value to 1
-                // Note this won't be called if fillInGaps is true, as all keys will already exist
-                array.put(element, 1);
-            } else {
-                // If the key already exists, then add 1 to its value by taking it out then putting
-                // it back in
-                int previousValue = array.get(element);
-                array.put(element, ++previousValue);
+            for (int element : data) {
+                if (array.get(element, NO_MAPPING_FOUND) == NO_MAPPING_FOUND) {
+                    // Add the key if it doesn't already exist, setting its initial value to 1
+                    // Note this won't be called if fillInGaps is true, as all keys will already exist
+                    array.put(element, 1);
+                } else {
+                    // If the key already exists, then add 1 to its value by taking it out then putting
+                    // it back in
+                    int previousValue = array.get(element);
+                    array.put(element, ++previousValue);
+                }
             }
+            return array;
+        } else {
+            return null;
         }
-        return array;
     }
 
     /**
@@ -232,9 +279,12 @@ public class DataToolbox {
      *
      * @return
      */
-    private static long[] getAllDatesFromFood() {
-        // TODO: Implement
-        return null;
+    private static long[] getAllExpiryDatesFromFood(List<Food> foods) {
+        long[] dates = new long[foods.size()];
+        for (int i = 0; i < foods.size(); i++) {
+            dates[i] = foods.get(i).getDateExpiry();
+        }
+        return dates;
     }
 
     /**

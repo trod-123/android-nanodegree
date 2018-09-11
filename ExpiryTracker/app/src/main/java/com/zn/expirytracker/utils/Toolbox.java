@@ -3,6 +3,7 @@ package com.zn.expirytracker.utils;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Vibrator;
@@ -17,7 +18,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 import com.rd.PageIndicatorView;
+import com.zn.expirytracker.GlideApp;
+import com.zn.expirytracker.GlideRequest;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -31,7 +37,7 @@ public class Toolbox {
     public static int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
     public static int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
     public static final long DEFAULT_VIBRATION_BUTTON_PRESS_LENGTH = 50;
-
+    private static final float GLIDE_THUMBNAIL_MULTIPLIER = 0.1f;
 
     public static final long PAGE_INDICATOR_FADE_IN_DURATION = 250;
     public static final long PAGE_INDICATOR_FADE_IN_DELAY = 0;
@@ -199,6 +205,46 @@ public class Toolbox {
                             view.setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    /**
+     * Loads an image from an image or video url into an imageview. For images that will be used
+     * as shared elements, see {@code Toolbox.loadSharedElementsImageFromUrl()}
+     * <p>
+     * Underlying mechanism is provided by Glide
+     *
+     * @param context
+     * @param sourceUrl
+     * @param imageView
+     */
+    public static void loadImageFromUrl(@NonNull Context context, @NonNull String sourceUrl,
+                                        @NonNull ImageView imageView,
+                                        RequestListener<Bitmap> listener) {
+        getGlideRequestForLoadingImage(context, sourceUrl, listener)
+                .into(imageView);
+    }
+
+    /**
+     * Helper for preparing the Glide request. For images that will be used as shared elements,
+     * see {@code Toolbox.getGlideRequestForLoadingSharedElementsImage()}
+     *
+     * @param context
+     * @param sourceUrl
+     * @param listener
+     * @return
+     */
+    private static GlideRequest getGlideRequestForLoadingImage(Context context, String sourceUrl,
+                                                               RequestListener<Bitmap> listener) {
+        return GlideApp.with(context).asBitmap()
+                .load(sourceUrl)
+                .listener(listener)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                // if this is RESOURCE, then we get java.io.FileNotFoundException(No content provider) in the main app AND also in widget (first time endless loading, second time loads broken image error).
+                // if this is DATA then it works OK in the main app, but does not load in widget (if a listener is provided, onResourceReady never gets called..., and if no listener is provided, still does not load)
+                // if this is AUTOMATIC then it works OK in the main app, but always crashes the widget (if no listener is provided, otherwise onResourceReady never gets called...)
+                // if this is NONE, no images load anywhere
+                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER) // ideally, this thumbnail request points to a low-res url of the same image
+                .transition(BitmapTransitionOptions.withCrossFade());
     }
 
 

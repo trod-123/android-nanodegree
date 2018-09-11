@@ -1,6 +1,8 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,8 +25,9 @@ import android.widget.ImageView;
 
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.Storage;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
 import com.zn.expirytracker.ui.dialog.FormChangedDialog;
@@ -53,8 +56,8 @@ public class EditFragment extends Fragment implements
         FormChangedDialog.OnFormChangedButtonClickListener,
         ConfirmDeleteDialog.OnConfirmDeleteButtonClickListener {
 
-    public static final String ARG_ITEM_POSITION_INT = Toolbox.createStaticKeyString(
-            "edit_fragment.item_position_int");
+    public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
+            "edit_fragment.item_id_long");
     public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
 
     public static final int DEFAULT_STARTING_COUNT = 1;
@@ -119,9 +122,10 @@ public class EditFragment extends Fragment implements
     private DetailImagePagerAdapter mPagerAdapter;
 
     private Activity mHostActivity;
-    private TestDataGen mDataGenerator;
+    private FoodViewModel mViewModel;
     private FormChangedDetector mFormChangedDetector;
-    private int mItemPosition;
+    private Food mFood;
+    private long mItemId;
 
     private long mExpiryDate;
     private long mGoodThruDate;
@@ -130,10 +134,10 @@ public class EditFragment extends Fragment implements
         // Required empty public constructor
     }
 
-    public static EditFragment newInstance(int itemPosition) {
+    public static EditFragment newInstance(long itemId) {
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_POSITION_INT, itemPosition);
+        args.putLong(ARG_ITEM_ID_LONG, itemId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -144,28 +148,21 @@ public class EditFragment extends Fragment implements
         setHasOptionsMenu(true);
 
         mHostActivity = getActivity();
-        mDataGenerator = TestDataGen.getInstance();
+        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
 
         Bundle args = getArguments();
         if (args != null) {
             // The position will determine the populated elements
-            mItemPosition = args.getInt(ARG_ITEM_POSITION_INT, 0);
+            mItemId = args.getLong(ARG_ITEM_ID_LONG, 0);
         }
 
         // Set the dates
-        if (mItemPosition != POSITION_ADD_MODE) {
-            // TODO: By default, dates are saved at 00:00, but for debugging this is not guaranteed
-            // from the generated data.
-            mExpiryDate = DataToolbox
-                    .getTimeInMillisStartOfDay(mDataGenerator.getExpiryDateAt(mItemPosition));
-        } else {
+        if (mItemId == POSITION_ADD_MODE) {
             // By default, load up the current day as the initial expiry date
             mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+            // For all new items, goodThruDate is the same as expiryDate by default
+            mGoodThruDate = mExpiryDate;
         }
-        // TODO: By default, goodThruDate is the same as expiryDate. But once real data comes in, do
-        // NOT do this
-        mGoodThruDate = mExpiryDate;
-
     }
 
     @Override
@@ -215,19 +212,24 @@ public class EditFragment extends Fragment implements
             }
         });
 
-        populateFields(mItemPosition);
+        mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
+            @Override
+            public void onChanged(@Nullable Food food) {
+                populateFields(food);
+                // this needs to be done AFTER fields are populated
+                mFormChangedDetector = getFormChangedDetector();
+            }
+        });
+
         setTextChangedListeners();
         setClickListeners();
-
-        // this needs to be done AFTER fields are populated
-        mFormChangedDetector = getFormChangedDetector();
 
         return rootView;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mItemPosition == POSITION_ADD_MODE) {
+        if (mItemId == POSITION_ADD_MODE) {
             inflater.inflate(R.menu.menu_add, menu);
         } else {
             inflater.inflate(R.menu.menu_edit, menu);
@@ -251,45 +253,50 @@ public class EditFragment extends Fragment implements
      * Helper that pre-populates all fields. Does not pre-populate if
      * {@code itemPosition == POSITION_ADD_MODE}
      */
-    private void populateFields(int itemPosition) {
+    private void populateFields(Food food) {
+        mFood = food;
         // Only load from database if in ADD_MODE
-        if (itemPosition != POSITION_ADD_MODE) {
+        if (mItemId != POSITION_ADD_MODE) {
             // Image adapter
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(),
-                    mDataGenerator.getColors());
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
+            mPagerAdapter.setImageUris(food.getImages());
+
+            // Dates
+            mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
+            mGoodThruDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateGoodThru());
 
             // Main layout
-            mEtFoodName.setText(mDataGenerator.getFoodNameAt(itemPosition));
-            mEtCount.setText(String.valueOf(mDataGenerator.getCountAt(itemPosition)));
+            mEtFoodName.setText(food.getFoodName());
+            mEtCount.setText(String.valueOf(food.getCount()));
 
-            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
-                    mDataGenerator.getStorageLocAt(itemPosition)));
-            mEtLoc.setText(DataToolbox.getStorageIconString
-                    (mDataGenerator.getStorageLocAt(itemPosition), mHostActivity));
+            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(food.getStorageLocation()));
+            mEtLoc.setText(DataToolbox.getStorageIconString(food.getStorageLocation(),
+                    mHostActivity));
 
-            String description = "The current item position is: " + itemPosition;
+            String description = food.getDescription();
             mEtDescription.setText(description);
             hideViewIfEmptyString(description, mIvDescriptionClear);
 
             // Other info layout
-            String brand = "Kellogg's";
+            String brand = food.getBrandName();
             mEtBrand.setText(brand);
             hideViewIfEmptyString(brand, mIvBrandClear);
 
-            String size = "12\" x 10\"";
+            String size = food.getSize();
             mEtSize.setText(size);
             hideViewIfEmptyString(size, mIvSizeClear);
 
-            String weight = "200 lbs";
+            String weight = food.getWeight();
             mEtWeight.setText(weight);
             hideViewIfEmptyString(weight, mIvWeightClear);
 
-            String notes = "What is 1 plus " + itemPosition;
+            String notes = food.getNotes();
             mEtNotes.setText(notes);
             hideViewIfEmptyString(notes, mIvNotesClear);
         } else {
             // Set ADD_MODE defaults
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), new int[]{});
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
+            mPagerAdapter.setImageUris(new ArrayList<String>());
             showFieldError(true, FieldError.REQUIRED_NAME);
             mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
             mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
@@ -552,7 +559,7 @@ public class EditFragment extends Fragment implements
      */
     private void showConfirmDeleteDialog() {
         ConfirmDeleteDialog dialog = ConfirmDeleteDialog.newInstance(
-                mDataGenerator.getFoodNameAt(mItemPosition), AuthToolbox.checkIfSignedIn());
+                mFood.getFoodName(), AuthToolbox.checkIfSignedIn());
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
     }
