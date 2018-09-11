@@ -137,21 +137,21 @@ public class TestDataGen {
 
     // From https://loremflickr.com/800/600
     private final String[] catImageUrls = new String[]{
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
-            "https://loremflickr.com/320/240",
+            "https://loremflickr.com/320/240/dog",
+            "https://loremflickr.com/320/240/paris",
+            "https://loremflickr.com/320/240/cat",
+            "https://loremflickr.com/320/240/computer",
+            "https://loremflickr.com/320/240/girl",
+            "https://loremflickr.com/320/240/woman",
+            "https://loremflickr.com/320/240/beach",
+            "https://loremflickr.com/320/240/pokemon",
+            "https://loremflickr.com/320/240/america",
+            "https://loremflickr.com/320/240/mountain",
+            "https://loremflickr.com/320/240/hat",
+            "https://loremflickr.com/320/240/keyboard",
+            "https://loremflickr.com/320/240/phone",
+            "https://loremflickr.com/320/240/speaker",
+            "https://loremflickr.com/320/240/table",
     };
 
     private String[] babyNames = new String[]{
