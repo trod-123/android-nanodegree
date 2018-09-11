@@ -126,6 +126,7 @@ public class EditFragment extends Fragment implements
     private FormChangedDetector mFormChangedDetector;
     private Food mFood;
     private long mItemId;
+    private boolean mAddMode = false;
 
     private long mExpiryDate;
     private long mGoodThruDate;
@@ -154,10 +155,11 @@ public class EditFragment extends Fragment implements
         if (args != null) {
             // The position will determine the populated elements
             mItemId = args.getLong(ARG_ITEM_ID_LONG, 0);
+            mAddMode = mItemId == POSITION_ADD_MODE;
         }
 
         // Set the dates
-        if (mItemId == POSITION_ADD_MODE) {
+        if (mAddMode) {
             // By default, load up the current day as the initial expiry date
             mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
             // For all new items, goodThruDate is the same as expiryDate by default
@@ -215,9 +217,11 @@ public class EditFragment extends Fragment implements
         mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
-                populateFields(food);
-                // this needs to be done AFTER fields are populated
-                mFormChangedDetector = getFormChangedDetector();
+                if (food != null) {
+                    populateFields(food);
+                    // this needs to be done AFTER fields are populated
+                    mFormChangedDetector = getFormChangedDetector();
+                }
             }
         });
 
@@ -229,7 +233,7 @@ public class EditFragment extends Fragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mItemId == POSITION_ADD_MODE) {
+        if (mAddMode) {
             inflater.inflate(R.menu.menu_add, menu);
         } else {
             inflater.inflate(R.menu.menu_edit, menu);
@@ -250,13 +254,12 @@ public class EditFragment extends Fragment implements
     }
 
     /**
-     * Helper that pre-populates all fields. Does not pre-populate if
-     * {@code itemPosition == POSITION_ADD_MODE}
+     * Helper that pre-populates all fields
      */
     private void populateFields(Food food) {
         mFood = food;
-        // Only load from database if in ADD_MODE
-        if (mItemId != POSITION_ADD_MODE) {
+        // Only load saved values if NOT adding
+        if (!mAddMode) {
             // Image adapter
             mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
             mPagerAdapter.setImageUris(food.getImages());
@@ -504,20 +507,19 @@ public class EditFragment extends Fragment implements
             // TODO: Implement
             mFormChangedDetector.updateCachedFields();
             Toolbox.showToast(mHostActivity, "This will save the current item!");
-            mHostActivity.onBackPressed();
+            mHostActivity.finish();
         }
     }
 
     private void deleteItem() {
-        // TODO: Implement
         mFormChangedDetector.updateCachedFields();
-        Toolbox.showToast(mHostActivity, "This will delete the current item!");
-        mHostActivity.onBackPressed();
+        mViewModel.delete(mItemId);
+        mHostActivity.finish();
     }
 
     private void discardChanges() {
         mFormChangedDetector.updateCachedFields(); // but won't be saved
-        mHostActivity.onBackPressed();
+        mHostActivity.finish();
     }
 
     // region Dialogs
