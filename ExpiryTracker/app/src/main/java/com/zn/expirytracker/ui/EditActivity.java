@@ -59,9 +59,17 @@ public class EditActivity extends AppCompatActivity {
                     ((EditFragment) topFragment).haveFieldsChanged()) {
                 // don't do anything. at this point the EditFragment is showing the
                 // FormChangedDialog
-            } else {
-                super.onBackPressed();
+                return;
             }
+            if (fragments.size() > 1) {
+                // Handle cases where Glide somehow is the top fragment instead
+                Fragment secondToTopFragment = fragments.get(fragments.size() - 2);
+                if (secondToTopFragment instanceof EditFragment &&
+                        ((EditFragment) secondToTopFragment).haveFieldsChanged()) {
+                    return;
+                }
+            }
+            super.onBackPressed();
         }
     }
 }
