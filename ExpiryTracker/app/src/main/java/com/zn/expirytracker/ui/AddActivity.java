@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.model.InputType;
 
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class AddActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_edit_fragment, EditFragment.newInstance(EditFragment.POSITION_ADD_MODE),
+                .replace(R.id.container_edit_fragment, EditFragment.newInstance(
+                        EditFragment.POSITION_ADD_MODE, "", InputType.TEXT_ONLY),
                         EditFragment.class.getSimpleName())
                 .commit();
     }

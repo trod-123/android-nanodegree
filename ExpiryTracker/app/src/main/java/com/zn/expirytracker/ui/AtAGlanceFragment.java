@@ -162,8 +162,6 @@ public class AtAGlanceFragment extends Fragment
                     resetXAxisMaximum(mCurrentFilter);
                     updateSummary(mCurrentFilter, mFullList_barChartEntries);
                     mRootLayout.animate().setDuration(500).alpha(1f);
-                } else {
-                    // TODO: Handle case when foods IS null
                 }
             }
         });
@@ -201,10 +199,12 @@ public class AtAGlanceFragment extends Fragment
                 true).observe(this, new Observer<PagedList<Food>>() {
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
-                mListAdapter.submitList(foods);
-                resetYAxisMaximum(foods, mCurrentDateTimeStartOfDay.getMillis());
-                updateListHeader(foods, mCurrentFilter);
-                updateSummary(mCurrentFilter, mFullList_barChartEntries);
+                if (foods != null) {
+                    mListAdapter.submitList(foods);
+                    resetYAxisMaximum(foods, mCurrentDateTimeStartOfDay.getMillis());
+                    updateListHeader(foods, mCurrentFilter);
+                    updateSummary(mCurrentFilter, mFullList_barChartEntries);
+                }
             }
         });
     }

@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
@@ -34,6 +35,7 @@ import com.zn.expirytracker.ui.dialog.FormChangedDialog;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialog;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.EditToolbox;
 import com.zn.expirytracker.utils.FormChangedDetector;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -58,10 +60,16 @@ public class EditFragment extends Fragment implements
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "edit_fragment.item_id_long");
+    public static final String ARG_BARCODE_STRING = Toolbox.createStaticKeyString(
+            "edit_fragment.barcode_string");
+    public static final String ARG_INPUT_TYPE = Toolbox.createStaticKeyString(
+            "edit_fragment.input_type");
+
     public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
 
     public static final int DEFAULT_STARTING_COUNT = 1;
     public static final Storage DEFAULT_STARTING_STORAGE = Storage.FRIDGE;
+    public static final InputType DEFAULT_INPUT_TYPE = InputType.TEXT_ONLY;
 
     @BindView(R.id.layout_edit_root)
     View mRootLayout;
@@ -128,17 +136,40 @@ public class EditFragment extends Fragment implements
     private long mItemId;
     private boolean mAddMode = false;
 
+    // Fields not directly translatable or accessible via EditText
+    private List<String> mImageUris;
     private long mExpiryDate;
     private long mGoodThruDate;
+    private Storage mLoc;
+    private String mBarcode;
+    private InputType mInputType;
 
     public EditFragment() {
         // Required empty public constructor
     }
 
-    public static EditFragment newInstance(long itemId) {
+    /**
+     * Creates a new {@link EditFragment} with the provided {@code itemId}.
+     * <p>
+     * Provide a {@code barcode} if coming from
+     * {@link com.zn.expirytracker.ui.capture.CaptureActivity}. This is not required for editing
+     * <p>
+     * Provide an {@code inputType} if adding a new item. Will be set to
+     * {@link EditFragment#DEFAULT_INPUT_TYPE} if null. Providing one for editing will be replaced
+     * by the {@code itemId} item's own {@link InputType}
+     *
+     * @param itemId
+     * @param barcode
+     * @param inputType
+     * @return
+     */
+    public static EditFragment newInstance(long itemId, @Nullable String barcode,
+                                           @Nullable InputType inputType) {
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_ITEM_ID_LONG, itemId);
+        args.putString(ARG_BARCODE_STRING, barcode);
+        args.putSerializable(ARG_INPUT_TYPE, inputType); // enums are serializable
         fragment.setArguments(args);
         return fragment;
     }
@@ -155,7 +186,11 @@ public class EditFragment extends Fragment implements
         if (args != null) {
             // The position will determine the populated elements
             mItemId = args.getLong(ARG_ITEM_ID_LONG, 0);
+
             mAddMode = mItemId == POSITION_ADD_MODE;
+            mBarcode = args.getString(ARG_BARCODE_STRING, "");
+            InputType inputType = (InputType) args.getSerializable(ARG_INPUT_TYPE);
+            mInputType = inputType != null ? inputType : DEFAULT_INPUT_TYPE;
         }
 
         // Set the dates
@@ -217,11 +252,9 @@ public class EditFragment extends Fragment implements
         mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
-                if (food != null) {
-                    populateFields(food);
-                    // this needs to be done AFTER fields are populated
-                    mFormChangedDetector = getFormChangedDetector();
-                }
+                populateFields(food);
+                // this needs to be done AFTER fields are populated, but also call it when adding
+                mFormChangedDetector = getFormChangedDetector();
             }
         });
 
@@ -256,13 +289,14 @@ public class EditFragment extends Fragment implements
     /**
      * Helper that pre-populates all fields
      */
-    private void populateFields(Food food) {
+    private void populateFields(@Nullable Food food) {
         mFood = food;
         // Only load saved values if NOT adding
-        if (!mAddMode) {
+        if (!mAddMode && food != null) {
             // Image adapter
+            mImageUris = food.getImages();
             mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
-            mPagerAdapter.setImageUris(food.getImages());
+            mPagerAdapter.setImageUris(mImageUris);
 
             // Dates
             mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
@@ -272,9 +306,7 @@ public class EditFragment extends Fragment implements
             mEtFoodName.setText(food.getFoodName());
             mEtCount.setText(String.valueOf(food.getCount()));
 
-            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(food.getStorageLocation()));
-            mEtLoc.setText(DataToolbox.getStorageIconString(food.getStorageLocation(),
-                    mHostActivity));
+            mLoc = food.getStorageLocation();
 
             String description = food.getDescription();
             mEtDescription.setText(description);
@@ -296,22 +328,25 @@ public class EditFragment extends Fragment implements
             String notes = food.getNotes();
             mEtNotes.setText(notes);
             hideViewIfEmptyString(notes, mIvNotesClear);
+
+            mBarcode = food.getBarcode();
+            mInputType = food.getInputType();
         } else {
             // Set ADD_MODE defaults
+            mImageUris = new ArrayList<>();
             mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
-            mPagerAdapter.setImageUris(new ArrayList<String>());
+            mPagerAdapter.setImageUris(mImageUris);
             showFieldError(true, FieldError.REQUIRED_NAME);
             mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
-            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(
-                    DEFAULT_STARTING_STORAGE));
-            mEtLoc.setText(DataToolbox.getStorageIconString
-                    (DEFAULT_STARTING_STORAGE, mHostActivity));
+            mLoc = DEFAULT_STARTING_STORAGE;
         }
 
         // Common fields
         mViewPager.setAdapter(mPagerAdapter);
         mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
         mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
+        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        mEtLoc.setText(DataToolbox.getStorageIconString(mLoc, mHostActivity));
         setGoodThruDateViewAttributes();
     }
 
@@ -504,9 +539,20 @@ public class EditFragment extends Fragment implements
             // Check for errors first
             showSaveErrorMessage();
         } else {
-            // TODO: Implement
             mFormChangedDetector.updateCachedFields();
-            Toolbox.showToast(mHostActivity, "This will save the current item!");
+            if (mAddMode) {
+                Food food = createFoodFromInputs(mExpiryDate, mGoodThruDate, mLoc, mBarcode,
+                        mInputType, mImageUris);
+                mViewModel.insert(food);
+                Toolbox.showToast(mHostActivity, getString(R.string.message_item_added,
+                        food.getFoodName()));
+            } else {
+                Food food = updateFoodFromInputs(mItemId, mExpiryDate, mGoodThruDate, mLoc,
+                        mBarcode, mInputType, mImageUris);
+                mViewModel.update(food);
+                Toolbox.showToast(mHostActivity, getString(R.string.message_item_updated,
+                        food.getFoodName()));
+            }
             mHostActivity.finish();
         }
     }
@@ -573,28 +619,27 @@ public class EditFragment extends Fragment implements
      */
     @Override
     public void onStorageLocationSelected(int position) {
-        Storage loc;
         switch (position) {
             case 0:
-                loc = Storage.FRIDGE;
+                mLoc = Storage.FRIDGE;
                 break;
             case 1:
-                loc = Storage.FREEZER;
+                mLoc = Storage.FREEZER;
                 break;
             case 2:
-                loc = Storage.PANTRY;
+                mLoc = Storage.PANTRY;
                 break;
             case 3:
-                loc = Storage.COUNTER;
+                mLoc = Storage.COUNTER;
                 break;
             case 4:
             default:
-                loc = Storage.CUSTOM;
+                mLoc = Storage.CUSTOM;
         }
 
         // TODO: Handle rotation changes not updating text properly (open dialog, rotate, choose, value does not change from original)
-        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(loc));
-        mEtLoc.setText(DataToolbox.getStorageIconString(loc, mHostActivity));
+        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        mEtLoc.setText(DataToolbox.getStorageIconString(mLoc, mHostActivity));
     }
 
     /**
@@ -823,6 +868,101 @@ public class EditFragment extends Fragment implements
         } else {
             return false;
         }
+    }
+
+    // endregion
+
+    // region Add/Update items
+
+    /**
+     * Creates a {@link Food} item. Assumes {@code editTexts} contains all of the following, in this
+     * exact order:
+     * <p>
+     * mEtFoodName
+     * mEtCount
+     * mEtDescription
+     * mEtBrand
+     * mEtSize
+     * mEtWeight
+     * mEtNotes
+     * <p>
+     * If the size of {@code editTexts} does not match the expected size, this method returns
+     * {@code null}
+     *
+     * @param dateExpiry
+     * @param dateGoodthru
+     * @param loc
+     * @param barcode
+     * @param inputType
+     * @param imageUris
+     * @return
+     */
+    private Food createFoodFromInputs(long dateExpiry, long dateGoodthru, Storage loc,
+                                      String barcode, InputType inputType, List<String> imageUris) {
+        List<TextInputEditText> editTexts = mergeEditTextsIntoList();
+        List<String> etValues = EditToolbox.getStringsFromEditTexts(editTexts);
+        String foodName = etValues.get(0);
+        int count = Integer.valueOf(etValues.get(1));
+        String description = etValues.get(2);
+        String brand = etValues.get(3);
+        String size = etValues.get(4);
+        String weight = etValues.get(5);
+        String notes = etValues.get(6);
+
+        return new Food(foodName, dateExpiry, dateGoodthru, count, loc, description, brand, size,
+                weight, notes, barcode, inputType, imageUris);
+    }
+
+    /**
+     * Updates a {@link Food} item with the provided {@code _id}. Assumes {@code editTexts}
+     * contains all of the following, in this exact order:
+     * <p>
+     * mEtFoodName
+     * mEtCount
+     * mEtDescription
+     * mEtBrand
+     * mEtSize
+     * mEtWeight
+     * mEtNotes
+     * <p>
+     * If the size of {@code editTexts} does not match the expected size, this method returns
+     * {@code null}
+     *
+     * @param _id
+     * @param dateExpiry
+     * @param dateGoodthru
+     * @param loc
+     * @param barcode
+     * @param inputType
+     * @param imageUris
+     * @return
+     */
+    private Food updateFoodFromInputs(long _id, long dateExpiry, long dateGoodthru, Storage loc,
+                                      String barcode, InputType inputType, List<String> imageUris) {
+        Food food = createFoodFromInputs(dateExpiry, dateGoodthru, loc, barcode, inputType,
+                imageUris);
+        food.set_id(_id);
+        return food;
+    }
+
+    /**
+     * Helper that prepares a list of {@link TextInputEditText} to be used for
+     * {@link EditFragment#createFoodFromInputs(long, long, Storage, String, InputType, List)} and
+     * {@link EditFragment#updateFoodFromInputs(long, long, long, Storage, String, InputType, List)}
+     *
+     * @return
+     */
+    private List<TextInputEditText> mergeEditTextsIntoList() {
+        return new ArrayList<>(
+                Arrays.asList(
+                        mEtFoodName,
+                        mEtCount,
+                        mEtDescription,
+                        mEtBrand,
+                        mEtSize,
+                        mEtWeight,
+                        mEtNotes)
+        );
     }
 
     // endregion

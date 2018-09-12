@@ -203,4 +203,11 @@
 
     <!-- endregion -->
 
+    <string name="message_item_added">Added %1$s</string>
+    <string name="message_item_updated">Updated %1$s</string>
+    <string name="message_item_removed">Removed %1$s</string>
+    <string name="message_item_added_generic">Food added</string>
+    <string name="message_item_updated_generic">Food updated</string>
+    <string name="message_item_removed_generic">Food removed</string>
+
 </resources>

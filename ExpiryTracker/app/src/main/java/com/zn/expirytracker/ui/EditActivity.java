@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.model.InputType;
 
 import java.util.List;
 
@@ -22,9 +23,13 @@ public class EditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-            long id = intent.getLongExtra(DetailActivity.ARG_ITEM_ID_LONG, 0);
+            long id = intent.getLongExtra(EditFragment.ARG_ITEM_ID_LONG, 0);
+            String barcode = intent.getStringExtra(EditFragment.ARG_BARCODE_STRING);
+            InputType inputType = (InputType) intent.getSerializableExtra(
+                    EditFragment.ARG_INPUT_TYPE);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_edit_fragment, EditFragment.newInstance(id),
+                    .replace(R.id.container_edit_fragment,
+                            EditFragment.newInstance(id, barcode, inputType),
                             EditFragment.class.getSimpleName())
                     .commit();
         }

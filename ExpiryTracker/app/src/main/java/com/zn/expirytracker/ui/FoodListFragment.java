@@ -27,6 +27,8 @@ import timber.log.Timber;
 
 public class FoodListFragment extends Fragment {
 
+    @BindView(R.id.container_list_fragment)
+    View mRootview;
     @BindView(R.id.rv_food_list)
     RecyclerView mRvFoodList;
     @BindView(R.id.fab_food_list_add)
@@ -72,7 +74,9 @@ public class FoodListFragment extends Fragment {
         mViewModel.getAllFoods(true).observe(this, new Observer<PagedList<Food>>() {
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
-                mListAdapter.submitList(foods);
+                if (foods != null) {
+                    mListAdapter.submitList(foods);
+                }
             }
         });
 
@@ -107,7 +111,8 @@ public class FoodListFragment extends Fragment {
                 int position = viewHolder.getAdapterPosition();
                 Food food = mListAdapter.getFoodAtPosition(position);
                 mViewModel.delete(food.get_id());
-                Toolbox.showToast(mHostActivity, "Removed " + food.getFoodName());
+                Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
+                        food.getFoodName()));
             }
         });
         helper.attachToRecyclerView(mRvFoodList);

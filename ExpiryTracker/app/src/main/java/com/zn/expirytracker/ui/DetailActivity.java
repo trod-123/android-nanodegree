@@ -28,6 +28,8 @@ public class DetailActivity extends AppCompatActivity {
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "detail_activity.item_id_long");
 
+    @BindView(R.id.container_detail_activity)
+    View mRootview;
     @BindView(R.id.viewPager_detail)
     ViewPager mViewPager;
 
@@ -99,7 +101,7 @@ public class DetailActivity extends AppCompatActivity {
 
     public void startEditActivity(View view) {
         Intent intent = new Intent(DetailActivity.this, EditActivity.class);
-        intent.putExtra(ARG_ITEM_ID_LONG, mFoodsList.get(mViewPager.getCurrentItem()).get_id());
+        intent.putExtra(EditFragment.ARG_ITEM_ID_LONG, mFoodsList.get(mViewPager.getCurrentItem()).get_id());
         startActivity(intent);
     }
 
@@ -129,6 +131,9 @@ public class DetailActivity extends AppCompatActivity {
      * Deletes the food item at the current position of the adapter
      */
     private void deleteItem() {
-        mViewModel.delete(mFoodsList.get(mCurrentPosition).get_id());
+        Food food = mFoodsList.get(mCurrentPosition);
+        mViewModel.delete(food.get_id());
+        Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
+                food.getFoodName()));
     }
 }

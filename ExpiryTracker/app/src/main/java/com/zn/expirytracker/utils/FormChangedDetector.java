@@ -2,7 +2,6 @@ package com.zn.expirytracker.utils;
 
 import android.widget.EditText;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +13,7 @@ public class FormChangedDetector<T extends EditText> {
 
     public FormChangedDetector(List<T> editTexts) {
         mEditTexts = editTexts;
-        mCachedStrings = getStringsFromEditTexts(editTexts);
+        mCachedStrings = EditToolbox.getStringsFromEditTexts(editTexts);
     }
 
     /**
@@ -24,7 +23,7 @@ public class FormChangedDetector<T extends EditText> {
      * @return {@code true} if any {@link EditText} strings are different
      */
     public boolean haveFieldsChanged() {
-        List<String> updatedStrings = getStringsFromEditTexts(mEditTexts);
+        List<String> updatedStrings = EditToolbox.getStringsFromEditTexts(mEditTexts);
         for (int i = 0; i < mCachedStrings.size(); i++) {
             String cached = mCachedStrings.get(i);
             String updated = updatedStrings.get(i);
@@ -39,14 +38,6 @@ public class FormChangedDetector<T extends EditText> {
      * Updates the list of cached strings
      */
     public void updateCachedFields() {
-        mCachedStrings = getStringsFromEditTexts(mEditTexts);
-    }
-
-    private List<String> getStringsFromEditTexts(List<T> editTexts) {
-        List<String> values = new ArrayList<>();
-        for (T editText : editTexts) {
-            values.add(editText.getText().toString());
-        }
-        return values;
+        mCachedStrings = EditToolbox.getStringsFromEditTexts(mEditTexts);
     }
 }
