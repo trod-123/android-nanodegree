@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    tools:context="com.zn.expirytracker.ui.capture.CaptureActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_capture_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_capture_instruction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:gravity="center_horizontal"
+            android:text="@string/capture_mode_barcode_instruction"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout_capture_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout_capture_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/layout_capture_barcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_capture_barcode"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:tint="@android:color/white"
+                    app:srcCompat="@drawable/ic_barcode_scan_black_24dp"
+                    tools:layout_editor_absoluteX="56dp"
+                    tools:layout_editor_absoluteY="473dp" />
+
+                <TextView
+                    android:id="@+id/tv_capture_barcode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/capture_mode_barcode"
+                    android:textColor="@android:color/white"
+                    tools:layout_editor_absoluteX="33dp"
+                    tools:layout_editor_absoluteY="531dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_capture_imgrec"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_capture_imgrec"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_image_search_white_24dp" />
+
+                <TextView
+                    android:id="@+id/tv_capture_imgrec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/capture_mode_imgrec"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/container_overlay_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_gravity="center" />
+
+</FrameLayout>

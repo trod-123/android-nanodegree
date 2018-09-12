@@ -11,6 +11,7 @@
     <string name="activity_details_name">Details</string>
     <string name="activity_edit_item_name">Edit</string>
     <string name="activity_add_item_name">Add new food item</string>
+    <string name="activity_capture_name">Capture</string>
 
     <string name="undefined_generic">Undefined</string>
 
@@ -26,6 +27,7 @@
     <string name="action_add_item_text">Text</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete this item</string>
+    <string name="action_try_again">Try again</string>
 
     <!-- endregion -->
 
@@ -209,5 +211,11 @@
     <string name="message_item_added_generic">Food added</string>
     <string name="message_item_updated_generic">Food updated</string>
     <string name="message_item_removed_generic">Food removed</string>
+
+    <string name="capture_mode_barcode">Scan barcode</string>
+    <string name="capture_mode_imgrec">Recognize image</string>
+
+    <string name="capture_mode_barcode_instruction">Barcode will automatically scan once shown on screen</string>
+    <string name="capture_mode_imgrec_instruction">Tap on the screen to capture the image</string>
 
 </resources>

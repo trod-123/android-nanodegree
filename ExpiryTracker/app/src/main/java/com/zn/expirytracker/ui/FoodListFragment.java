@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.ui.capture.CaptureActivity;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -119,7 +120,9 @@ public class FoodListFragment extends Fragment {
     }
 
     private void startAddActivity() {
-        Intent intent = new Intent(mHostActivity, AddActivity.class);
+//        Intent intent = new Intent(mHostActivity, AddActivity.class);
+        // TODO: For testing only
+        Intent intent = new Intent(mHostActivity, CaptureActivity.class);
         startActivity(intent);
     }
 }

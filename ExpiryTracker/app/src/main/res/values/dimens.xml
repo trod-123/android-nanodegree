@@ -28,4 +28,8 @@
 
     <dimen name="icon_clickable_size">40dp</dimen>
     <dimen name="icon_clickable_padding">8dp</dimen>
+    <dimen name="dialog_horizontal_margin">24dp</dimen>
+    <dimen name="dialog_mid_margin">8dp</dimen>
+    <dimen name="dialog_top_margin">24dp</dimen>
+    <dimen name="dialog_button_margin">8dp</dimen>
 </resources>
