@@ -154,20 +154,10 @@ public class AtAGlanceFragment extends Fragment
             }
         });
         mRootLayout.setAlpha(0f); // hide the views until data is ready TODO: Add progress bar
-        mViewModel.getAllFoods(true).observe(this, new Observer<PagedList<Food>>() {
-            @Override
-            public void onChanged(@Nullable PagedList<Food> foods) {
-                if (foods != null) {
-                    setupBarChart(foods);
-                    resetXAxisMaximum(mCurrentFilter);
-                    updateSummary(mCurrentFilter, mFullList_barChartEntries);
-                    mRootLayout.animate().setDuration(500).alpha(1f);
-                }
-            }
-        });
         updateViewModelWithFilter(mCurrentFilter);
 
         // Prepare the UI elements first - these can be done independently of data
+        setupBarChart();
         setupRecyclerView();
         updateGreeting(mCurrentDateTime);
 
@@ -200,10 +190,13 @@ public class AtAGlanceFragment extends Fragment
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
+                    loadBarChartData(foods);
                     mListAdapter.submitList(foods);
+                    resetXAxisMaximum(mCurrentFilter);
                     resetYAxisMaximum(foods, mCurrentDateTimeStartOfDay.getMillis());
                     updateListHeader(foods, mCurrentFilter);
                     updateSummary(mCurrentFilter, mFullList_barChartEntries);
+                    mRootLayout.animate().setDuration(500).alpha(1f);
                 }
             }
         });
@@ -216,16 +209,16 @@ public class AtAGlanceFragment extends Fragment
      * <p>
      * Currently, the bar chart shows even when the highest frequency is 0
      */
-    private void showBarChart() {
-
+    private boolean showBarChart(List<Food> allFoods) {
+        return false;
     }
 
     /**
-     * Helper for setting up the bar chart. Show the data only if it's not empty, otherwise display
-     * a message
-     * Documentation and instructions: https://github.com/PhilJay/MPAndroidChart
+     * Loads the barchart with data
+     *
+     * @param allFoods
      */
-    private void setupBarChart(List<Food> allFoods) {
+    private void loadBarChartData(List<Food> allFoods) {
         mFullList_barChartEntries = DataToolbox.getBarEntries(allFoods, mCurrentDateTimeStartOfDay.getMillis());
         if (mFullList_barChartEntries.size() > 0) {
             BarDataSet dataSet = new BarDataSet(mFullList_barChartEntries, null);
@@ -235,41 +228,6 @@ public class AtAGlanceFragment extends Fragment
             barData.setBarWidth(0.6f);
             mBarChart.setData(barData);
 
-            // Label elements
-            mBarChart.getDescription().setEnabled(false);
-            mBarChart.getLegend().setEnabled(false);
-
-            // Touch elements
-            mBarChart.setDragEnabled(false);
-            mBarChart.setScaleEnabled(false);
-            mBarChart.setDoubleTapToZoomEnabled(false);
-
-            // Axis elements
-            YAxis axisLeft = mBarChart.getAxisLeft();
-            axisLeft.setAxisMinimum(0); // by default, minimum is auto-calculated
-            axisLeft.setDrawAxisLine(false); // don't draw the y axis
-            axisLeft.setGranularity(1); // limit labels only to whole numbers
-            axisLeft.setTextColor(ContextCompat.getColor(mHostActivity, R.color.textColorPrimaryLight));
-            axisLeft.setTextSize(12f);
-
-            mBarChart.getAxisRight().setEnabled(false);
-
-            XAxis xAxis = mBarChart.getXAxis();
-            xAxis.setAxisMinimum(-0.5f); // overshoot to add padding for first day
-            xAxis.setDrawGridLines(false); // hide the vertical lines for each x axis value
-            xAxis.setAxisLineWidth(2); // make the x axis thicker than others
-            xAxis.setAxisLineColor(ContextCompat.getColor(mHostActivity, R.color.colorPrimary));
-            xAxis.setGranularity(1); // limit labels only to whole numbers
-            xAxis.setTextColor(ContextCompat.getColor(mHostActivity, R.color.textColorPrimaryLight));
-            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Show Sun, Mon, Tue... on the x axis
-            xAxis.setValueFormatter(new IAxisValueFormatter() {
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return DataToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, (int) value);
-                }
-            });
-
-            // Highlighting
             mBarChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
                 @Override
                 public void onValueSelected(Entry e, Highlight h) {
@@ -281,12 +239,52 @@ public class AtAGlanceFragment extends Fragment
 
                 }
             });
-            mBarChart.highlightValue(0, 0); // Automatically highlight the first value
+            mBarChart.highlightValue(0, 0);
         } else {
             mBarChart.setData(null);
             mBarChart.setNoDataText(getString(R.string.at_a_glance_bar_chart_empty));
             showEmptyChartHeader();
         }
+    }
+
+    /**
+     * Helper for setting up the bar chart without data. Needs to only be done once
+     * Documentation and instructions: https://github.com/PhilJay/MPAndroidChart
+     */
+    private void setupBarChart() {
+        // Label elements
+        mBarChart.getDescription().setEnabled(false);
+        mBarChart.getLegend().setEnabled(false);
+
+        // Touch elements
+        mBarChart.setDragEnabled(false);
+        mBarChart.setScaleEnabled(false);
+        mBarChart.setDoubleTapToZoomEnabled(false);
+
+        // Axis elements
+        YAxis axisLeft = mBarChart.getAxisLeft();
+        axisLeft.setAxisMinimum(0); // by default, minimum is auto-calculated
+        axisLeft.setDrawAxisLine(false); // don't draw the y axis
+        axisLeft.setGranularity(1); // limit labels only to whole numbers
+        axisLeft.setTextColor(ContextCompat.getColor(mHostActivity, R.color.textColorPrimaryLight));
+        axisLeft.setTextSize(12f);
+
+        mBarChart.getAxisRight().setEnabled(false);
+
+        XAxis xAxis = mBarChart.getXAxis();
+        xAxis.setAxisMinimum(-0.5f); // overshoot to add padding for first day
+        xAxis.setDrawGridLines(false); // hide the vertical lines for each x axis value
+        xAxis.setAxisLineWidth(2); // make the x axis thicker than others
+        xAxis.setAxisLineColor(ContextCompat.getColor(mHostActivity, R.color.colorPrimary));
+        xAxis.setGranularity(1); // limit labels only to whole numbers
+        xAxis.setTextColor(ContextCompat.getColor(mHostActivity, R.color.textColorPrimaryLight));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM); // Show Sun, Mon, Tue... on the x axis
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return DataToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, (int) value);
+            }
+        });
     }
 
     /**
