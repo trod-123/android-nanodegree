@@ -500,6 +500,28 @@ public class DataToolbox {
     }
 
     /**
+     * Returns a full date string, in the form MON DAY, YEAR (Jan 4, 2018)
+     *
+     * @param dateInMillis
+     * @return
+     */
+    public static String getFormattedFullDateString(long dateInMillis) {
+        DateTime date = new DateTime(dateInMillis);
+        return getFormattedFullDateString(date);
+    }
+
+    /**
+     * Returns a full date string, in the form MON DAY, YEAR (Jan 4, 2018)
+     *
+     * @param date
+     * @return
+     */
+    public static String getFormattedFullDateString(DateTime date) {
+        return String.format("%s %s, %s", date.monthOfYear().getAsShortText(),
+                date.dayOfMonth().get(), date.year().get());
+    }
+
+    /**
      * Returns a relative date string, that is either "Today", "Tomorrow", or the DOW (or next DOW)
      *
      * @param context

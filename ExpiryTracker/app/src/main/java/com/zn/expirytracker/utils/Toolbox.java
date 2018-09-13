@@ -2,6 +2,7 @@ package com.zn.expirytracker.utils;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -44,6 +45,16 @@ public class Toolbox {
     public static final long PAGE_INDICATOR_FADE_OUT_DURATION = 1000;
     public static final long PAGE_INDICATOR_FADE_OUT_DELAY = 500;
 
+
+    /**
+     * Check if this device has a camera
+     *
+     * @param context
+     * @return
+     */
+    public static boolean checkCameraHardware(Context context) {
+        return (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA));
+    }
 
     /**
      * Display toasts, ensuring they do not overlap with each other

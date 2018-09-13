@@ -45,6 +45,7 @@ public class ExpiryDatePickerDialog extends DialogFragment
      *
      * @param dateType
      * @param expiryDateStartOfDay
+     * @param goodThruDateStartOfDay
      * @return
      */
     public static ExpiryDatePickerDialog newInstance(DateType dateType, long expiryDateStartOfDay,

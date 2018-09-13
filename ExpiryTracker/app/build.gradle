@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.zn.expirytracker"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -72,6 +73,9 @@ dependencies {
     // Paging
     implementation "android.arch.paging:runtime:$pagingVersion"
     testImplementation "android.arch.paging:common:$pagingVersion"
+
+    // Firebase core
+    implementation "com.google.firebase:firebase-core:$firebaseCoreVersion"
 
     // Firebase Realtime Database
     implementation "com.google.firebase:firebase-database:$firebaseRealtimeDbVersion"

@@ -116,6 +116,7 @@
     <string name="expiry_msg_ordinal">Expires on the %1$s</string>
     <string name="expiry_msg_month_day">Expires on %1$s %2$d</string>
     <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
+    <string name="expiry_msg_generic">Expires %1$s</string>
 
     <string name="date_today">today</string>
     <string name="date_tomorrow">tomorrow</string>
@@ -217,5 +218,7 @@
 
     <string name="capture_mode_barcode_instruction">Barcode will automatically scan once shown on screen</string>
     <string name="capture_mode_imgrec_instruction">Tap on the screen to capture the image</string>
+    <string name="error_requires_camera">This feature requires a camera on device</string>
+    <string name="voice_prompt_expiry">When does this item expire?</string>
 
 </resources>
