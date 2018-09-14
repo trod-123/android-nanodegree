@@ -50,7 +50,7 @@ public class AddActivity extends AppCompatActivity {
             if (topFragment instanceof EditFragment &&
                     ((EditFragment) topFragment).haveFieldsChanged()) {
                 // don't do anything. at this point the EditFragment is showing the
-                // FormChangedDialog
+                // FormChangedDialogFragment
             } else {
                 super.onBackPressed();
             }

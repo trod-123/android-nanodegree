@@ -15,7 +15,7 @@ import android.text.TextUtils;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
+import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SettingsFragment extends PreferenceFragmentCompat
-        implements ConfirmDeleteDialog.OnConfirmDeleteButtonClickListener {
+        implements ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener {
 
     static Preference mPreferenceNotificationsNumDays;
     static Preference mPreferenceNotificationsTod;
@@ -275,10 +275,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * Shows a dialog for the user to confirm wiping device data
      */
     private void showWipeDeviceDataConfirmationDialog() {
-        ConfirmDeleteDialog dialog = ConfirmDeleteDialog
+        ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment
                 .newInstance(null, false, true);
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
+        dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
     }
 
     @Override

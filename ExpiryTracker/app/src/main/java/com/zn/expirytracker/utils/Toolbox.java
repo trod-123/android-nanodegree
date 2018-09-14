@@ -35,17 +35,6 @@ public class Toolbox {
     private static Snackbar mSnackbar;
     private static String mSnackbarMessage;
 
-    public static int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
-    public static int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
-    public static final long DEFAULT_VIBRATION_BUTTON_PRESS_LENGTH = 50;
-    private static final float GLIDE_THUMBNAIL_MULTIPLIER = 0.1f;
-
-    public static final long PAGE_INDICATOR_FADE_IN_DURATION = 250;
-    public static final long PAGE_INDICATOR_FADE_IN_DELAY = 0;
-    public static final long PAGE_INDICATOR_FADE_OUT_DURATION = 1000;
-    public static final long PAGE_INDICATOR_FADE_OUT_DELAY = 500;
-
-
     /**
      * Check if this device has a camera
      *
@@ -66,7 +55,7 @@ public class Toolbox {
         if (mToast != null) {
             mToast.cancel();
         }
-        mToast = Toast.makeText(context, message, DEFAULT_TOAST_LENGTH);
+        mToast = Toast.makeText(context, message, Constants.DEFAULT_TOAST_LENGTH);
         mToast.show();
     }
 
@@ -82,7 +71,7 @@ public class Toolbox {
             // Refresh currently shown snackbar with different message, otherwise don't do
             // anything
             mSnackbarMessage = message;
-            mSnackbar = Snackbar.make(view, mSnackbarMessage, DEFAULT_SNACKBAR_LENGTH);
+            mSnackbar = Snackbar.make(view, mSnackbarMessage, Constants.DEFAULT_SNACKBAR_LENGTH);
             mSnackbar.show();
         }
     }
@@ -254,7 +243,7 @@ public class Toolbox {
                 // if this is DATA then it works OK in the main app, but does not load in widget (if a listener is provided, onResourceReady never gets called..., and if no listener is provided, still does not load)
                 // if this is AUTOMATIC then it works OK in the main app, but always crashes the widget (if no listener is provided, otherwise onResourceReady never gets called...)
                 // if this is NONE, no images load anywhere
-                .thumbnail(GLIDE_THUMBNAIL_MULTIPLIER) // ideally, this thumbnail request points to a low-res url of the same image
+                .thumbnail(Constants.GLIDE_THUMBNAIL_MULTIPLIER) // ideally, this thumbnail request points to a low-res url of the same image
                 .transition(BitmapTransitionOptions.withCrossFade());
     }
 
@@ -267,15 +256,15 @@ public class Toolbox {
     public static void showPageIndicator(boolean show, ImageView imageScrim,
                                          PageIndicatorView pageIndicatorView) {
         if (show) {
-            imageScrim.animate().setStartDelay(Toolbox.PAGE_INDICATOR_FADE_IN_DELAY)
-                    .setDuration(Toolbox.PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
-            pageIndicatorView.animate().setStartDelay(Toolbox.PAGE_INDICATOR_FADE_IN_DELAY)
-                    .setDuration(Toolbox.PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
+            imageScrim.animate().setStartDelay(Constants.PAGE_INDICATOR_FADE_IN_DELAY)
+                    .setDuration(Constants.PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
+            pageIndicatorView.animate().setStartDelay(Constants.PAGE_INDICATOR_FADE_IN_DELAY)
+                    .setDuration(Constants.PAGE_INDICATOR_FADE_IN_DURATION).alpha(1f);
         } else {
-            imageScrim.animate().setStartDelay(Toolbox.PAGE_INDICATOR_FADE_OUT_DELAY)
-                    .setDuration(Toolbox.PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
-            pageIndicatorView.animate().setStartDelay(Toolbox.PAGE_INDICATOR_FADE_OUT_DELAY)
-                    .setDuration(Toolbox.PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
+            imageScrim.animate().setStartDelay(Constants.PAGE_INDICATOR_FADE_OUT_DELAY)
+                    .setDuration(Constants.PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
+            pageIndicatorView.animate().setStartDelay(Constants.PAGE_INDICATOR_FADE_OUT_DELAY)
+                    .setDuration(Constants.PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
         }
     }
 }

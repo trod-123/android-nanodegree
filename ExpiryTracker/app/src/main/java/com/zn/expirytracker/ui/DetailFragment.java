@@ -194,9 +194,15 @@ public class DetailFragment extends Fragment {
         mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                 mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
         Storage storage = food.getStorageLocation();
-        mTvStorage.setText(getString(R.string.storage_location_description,
-                DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
-        mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
+        if (storage != Storage.NOT_SET) {
+            mTvStorage.setText(getString(R.string.storage_location_description,
+                    DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
+            mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
+        } else {
+            // Don't show text-icon if storage not set
+            mTvStorage.setText("");
+            mIvStorageIcon.setImageDrawable(null);
+        }
 
         mNcvCount.mTvValue.setText(String.valueOf(food.getCount()));
         mNcvCount.mTvLabel.setText(getString(R.string.food_count_label));

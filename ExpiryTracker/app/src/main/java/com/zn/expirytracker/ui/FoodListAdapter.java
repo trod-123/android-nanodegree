@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -125,8 +126,13 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             mExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, food.getDateExpiry()));
             mCount.setText(String.valueOf(food.getCount()));
-            mStorageIcon.setImageResource(
-                    DataToolbox.getStorageIconResource(food.getStorageLocation()));
+            Storage storageLocation = food.getStorageLocation();
+            if (storageLocation != Storage.NOT_SET) {
+                // don't show icon if no storage set
+                mStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storageLocation));
+            } else {
+                mStorageIcon.setImageDrawable(null);
+            }
             int daysUntilExpiry =
                     DataToolbox.getNumDaysBetweenDates(mCurrentTime, food.getDateExpiry());
             mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));

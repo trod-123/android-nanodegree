@@ -10,7 +10,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.zn.expirytracker.R;
 
-public class FormChangedDialog extends DialogFragment {
+public class FormChangedDialogFragment extends DialogFragment {
     private OnFormChangedButtonClickListener callback;
 
     public interface OnFormChangedButtonClickListener {
@@ -21,7 +21,7 @@ public class FormChangedDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            callback = (FormChangedDialog.OnFormChangedButtonClickListener) getTargetFragment();
+            callback = (FormChangedDialogFragment.OnFormChangedButtonClickListener) getTargetFragment();
         } catch (ClassCastException e) {
             throw new ClassCastException("Calling Fragment must implement " +
                     "OnFormChangedButtonClickListener");

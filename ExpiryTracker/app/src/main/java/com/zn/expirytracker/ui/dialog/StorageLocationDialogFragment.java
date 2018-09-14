@@ -14,7 +14,7 @@ import com.zn.expirytracker.R;
  * {@link DialogFragment} that prompts for the {@link com.zn.expirytracker.data.model.Storage}
  * location of an item
  */
-public class StorageLocationDialog extends DialogFragment {
+public class StorageLocationDialogFragment extends DialogFragment {
     private OnStorageLocationSelectedListener callback;
 
     public interface OnStorageLocationSelectedListener {

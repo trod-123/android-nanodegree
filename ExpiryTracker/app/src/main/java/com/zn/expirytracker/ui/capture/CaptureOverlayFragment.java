@@ -1,13 +1,16 @@
 package com.zn.expirytracker.ui.capture;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.support.annotation.Nullable;
@@ -17,18 +20,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
+import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
+import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
+import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
+import com.zn.expirytracker.upcitemdb.UpcItemDbService;
+import com.zn.expirytracker.upcitemdb.model.Item;
+import com.zn.expirytracker.upcitemdb.model.UpcItem;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -38,35 +48,45 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class CaptureOverlayFragment extends Fragment
-        implements ExpiryDatePickerDialog.OnDateSelectedListener {
+        implements TextInputDialogFragment.OnTextConfirmedListener, OnDialogCancelListener,
+        ExpiryDatePickerDialogFragment.OnDateSelectedListener {
+
+    private static final boolean DEBUG_MODE_NO_API_CALL = false;
 
     public static final String ARG_INPUT_TYPE = Toolbox.createStaticKeyString(
             "capture_overlay_fragment.input_type");
     public static final String ARG_BARCODE = Toolbox.createStaticKeyString(
             "capture_overlay_fragment.barcode");
+    public static final String ARG_BARCODE_BITMAP = Toolbox.createStaticKeyString(
+            "capture_overlay_fragment.barcode_bitmap");
 
-    private static final int REQ_CODE_SPEECH_INPUT = 100;
+    private static final int REQ_CODE_SPEECH_INPUT_NAME = 1024;
+    private static final int REQ_CODE_SPEECH_INPUT_EXPIRY_DATE = 1026;
 
-    public static final String UPCITEMDB_BASE_SEARCH_URL = "https://api.upcitemdb.com/prod/trial/search?s=";
-    public static final String UPCITEMDB_BASE_UPC_SEARCH_URL =
-            "https://api.upcitemdb.com/prod/trial/lookup?upc=";
+    /**
+     * Allows consecutive speech requests without blocking the mic. Needs to be at least 200
+     */
+    private static final int DELAY_CONSECUTIVE_SPEECH_REQEUSTS = 250;
 
+    private static final int DEFAULT_MAX_IMAGES = 5;
 
+    @BindView(R.id.layout_overlay_capture_root)
+    View mRootView;
+    @BindView(R.id.pb_overlay_scanned)
+    ProgressBar mPb;
     @BindView(R.id.btn_overlay_scanned_positive)
     Button mBtnPositive;
     @BindView(R.id.btn_overlay_scanned_negative)
@@ -91,29 +111,30 @@ public class CaptureOverlayFragment extends Fragment
     private Activity mHostActivity;
     private FoodViewModel mViewModel;
     private long mCurrentDateStartOfDay;
+    private boolean mVoicePrompt;
 
     private InputType mInputType;
     private String mBarcode;
+    private Bitmap mBarcodeBitmap;
     private String mName;
     private String mDescription;
-    private String mImageUri;
-    private String mBarcodeUri;
     long mDateExpiry;
+    private String mBrand;
+    private String mSize;
+    private String mWeight;
+    private List<String> mImageUris;
 
     public CaptureOverlayFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * TODO: Temp, for if we need to pass any arguments
-     *
-     * @return
-     */
-    public static CaptureOverlayFragment newInstance(InputType inputType, @Nullable String barcode) {
+    public static CaptureOverlayFragment newInstance(InputType inputType, @Nullable String barcode,
+                                                     @Nullable Bitmap barcodeImage) {
         CaptureOverlayFragment fragment = new CaptureOverlayFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_INPUT_TYPE, inputType);
         args.putString(ARG_BARCODE, barcode);
+        args.putParcelable(ARG_BARCODE_BITMAP, barcodeImage);
         fragment.setArguments(args);
         return fragment;
     }
@@ -126,11 +147,15 @@ public class CaptureOverlayFragment extends Fragment
         if (args != null) {
             mInputType = (InputType) args.getSerializable(ARG_INPUT_TYPE);
             mBarcode = args.getString(ARG_BARCODE, "");
+            mBarcodeBitmap = args.getParcelable(ARG_BARCODE_BITMAP);
         }
 
         mHostActivity = getActivity();
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
         mCurrentDateStartOfDay = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        mVoicePrompt = sp.getBoolean(getString(R.string.pref_capture_voice_input_key), true);
     }
 
     @Override
@@ -168,9 +193,24 @@ public class CaptureOverlayFragment extends Fragment
         return rootView;
     }
 
+    /**
+     * Shows or hides the overlay data with a progress bar
+     *
+     * @param show
+     */
+    private void showOverlayData(boolean show) {
+        Toolbox.showView(mRootView, show, false);
+        Toolbox.showView(mPb, !show, false);
+    }
+
+    /**
+     * Saves the item into the database
+     */
     private void saveItem() {
-        // TODO: Implement
-        Toolbox.showToast(mHostActivity, "This will save the item!");
+        Food food = createFood(mName, mDescription, mDateExpiry, mBrand, mSize, mWeight,
+                mImageUris, mBarcode, mInputType, Storage.NOT_SET);
+        mViewModel.insert(food);
+        Toolbox.showToast(mHostActivity, String.format("Saved %s!", mName));
         mHostActivity.onBackPressed();
     }
 
@@ -184,131 +224,257 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     private void fetchImageData(Bitmap image) {
-
+        // TODO: Implement
     }
 
     /**
-     * Populates overlay with {@code result} data gathered from the appropriate database provided by
-     * {@code inputType}
+     * Populates overlay with {@code upcItem} data gathered.
+     * <p>
+     * If {@code upcItem == null}, then close fragment
      *
-     * @param inputType
-     * @param result
+     * @param upcItem
      */
-    private void fillInFieldsFromOnline(InputType inputType, String result) {
-        String attr;
+    private void populateFieldsFromBarcode(@Nullable UpcItem upcItem) {
+        if (upcItem == null) {
+            mHostActivity.onBackPressed();
+            return;
+        }
+        mTvBarcode.setText(mBarcode);
 
-        Toolbox.showToast(mHostActivity, result);
+        if (upcItem.getItems() != null) {
+            Item item = upcItem.getItems().get(0);
+            mName = item.getTitle();
+            mTvName.setText(mName);
+            mDescription = item.getDescription();
+            mTvDescription.setText(mDescription);
+            mImageUris = item.getImages();
+            String imageUri = "";
+            if (mImageUris != null && mImageUris.size() > 0) {
+                imageUri = mImageUris.get(0);
+            }
+            Toolbox.loadImageFromUrl(mHostActivity, imageUri, mIvImage, new RequestListener<Bitmap>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                            Target<Bitmap> target, boolean isFirstResource) {
+                    // TODO: If there is no image, hide the view
+                    return false;
+                }
 
-        switch (inputType) {
-            case BARCODE:
-                mName = "";
-                mDescription = "";
-                attr = getString(R.string.data_attribution_upcitemdb);
-                // TODO: Set the imageUri to the first image in the result array
-                mImageUri = "";
-                // TODO: Set the barcodeUri to the same image captured
-                mBarcodeUri = "";
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                               DataSource dataSource, boolean isFirstResource) {
+                    return false;
+                }
+            });
+            GlideApp.with(mHostActivity)
+                    .load(mBarcodeBitmap)
+                    .into(mIvBarcode);
+
+            mTvAttr.setText(R.string.data_attribution_upcitemdb);
+
+            mBrand = item.getBrand();
+            mSize = item.getSize();
+            mWeight = item.getWeight();
+        }
+        promptForMissingInfo();
+    }
+
+    /**
+     * Populates overlay with {@code xxx} data gathered.
+     * <p>
+     * If {@code xxx == null}, then close fragment
+     *
+     * @param bitmap
+     */
+    private void populateFieldsFromImage(Bitmap bitmap) {
+        // TODO: Implement
+        mName = "";
+        mDescription = "";
+        mTvAttr.setText(R.string.data_attribution_google_imgrec);
+
+        promptForMissingInfo();
+    }
+
+    /**
+     * Prompt the user for additional required info. Use voice input if enabled in Settings
+     */
+    private void promptForMissingInfo() {
+        if (mName != null && mName.isEmpty()) {
+            // If prompting name, name should be first. Will prompt for Expiry date after name is
+            // provided
+            promptItemName(mVoicePrompt, false);
+        } else {
+            promptExpiryDate(mVoicePrompt, false, false);
+        }
+    }
+
+    /**
+     * Prompts the user for voice input. Input is handled in
+     * {@link CaptureOverlayFragment#onActivityResult(int, int, Intent)} with the provided
+     * {@code speechRequestCode}
+     *
+     * @param speechRequestCode
+     * @param reprompt          {@code true} will append reprompt message
+     */
+    private void startVoiceInput(int speechRequestCode, boolean reprompt) {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        String prompt;
+        switch (speechRequestCode) {
+            case REQ_CODE_SPEECH_INPUT_EXPIRY_DATE:
+                prompt = getString(R.string.voice_prompt_expiry);
+                if (reprompt) {
+                    prompt += String.format(" %s", getString(R.string.edit_error_date_expiry));
+                }
                 break;
-            case IMG_REC:
-                mName = "";
-                mDescription = "";
-                attr = getString(R.string.data_attribution_google_imgrec);
-                // TODO: Set the imageUri to the same image captured
-                mImageUri = "";
-                mBarcodeUri = "";
-                mIvBarcode.setVisibility(View.INVISIBLE);
+            case REQ_CODE_SPEECH_INPUT_NAME:
+                prompt = getString(R.string.voice_prompt_name);
                 break;
             default:
+                Timber.d("In startVoiceInput(). Invalid speechRequestCode passed: %s. Returning...",
+                        speechRequestCode);
                 return;
         }
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
+        try {
+            startActivityForResult(intent, speechRequestCode);
+        } catch (ActivityNotFoundException a) {
+            Timber.e(a, "There was an issue starting the speech request");
+        }
+    }
 
-        // common fields
-        mTvBarcode.setText(mBarcode);
-        mTvName.setText(mName);
-        mTvDescription.setText(mDescription);
-        mTvAttr.setText(attr);
-        Toolbox.loadImageFromUrl(mHostActivity, mImageUri, mIvImage, new RequestListener<Bitmap>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                return false;
-            }
-        });
-        Toolbox.loadImageFromUrl(mHostActivity, mBarcode, mIvBarcode, new RequestListener<Bitmap>() {
-            @Override
-            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                return false;
-            }
-
-            @Override
-            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                return false;
-            }
-        });
-
-        // expiry date, use voice prompt depending on settings
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
-        boolean voicePrompt = sp.getBoolean(getString(R.string.pref_capture_voice_input_key), true);
-        promptExpiryDate(voicePrompt);
+    /**
+     * Dismiss the overlay if the user dismisses a dialog prompt
+     *
+     * @param klass
+     * @param dialogInterface
+     */
+    @Override
+    public void onCancelled(Class klass, DialogInterface dialogInterface) {
+        mHostActivity.onBackPressed();
     }
 
     /**
      * Fetches info about the provided barcode from the upcitemdb
      */
-    private class GetProductsAsyncTask extends AsyncTask<String, Void, String> {
+    private class GetProductsAsyncTask extends AsyncTask<String, Void, UpcItem> {
+        UpcItemDbService service;
+
         @Override
-        protected void onPostExecute(String result) {
-            fillInFieldsFromOnline(mInputType, result);
+        protected void onPostExecute(@Nullable UpcItem upcItem) {
+            populateFieldsFromBarcode(upcItem);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            service = new UpcItemDbService(mHostActivity);
         }
 
         // https://api.upcitemdb.com/prod/trial/search?s=google%20pixel%202&match_mode=0&type=product
         @Override
-        protected String doInBackground(String... barcodes) {
-            String queryUrl = UPCITEMDB_BASE_UPC_SEARCH_URL + barcodes[0];
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .url(queryUrl)
-                    .build();
-            try {
-                Response response = client.newCall(request).execute();
-                return response.body().string();
-
-            } catch (IOException e) {
-                e.printStackTrace();
+        protected UpcItem doInBackground(String... barcodes) {
+            if (DEBUG_MODE_NO_API_CALL) {
+                return new UpcItem();
+            } else {
+                try {
+                    return service.fetchUpcItemInfo(barcodes[0]);
+                } catch (IOException e) {
+                    Timber.e(e, "There was an error fetching the upcitemdb result");
+                }
+                return null;
             }
-            return "Error getting results";
         }
     }
+
+    // region Get item name
+
+    /**
+     * Ask the user for the scanned item's name
+     *
+     * @param voiceInput
+     */
+    private void promptItemName(boolean voiceInput, boolean delay) {
+        if (voiceInput) {
+            if (delay) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startVoiceInput(REQ_CODE_SPEECH_INPUT_NAME, false);
+                    }
+                }, DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
+            } else {
+                startVoiceInput(REQ_CODE_SPEECH_INPUT_NAME, false);
+            }
+        } else {
+            showInputTextDialog();
+        }
+    }
+
+    /**
+     * Prompts the user to type in the item's name
+     */
+    private void showInputTextDialog() {
+        TextInputDialogFragment dialog = TextInputDialogFragment.newInstance(getString(R.string.voice_prompt_name));
+        dialog.setTargetFragment(this, 0);
+        dialog.show(getFragmentManager(), TextInputDialogFragment.class.getSimpleName());
+    }
+
+    @Override
+    public void onTextConfirmed(int position, String textInput) {
+        switch (position) {
+            case Dialog.BUTTON_POSITIVE:
+                setItemName(textInput, true);
+                showOverlayData(true);
+                break;
+            default:
+                mHostActivity.onBackPressed();
+                break;
+        }
+    }
+
+    /**
+     * Sets the name textview. Convenience method for handling interfaced requests. Chain the next
+     * request through {@code promptExpiryDate}
+     *
+     * @param name
+     */
+    private void setItemName(String name, boolean promptExpiryDate) {
+        mTvName.setText(name);
+        mName = name;
+
+        // Expiry date is the next step, which is required. Putting the call here to ensure it is
+        // not forgotten since UI shows only after expiry date is provided
+        if (promptExpiryDate) {
+            promptExpiryDate(mVoicePrompt, true, false);
+        }
+    }
+
+    // endregion
 
     // region Get expiry date
 
     /**
      * Ask the user for the scanned item's expiry date
+     *
+     * @param voiceInput
+     * @param reprompt   {@code true} will append reprompt message
      */
-    private void promptExpiryDate(boolean voiceInput) {
+    private void promptExpiryDate(boolean voiceInput, boolean delay, final boolean reprompt) {
         if (voiceInput) {
-            startVoiceInput();
+            if (delay) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startVoiceInput(REQ_CODE_SPEECH_INPUT_EXPIRY_DATE, reprompt);
+                    }
+                }, DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
+            } else {
+                startVoiceInput(REQ_CODE_SPEECH_INPUT_EXPIRY_DATE, reprompt);
+            }
         } else {
             showDatePickerDialog();
-        }
-    }
-
-    /**
-     * Prompts the user to say a date
-     */
-    private void startVoiceInput() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.voice_prompt_expiry));
-        try {
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        } catch (ActivityNotFoundException a) {
-
         }
     }
 
@@ -316,35 +482,11 @@ public class CaptureOverlayFragment extends Fragment
      * Prompts the user to select a date, with the user's current date as default date
      */
     private void showDatePickerDialog() {
-        ExpiryDatePickerDialog dialog = ExpiryDatePickerDialog.newInstance(
-                ExpiryDatePickerDialog.DateType.EXPIRY, mCurrentDateStartOfDay,
+        ExpiryDatePickerDialogFragment dialog = ExpiryDatePickerDialogFragment.newInstance(
+                ExpiryDatePickerDialogFragment.DateType.EXPIRY, mCurrentDateStartOfDay,
                 mCurrentDateStartOfDay);
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), ExpiryDatePickerDialog.class.getSimpleName());
-    }
-
-    // endregion
-
-    // region Handling date input
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-                    ArrayList<String> result =
-                            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String dateString = result.get(0);
-                    DateTime date = parseDateFromVoiceInput(dateString);
-                    setExpiryDate(date.getMillis());
-                } else if (resultCode == RESULT_CANCELED) {
-                    // Set current date as default expiry date
-                    setExpiryDate(mCurrentDateStartOfDay);
-                }
-                break;
-            }
-        }
+        dialog.show(getFragmentManager(), ExpiryDatePickerDialogFragment.class.getSimpleName());
     }
 
     private DateTime parseDateFromVoiceInput(String dateString) {
@@ -380,12 +522,13 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     @Override
-    public void onDateSelected(ExpiryDatePickerDialog.DateType dateType, DateTime selectedDate) {
+    public void onDateSelected(ExpiryDatePickerDialogFragment.DateType dateType, DateTime selectedDate) {
         setExpiryDate(selectedDate.getMillis());
+        showOverlayData(true);
     }
 
     /**
-     * Sets the expiry date textview
+     * Sets the expiry date textview. Convenience method for handling interfaced requests
      *
      * @param date
      */
@@ -397,6 +540,61 @@ public class CaptureOverlayFragment extends Fragment
 
     // endregion
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT_EXPIRY_DATE:
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result =
+                            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String dateString = result.get(0);
+                    if (isCancelled(dateString)) {
+                        mHostActivity.onBackPressed();
+                        return;
+                    }
+                    DateTime date = parseDateFromVoiceInput(dateString);
+                    if (DataToolbox.compareTwoDates(date.getMillis(), mCurrentDateStartOfDay)) {
+                        setExpiryDate(date.getMillis());
+                    } else {
+                        // reprompt
+                        promptExpiryDate(mVoicePrompt, true, true);
+                    }
+                } else if (resultCode == RESULT_CANCELED) {
+                    mHostActivity.onBackPressed();
+                    return;
+                }
+                showOverlayData(true); // date is the last thing to load before showing data
+                break;
+            case REQ_CODE_SPEECH_INPUT_NAME:
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result =
+                            data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String name = result.get(0);
+                    if (isCancelled(name)) {
+                        mHostActivity.onBackPressed();
+                        return;
+                    }
+                    setItemName(name, true);
+                } else if (resultCode == RESULT_CANCELED) {
+                    mHostActivity.onBackPressed();
+                    return;
+                }
+                break;
+        }
+    }
+
+    /**
+     * Checks if the user has cancelled voice prompt
+     *
+     * @param string
+     * @return
+     */
+    private boolean isCancelled(String string) {
+        String[] cancelInputs = mHostActivity.getResources().getStringArray(R.array.voice_input_cancelled);
+        return Arrays.asList(cancelInputs).contains(string);
+    }
+
     /**
      * Helper that creates food object
      *
@@ -406,16 +604,15 @@ public class CaptureOverlayFragment extends Fragment
      * @param brand
      * @param size
      * @param weight
-     * @param images
+     * @param imageUris
      * @param barcode
      * @param inputType
      * @param loc
      * @return
      */
     private Food createFood(String name, String description, long dateExpiry, String brand,
-                            String size, String weight, Bitmap images, String barcode,
+                            String size, String weight, List<String> imageUris, String barcode,
                             InputType inputType, Storage loc) {
-        List<String> imageUris = new ArrayList<>();
         return new Food(name, dateExpiry, dateExpiry, 1, loc, description, brand, size,
                 weight, null, barcode, inputType, imageUris);
     }

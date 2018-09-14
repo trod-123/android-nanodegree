@@ -21,6 +21,8 @@ public class InputTypeTypeConverter {
             return InputType.IMG_ONLY;
         } else if (code == InputType.TEXT_ONLY.getCode()) {
             return InputType.TEXT_ONLY;
+        } else if (code == InputType.NONE.getCode()) {
+            return InputType.NONE;
         } else {
             throw new IllegalArgumentException("Could not recognize InputType passed. Code:" + code);
         }

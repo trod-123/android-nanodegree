@@ -165,12 +165,14 @@
     <string name="data_attribution_upcitemdb">Barcode data provided by upcitemdb</string>
     <string name="data_attribution_google_imgrec">Image data provided by Google Image Labeling</string>
 
+    <string name="storage_location_none_label">Not set</string>
     <string name="storage_location_fridge_label">Fridge</string>
     <string name="storage_location_freezer_label">Freezer</string>
     <string name="storage_location_pantry_label">Pantry</string>
     <string name="storage_location_counter_label">Counter</string>
     <string name="storage_location_other_label">Other</string>
     <string-array name="storage_location_labels">
+        <item>@string/storage_location_none_label</item>
         <item>@string/storage_location_fridge_label</item>
         <item>@string/storage_location_freezer_label</item>
         <item>@string/storage_location_pantry_label</item>
@@ -184,9 +186,11 @@
     <string name="edit_food_count_label_required">Count (required)</string>
     <string name="edit_good_thru_date_default">%1$s (same as Expiry date)</string>
     <string name="edit_error_saving">Please fix the errors first before saving</string>
-    <string name="edit_error_required">This field is required</string>
+    <string name="edit_error_required_generic">This field is required</string>
+    <string name="edit_error_required_name">Name is required</string>
+    <string name="edit_error_required_date">An expiry date is required</string>
     <string name="edit_error_count">Count must be larger than 0</string>
-    <string name="edit_error_date_expiry">The selected date must be today or later</string>
+    <string name="edit_error_date_expiry">The Expiry date must be today or later</string>
     <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
 
     <!-- region Delete dialog -->
@@ -215,10 +219,27 @@
 
     <string name="capture_mode_barcode">Scan barcode</string>
     <string name="capture_mode_imgrec">Recognize image</string>
-
     <string name="capture_mode_barcode_instruction">Barcode will automatically scan once shown on screen</string>
     <string name="capture_mode_imgrec_instruction">Tap on the screen to capture the image</string>
-    <string name="error_requires_camera">This feature requires a camera on device</string>
-    <string name="voice_prompt_expiry">When does this item expire?</string>
 
+    <string name="error_requires_camera">This feature requires a camera on device</string>
+
+    <string name="voice_prompt_expiry">When does this item expire?</string>
+    <string name="voice_prompt_good_thru">Beyond the expiry date, when does this food go bad?</string>
+    <string name="voice_prompt_name">What is this item called?</string>
+    <string name="voice_prompt_description">How would you describe this item?</string>
+    <string name="voice_prompt_storage_loc">Where is this item stored?</string>
+
+    <string name="voice_input_cancelled_0">cancel</string>
+    <string name="voice_input_cancelled_1">never mind</string>
+    <string name="voice_input_cancelled_2">stop</string>
+    <string name="voice_input_cancelled_3">quit</string>
+    <string name="voice_input_cancelled_4">exit</string>
+    <string-array name="voice_input_cancelled">
+        <item>@string/voice_input_cancelled_0</item>
+        <item>@string/voice_input_cancelled_1</item>
+        <item>@string/voice_input_cancelled_2</item>
+        <item>@string/voice_input_cancelled_3</item>
+        <item>@string/voice_input_cancelled_4</item>
+    </string-array>
 </resources>

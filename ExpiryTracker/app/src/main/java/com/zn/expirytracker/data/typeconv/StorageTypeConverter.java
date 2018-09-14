@@ -23,6 +23,8 @@ public class StorageTypeConverter {
             return Storage.COUNTER;
         } else if (code == Storage.CUSTOM.getCode()) {
             return Storage.CUSTOM;
+        } else if (code == Storage.NOT_SET.getCode()) {
+            return Storage.NOT_SET;
         } else {
             throw new IllegalArgumentException("Could not recognize Storage passed. Code:" + code);
         }

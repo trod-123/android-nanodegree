@@ -42,6 +42,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import timber.log.Timber;
+
 /**
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
  * displaying extra information). This receives preview frames from the camera at a specified rate,
@@ -116,6 +118,8 @@ public class CameraSource {
     // @GuardedBy("processorLock")
     private VisionImageProcessor frameProcessor;
 
+    private boolean mProcessingThreadPaused = true;
+
     /**
      * Map to convert between a byte array, received from the camera, and its associated byte buffer.
      * We use byte buffers internally because this is a more efficient way to call into native code
@@ -172,9 +176,6 @@ public class CameraSource {
         usingSurfaceTexture = true;
         camera.startPreview();
 
-        processingThread = new Thread(processingRunnable);
-        processingRunnable.setActive(true);
-        processingThread.start();
         return this;
     }
 
@@ -195,12 +196,20 @@ public class CameraSource {
         camera.setPreviewDisplay(surfaceHolder);
         camera.startPreview();
 
+        usingSurfaceTexture = false;
+        return this;
+    }
+
+    /**
+     * Starts sending preview frames to the underlying detector without touching the camera or
+     * surface holder. Assumes camera is previewing
+     */
+    private synchronized void startProcessingThreadOnly() {
         processingThread = new Thread(processingRunnable);
         processingRunnable.setActive(true);
         processingThread.start();
 
-        usingSurfaceTexture = false;
-        return this;
+        mProcessingThreadPaused = false;
     }
 
     /**
@@ -213,18 +222,7 @@ public class CameraSource {
      * resources of the underlying detector.
      */
     public synchronized void stop() {
-        processingRunnable.setActive(false);
-        if (processingThread != null) {
-            try {
-                // Wait for the thread to complete to ensure that we can't have multiple threads
-                // executing at the same time (i.e., which would happen if we called start too
-                // quickly after stop).
-                processingThread.join();
-            } catch (InterruptedException e) {
-                Log.d(TAG, "Frame processing thread interrupted on release.");
-            }
-            processingThread = null;
-        }
+        stopProcessingThreadOnly();
 
         if (camera != null) {
             camera.stopPreview();
@@ -244,6 +242,25 @@ public class CameraSource {
 
         // Release the reference to any image buffers, since these will no longer be in use.
         bytesToByteBuffer.clear();
+    }
+
+    /**
+     * Stops sending frames to the underlying frame detector without stopping the camera
+     */
+    private synchronized void stopProcessingThreadOnly() {
+        processingRunnable.setActive(false);
+        if (processingThread != null) {
+            try {
+                // Wait for the thread to complete to ensure that we can't have multiple threads
+                // executing at the same time (i.e., which would happen if we called start too
+                // quickly after stop).
+                processingThread.join();
+            } catch (InterruptedException e) {
+                Log.d(TAG, "Frame processing thread interrupted on release.");
+            }
+            processingThread = null;
+        }
+        mProcessingThreadPaused = true;
     }
 
     /**
@@ -588,8 +605,47 @@ public class CameraSource {
         }
     }
 
+    /**
+     * Edited from source to allow null values to be passed, which pause the processor
+     *
+     * @param processor
+     */
     void setMachineLearningFrameProcessor(VisionImageProcessor processor) {
+        if (processor != null) {
+            startMachineLearningProcessor(processor);
+        } else {
+            pauseMachineLearningFrameProcessor();
+        }
+    }
+
+    /**
+     * Run this only when frame processor is started. Sends an error otherwise
+     */
+    private void pauseMachineLearningFrameProcessor() {
         synchronized (processorLock) {
+            if (!mProcessingThreadPaused) {
+                stopProcessingThreadOnly();
+            } else {
+                Timber.e("Attempted to pause frame processor when it is already paused. Doing nothing...");
+            }
+            processingRunnable.release();
+            cleanScreen();
+            if (frameProcessor != null) {
+                frameProcessor.stop();
+            }
+        }
+    }
+
+    /**
+     * Run this only when frame processor is paused. Sends an error otherwise
+     */
+    private void startMachineLearningProcessor(VisionImageProcessor processor) {
+        synchronized (processorLock) {
+            if (mProcessingThreadPaused) {
+                startProcessingThreadOnly();
+            } else {
+                Timber.e("Attempted to start frame processor when it is already started. Proceeding");
+            }
             cleanScreen();
             if (frameProcessor != null) {
                 frameProcessor.stop();
@@ -736,6 +792,7 @@ public class CameraSource {
                 }
             }
         }
+
     }
 
     /**

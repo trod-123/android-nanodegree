@@ -13,6 +13,7 @@
 // limitations under the License.
 package com.zn.expirytracker.ui.capture.barcodescanning;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -37,6 +38,7 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
 
     private final FirebaseVisionBarcodeDetector detector;
     private OnRecognizedBarcodeListener mListener;
+    private Bitmap mBitmap;
 
     public BarcodeScanningProcessor(OnRecognizedBarcodeListener listener) {
         // Note that if you know which format of barcode your app is dealing with, detection will be
@@ -59,6 +61,7 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
 
     @Override
     protected Task<List<FirebaseVisionBarcode>> detectInImage(FirebaseVisionImage image) {
+        mBitmap = image.getBitmapForDebugging();
         return detector.detectInImage(image);
     }
 
@@ -70,12 +73,7 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
         graphicOverlay.clear();
         for (int i = 0; i < barcodes.size(); ++i) {
             FirebaseVisionBarcode barcode = barcodes.get(i);
-            mListener.handleBarcode(barcode); // pass the barcode to CaptureActivity
-
-            // TODO: Potentially remove Graphics? The below is the only use for it
-//            BarcodeGraphic barcodeGraphic = new BarcodeGraphic(graphicOverlay, barcode);
-//            graphicOverlay.add(barcodeGraphic);
-
+            mListener.handleBarcode(barcode, mBitmap); // pass the barcode to CaptureActivity
         }
     }
 
@@ -85,6 +83,6 @@ public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseV
     }
 
     public interface OnRecognizedBarcodeListener {
-        void handleBarcode(FirebaseVisionBarcode barcode);
+        void handleBarcode(FirebaseVisionBarcode barcode, Bitmap bitmap);
     }
 }

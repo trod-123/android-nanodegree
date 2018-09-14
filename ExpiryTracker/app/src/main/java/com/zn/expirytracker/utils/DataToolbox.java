@@ -37,6 +37,7 @@ public class DataToolbox {
     private static final int GREETING_AFTERNOON_BOUNDS = 12;
 
     public static final int POSITION_NO_FOOD = -1;
+    public static final int NO_STORAGE_ICON_RESOURCE = -1;
 
     /**
      * Returns a customized greeting based on the time of day
@@ -421,8 +422,9 @@ public class DataToolbox {
             case COUNTER:
                 return R.drawable.ic_tabletop_black_24dp;
             case CUSTOM:
-            default:
                 return R.drawable.ic_add_black_24dp;
+            default:
+                return NO_STORAGE_ICON_RESOURCE;
         }
     }
 
@@ -444,8 +446,9 @@ public class DataToolbox {
             case COUNTER:
                 return context.getString(R.string.storage_location_counter_label);
             case CUSTOM:
-            default:
                 return context.getString(R.string.storage_location_other_label);
+            default:
+                return context.getString(R.string.storage_location_none_label);
         }
     }
 
@@ -730,5 +733,16 @@ public class DataToolbox {
      */
     public static long getTimeInMillisStartOfDay(long timeInMillis) {
         return getDateTimeStartOfDay(timeInMillis).getMillis();
+    }
+
+    /**
+     * Returns true if the selected date is equal to or greater than the current date
+     *
+     * @param selectedDateInMillis
+     * @param currentDateInMillis
+     * @return
+     */
+    public static boolean compareTwoDates(long selectedDateInMillis, long currentDateInMillis) {
+        return selectedDateInMillis >= currentDateInMillis;
     }
 }

@@ -1,7 +1,7 @@
 package com.zn.expirytracker.data.model;
 
 public enum InputType {
-    BARCODE(0), IMG_REC(1), IMG_ONLY(2), TEXT_ONLY(3);
+    BARCODE(0), IMG_REC(1), IMG_ONLY(2), TEXT_ONLY(3), NONE(-1);
 
     // Below code (and parenthesis indexing above) allows Storage to function as a TypeConverter
     // for Room

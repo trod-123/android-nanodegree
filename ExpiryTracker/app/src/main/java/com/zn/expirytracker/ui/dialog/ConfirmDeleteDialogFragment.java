@@ -11,7 +11,7 @@ import android.support.v7.app.AlertDialog;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.Toolbox;
 
-public class ConfirmDeleteDialog extends DialogFragment {
+public class ConfirmDeleteDialogFragment extends DialogFragment {
 
     private static final String ARG_FOOD_NAME_STRING =
             Toolbox.createStaticKeyString("confirm_delete_dialog.food_name");
@@ -29,8 +29,8 @@ public class ConfirmDeleteDialog extends DialogFragment {
         void onConfirmDeleteButtonClicked(int position);
     }
 
-    public static ConfirmDeleteDialog newInstance(String foodName, boolean isLoggedIn, boolean wipeAll) {
-        ConfirmDeleteDialog fragment = new ConfirmDeleteDialog();
+    public static ConfirmDeleteDialogFragment newInstance(String foodName, boolean isLoggedIn, boolean wipeAll) {
+        ConfirmDeleteDialogFragment fragment = new ConfirmDeleteDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_FOOD_NAME_STRING, foodName);
         args.putBoolean(ARG_IS_LOGGED_IN_BOOL, isLoggedIn);

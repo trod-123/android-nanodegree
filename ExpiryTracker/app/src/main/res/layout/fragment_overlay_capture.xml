@@ -5,9 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Hide view upon load, through 0 alpha, while Pb is shown. Remember to adjust when needed -->
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_overlay_capture_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:alpha="0">
 
         <TextView
             android:id="@+id/tv_overlay_capture_barcode"
@@ -15,7 +18,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dialog_mid_margin"
             android:layout_marginStart="@dimen/dialog_horizontal_margin"
-            android:text="1234567890"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/textColorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@+id/iv_overlay_scanned_storage_loc"
             app:layout_constraintEnd_toStartOf="@+id/tv_overlay_scanned_storage_loc"
@@ -27,7 +31,6 @@
             android:id="@+id/tv_overlay_scanned_storage_loc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Fridge"
             android:textColor="@color/textColorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@+id/iv_overlay_scanned_storage_loc"
             app:layout_constraintEnd_toStartOf="@+id/iv_overlay_scanned_storage_loc"
@@ -60,7 +63,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dialog_mid_margin"
             android:layout_marginTop="@dimen/dialog_mid_margin"
-            android:text="Lettuce"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/textColorPrimary"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/iv_overlay_scanned_storage_loc"
@@ -72,7 +76,8 @@
             android:id="@+id/tv_overlay_scanned_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Very green!"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/textColorPrimary"
             app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
             app:layout_constraintStart_toStartOf="@+id/tv_overlay_scanned_name"
@@ -83,7 +88,7 @@
             android:id="@+id/tv_overlay_scanned_expiry_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Expires Jan 23, 2018"
+            android:layout_marginTop="8dp"
             android:textColor="@color/textColorPrimary"
             android:textStyle="italic"
             app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_description"
@@ -139,4 +144,11 @@
             app:layout_constraintTop_toTopOf="@+id/btn_overlay_scanned_positive" />
 
     </android.support.constraint.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/pb_overlay_scanned"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
 </android.support.v7.widget.CardView>

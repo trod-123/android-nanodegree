@@ -3,6 +3,7 @@ package com.zn.expirytracker.ui;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,10 +30,11 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialog;
-import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog;
-import com.zn.expirytracker.ui.dialog.FormChangedDialog;
-import com.zn.expirytracker.ui.dialog.StorageLocationDialog;
+import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
+import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
+import com.zn.expirytracker.ui.dialog.FormChangedDialogFragment;
+import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
+import com.zn.expirytracker.ui.dialog.StorageLocationDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.EditToolbox;
@@ -53,10 +55,10 @@ import timber.log.Timber;
  * Callbacks for {@link android.support.v4.app.DialogFragment} idea from: https://gist.github.com/Joev-/5695813
  */
 public class EditFragment extends Fragment implements
-        StorageLocationDialog.OnStorageLocationSelectedListener,
-        ExpiryDatePickerDialog.OnDateSelectedListener,
-        FormChangedDialog.OnFormChangedButtonClickListener,
-        ConfirmDeleteDialog.OnConfirmDeleteButtonClickListener {
+        StorageLocationDialogFragment.OnStorageLocationSelectedListener,
+        ExpiryDatePickerDialogFragment.OnDateSelectedListener,
+        FormChangedDialogFragment.OnFormChangedButtonClickListener,
+        ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "edit_fragment.item_id_long");
@@ -68,8 +70,8 @@ public class EditFragment extends Fragment implements
     public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
 
     public static final int DEFAULT_STARTING_COUNT = 1;
-    public static final Storage DEFAULT_STARTING_STORAGE = Storage.FRIDGE;
-    public static final InputType DEFAULT_INPUT_TYPE = InputType.TEXT_ONLY;
+    public static final Storage DEFAULT_STARTING_STORAGE = Storage.NOT_SET;
+    public static final InputType DEFAULT_INPUT_TYPE = InputType.NONE;
 
     @BindView(R.id.layout_edit_root)
     View mRootLayout;
@@ -345,7 +347,11 @@ public class EditFragment extends Fragment implements
         mViewPager.setAdapter(mPagerAdapter);
         mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
         mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
-        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        if (mLoc != Storage.NOT_SET) {
+            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        } else {
+            mIvLoc.setImageDrawable(null);
+        }
         mEtLoc.setText(DataToolbox.getStorageIconString(mLoc, mHostActivity));
         setGoodThruDateViewAttributes();
     }
@@ -422,13 +428,13 @@ public class EditFragment extends Fragment implements
         mEtDateExpiry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePickerDialog(ExpiryDatePickerDialog.DateType.EXPIRY);
+                showDatePickerDialog(ExpiryDatePickerDialogFragment.DateType.EXPIRY);
             }
         });
         mEtDateGood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePickerDialog(ExpiryDatePickerDialog.DateType.GOOD_THRU);
+                showDatePickerDialog(ExpiryDatePickerDialogFragment.DateType.GOOD_THRU);
             }
         });
         mIvMinus.setOnClickListener(new View.OnClickListener() {
@@ -575,81 +581,88 @@ public class EditFragment extends Fragment implements
      * https://developer.android.com/guide/topics/ui/dialogs
      */
     private void showLocationDialog() {
-        StorageLocationDialog dialog = new StorageLocationDialog();
+        StorageLocationDialogFragment dialog = new StorageLocationDialogFragment();
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), StorageLocationDialog.class.getSimpleName());
+        dialog.show(getFragmentManager(), StorageLocationDialogFragment.class.getSimpleName());
     }
 
     /**
      * Prompts the user to select a date. Resulting action is based on the
-     * {@link com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialog.DateType} passed
+     * {@link ExpiryDatePickerDialogFragment.DateType} passed
      *
      * @param dateType
      */
-    private void showDatePickerDialog(ExpiryDatePickerDialog.DateType dateType) {
-        ExpiryDatePickerDialog dialog = ExpiryDatePickerDialog.newInstance(dateType, mExpiryDate,
+    private void showDatePickerDialog(ExpiryDatePickerDialogFragment.DateType dateType) {
+        ExpiryDatePickerDialogFragment dialog = ExpiryDatePickerDialogFragment.newInstance(dateType, mExpiryDate,
                 mGoodThruDate);
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), ExpiryDatePickerDialog.class.getSimpleName());
+        dialog.show(getFragmentManager(), ExpiryDatePickerDialogFragment.class.getSimpleName());
     }
 
     /**
      * Prompts the user to either discard or save changes
      */
     private void showFormChangedDialog() {
-        FormChangedDialog dialog = new FormChangedDialog();
+        FormChangedDialogFragment dialog = new FormChangedDialogFragment();
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), FormChangedDialog.class.getSimpleName());
+        dialog.show(getFragmentManager(), FormChangedDialogFragment.class.getSimpleName());
     }
 
     /**
      * Prompts the user to confirm whether the current item should be deleted
      */
     private void showConfirmDeleteDialog() {
-        ConfirmDeleteDialog dialog = ConfirmDeleteDialog.newInstance(
+        ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(
                 mFood.getFoodName(), AuthToolbox.checkIfSignedIn(), false);
         dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), ConfirmDeleteDialog.class.getSimpleName());
+        dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
     }
 
     /**
-     * Handles the {@link Storage} selection from  {@link StorageLocationDialog}
+     * Handles the {@link Storage} selection from  {@link StorageLocationDialogFragment}
      *
      * @param position
      */
     @Override
     public void onStorageLocationSelected(int position) {
         switch (position) {
-            case 0:
+            case 1:
                 mLoc = Storage.FRIDGE;
                 break;
-            case 1:
+            case 2:
                 mLoc = Storage.FREEZER;
                 break;
-            case 2:
+            case 3:
                 mLoc = Storage.PANTRY;
                 break;
-            case 3:
+            case 4:
                 mLoc = Storage.COUNTER;
                 break;
-            case 4:
-            default:
+            case 5:
                 mLoc = Storage.CUSTOM;
+                break;
+            case 0:
+            default:
+                mLoc = Storage.NOT_SET;
         }
 
         // TODO: Handle rotation changes not updating text properly (open dialog, rotate, choose, value does not change from original)
-        mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        if (mLoc != Storage.NOT_SET) {
+            mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
+        } else {
+            mIvLoc.setImageDrawable(null);
+        }
         mEtLoc.setText(DataToolbox.getStorageIconString(mLoc, mHostActivity));
     }
 
     /**
-     * Handles the date selection from {@link ExpiryDatePickerDialog}
+     * Handles the date selection from {@link ExpiryDatePickerDialogFragment}
      *
      * @param dateType
      * @param selectedDate
      */
     @Override
-    public void onDateSelected(ExpiryDatePickerDialog.DateType dateType, DateTime selectedDate) {
+    public void onDateSelected(ExpiryDatePickerDialogFragment.DateType dateType, DateTime selectedDate) {
         String fieldFormattedDate = DataToolbox.getFieldFormattedDate(selectedDate);
         switch (dateType) {
             case GOOD_THRU:
@@ -669,7 +682,7 @@ public class EditFragment extends Fragment implements
     }
 
     /**
-     * Handles the button clicked from {@link FormChangedDialog}
+     * Handles the button clicked from {@link FormChangedDialogFragment}
      *
      * @param position
      */
@@ -686,7 +699,7 @@ public class EditFragment extends Fragment implements
     }
 
     /**
-     * Handles the button clicked from {@link ConfirmDeleteDialog}
+     * Handles the button clicked from {@link ConfirmDeleteDialogFragment}
      *
      * @param position
      */
@@ -697,6 +710,11 @@ public class EditFragment extends Fragment implements
                 deleteItem();
                 break;
         }
+    }
+
+    @Override
+    public void onCancelled(Class klass, DialogInterface dialogInterface) {
+        // Necessary to be overridden
     }
 
     // endregion
@@ -731,12 +749,12 @@ public class EditFragment extends Fragment implements
                 case REQUIRED_NAME:
                     editTextView = mEtFoodName;
                     errorEditTextView = mEtFoodNameError;
-                    errorMessage = getString(R.string.edit_error_required);
+                    errorMessage = getString(R.string.edit_error_required_generic);
                     break;
                 case REQUIRED_COUNT:
                     editTextView = mEtCount;
                     errorEditTextView = mEtCountError;
-                    errorMessage = getString(R.string.edit_error_required);
+                    errorMessage = getString(R.string.edit_error_required_generic);
                     break;
                 case INVALID_COUNT:
                     editTextView = mEtCount;
@@ -773,7 +791,7 @@ public class EditFragment extends Fragment implements
         switch (error) {
             case REQUIRED_NAME:
             case REQUIRED_COUNT:
-                Toolbox.showSnackbarMessage(getView(), getString(R.string.edit_error_required));
+                Toolbox.showSnackbarMessage(getView(), getString(R.string.edit_error_required_generic));
                 break;
             case INVALID_COUNT:
                 Toolbox.showSnackbarMessage(getView(), getString(R.string.edit_error_count));
