@@ -219,8 +219,10 @@
 
     <string name="capture_mode_barcode">Scan barcode</string>
     <string name="capture_mode_imgrec">Recognize image</string>
+    <string name="capture_mode_imgonly">Take photo</string>
     <string name="capture_mode_barcode_instruction">Barcode will automatically scan once shown on screen</string>
     <string name="capture_mode_imgrec_instruction">Tap on the screen to capture the image</string>
+    <string name="capture_mode_imgonly_instruction">@string/capture_mode_imgrec_instruction</string>
 
     <string name="error_requires_camera">This feature requires a camera on device</string>
 

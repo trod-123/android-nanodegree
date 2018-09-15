@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -214,7 +215,7 @@ public class CaptureOverlayFragment extends Fragment
                 break;
             case IMG_ONLY:
                 // For image only, there is no data to fetch, so just populate views
-                populateFieldsFromImage(mImageBitmap);
+                populateFieldsFromImageOnly(mImageBitmap);
                 break;
         }
         return rootView;
@@ -343,17 +344,19 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     /**
-     * Populates overlay with {@code xxx} data gathered.
-     * <p>
-     * If {@code xxx == null}, then close fragment
+     * Populates overlay with the just the image, and hides unnecessary views
      *
-     * @param bitmap
+     * @param image
      */
-    private void populateFieldsFromImage(Bitmap bitmap) {
-        // TODO: Implement
-        mName = "";
-        mDescription = "";
-        mTvAttr.setText(R.string.data_attribution_google_imgrec);
+    private void populateFieldsFromImageOnly(@NonNull Bitmap image) {
+        mTvDescription.setVisibility(View.GONE);
+        // Load the barcode in the main image instead and hide the other
+        GlideApp.with(mHostActivity)
+                .load(image)
+                .into(mIvImage);
+        mTvBarcode.setVisibility(View.GONE);
+        mIvBarcode.setVisibility(View.GONE);
+        mTvAttr.setVisibility(View.GONE);
 
         promptForMissingInfo();
     }

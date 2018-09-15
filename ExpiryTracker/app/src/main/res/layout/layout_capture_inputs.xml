@@ -83,6 +83,34 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/layout_capture_imgonly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:alpha="0.3"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_capture_imgonly"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_photo_camera_black_24dp"
+                android:tint="@android:color/white"/>
+
+            <TextView
+                android:id="@+id/tv_capture_imgonly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/capture_mode_imgonly"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

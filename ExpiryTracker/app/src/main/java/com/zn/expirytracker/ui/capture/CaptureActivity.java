@@ -52,6 +52,8 @@ public class CaptureActivity extends AppCompatActivity implements
     View mBtnCaptureBarcode;
     @BindView(R.id.layout_capture_imgrec)
     View mBtnCaptureImgrec;
+    @BindView(R.id.layout_capture_imgonly)
+    View mBtnCaptureImgonly;
     @BindView(R.id.tv_capture_instruction)
     TextView mTvInstruction;
     @BindView(R.id.container_overlay_fragment)
@@ -60,7 +62,7 @@ public class CaptureActivity extends AppCompatActivity implements
     CameraSourcePreview mPreview;
     @BindView(R.id.fireFaceOverlay)
     GraphicOverlay mGraphicOverlay;
-    @BindView(R.id.view_imgrec_clicker)
+    @BindView(R.id.btn_capture_image)
     View mBtnImgRec;
 
     private CameraSource mCameraSource;
@@ -81,6 +83,7 @@ public class CaptureActivity extends AppCompatActivity implements
 
         mBtnCaptureBarcode.setOnClickListener(this);
         mBtnCaptureImgrec.setOnClickListener(this);
+        mBtnCaptureImgonly.setOnClickListener(this);
         mFragmentRoot.setOnClickListener(this);
 
         if (allPermissionsGranted()) {
@@ -141,16 +144,11 @@ public class CaptureActivity extends AppCompatActivity implements
         if (fragments.size() == 0) {
             super.onBackPressed();
         } else {
-            Fragment topFragment = fragments.get(fragments.size() - 1);
-            if (topFragment instanceof CaptureOverlayFragment) {
-                // Dismiss the overlay fragment first if it's showing
-                activateRoot(true);
-            }
-            if (fragments.size() > 1) {
-                // Handle cases where Glide somehow is the top fragment instead
-                Fragment secondToTopFragment = fragments.get(fragments.size() - 2);
-                if (secondToTopFragment instanceof CaptureOverlayFragment) {
+            for (Fragment fragment : fragments) {
+                String tag = fragment.getTag();
+                if (tag != null && tag.equals(CaptureOverlayFragment.class.getSimpleName())) {
                     activateRoot(true);
+                    break;
                 }
             }
             super.onBackPressed();
@@ -170,6 +168,9 @@ public class CaptureActivity extends AppCompatActivity implements
                 break;
             case R.id.layout_capture_imgrec:
                 setInputType(InputType.IMG_REC);
+                break;
+            case R.id.layout_capture_imgonly:
+                setInputType(InputType.IMG_ONLY);
                 break;
             case R.id.container_overlay_fragment:
                 // Prevent clicking on the "dialog" from dismissing the fragment due to root's click listener
@@ -201,13 +202,19 @@ public class CaptureActivity extends AppCompatActivity implements
      */
     @Override
     public void handleImage(@NonNull List<FirebaseVisionLabel> labels, Bitmap bitmap) {
-        // TODO: Implement and pass to overlay. Currently shows dummy toast with labels
-        StringBuilder sb = new StringBuilder();
-        for (FirebaseVisionLabel label : labels) {
-            sb.append(label.getLabel());
-            sb.append(", ");
+        if (mCurrentInputType == InputType.IMG_REC) {
+            // TODO: Implement and pass to overlay. Currently shows dummy toast with labels
+            StringBuilder sb = new StringBuilder();
+            for (FirebaseVisionLabel label : labels) {
+                sb.append(label.getLabel());
+                sb.append(", ");
+            }
+            Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
+        } else if (mCurrentInputType == InputType.IMG_ONLY) {
+            // TODO: Get IMGONLY its own method, it will not be called from here
+            loadResultOverlay(bitmap);
+            mScanJitter = true;
         }
-        Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
     }
 
     /**
@@ -217,13 +224,34 @@ public class CaptureActivity extends AppCompatActivity implements
         activateRoot(false);
         CaptureOverlayFragment fragment =
                 CaptureOverlayFragment.newInstance_BarcodeInput(barcode, barcodeImage);
+        startFragment(fragment);
+
+    }
+
+    /**
+     * Load the result overlay with the captured image
+     *
+     * @param image
+     */
+    private void loadResultOverlay(Bitmap image) {
+        activateRoot(false);
+        CaptureOverlayFragment fragment = CaptureOverlayFragment.newInstance_ImageInput(image);
+        startFragment(fragment);
+    }
+
+    /**
+     * Helper to start the fragment with a fade-in
+     *
+     * @param fragment
+     */
+    private void startFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 // TODO: Fade out
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 //                .setCustomAnimations(R.anim.overlay_capture_fade_in, R.anim.overlay_capture_fade_out,
 //                        R.anim.overlay_capture_fade_in, R.anim.overlay_capture_fade_out)
                 .add(R.id.container_overlay_fragment, fragment,
-                        CaptureOverlayFragment.class.getSimpleName())
+                        fragment.getClass().getSimpleName())
                 .addToBackStack(null)
                 .commit();
     }
@@ -245,12 +273,13 @@ public class CaptureActivity extends AppCompatActivity implements
             }
         };
         mRootView.animate().setDuration(Constants.DURATION_TRANSITION).alpha(alpha);
+        mBtnCaptureImgonly.setEnabled(activate);
         mBtnCaptureImgrec.setEnabled(activate);
         mBtnCaptureBarcode.setEnabled(activate);
         mRootView.setOnClickListener(listener);
 
-        int visibility = (activate && mCurrentInputType == InputType.IMG_REC) ?
-                View.VISIBLE : View.GONE;
+        int visibility = (activate && mCurrentInputType == InputType.IMG_REC ||
+                mCurrentInputType == InputType.IMG_ONLY) ? View.VISIBLE : View.GONE;
         mBtnImgRec.setVisibility(visibility);
 
         if (activate) {
@@ -295,11 +324,10 @@ public class CaptureActivity extends AppCompatActivity implements
         if (mCurrentInputType != inputType) {
             // Only action if changing
             mCurrentInputType = inputType;
+            fadeInOutInputTypes(inputType);
             switch (inputType) {
                 case BARCODE:
                     mTvInstruction.setText(R.string.capture_mode_barcode_instruction);
-                    mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_ACTIVATED);
-                    mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_DEACTIVATED);
                     mBtnImgRec.setVisibility(View.GONE);
                     break;
                 case IMG_REC:
@@ -308,7 +336,10 @@ public class CaptureActivity extends AppCompatActivity implements
                             "anywhere shows labels for image on camera");
                     //mTvInstruction.setText(R.string.capture_mode_imgrec_instruction);
                     mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_DEACTIVATED);
-                    mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_ACTIVATED);
+                    mBtnImgRec.setVisibility(View.VISIBLE);
+                    break;
+                case IMG_ONLY:
+                    mTvInstruction.setText(R.string.capture_mode_imgonly_instruction);
                     mBtnImgRec.setVisibility(View.VISIBLE);
                     break;
             }
@@ -319,6 +350,31 @@ public class CaptureActivity extends AppCompatActivity implements
                 getRuntimePermissions();
             }
         }
+    }
+
+    /**
+     * Fades out all capture buttons, but keeps the passed {@link InputType} activated
+     *
+     * @param inputType
+     */
+    private void fadeInOutInputTypes(InputType inputType) {
+        mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_DEACTIVATED);
+        mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_DEACTIVATED);
+        mBtnCaptureImgonly.animate().alpha(Constants.ALPHA_DEACTIVATED);
+
+        switch (inputType) {
+            case BARCODE:
+                mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_ACTIVATED);
+                break;
+            case IMG_REC:
+                mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_ACTIVATED);
+                break;
+            case IMG_ONLY:
+                mBtnCaptureImgonly.animate().alpha(Constants.ALPHA_ACTIVATED);
+                break;
+        }
+
+
     }
 
     // region Camera
@@ -362,6 +418,8 @@ public class CaptureActivity extends AppCompatActivity implements
                 Timber.i("Using Barcode Detector Processor");
                 mCameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor(this));
                 break;
+            case IMG_ONLY:
+                // TODO: Null the frame processor, but still have a way to capture the image
             case IMG_REC:
                 Timber.i("Using Image Label Detector Processor");
                 mCameraSource.setMachineLearningFrameProcessor(new ImageLabelingProcessor(mBtnImgRec, this));
