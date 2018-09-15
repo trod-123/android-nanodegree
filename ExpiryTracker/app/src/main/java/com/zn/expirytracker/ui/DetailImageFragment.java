@@ -75,6 +75,7 @@ public class DetailImageFragment extends Fragment {
             Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView, new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                    Timber.e(e, "There was an error loading the image: %s", mImageUriString);
                     return false;
                 }
 

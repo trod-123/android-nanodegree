@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.zn.expirytracker.upcitemdb.model.UpcItem;
-import com.zn.expirytracker.utils.Toolbox;
 
 import java.io.IOException;
 
@@ -76,9 +75,9 @@ public final class UpcItemDbService {
     }
 
     /**
-     * Checks the response if it's valid. Logs and informs user if there is an error
+     * Checks the response if it's valid. Logs and informs user if there is an error. If the UPC is
+     * invalid, then returns {@code false}
      * <p>
-     * TODO: Export strings into resources
      *
      * @param item
      * @return
@@ -86,7 +85,6 @@ public final class UpcItemDbService {
     private boolean checkResponseOK(@Nullable UpcItem item) {
         if (item == null) {
             Timber.e("UpcItemDb response was null");
-            Toolbox.showToast(mContext, "There was no response.");
             return false;
         }
         String code = item.getCode();
@@ -97,7 +95,6 @@ public final class UpcItemDbService {
             return true;
         } else {
             Timber.e("Error with UpcItemDb response: %s, %s", code, message);
-            Toolbox.showToast(mContext, message);
             return false;
         }
     }

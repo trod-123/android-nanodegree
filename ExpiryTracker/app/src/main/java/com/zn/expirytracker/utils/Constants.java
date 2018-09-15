@@ -24,4 +24,7 @@ public class Constants {
 
     public static final int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
     public static final int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
+
+    public static final String BITMAP_SAVING_DIRECTORY = "scannedImagesDir";
+    public static final int BITMAP_SAVING_QUALITY = 30; // out of 100
 }

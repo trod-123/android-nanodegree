@@ -72,6 +72,8 @@ public class CaptureOverlayFragment extends Fragment
             "capture_overlay_fragment.barcode");
     public static final String ARG_BARCODE_BITMAP = Toolbox.createStaticKeyString(
             "capture_overlay_fragment.barcode_bitmap");
+    public static final String ARG_IMAGE_BITMAP = Toolbox.createStaticKeyString(
+            "capture_overlay_fragment.image_bitmap");
 
     private static final int REQ_CODE_SPEECH_INPUT_NAME = 1024;
     private static final int REQ_CODE_SPEECH_INPUT_EXPIRY_DATE = 1026;
@@ -105,36 +107,57 @@ public class CaptureOverlayFragment extends Fragment
     ImageView mIvImage;
     @BindView(R.id.iv_overlay_scanned_barcode)
     ImageView mIvBarcode;
-    @BindView(R.id.iv_overlay_scanned_storage_loc)
-    ImageView mIvLoc;
 
     private Activity mHostActivity;
     private FoodViewModel mViewModel;
     private long mCurrentDateStartOfDay;
     private boolean mVoicePrompt;
 
-    private InputType mInputType;
-    private String mBarcode;
+    private InputType mInputType = InputType.NONE;
+    private String mBarcode = "";
     private Bitmap mBarcodeBitmap;
-    private String mName;
-    private String mDescription;
+    private Bitmap mImageBitmap;
+    private String mName = "";
+    private String mDescription = "";
     long mDateExpiry;
-    private String mBrand;
-    private String mSize;
-    private String mWeight;
-    private List<String> mImageUris;
+    private String mBrand = "";
+    private String mSize = "";
+    private String mWeight = "";
+    private List<String> mImageUris = new ArrayList<>();
 
     public CaptureOverlayFragment() {
         // Required empty public constructor
     }
 
-    public static CaptureOverlayFragment newInstance(InputType inputType, @Nullable String barcode,
-                                                     @Nullable Bitmap barcodeImage) {
+    /**
+     * Specifically for Barcode scans
+     *
+     * @param barcode
+     * @param barcodeImage
+     * @return
+     */
+    public static CaptureOverlayFragment newInstance_BarcodeInput(@Nullable String barcode,
+                                                                  @Nullable Bitmap barcodeImage) {
         CaptureOverlayFragment fragment = new CaptureOverlayFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_INPUT_TYPE, inputType);
+        args.putSerializable(ARG_INPUT_TYPE, InputType.BARCODE);
         args.putString(ARG_BARCODE, barcode);
         args.putParcelable(ARG_BARCODE_BITMAP, barcodeImage);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Specifically for Image only captures
+     *
+     * @param image
+     * @return
+     */
+    public static CaptureOverlayFragment newInstance_ImageInput(Bitmap image) {
+        CaptureOverlayFragment fragment = new CaptureOverlayFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_INPUT_TYPE, InputType.IMG_ONLY);
+        args.putParcelable(ARG_IMAGE_BITMAP, image);
         fragment.setArguments(args);
         return fragment;
     }
@@ -148,6 +171,7 @@ public class CaptureOverlayFragment extends Fragment
             mInputType = (InputType) args.getSerializable(ARG_INPUT_TYPE);
             mBarcode = args.getString(ARG_BARCODE, "");
             mBarcodeBitmap = args.getParcelable(ARG_BARCODE_BITMAP);
+            mImageBitmap = args.getParcelable(ARG_IMAGE_BITMAP);
         }
 
         mHostActivity = getActivity();
@@ -188,8 +212,11 @@ public class CaptureOverlayFragment extends Fragment
             case IMG_REC:
                 fetchImageData(null);
                 break;
+            case IMG_ONLY:
+                // For image only, there is no data to fetch, so just populate views
+                populateFieldsFromImage(mImageBitmap);
+                break;
         }
-
         return rootView;
     }
 
@@ -207,11 +234,43 @@ public class CaptureOverlayFragment extends Fragment
      * Saves the item into the database
      */
     private void saveItem() {
+        // First save the images into the food item
+        saveBitmapsToFood();
+
         Food food = createFood(mName, mDescription, mDateExpiry, mBrand, mSize, mWeight,
                 mImageUris, mBarcode, mInputType, Storage.NOT_SET);
         mViewModel.insert(food);
         Toolbox.showToast(mHostActivity, String.format("Saved %s!", mName));
         mHostActivity.onBackPressed();
+    }
+
+    /**
+     * Saves the user-taken shots to internal storage, and appends their uri strings to food.
+     * Note only either {@code mBarcodeBitmap} or {@code mImageBitmap} is not null.
+     */
+    private void saveBitmapsToFood() {
+        if (mBarcodeBitmap != null) {
+            try {
+                String path = Toolbox.getInternalStorageUriString(
+                        Toolbox.saveBitmapToInternalStorage(mBarcodeBitmap, mName, mHostActivity),
+                        mHostActivity);
+                Timber.d("Saved barcode bitmap path: %s", path);
+                mImageUris.add(path);
+            } catch (IOException e) {
+                Timber.e(e, "There was a problem saving the barcode bitmap to internal storage");
+            }
+        }
+        if (mImageBitmap != null) {
+            try {
+                String path = Toolbox.getInternalStorageUriString(
+                        Toolbox.saveBitmapToInternalStorage(mImageBitmap, mName, mHostActivity),
+                        mHostActivity);
+                Timber.d("Saved image bitmap path: %s", path);
+                mImageUris.add(path);
+            } catch (IOException e) {
+                Timber.e(e, "There was a problem saving the image bitmap to internal storage");
+            }
+        }
     }
 
     /**
@@ -235,15 +294,8 @@ public class CaptureOverlayFragment extends Fragment
      * @param upcItem
      */
     private void populateFieldsFromBarcode(@Nullable UpcItem upcItem) {
-        if (upcItem == null) {
-            mHostActivity.onBackPressed();
-            return;
-        }
         mTvBarcode.setText(mBarcode);
-
-        // TODO: Handle no results cases
-
-        if (upcItem.getItems() != null && upcItem.getItems().size() > 0) {
+        if (upcItem != null && upcItem.getItems().size() > 0) {
             Item item = upcItem.getItems().get(0);
             mName = item.getTitle();
             mTvName.setText(mName);
@@ -271,12 +323,21 @@ public class CaptureOverlayFragment extends Fragment
             GlideApp.with(mHostActivity)
                     .load(mBarcodeBitmap)
                     .into(mIvBarcode);
-
             mTvAttr.setText(R.string.data_attribution_upcitemdb);
 
             mBrand = item.getBrand();
             mSize = item.getSize();
             mWeight = item.getWeight();
+        } else {
+            // upcItem is null or has no results
+            Toolbox.showToast(mHostActivity, "Item not in online database");
+            mTvDescription.setVisibility(View.GONE);
+            // Load the barcode in the main image instead and hide the other
+            GlideApp.with(mHostActivity)
+                    .load(mBarcodeBitmap)
+                    .into(mIvImage);
+            mIvBarcode.setVisibility(View.GONE);
+            mTvAttr.setVisibility(View.GONE);
         }
         promptForMissingInfo();
     }
@@ -577,7 +638,7 @@ public class CaptureOverlayFragment extends Fragment
                         mHostActivity.onBackPressed();
                         return;
                     }
-                    setItemName(name, true);
+                    setItemName(Toolbox.toTitleCase(name), true);
                 } else if (resultCode == RESULT_CANCELED) {
                     mHostActivity.onBackPressed();
                     return;

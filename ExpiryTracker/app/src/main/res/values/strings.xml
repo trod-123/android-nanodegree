@@ -242,4 +242,6 @@
         <item>@string/voice_input_cancelled_3</item>
         <item>@string/voice_input_cancelled_4</item>
     </string-array>
+
+    <string name="internal_storage_uri_path" translatable="false">file://%1$s</string>
 </resources>

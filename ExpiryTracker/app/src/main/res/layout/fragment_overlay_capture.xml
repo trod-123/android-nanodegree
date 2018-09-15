@@ -12,115 +12,119 @@
         android:layout_height="wrap_content"
         android:alpha="0">
 
-        <TextView
-            android:id="@+id/tv_overlay_capture_barcode"
-            android:layout_width="0dp"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dialog_mid_margin"
-            android:layout_marginStart="@dimen/dialog_horizontal_margin"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/textColorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_overlay_scanned_storage_loc"
-            app:layout_constraintEnd_toStartOf="@+id/tv_overlay_scanned_storage_loc"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/iv_overlay_scanned_storage_loc"
-            tools:text="1234567890" />
-
-        <TextView
-            android:id="@+id/tv_overlay_scanned_storage_loc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/textColorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_overlay_scanned_storage_loc"
-            app:layout_constraintEnd_toStartOf="@+id/iv_overlay_scanned_storage_loc"
-            app:layout_constraintTop_toTopOf="@+id/iv_overlay_scanned_storage_loc"
-            tools:text="Fridge" />
-
-        <ImageView
-            android:id="@+id/iv_overlay_scanned_storage_loc"
-            style="@style/AppTheme.Icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dialog_horizontal_margin"
-            android:layout_marginTop="@dimen/dialog_top_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_fridge_black_24dp" />
-
-        <ImageView
-            android:id="@+id/iv_overlay_scanned_image"
-            android:layout_width="128dp"
-            android:layout_height="96dp"
-            android:layout_marginTop="@dimen/dialog_mid_margin"
-            app:layout_constraintStart_toStartOf="@+id/tv_overlay_capture_barcode"
-            app:layout_constraintTop_toBottomOf="@+id/tv_overlay_capture_barcode"
-            app:srcCompat="@color/imageBackground_none" />
-
-        <TextView
-            android:id="@+id/tv_overlay_scanned_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dialog_mid_margin"
-            android:layout_marginTop="@dimen/dialog_mid_margin"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/textColorPrimary"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/iv_overlay_scanned_storage_loc"
-            app:layout_constraintStart_toEndOf="@+id/iv_overlay_scanned_image"
-            app:layout_constraintTop_toTopOf="@+id/iv_overlay_scanned_image"
-            tools:text="Lettuce" />
-
-        <TextView
-            android:id="@+id/tv_overlay_scanned_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/textColorPrimary"
-            app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
-            app:layout_constraintStart_toStartOf="@+id/tv_overlay_scanned_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_name"
-            tools:text="Very green" />
-
-        <TextView
-            android:id="@+id/tv_overlay_scanned_expiry_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/textColorPrimary"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_description"
-            app:layout_constraintStart_toStartOf="@+id/tv_overlay_scanned_description"
-            app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_description"
-            tools:text="Expires Jan 23, 2018" />
-
-        <ImageView
-            android:id="@+id/iv_overlay_scanned_barcode"
-            android:layout_width="96dp"
-            android:layout_height="64dp"
-            android:layout_marginBottom="@dimen/dialog_button_margin"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/btn_overlay_scanned_positive"
-            app:layout_constraintEnd_toEndOf="@+id/iv_overlay_scanned_storage_loc"
-            app:layout_constraintTop_toBottomOf="@+id/iv_overlay_scanned_image"
-            app:srcCompat="@color/imageBackground_none" />
-
-        <TextView
-            android:id="@+id/tv_overlay_capture_attr"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginTop="8dp"
-            android:gravity="bottom"
-            android:text="@string/data_attribution_upcitemdb"
-            android:textColor="@color/textColorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_overlay_scanned_barcode"
-            app:layout_constraintEnd_toStartOf="@+id/iv_overlay_scanned_barcode"
-            app:layout_constraintStart_toStartOf="@+id/iv_overlay_scanned_image"
-            app:layout_constraintTop_toBottomOf="@+id/iv_overlay_scanned_image"
-            tools:text="@string/data_attribution_upcitemdb" />
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="@dimen/dialog_top_margin"
+            app:layout_constraintBottom_toTopOf="@+id/btn_overlay_scanned_positive"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_overlay_capture_barcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/textColorPrimaryLight"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="1234567890" />
+
+            <ImageView
+                android:id="@+id/iv_overlay_scanned_image"
+                android:layout_width="128dp"
+                android:layout_height="96dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_overlay_capture_barcode"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@color/imageBackground_none" />
+
+            <TextView
+                android:id="@+id/tv_overlay_scanned_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/textColorPrimary"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/iv_overlay_scanned_image"
+                app:layout_constraintTop_toBottomOf="@+id/tv_overlay_capture_barcode"
+                app:layout_constraintVertical_chainStyle="spread_inside"
+                tools:text="Lettuce" />
+
+            <TextView
+                android:id="@+id/tv_overlay_scanned_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="@color/textColorPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_name"
+                tools:text="Very green" />
+
+            <TextView
+                android:id="@+id/tv_overlay_scanned_expiry_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/textColorPrimary"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toTopOf="@+id/tv_overlay_capture_attr"
+                app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_description"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="Expires Jan 23, 2018" />
+
+            <ImageView
+                android:id="@+id/iv_overlay_scanned_barcode"
+                android:layout_width="96dp"
+                android:layout_height="64dp"
+                android:layout_marginBottom="@dimen/dialog_button_margin"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_expiry_date"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@color/imageBackground_none" />
+
+            <TextView
+                android:id="@+id/tv_overlay_capture_attr"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom"
+                android:textColor="@color/textColorPrimaryLight"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_overlay_scanned_image"
+                app:layout_constraintVertical_bias="1.0"
+                tools:text="@string/data_attribution_upcitemdb" />
+
+
+        </android.support.constraint.ConstraintLayout>
 
         <Button
             android:id="@+id/btn_overlay_scanned_positive"

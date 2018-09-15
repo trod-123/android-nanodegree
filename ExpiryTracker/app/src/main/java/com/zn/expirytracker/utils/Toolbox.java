@@ -2,11 +2,13 @@ package com.zn.expirytracker.utils;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -25,6 +27,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
+import com.zn.expirytracker.R;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -266,5 +273,71 @@ public class Toolbox {
             pageIndicatorView.animate().setStartDelay(Constants.PAGE_INDICATOR_FADE_OUT_DELAY)
                     .setDuration(Constants.PAGE_INDICATOR_FADE_OUT_DURATION).alpha(0f);
         }
+    }
+
+    /**
+     * Converts a string input into title case
+     * <p>
+     * https://stackoverflow.com/questions/1086123/string-conversion-to-title-case
+     *
+     * @param input
+     * @return
+     */
+    public static String toTitleCase(String input) {
+        StringBuilder titleCase = new StringBuilder();
+        boolean nextTitleCase = true;
+
+        for (char c : input.toCharArray()) {
+            if (Character.isSpaceChar(c)) {
+                nextTitleCase = true;
+            } else if (nextTitleCase) {
+                c = Character.toTitleCase(c);
+                nextTitleCase = false;
+            }
+            titleCase.append(c);
+        }
+        return titleCase.toString();
+    }
+
+    /**
+     * Saves a bitmap into internal storage for this app, with the following filename syntax:
+     * {@code currentTimeInMillis_filename.jpg}
+     * <p>
+     * https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+     *
+     * @param bitmap   {@code Bitmap} to be saved into the device's internal directory
+     * @param filename
+     * @param context
+     * @return {@code String} representing the filepath of the stored file
+     * @throws IOException
+     */
+    public static String saveBitmapToInternalStorage(Bitmap bitmap, String filename, Context context)
+            throws IOException {
+        ContextWrapper cw = new ContextWrapper(context);
+        filename = System.currentTimeMillis() + "_" + filename + ".jpg";
+        // path to /data/data/{yourapp}/{app_data}/scannedImagesDir
+        File directory = cw.getDir(Constants.BITMAP_SAVING_DIRECTORY, Context.MODE_PRIVATE);
+        File path = new File(directory, filename);
+        FileOutputStream fos;
+        fos = new FileOutputStream(path);
+        // Use the compress method on the Bitmap object to write image to fos
+        bitmap.compress(Bitmap.CompressFormat.JPEG, Constants.BITMAP_SAVING_QUALITY, fos);
+        fos.close();
+        return path.getAbsolutePath();
+    }
+
+    public static void deleteBitmapFromInternalStorage(Uri uri) {
+        // TODO: Implement and send to FoodViewModel
+    }
+
+    /**
+     * Returns a path prefixed with {@code "file://"}
+     *
+     * @param path
+     * @param context
+     * @return
+     */
+    public static String getInternalStorageUriString(String path, Context context) {
+        return context.getString(R.string.internal_storage_uri_path, path);
     }
 }

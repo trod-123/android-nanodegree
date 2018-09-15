@@ -216,7 +216,7 @@ public class CaptureActivity extends AppCompatActivity implements
     private void loadResultOverlay(String barcode, Bitmap barcodeImage) {
         activateRoot(false);
         CaptureOverlayFragment fragment =
-                CaptureOverlayFragment.newInstance(mCurrentInputType, barcode, barcodeImage);
+                CaptureOverlayFragment.newInstance_BarcodeInput(barcode, barcodeImage);
         getSupportFragmentManager().beginTransaction()
                 // TODO: Fade out
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

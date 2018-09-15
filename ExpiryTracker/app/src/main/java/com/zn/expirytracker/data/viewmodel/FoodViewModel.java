@@ -32,19 +32,27 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository = new FoodRepository(application);
     }
 
-    public void insert(Food food) { mRepository.insertFood(food);}
+    public void insert(Food food) {
+        mRepository.insertFood(food);
+    }
 
     public void insert(Food... foods) {
         mRepository.insertFoods(foods);
     }
 
-    public void update(Food food) { mRepository.updateFood(food); }
+    public void update(Food food) {
+        mRepository.updateFood(food);
+    }
 
     public void update(Food... foods) {
         mRepository.updateFoods(foods);
     }
 
-    public void delete(long id) { mRepository.deleteFoodById(id);}
+    // TODO: When deleting, delete all user-submitted pictures too
+
+    public void delete(long id) {
+        mRepository.deleteFoodById(id);
+    }
 
     public void delete(Long... ids) {
         mRepository.deleteFoodsByIds(ids);

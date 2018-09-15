@@ -29,7 +29,7 @@ public class Item {
     @Json(name = "currency")
     private String currency;
     @Json(name = "lowest_recorded_price")
-    private Integer lowestRecordedPrice;
+    private Double lowestRecordedPrice;
     @Json(name = "highest_recorded_price")
     private Double highestRecordedPrice;
     @Json(name = "images")
@@ -66,7 +66,7 @@ public class Item {
      * @param images
      * @param brand
      */
-    public Item(String ean, String title, String description, String upc, String brand, String model, String color, String size, String dimension, String weight, String currency, Integer lowestRecordedPrice, Double highestRecordedPrice, List<String> images, List<Offer> offers, String asin, String elid) {
+    public Item(String ean, String title, String description, String upc, String brand, String model, String color, String size, String dimension, String weight, String currency, Double lowestRecordedPrice, Double highestRecordedPrice, List<String> images, List<Offer> offers, String asin, String elid) {
         super();
         this.ean = ean;
         this.title = title;
@@ -175,11 +175,11 @@ public class Item {
         this.currency = currency;
     }
 
-    public Integer getLowestRecordedPrice() {
+    public Double getLowestRecordedPrice() {
         return lowestRecordedPrice;
     }
 
-    public void setLowestRecordedPrice(Integer lowestRecordedPrice) {
+    public void setLowestRecordedPrice(Double lowestRecordedPrice) {
         this.lowestRecordedPrice = lowestRecordedPrice;
     }
 
