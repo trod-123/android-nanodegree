@@ -91,6 +91,7 @@ dependencies {
 
     // Firebase ML Kit
     implementation "com.google.firebase:firebase-ml-vision:$firebaseMlKitVersion"
+    implementation "com.google.firebase:firebase-ml-vision-image-label-model:$firebaseMlKitVisionImageLabelModelVersion"
 
     // Firebase Job Dispatcher
     implementation "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"

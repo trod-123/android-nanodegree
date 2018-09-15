@@ -241,7 +241,9 @@ public class CaptureOverlayFragment extends Fragment
         }
         mTvBarcode.setText(mBarcode);
 
-        if (upcItem.getItems() != null) {
+        // TODO: Handle no results cases
+
+        if (upcItem.getItems() != null && upcItem.getItems().size() > 0) {
             Item item = upcItem.getItems().get(0);
             mName = item.getTitle();
             mTvName.setText(mName);

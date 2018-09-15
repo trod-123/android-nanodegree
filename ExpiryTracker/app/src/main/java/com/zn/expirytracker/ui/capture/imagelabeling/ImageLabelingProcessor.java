@@ -13,8 +13,9 @@
 // limitations under the License.
 package com.zn.expirytracker.ui.capture.imagelabeling;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -28,17 +29,31 @@ import com.zn.expirytracker.ui.capture.helpers.VisionProcessorBase;
 import java.io.IOException;
 import java.util.List;
 
+import timber.log.Timber;
+
 /**
  * Custom Image Classifier Demo.
  */
 public class ImageLabelingProcessor extends VisionProcessorBase<List<FirebaseVisionLabel>> {
 
-    private static final String TAG = "ImageLabelingProcessor";
-
     private final FirebaseVisionLabelDetector detector;
+    private OnImageRecognizedListener mListener;
+    private Bitmap mBitmap;
+    private View mButtonView;
+    private List<FirebaseVisionLabel> mLabels;
 
-    public ImageLabelingProcessor() {
+    public ImageLabelingProcessor(View buttonView, OnImageRecognizedListener listener) {
         detector = FirebaseVision.getInstance().getVisionLabelDetector();
+        mButtonView = buttonView;
+        mButtonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mLabels != null) {
+                    mListener.handleImage(mLabels, mBitmap);
+                }
+            }
+        });
+        mListener = listener;
     }
 
     @Override
@@ -46,12 +61,13 @@ public class ImageLabelingProcessor extends VisionProcessorBase<List<FirebaseVis
         try {
             detector.close();
         } catch (IOException e) {
-            Log.e(TAG, "Exception thrown while trying to close Text Detector: " + e);
+            Timber.e(e, "Exception thrown while trying to close Text Detector");
         }
     }
 
     @Override
     protected Task<List<FirebaseVisionLabel>> detectInImage(FirebaseVisionImage image) {
+        mBitmap = image.getBitmapForDebugging();
         return detector.detectInImage(image);
     }
 
@@ -60,13 +76,15 @@ public class ImageLabelingProcessor extends VisionProcessorBase<List<FirebaseVis
             @NonNull List<FirebaseVisionLabel> labels,
             @NonNull FrameMetadata frameMetadata,
             @NonNull GraphicOverlay graphicOverlay) {
-        graphicOverlay.clear();
-        LabelGraphic labelGraphic = new LabelGraphic(graphicOverlay, labels);
-        graphicOverlay.add(labelGraphic);
+        mLabels = labels;
     }
 
     @Override
     protected void onFailure(@NonNull Exception e) {
-        Log.w(TAG, "Label detection failed." + e);
+        Timber.w(e, "Label detection failed.");
+    }
+
+    public interface OnImageRecognizedListener {
+        void handleImage(@NonNull List<FirebaseVisionLabel> labels, Bitmap bitmap);
     }
 }

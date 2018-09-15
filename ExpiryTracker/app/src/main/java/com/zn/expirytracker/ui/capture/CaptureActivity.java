@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
+import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.ui.capture.barcodescanning.BarcodeScanningProcessor;
@@ -36,7 +38,8 @@ import timber.log.Timber;
  */
 public class CaptureActivity extends AppCompatActivity implements
         View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback,
-        BarcodeScanningProcessor.OnRecognizedBarcodeListener {
+        BarcodeScanningProcessor.OnRecognizedBarcodeListener,
+        ImageLabelingProcessor.OnImageRecognizedListener {
 
     private static final InputType DEFAULT_INPUT_TYPE = InputType.BARCODE;
 
@@ -57,6 +60,8 @@ public class CaptureActivity extends AppCompatActivity implements
     CameraSourcePreview mPreview;
     @BindView(R.id.fireFaceOverlay)
     GraphicOverlay mGraphicOverlay;
+    @BindView(R.id.view_imgrec_clicker)
+    View mBtnImgRec;
 
     private CameraSource mCameraSource;
     private InputType mCurrentInputType = DEFAULT_INPUT_TYPE;
@@ -173,6 +178,8 @@ public class CaptureActivity extends AppCompatActivity implements
     }
 
     /**
+     * Load up the overlay.
+     * <p>
      * See {@link CaptureActivity#startJitterCountdown()}
      *
      * @param barcode
@@ -187,7 +194,24 @@ public class CaptureActivity extends AppCompatActivity implements
     }
 
     /**
-     * Load the captured image result overlay
+     * Load up the overlay
+     *
+     * @param labels
+     * @param bitmap
+     */
+    @Override
+    public void handleImage(@NonNull List<FirebaseVisionLabel> labels, Bitmap bitmap) {
+        // TODO: Implement and pass to overlay. Currently shows dummy toast with labels
+        StringBuilder sb = new StringBuilder();
+        for (FirebaseVisionLabel label : labels) {
+            sb.append(label.getLabel());
+            sb.append(", ");
+        }
+        Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
+    }
+
+    /**
+     * Load the captured image result overlay for the barcode
      */
     private void loadResultOverlay(String barcode, Bitmap barcodeImage) {
         activateRoot(false);
@@ -225,6 +249,10 @@ public class CaptureActivity extends AppCompatActivity implements
         mBtnCaptureBarcode.setEnabled(activate);
         mRootView.setOnClickListener(listener);
 
+        int visibility = (activate && mCurrentInputType == InputType.IMG_REC) ?
+                View.VISIBLE : View.GONE;
+        mBtnImgRec.setVisibility(visibility);
+
         if (activate) {
             startJitterCountdown();
         }
@@ -258,7 +286,8 @@ public class CaptureActivity extends AppCompatActivity implements
     }
 
     /**
-     * Sets the current input type
+     * Sets the current input type. This determines the callback that returns info of the scanned
+     * item
      *
      * @param inputType
      */
@@ -271,13 +300,16 @@ public class CaptureActivity extends AppCompatActivity implements
                     mTvInstruction.setText(R.string.capture_mode_barcode_instruction);
                     mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_ACTIVATED);
                     mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_DEACTIVATED);
+                    mBtnImgRec.setVisibility(View.GONE);
                     break;
                 case IMG_REC:
                     // TODO: Implement
-                    mTvInstruction.setText("Still to be implemented");
+                    mTvInstruction.setText("Still to be implemented. In the meantime, tapping " +
+                            "anywhere shows labels for image on camera");
                     //mTvInstruction.setText(R.string.capture_mode_imgrec_instruction);
                     mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_DEACTIVATED);
                     mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_ACTIVATED);
+                    mBtnImgRec.setVisibility(View.VISIBLE);
                     break;
             }
             if (allPermissionsGranted()) {
@@ -332,7 +364,7 @@ public class CaptureActivity extends AppCompatActivity implements
                 break;
             case IMG_REC:
                 Timber.i("Using Image Label Detector Processor");
-                mCameraSource.setMachineLearningFrameProcessor(new ImageLabelingProcessor());
+                mCameraSource.setMachineLearningFrameProcessor(new ImageLabelingProcessor(mBtnImgRec, this));
                 break;
             default:
                 Timber.i("Passing in null processor");
