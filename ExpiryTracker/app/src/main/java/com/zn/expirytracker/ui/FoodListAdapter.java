@@ -125,13 +125,20 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             mName.setText(food.getFoodName());
             mExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, food.getDateExpiry()));
-            mCount.setText(String.valueOf(food.getCount()));
+            int count = food.getCount();
+            if (count != 1) {
+                mCount.setVisibility(View.VISIBLE);
+                mCount.setText("x" + String.valueOf(count));
+            } else {
+                mCount.setVisibility(View.GONE);
+            }
             Storage storageLocation = food.getStorageLocation();
             if (storageLocation != Storage.NOT_SET) {
                 // don't show icon if no storage set
+                mStorageIcon.setVisibility(View.VISIBLE);
                 mStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storageLocation));
             } else {
-                mStorageIcon.setImageDrawable(null);
+                mStorageIcon.setVisibility(View.GONE);
             }
             int daysUntilExpiry =
                     DataToolbox.getNumDaysBetweenDates(mCurrentTime, food.getDateExpiry());
@@ -142,6 +149,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             // Load image only if there is any
             List<String> images = food.getImages();
             if (images != null && images.size() > 0) {
+                mImage.setVisibility(View.VISIBLE);
                 Toolbox.loadImageFromUrl(mContext, images.get(0), mImage, new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
@@ -154,7 +162,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                     }
                 });
             } else {
-                mImage.setImageDrawable(null);
+                mImage.setVisibility(View.GONE);
             }
 
             // Set the color of a drawable

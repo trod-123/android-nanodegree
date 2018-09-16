@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -296,6 +297,7 @@ public class AtAGlanceFragment extends Fragment
         mRvFoodList.setHasFixedSize(false); // since size dynamically changes, this should be false
         mListAdapter = new FoodListAdapter(mHostActivity);
         mRvFoodList.setAdapter(mListAdapter);
+        mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
         ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
     }
 

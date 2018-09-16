@@ -22,21 +22,28 @@
 
     <TextView
         android:id="@+id/tv_list_item_food_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="@dimen/list_item_name_padding"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textStyle="bold"
         android:textColor="@color/textColorPrimary"
         android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/iv_list_item_storage_icon"
         app:layout_constraintStart_toEndOf="@+id/ncv_list_item_count_days"
-        app:layout_constraintTop_toTopOf="@+id/ncv_list_item_count_days"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Lettuce" />
 
     <TextView
         android:id="@+id/tv_list_item_expiry_date"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/textColorPrimary"
         android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_list_item_food_name"
         app:layout_constraintStart_toStartOf="@+id/tv_list_item_food_name"
         app:layout_constraintTop_toBottomOf="@+id/tv_list_item_food_name"
         tools:text="Expires today!" />
@@ -45,10 +52,10 @@
         android:id="@+id/iv_list_item_storage_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/icon_padding"
+        android:layout_marginEnd="4dp"
         android:tint="@color/icon_tint"
         app:layout_constraintBottom_toBottomOf="@+id/tv_list_item_food_name"
-        app:layout_constraintStart_toEndOf="@+id/tv_list_item_food_name"
+        app:layout_constraintEnd_toStartOf="@+id/tv_list_item_count"
         app:layout_constraintTop_toTopOf="@+id/tv_list_item_food_name"
         tools:src="@drawable/ic_tabletop_black_24dp" />
 
@@ -56,10 +63,10 @@
         android:id="@+id/tv_list_item_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/icon_padding_narrow"
+        android:layout_marginEnd="8dp"
         android:textColor="@color/textColorPrimaryLight"
         app:layout_constraintBottom_toBottomOf="@+id/iv_list_item_storage_icon"
-        app:layout_constraintStart_toEndOf="@+id/iv_list_item_storage_icon"
+        app:layout_constraintEnd_toStartOf="@+id/iv_list_item_image"
         app:layout_constraintTop_toTopOf="@+id/iv_list_item_storage_icon"
         tools:text="2" />
 
@@ -70,6 +77,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="centerCrop"
         tools:src="@color/textColorPrimary" />
 
 </android.support.constraint.ConstraintLayout>
