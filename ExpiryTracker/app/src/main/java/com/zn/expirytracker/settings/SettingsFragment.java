@@ -66,22 +66,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 getString(R.string.pref_notifications_receive_key)));
         setOnPreferenceChangeListener(mPreferenceNotificationsNumDays);
         setOnPreferenceChangeListener(mPreferenceNotificationsTod);
-        setOnPreferenceChangeListener(findPreference(
-                getString(R.string.pref_notifications_days_key)));
+        setOnPreferenceChangeListener(mPreferenceWidget);
         setOnPreferenceChangeListener(findPreference(
                 getString(R.string.pref_widget_num_days_key)));
         setOnPreferenceChangeListener(findPreference(
                 getString(R.string.pref_account_display_name_key)));
-
-        // Refresh widget
-        mPreferenceWidget.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                // Request update
-                UpdateWidgetService.updateFoodWidget(preference.getContext());
-                return true;
-            }
-        });
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
@@ -188,7 +177,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     /**
      * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
+     * to reflect its new value. Also adds individual preference-specific actions
      */
     private static Preference.OnPreferenceChangeListener sOnPreferenceChangeListener =
             new Preference.OnPreferenceChangeListener() {
@@ -205,6 +194,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                         enablePreference(preference, value, context);
                     }
 
+                    // Individual preference-specific actions
                     if (preference.getKey()
                             .equals(context.getString(R.string.pref_account_display_name_key))) {
                         // Sync the display name with the database
@@ -214,6 +204,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
                         // If there is no name, set the summary to the default
                         if (displayName.trim().isEmpty())
                             preference.setSummary(R.string.pref_account_display_name_summary);
+                    } else if (preference.getKey().equals(context.getString(R.string.pref_widget_num_days_key))) {
+                        // Request update
+                        UpdateWidgetService.updateFoodWidget(preference.getContext());
+                        return true;
                     }
                     return true;
                 }
