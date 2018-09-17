@@ -185,7 +185,29 @@ public class DataToolbox {
             default:
                 plusDays = 0;
         }
-        return currentDateTimeStartOfDay.plusDays(plusDays).getMillis();
+        return getDateBounds(currentDateTimeStartOfDay, plusDays);
+    }
+
+    /**
+     * Gets the date in millis after the number of {@code plusDays} provided
+     *
+     * @param currentDateTimeStartOfDay
+     * @param plusDays
+     * @return
+     */
+    public static long getDateBounds(DateTime currentDateTimeStartOfDay, int plusDays) {
+        return currentDateTimeStartOfDay.plusDays(plusDays + 1).getMillis();
+    }
+
+    /**
+     * Gets the date in millis after the number of {@code plusDays} provided
+     *
+     * @param baseDateStartOfDay
+     * @param plusDays
+     * @return
+     */
+    public static long getDateBounds(long baseDateStartOfDay, int plusDays) {
+        return getDateBounds(new DateTime(baseDateStartOfDay), plusDays);
     }
 
     /**
@@ -456,6 +478,8 @@ public class DataToolbox {
      * Returns a readable date string formatted based on number of days between 2 dates, with
      * dates provided in {@code MILLISECONDS}. Assumes the second date is equal to or greater
      * than the first
+     * <p>
+     * Example result: Expires soon on Tuesday
      *
      * @param dateInMillis2
      * @return
@@ -556,7 +580,9 @@ public class DataToolbox {
     /**
      * Returns a readable date string formatted based on number of days between 2 dates, with
      * dates provided as {@code JodaTime.DateTime} objects. Assumes the second date is equal to or
-     * greater than the first
+     * greater than the first.
+     * <p>
+     * Example result: Expires soon on Tuesday
      *
      * @param context
      * @param date1
@@ -605,7 +631,7 @@ public class DataToolbox {
     }
 
     /**
-     * Helper that gets a field-friendly date string
+     * Helper that gets a field-friendly date string in the form "M/d/yyyy"
      *
      * @param dateTime
      * @return
@@ -615,7 +641,7 @@ public class DataToolbox {
     }
 
     /**
-     * Helper that gets a field-friendly date string
+     * Helper that gets a field-friendly date string in the form "M/d/yyyy"
      *
      * @param dateInMillis
      * @return
@@ -744,5 +770,23 @@ public class DataToolbox {
      */
     public static boolean compareTwoDates(long selectedDateInMillis, long currentDateInMillis) {
         return selectedDateInMillis >= currentDateInMillis;
+    }
+
+    /**
+     * Does what it says
+     *
+     * @return {@code int} - a random animal drawable resource id
+     */
+    public static int getRandomAnimalDrawableId() {
+        int[] drawableIds = new int[]{
+                R.drawable.ic_cat_black_24dp,
+                R.drawable.ic_dog_black_24dp,
+                R.drawable.ic_duck_black_24dp,
+                R.drawable.ic_easter_black_24dp,
+                R.drawable.ic_fish_black_24dp,
+                R.drawable.ic_poop_black_24dp,
+        };
+
+        return drawableIds[mRandomizer.nextInt(drawableIds.length - 1)];
     }
 }

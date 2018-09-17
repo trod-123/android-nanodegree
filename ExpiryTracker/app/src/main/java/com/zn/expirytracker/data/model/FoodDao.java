@@ -141,6 +141,20 @@ public interface FoodDao {
     DataSource.Factory<Integer, Food> getAllFoodExpiringBeforeDate(long date);
 
     /**
+     * Returns a list of {@link Food} filtered to those expiring on or before the provided
+     * {@code date}.
+     * <p>
+     * Order by increasing expiration date, so those closer to expiring are shown first, providing
+     * only the summary columns (all other values will be null)
+     *
+     * @param date
+     * @return
+     */
+    @Query("SELECT _id, food_name, date_expiry, date_good_thru, count, storage_location, images" +
+            " FROM food_table WHERE date_expiry <= :date ORDER BY date_expiry, food_name ASC")
+    List<Food> getAllFoodExpiringBeforeDate_Widget(long date);
+
+    /**
      * Returns a random single {@link Food} item. If there are no {@link Food} in the database,
      * returns an empty array
      *

@@ -17,6 +17,7 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.widget.UpdateWidgetService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     static Preference mPreferenceNotificationsNumDays;
     static Preference mPreferenceNotificationsTod;
+    static Preference mPreferenceWidget;
     static Preference mPreferenceAccountSignIn;
     static Preference mPreferenceAccountSignOut;
     static Preference mPreferenceAccountSync;
@@ -51,6 +53,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 findPreference(getString(R.string.pref_notifications_days_key));
         mPreferenceNotificationsTod =
                 findPreference(getString(R.string.pref_notifications_tod_key));
+        mPreferenceWidget = findPreference(getString(R.string.pref_widget_num_days_key));
         mPreferenceAccountSignIn = findPreference(getString(R.string.pref_account_sign_in_key));
         mPreferenceAccountSignOut = findPreference(getString(R.string.pref_account_sign_out_key));
         mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
@@ -69,6 +72,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 getString(R.string.pref_widget_num_days_key)));
         setOnPreferenceChangeListener(findPreference(
                 getString(R.string.pref_account_display_name_key)));
+
+        // Refresh widget
+        mPreferenceWidget.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                // Request update
+                UpdateWidgetService.updateFoodWidget(preference.getContext());
+                return true;
+            }
+        });
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();

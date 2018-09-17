@@ -1,0 +1,103 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- All app colors need to be explicitly set here, as widgets are not tied to the app's theme -->
+    <LinearLayout
+        android:id="@+id/layout_widget_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="@dimen/default_app_bar_elevation"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_widget_app_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="16dp"
+            android:src="@drawable/ic_cube_black_24dp"
+            android:tint="@android:color/white" />
+
+        <TextView
+            android:id="@+id/tv_widget_header"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="@string/widget_header"
+            android:textColor="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/btn_widget_settings"
+            style="@style/AppTheme.Icon.ClickableIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_settings_white_24dp"
+            android:tint="@android:color/white" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/tv_widget_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:text="@string/expiring_food_none"
+                android:textColor="@color/textColorPrimaryLight"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/iv_widget_empty_animal"
+                style="@style/AppTheme.Icon"
+                android:layout_width="@dimen/empty_list_icon_size"
+                android:layout_height="@dimen/empty_list_icon_size"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_dog_black_24dp" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lv_widget"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/divider_list_item"
+            android:dividerHeight="@dimen/divider_list_item_height"
+            tools:listitem="@layout/item_widget" />
+
+        <ProgressBar
+            android:id="@+id/pb_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/colorAccent" />
+
+    </FrameLayout>
+
+</LinearLayout>

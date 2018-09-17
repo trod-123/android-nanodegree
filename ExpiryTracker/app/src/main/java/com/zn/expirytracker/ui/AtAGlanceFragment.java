@@ -243,7 +243,7 @@ public class AtAGlanceFragment extends Fragment
             mBarChart.highlightValue(0, 0);
         } else {
             mBarChart.setData(null);
-            mBarChart.setNoDataText(getString(R.string.at_a_glance_bar_chart_empty));
+            mBarChart.setNoDataText(getString(R.string.expiring_food_none));
             showEmptyChartHeader();
         }
     }
@@ -381,7 +381,7 @@ public class AtAGlanceFragment extends Fragment
 
     private void showEmptyChartHeader() {
         mTvChartHeaderDate.setText("");
-        mTvChartHeaderNumFoods.setText(R.string.at_a_glance_bar_chart_empty);
+        mTvChartHeaderNumFoods.setText(R.string.expiring_food_none);
     }
 
     /**

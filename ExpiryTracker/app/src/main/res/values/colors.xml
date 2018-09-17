@@ -24,5 +24,6 @@
     <color name="imageBackground_none">@color/textColorPrimaryDark</color>
 
     <color name="number_circle_outline_default">@color/textColorPrimaryDark</color>
+    <color name="divider_list_item">#dfdfdf</color>
 
 </resources>

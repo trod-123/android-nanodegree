@@ -35,7 +35,6 @@
 
     <!-- Bar chart -->
     <string name="at_a_glance_bar_chart_label">Dates bar chart</string>
-    <string name="at_a_glance_bar_chart_empty">No expiring foods during this time</string>
     <string name="at_a_glance_date_range_label">Set date range</string>
     <string name="at_a_glance_bar_chart_header_count_none">No foods expiring %2$s</string>
     <string name="at_a_glance_bar_chart_header_count_one">1 food expiring %2$s</string>
@@ -117,6 +116,7 @@
     <string name="expiry_msg_month_day">Expires on %1$s %2$d</string>
     <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
     <string name="expiry_msg_generic">Expires %1$s</string>
+    <string name="expiry_msg_generic_pp">Expiring %1$s</string>
 
     <string name="date_today">today</string>
     <string name="date_tomorrow">tomorrow</string>
@@ -246,4 +246,8 @@
     </string-array>
 
     <string name="internal_storage_uri_path" translatable="false">file://%1$s</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_header">Expiring soon!</string>
+    <string name="expiring_food_none">No expiring foods during this time</string>
+
 </resources>

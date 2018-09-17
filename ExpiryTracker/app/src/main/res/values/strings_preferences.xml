@@ -65,15 +65,15 @@
     <!-- Food to show based on number of days until expiry date -->
     <string name="pref_widget_num_days_key" translatable="false">Number of days</string>
     <string name="pref_widget_num_days_label">Show only foods expiring</string>
-    <string name="pref_widget_num_days_summary">Food to show based on number of days before expiry date</string>
-    <string name="pref_widget_num_days_entries_0">On their day of expiration</string>
-    <string name="pref_widget_num_days_entries_1">At most 1 day before</string>
-    <string name="pref_widget_num_days_entries_2">At most 2 days before</string>
-    <string name="pref_widget_num_days_entries_3">At most 3 days before (default)</string>
-    <string name="pref_widget_num_days_entries_4">At most 4 days before</string>
-    <string name="pref_widget_num_days_entries_5">At most 5 days before</string>
-    <string name="pref_widget_num_days_entries_6">At most 6 days before</string>
-    <string name="pref_widget_num_days_entries_7">At most 1 week before</string>
+    <string name="pref_widget_num_days_summary">Food to show based on number of days until expiry date</string>
+    <string name="pref_widget_num_days_entries_0">Today</string>
+    <string name="pref_widget_num_days_entries_1">Tomorrow</string>
+    <string name="pref_widget_num_days_entries_2">Within the next 2 days</string>
+    <string name="pref_widget_num_days_entries_3">Within the next 3 days</string>
+    <string name="pref_widget_num_days_entries_4">Within the next 4 days</string>
+    <string name="pref_widget_num_days_entries_5">Within the next 5 days</string>
+    <string name="pref_widget_num_days_entries_6">Within the next 6 days</string>
+    <string name="pref_widget_num_days_entries_7">Within this week</string>
     <string-array name="pref_widget_num_days_entries">
         <item>@string/pref_widget_num_days_entries_0</item>
         <item>@string/pref_widget_num_days_entries_1</item>

@@ -18,7 +18,7 @@
     </style>
 
     <style name="AppTheme.Icon.ClickableIcon" parent="AppTheme.Icon">
-        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_width">@dimen/icon_clickable_size</item>
         <item name="android:layout_height">@dimen/icon_clickable_size</item>
         <item name="android:clickable">true</item>

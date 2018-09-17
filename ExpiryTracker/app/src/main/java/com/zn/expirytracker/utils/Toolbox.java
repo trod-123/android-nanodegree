@@ -21,9 +21,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
@@ -32,6 +34,9 @@ import com.zn.expirytracker.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import timber.log.Timber;
 
 /**
  * Just a class of neat convenient global helper methods
@@ -121,6 +126,18 @@ public class Toolbox {
      */
     public static String createStaticKeyString(String name) {
         return String.format("com.zn.expirytracker.%s", name);
+    }
+
+    /**
+     * Creates a uniformly structured key with the provided {@code name}, prepending the passed
+     * class name.
+     *
+     * @param klass
+     * @param name
+     * @return
+     */
+    public static String createStaticKeyString(Class klass, String name) {
+        return String.format("%s.%s", klass.getSimpleName(), name);
     }
 
     /**
@@ -229,6 +246,33 @@ public class Toolbox {
                                         RequestListener<Bitmap> listener) {
         getGlideRequestForLoadingImage(context, sourceUrl, listener)
                 .into(imageView);
+    }
+
+    /**
+     * Generates a Bitmap thumbnail from a source url. Can only be called on a background thread
+     *
+     * @param context
+     * @param sourceUrl
+     * @return
+     * @throws Throwable
+     */
+    public static Bitmap getThumbnailFromUrl(Context context, String sourceUrl) {
+        RequestOptions options = new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL);
+        Bitmap bitmap = null;
+        try {
+            bitmap = Glide.with(context).asBitmap()
+                    .load(sourceUrl)
+                    .apply(options)
+                    .transition(BitmapTransitionOptions.withCrossFade())
+                    .thumbnail(Constants.GLIDE_THUMBNAIL_MULTIPLIER)
+                    .submit()
+                    .get();
+        } catch (InterruptedException | ExecutionException e) {
+            Timber.e("There was an error getting the thumbnail from the ui: %s",
+                    e.getMessage());
+        }
+        return bitmap;
     }
 
     /**

@@ -4,10 +4,12 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
+import com.zn.expirytracker.widget.UpdateWidgetService;
 
 /**
  * Repositories abstract access to multiple data sources, if your app has any. It is a convenience
@@ -22,9 +24,11 @@ public class FoodRepository {
     private static final int DEFAULT_PAGE_SIZE = 20;
 
     private FoodDao mFoodDao;
+    private Context mContext;
 
     public FoodRepository(Application application) {
         getDao(application);
+        mContext = application;
     }
 
     private void getDao(Application application) {
@@ -81,10 +85,11 @@ public class FoodRepository {
 
     /**
      * Inserts a single {@link Food} item into the database
+     *
      * @param food
      */
     public void insertFood(Food food) {
-        new InsertAsyncTask(mFoodDao).execute(food);
+        new InsertAsyncTask(mFoodDao, food).execute(mContext);
     }
 
     /**
@@ -93,15 +98,16 @@ public class FoodRepository {
      * @param foods
      */
     public void insertFoods(Food... foods) {
-        new InsertAsyncTask(mFoodDao).execute(foods);
+        new InsertAsyncTask(mFoodDao, foods).execute(mContext);
     }
 
     /**
      * Updates a single {@link Food} item in the database
+     *
      * @param food
      */
     public void updateFood(Food food) {
-        new UpdateAsyncTask(mFoodDao).execute(food);
+        new UpdateAsyncTask(mFoodDao, food).execute(mContext);
     }
 
     /**
@@ -110,15 +116,16 @@ public class FoodRepository {
      * @param foods
      */
     public void updateFoods(Food... foods) {
-        new UpdateAsyncTask(mFoodDao).execute(foods);
+        new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
     }
 
     /**
      * Deletes a single {@link Food} item by {@code id}
+     *
      * @param id
      */
     public void deleteFoodById(long id) {
-        new DeleteAsyncTask(mFoodDao).execute(id);
+        new DeleteAsyncTask(mFoodDao, id).execute(mContext);
     }
 
     /**
@@ -127,14 +134,14 @@ public class FoodRepository {
      * @param ids
      */
     public void deleteFoodsByIds(Long... ids) {
-        new DeleteAsyncTask(mFoodDao).execute(ids);
+        new DeleteAsyncTask(mFoodDao, ids).execute(mContext);
     }
 
     /**
      * Deletes all {@link Food} items in the database
      */
     public void deleteAllFoods() {
-        new DeleteAllFoodsAsyncTask(mFoodDao).execute();
+        new DeleteAllFoodsAsyncTask(mFoodDao).execute(mContext);
     }
 
     // region AsyncTasks
@@ -142,16 +149,20 @@ public class FoodRepository {
     /**
      * Use an AsyncTask to properly insert a new {@link Food} into the database
      */
-    private static class InsertAsyncTask extends AsyncTask<Food, Void, Void> {
+    private static class InsertAsyncTask extends AsyncTask<Context, Void, Void> {
         private FoodDao mAsyncTaskDao;
+        private Food[] mFoods;
 
-        InsertAsyncTask(FoodDao foodDao) {
+        InsertAsyncTask(FoodDao foodDao, Food... foods) {
             mAsyncTaskDao = foodDao;
+            mFoods = foods;
         }
 
         @Override
-        protected Void doInBackground(Food... foods) {
-            mAsyncTaskDao.insert(foods);
+        protected Void doInBackground(Context... contexts) {
+            mAsyncTaskDao.insert(mFoods);
+            // Update the widget
+            UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
     }
@@ -159,16 +170,20 @@ public class FoodRepository {
     /**
      * Use an AsyncTask to properly update an existing {@link Food} in the database
      */
-    private static class UpdateAsyncTask extends AsyncTask<Food, Void, Void> {
+    private static class UpdateAsyncTask extends AsyncTask<Context, Void, Void> {
         private FoodDao mAsyncTaskDao;
+        private Food[] mFoods;
 
-        UpdateAsyncTask(FoodDao foodDao) {
+        UpdateAsyncTask(FoodDao foodDao, Food... foods) {
             mAsyncTaskDao = foodDao;
+            mFoods = foods;
         }
 
         @Override
-        protected Void doInBackground(Food... foods) {
-            mAsyncTaskDao.update(foods);
+        protected Void doInBackground(Context... contexts) {
+            mAsyncTaskDao.update(mFoods);
+            // Update the widget
+            UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
     }
@@ -176,16 +191,20 @@ public class FoodRepository {
     /**
      * Use an AsyncTask to properly delete an existing {@link Food} in the database
      */
-    private static class DeleteAsyncTask extends AsyncTask<Long, Void, Void> {
+    private static class DeleteAsyncTask extends AsyncTask<Context, Void, Void> {
         private FoodDao mAsyncTaskDao;
+        private Long[] mIds;
 
-        DeleteAsyncTask(FoodDao foodDao) {
+        DeleteAsyncTask(FoodDao foodDao, Long... ids) {
             mAsyncTaskDao = foodDao;
+            mIds = ids;
         }
 
         @Override
-        protected Void doInBackground(Long... ids) {
-            mAsyncTaskDao.delete(ids);
+        protected Void doInBackground(Context... contexts) {
+            mAsyncTaskDao.delete(mIds);
+            // Update the widget
+            UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
     }
@@ -193,7 +212,7 @@ public class FoodRepository {
     /**
      * Use an AsyncTask to properly delete all {@link Food} items in the database
      */
-    private static class DeleteAllFoodsAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class DeleteAllFoodsAsyncTask extends AsyncTask<Context, Void, Void> {
         private FoodDao mAsyncTaskDao;
 
         DeleteAllFoodsAsyncTask(FoodDao foodDao) {
@@ -201,8 +220,10 @@ public class FoodRepository {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(Context... contexts) {
             mAsyncTaskDao.deleteAll();
+            // Update the widget
+            UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
     }
