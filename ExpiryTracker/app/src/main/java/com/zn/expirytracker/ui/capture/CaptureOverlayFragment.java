@@ -680,6 +680,6 @@ public class CaptureOverlayFragment extends Fragment
                             String size, String weight, List<String> imageUris, String barcode,
                             InputType inputType, Storage loc) {
         return new Food(name, dateExpiry, dateExpiry, 1, loc, description, brand, size,
-                weight, null, barcode, inputType, imageUris);
+                weight, "", barcode, inputType, imageUris);
     }
 }

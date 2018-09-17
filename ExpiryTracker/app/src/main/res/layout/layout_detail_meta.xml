@@ -9,8 +9,6 @@
         android:id="@+id/tv_detail_meta_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:text="@string/food_meta_data_label"
         android:textColor="@color/textColorPrimary"
         android:textStyle="bold"
@@ -21,7 +19,7 @@
         android:id="@+id/iv_detail_barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:tint="@color/icon_tint"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +30,10 @@
         android:id="@+id/iv_detail_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:tint="@color/icon_tint"
-        app:layout_constraintStart_toStartOf="@+id/iv_detail_barcode"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_detail_barcode"
         app:srcCompat="@drawable/ic_edit_black_24dp" />
 
@@ -53,10 +52,11 @@
         android:id="@+id/tv_detail_input_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="@string/food_input_type_label"
         android:textColor="@color/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="@+id/iv_detail_input"
-        app:layout_constraintStart_toStartOf="@+id/tv_detail_barcode_label"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_input"
         app:layout_constraintTop_toTopOf="@+id/iv_detail_input" />
 
     <TextView
@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/textColorPrimaryLight"
         app:layout_constraintBottom_toBottomOf="@+id/tv_detail_input_label"
-        app:layout_constraintStart_toStartOf="@+id/tv_detail_barcode"
+        app:layout_constraintStart_toStartOf="@+id/detail_guideline_40"
         app:layout_constraintTop_toTopOf="@+id/tv_detail_input_label"
         tools:text="@string/food_input_type_barcode" />
 
@@ -90,23 +90,25 @@
         android:id="@+id/tv_detail_credit_upcitemdb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/data_attribution_upcitemdb"
         android:textColor="@color/textColorPrimaryLight"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/iv_detail_input"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_detail_input" />
 
     <TextView
         android:id="@+id/tv_detail_credit_googleimgrec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="@string/data_attribution_google_imgrec"
         android:textColor="@color/textColorPrimaryLight"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tv_detail_credit_upcitemdb"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_credit_upcitemdb" />
 
 </android.support.constraint.ConstraintLayout>

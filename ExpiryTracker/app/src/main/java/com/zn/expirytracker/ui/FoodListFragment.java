@@ -99,6 +99,19 @@ public class FoodListFragment extends Fragment {
         mRvFoodList.setHasFixedSize(true);
         mListAdapter = new FoodListAdapter(mHostActivity);
         mRvFoodList.setAdapter(mListAdapter);
+        mRvFoodList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    // view scrolls up (user scrolls down)
+                    mFabAdd.hide();
+                } else {
+                    // view scrolls down (user scrolls up)
+                    mFabAdd.show();
+                }
+            }
+        });
 
         // Remove items by swipe
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(

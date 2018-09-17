@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:paddingBottom="64dp">
+        android:paddingBottom="@dimen/bottom_root_padding">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -35,9 +35,13 @@
 
                     <include layout="@layout/layout_detail_main" />
 
-                    <include layout="@layout/layout_border" />
+                    <include
+                        android:id="@+id/border_detail_other_info"
+                        layout="@layout/layout_border" />
 
-                    <include layout="@layout/layout_detail_other_info" />
+                    <include
+                        android:id="@+id/layout_detail_other_info_root"
+                        layout="@layout/layout_detail_other_info" />
 
                     <include layout="@layout/layout_border" />
 

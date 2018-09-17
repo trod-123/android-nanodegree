@@ -196,7 +196,7 @@ public class DataToolbox {
      * @return
      */
     public static long getDateBounds(DateTime currentDateTimeStartOfDay, int plusDays) {
-        return currentDateTimeStartOfDay.plusDays(plusDays + 1).getMillis();
+        return currentDateTimeStartOfDay.plusDays(plusDays).getMillis();
     }
 
     /**

@@ -7,22 +7,24 @@
 
     <TextView
         android:id="@+id/tv_detail_food_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="28sp"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/include"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Lettuce" />
 
     <TextView
         android:id="@+id/tv_detail_expiry_date"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:textColor="@color/textColorPrimary"
         android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/include"
         app:layout_constraintStart_toStartOf="@+id/tv_detail_food_name"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_food_name"
         tools:text="Expires tomorrow!" />
@@ -32,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Stored in:"
+        android:text="Stored in the fridge"
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tv_detail_expiry_date"
@@ -54,8 +56,10 @@
         android:id="@+id/ncv_detail_count_days"
         android:layout_width="@dimen/number_circle_size_detail"
         android:layout_height="@dimen/number_circle_size_detail"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_description"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_storage_label" />
 
@@ -74,9 +78,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:textColor="@color/textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,5 +92,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/layout_date_calendar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

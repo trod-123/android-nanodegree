@@ -53,6 +53,15 @@ public class DetailFragment extends Fragment {
     NumberCircleView mNcvCount;
     @BindView(R.id.tv_detail_description)
     TextView mTvDescription;
+    @BindView(R.id.tv_date_calendar_day)
+    TextView mTvCalendarDay;
+    @BindView(R.id.tv_date_calendar_month)
+    TextView mTvCalendarMonth;
+
+    @BindView(R.id.border_detail_other_info)
+    View mBorderOtherInfo;
+    @BindView(R.id.layout_detail_other_info_root)
+    View mRootOtherInfo;
 
     @BindView(R.id.tv_detail_brand)
     TextView mTvBrand;
@@ -193,6 +202,10 @@ public class DetailFragment extends Fragment {
         mTvFoodName.setText(food.getFoodName());
         mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                 mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
+        DateTime dateTime = new DateTime(food.getDateExpiry());
+        mTvCalendarDay.setText(String.valueOf(dateTime.getDayOfMonth()));
+        mTvCalendarMonth.setText(dateTime.monthOfYear().getAsShortText());
+
         Storage storage = food.getStorageLocation();
         if (storage != Storage.NOT_SET) {
             mTvStorage.setText(getString(R.string.storage_location_description,
@@ -200,8 +213,8 @@ public class DetailFragment extends Fragment {
             mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
         } else {
             // Don't show text-icon if storage not set
-            mTvStorage.setText("");
-            mIvStorageIcon.setImageDrawable(null);
+            mTvStorage.setVisibility(View.GONE);
+            mIvStorageIcon.setVisibility(View.GONE);
         }
 
         mNcvCount.mTvValue.setText(String.valueOf(food.getCount()));
@@ -219,39 +232,45 @@ public class DetailFragment extends Fragment {
 
         String description = food.getDescription();
         mTvDescription.setText(description);
-//        mTvDescription.setVisibility(description.isEmpty() ? View.GONE : View.VISIBLE);
+        mTvDescription.setVisibility(description.isEmpty() ? View.GONE : View.VISIBLE);
 
         // Other info layout
         String brandName = food.getBrandName();
         mTvBrand.setText(brandName);
-//        setInfoVisibility(mIvBrand, mTvBrandLabel, mTvBrand, !brandName.isEmpty());
+        setInfoVisibility(mIvBrand, mTvBrandLabel, mTvBrand, !brandName.isEmpty());
         String size = food.getSize();
         mTvSize.setText(size);
-//        setInfoVisibility(mIvSize, mTvSizeLabel, mTvSize, !size.isEmpty());
+        setInfoVisibility(mIvSize, mTvSizeLabel, mTvSize, !size.isEmpty());
         String weight = food.getWeight();
         mTvWeight.setText(weight);
-//        setInfoVisibility(mIvWeight, mTvWeightLabel, mTvWeight, !weight.isEmpty());
+        setInfoVisibility(mIvWeight, mTvWeightLabel, mTvWeight, !weight.isEmpty());
         String notes = food.getNotes();
         mTvNotes.setText(notes);
-//        setInfoVisibility(mIvNotes, mTvNotesLabel, mTvNotes, !notes.isEmpty());
+        setInfoVisibility(mIvNotes, mTvNotesLabel, mTvNotes, !notes.isEmpty());
+
+        // Hide the "Other info" section if all of its fields are blank
+        if (brandName.isEmpty() && size.isEmpty() && weight.isEmpty() && notes.isEmpty()) {
+            mRootOtherInfo.setVisibility(View.GONE);
+            mBorderOtherInfo.setVisibility(View.GONE);
+        }
 
         // Meta data layout
         String barcode = food.getBarcode();
         mTvBarcode.setText(barcode);
-//        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode, !barcode.isEmpty());
+        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode, !barcode.isEmpty());
         mTvInput.setText(food.getInputType().toString());
-//        switch (food.getInputType()) {
-//            case BARCODE:
-//                mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
-//                break;
-//            case IMG_REC:
-//                mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
-//                break;
-//        }
+        switch (food.getInputType()) {
+            case BARCODE:
+                mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
+                break;
+            case IMG_REC:
+                mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView, boolean show) {
-        int visibility = show ? View.VISIBLE : View.INVISIBLE;
+        int visibility = show ? View.VISIBLE : View.GONE;
         iconView.setVisibility(visibility);
         labelView.setVisibility(visibility);
         valueView.setVisibility(visibility);

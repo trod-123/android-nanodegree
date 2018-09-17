@@ -12,7 +12,7 @@
     <dimen name="list_item_height">80dp</dimen>
     <dimen name="list_item_image_size">80dp</dimen>
     <dimen name="list_item_name_padding">16dp</dimen>
-    <dimen name="space_margin">4dp</dimen>
+    <dimen name="space_margin">8dp</dimen>
     <dimen name="bar_chart_height">200dp</dimen>
     <dimen name="bar_chart_margin">16dp</dimen>
     <dimen name="detail_image_height">200dp</dimen>
@@ -45,4 +45,5 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="divider_list_item_height">1dp</dimen>
     <dimen name="widget_actionBarSize">56dp</dimen>
     <dimen name="empty_list_icon_size">96dp</dimen>
+    <dimen name="bottom_root_padding">112dp</dimen>
 </resources>
