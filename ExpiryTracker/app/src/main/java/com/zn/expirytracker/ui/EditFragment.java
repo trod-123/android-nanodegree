@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -30,6 +34,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.ui.dialog.AddImageMethodPickerBottomSheet;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
 import com.zn.expirytracker.ui.dialog.FormChangedDialogFragment;
@@ -43,6 +48,8 @@ import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +58,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Callbacks for {@link android.support.v4.app.DialogFragment} idea from: https://gist.github.com/Joev-/5695813
  */
@@ -58,7 +67,9 @@ public class EditFragment extends Fragment implements
         StorageLocationDialogFragment.OnStorageLocationSelectedListener,
         ExpiryDatePickerDialogFragment.OnDateSelectedListener,
         FormChangedDialogFragment.OnFormChangedButtonClickListener,
-        ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener {
+        ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener,
+        DetailImageFragment.AddImageButtonClickListener,
+        AddImageMethodPickerBottomSheet.OnAddImageMethodSelectedListener {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "edit_fragment.item_id_long");
@@ -68,6 +79,9 @@ public class EditFragment extends Fragment implements
             "edit_fragment.input_type");
 
     public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
+
+    private static final int RC_LOAD_IMAGE = 1100;
+    private static final int RC_CAMERA = 1101;
 
     public static final int DEFAULT_STARTING_COUNT = 1;
     public static final Storage DEFAULT_STARTING_STORAGE = Storage.NOT_SET;
@@ -179,6 +193,7 @@ public class EditFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(EditFragment.class.getSimpleName());
         setHasOptionsMenu(true);
 
         mHostActivity = getActivity();
@@ -209,7 +224,6 @@ public class EditFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View rootView =
                 inflater.inflate(R.layout.fragment_edit, container, false);
-        Timber.tag(EditFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -297,7 +311,7 @@ public class EditFragment extends Fragment implements
         if (!mAddMode && food != null) {
             // Image adapter
             mImageUris = food.getImages();
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true);
             mPagerAdapter.setImageUris(mImageUris);
 
             // Dates
@@ -336,7 +350,7 @@ public class EditFragment extends Fragment implements
         } else {
             // Set ADD_MODE defaults
             mImageUris = new ArrayList<>();
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true);
             mPagerAdapter.setImageUris(mImageUris);
             showFieldError(true, FieldError.REQUIRED_NAME);
             mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
@@ -981,6 +995,141 @@ public class EditFragment extends Fragment implements
                         mEtWeight,
                         mEtNotes)
         );
+    }
+
+    // endregion
+
+    // region Add new image
+
+    /**
+     * Show the bottom sheet when the Add Image button in the {@link DetailImageFragment} is
+     * clicked
+     */
+    @Override
+    public void onAddImageButtonSelected() {
+        // Show the bottom sheet
+        AddImageMethodPickerBottomSheet bottomSheet = new AddImageMethodPickerBottomSheet();
+        bottomSheet.setTargetFragment(this, 0);
+        bottomSheet.show(getFragmentManager(),
+                AddImageMethodPickerBottomSheet.class.getSimpleName());
+    }
+
+    @Override
+    public void onCameraInputSelected() {
+        captureImageFromCamera();
+    }
+
+    @Override
+    public void onImagePickerSelected() {
+        getImageFromStorage();
+    }
+
+    private String mCurrentCameraCapturePath;
+
+    /**
+     * Launches the camera for the user to take an image. Intent includes the filepath where the
+     * image would be saved. Saving images in this way, instead of grabbing them from
+     * onActivityResult() is better because (1) orientation is preserved upon displaying images,
+     * and (2) the images saved are not thumbnails. intent.getData() returns the THUMBNAIL, not
+     * the actual image
+     * <p>
+     * https://developer.android.com/training/camera/photobasics
+     */
+    public void captureImageFromCamera() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure device has camera activity to handle this first
+        if (cameraIntent.resolveActivity(mHostActivity.getPackageManager()) != null) {
+            File outputFilePath = null;
+            try {
+                // Get the path where file would be saved
+                outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity, mFood.getFoodName());
+                // Use File.getAbsolutePath() to get the String path that we can store in the
+                // Food images list, which could then be loaded up into Glide
+                mCurrentCameraCapturePath = outputFilePath.getAbsolutePath();
+                Timber.d("Current Camera Capture Path: %s", mCurrentCameraCapturePath);
+            } catch (IOException e) {
+                Timber.e(e, "There was a problem creating the output camera image file");
+            }
+            if (outputFilePath != null) {
+                // Generate the uri from the path. Fileprovider details in Manifest
+                Uri photoUri = FileProvider.getUriForFile(
+                        mHostActivity, "com.zn.expirytracker.fileprovider", outputFilePath);
+                // Indicate where photo output should be saved
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+
+                startActivityForResult(cameraIntent, RC_CAMERA);
+            }
+        }
+    }
+
+    /**
+     * Prompts the user to pick an image from storage
+     */
+    public void getImageFromStorage() {
+        // Get image from user storage
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, RC_LOAD_IMAGE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_LOAD_IMAGE && resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri imageUri = data.getData();
+                addImageFromUri(imageUri);
+            }
+        } else if (requestCode == RC_CAMERA && resultCode == RESULT_OK) {
+            if (data != null) {
+                // data.getData() returns a THUMBNAIL of the image, and no orientation preservation
+                // At this point we had already saved the image into app storage, so all we need
+                // to do is to add the path to the Food image list
+                addImageFromCamera(mCurrentCameraCapturePath);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    /**
+     * Stores a copy of the image in app's internal storage and saves the Uri into the food item.
+     * Updates the food item when done
+     *
+     * @param uri
+     */
+    private void addImageFromUri(Uri uri) {
+        // Save bitmap to internal storage and then update the food item
+        try {
+            File outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity, mFood.getFoodName());
+            String inputFilePath = Toolbox.getGalleryUriPath(mHostActivity, uri);
+            Toolbox.copyFile(new File(inputFilePath), outputFilePath);
+            String path = outputFilePath.getAbsolutePath();
+            Timber.d("Saved image path: %s", path);
+            mFood.getImages().add(path);
+            mViewModel.update(mFood);
+            Toolbox.showToast(mHostActivity, "Image added!");
+        } catch (IOException e) {
+            Timber.e(e, "There was a problem saving the image to internal storage");
+        }
+    }
+
+    /**
+     * Updates the food item with the newly captured photo, with the path
+     */
+    private void addImageFromCamera(String imagePath) {
+        mFood.getImages().add(imagePath);
+        mViewModel.update(mFood);
+        Toolbox.showToast(mHostActivity, "Image added!");
+    }
+
+    /**
+     * Deletes an image from the food item image list. Only delete from internal storage if it is
+     * in the app's bitmap capture folder
+     *
+     * @param uri
+     */
+    private void deleteImage(Uri uri) {
+
     }
 
     // endregion

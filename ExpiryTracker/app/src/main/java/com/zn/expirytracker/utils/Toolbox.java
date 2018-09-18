@@ -1,15 +1,19 @@
 package com.zn.expirytracker.utils;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Vibrator;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
@@ -29,11 +33,15 @@ import com.bumptech.glide.request.RequestOptions;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
-import com.zn.expirytracker.R;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
@@ -344,24 +352,21 @@ public class Toolbox {
     }
 
     /**
-     * Saves a bitmap into internal storage for this app, with the following filename syntax:
-     * {@code currentTimeInMillis_filename.jpg}
+     * Saves a bitmap into internal storage for this app
      * <p>
      * https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
      *
      * @param bitmap   {@code Bitmap} to be saved into the device's internal directory
      * @param filename
      * @param context
-     * @return {@code String} representing the filepath of the stored file
+     * @return {@code String} representing the filepath of the stored file, which can safely be
+     * used in Glide
      * @throws IOException
      */
     public static String saveBitmapToInternalStorage(Bitmap bitmap, String filename, Context context)
             throws IOException {
         ContextWrapper cw = new ContextWrapper(context);
-        filename = System.currentTimeMillis() + "_" + filename + ".jpg";
-        // path to /data/data/{yourapp}/{app_data}/scannedImagesDir
-        File directory = cw.getDir(Constants.BITMAP_SAVING_DIRECTORY, Context.MODE_PRIVATE);
-        File path = new File(directory, filename);
+        File path = getBitmapSavingFilePath(cw, filename);
         FileOutputStream fos;
         fos = new FileOutputStream(path);
         // Use the compress method on the Bitmap object to write image to fos
@@ -375,13 +380,64 @@ public class Toolbox {
     }
 
     /**
-     * Returns a path prefixed with {@code "file://"}
+     * Generates a file to be used for outputting a bitmap, with the following filename syntax:
+     * {@code currentTime_filename.jpg}
+     * <p>
+     * Call File.getAbsolutePath() on the result to return a String that represents the filepath
+     * of the file, which can safely be used in Glide
+     * <p>
+     * https://developer.android.com/training/camera/photobasics
      *
-     * @param path
      * @param context
+     * @param filename
      * @return
      */
-    public static String getInternalStorageUriString(String path, Context context) {
-        return context.getString(R.string.internal_storage_uri_path, path);
+    public static File getBitmapSavingFilePath(Context context, String filename) throws IOException {
+        filename = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "_" + filename;
+        // filepath: Android/data/com.zn.expirytracker.free.debug/files/Pictures
+        // (also defined in file_paths.xml)
+        File directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(filename, ".jpg", directory);
+    }
+
+    /**
+     * Copies a file
+     * <p>
+     * https://stackoverflow.com/questions/9292954/how-to-make-a-copy-of-a-file-in-android
+     *
+     * @param src
+     * @param dst
+     * @throws IOException
+     */
+    public static void copyFile(File src, File dst) throws IOException {
+        try (InputStream in = new FileInputStream(src)) {
+            try (OutputStream out = new FileOutputStream(dst)) {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the path for a Uri obtained through {@code Intent.ACTION_PICK} for the gallery so
+     * it can be fed into new File(path)
+     * <p>
+     * http://stackoverflow.com/q/6935497/42619
+     *
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static String getGalleryUriPath(Activity context, Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = context.managedQuery(uri, projection, null, null, null);
+        context.startManagingCursor(cursor);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 }

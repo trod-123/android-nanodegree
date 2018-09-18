@@ -26,6 +26,11 @@
         <item name="android:padding">@dimen/icon_clickable_padding</item>
     </style>
 
+    <style name="AppTheme.Icon.BottomSheetIcon" parent="AppTheme.Icon">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_margin">@dimen/bottom_sheet_item_margins</item>
+    </style>
+
     <style name="AppTheme.TextInputLayout" parent="AppTheme">
         <item name="android:textColorHint">@color/textColorPrimaryLight</item>
     </style>

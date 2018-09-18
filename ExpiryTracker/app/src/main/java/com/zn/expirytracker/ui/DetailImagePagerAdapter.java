@@ -11,10 +11,12 @@ import java.util.List;
 public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
 
     private List<String> mImageUris;
+    private boolean mEditMode;
 
-    public DetailImagePagerAdapter(FragmentManager fm) {
+    public DetailImagePagerAdapter(FragmentManager fm, boolean editMode) {
         // This is where you pass in what's needed to create each of the fragments
         super(fm);
+        mEditMode = editMode;
     }
 
     public void setImageUris(List<String> imageUris) {
@@ -32,20 +34,19 @@ public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
         // This is where we create paged items
         if (mImageUris != null) {
             if (position < mImageUris.size()) {
-                return DetailImageFragment.newInstance(-1, mImageUris.get(position));
-            } else {
-                // Guaranteed to always be the last position
-                return DetailImageFragment.newInstance(-1, null);
+                return DetailImageFragment.newInstance(mImageUris.get(position), mEditMode);
+            } else if (mEditMode) {
+                // Guaranteed to always be the last position; only create if we're editing
+                return DetailImageFragment.newInstance(null, true);
             }
-        } else {
-            // Don't create anything if null
-            return null;
         }
+        // Don't create anything if null
+        return null;
     }
 
     @Override
     public int getCount() {
-        // Add one for the dedicated add image fragment
-        return mImageUris != null ? mImageUris.size() + 1 : 0;
+        // Add one for the dedicated add image fragment, only if we're editing
+        return mImageUris != null ? (mEditMode ? mImageUris.size() + 1 : mImageUris.size()) : 0;
     }
 }

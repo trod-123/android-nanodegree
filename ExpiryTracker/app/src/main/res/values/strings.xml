@@ -28,6 +28,8 @@
     <string name="action_save">Save</string>
     <string name="action_delete">Delete this item</string>
     <string name="action_try_again">Try again</string>
+    <string name="action_add_photo_camera">Take a photo</string>
+    <string name="action_add_photo_library">Choose from library</string>
 
     <!-- endregion -->
 
@@ -250,5 +252,6 @@
     <string name="add_widget">Add widget</string>
     <string name="widget_header">Expiring soon!</string>
     <string name="expiring_food_none">No expiring foods during this time</string>
+    <string name="add_photo_instruction">How do you want to add an image?</string>
 
 </resources>

@@ -252,9 +252,7 @@ public class CaptureOverlayFragment extends Fragment
     private void saveBitmapsToFood() {
         if (mBarcodeBitmap != null) {
             try {
-                String path = Toolbox.getInternalStorageUriString(
-                        Toolbox.saveBitmapToInternalStorage(mBarcodeBitmap, mName, mHostActivity),
-                        mHostActivity);
+                String path = Toolbox.saveBitmapToInternalStorage(mBarcodeBitmap, mName, mHostActivity);
                 Timber.d("Saved barcode bitmap path: %s", path);
                 mImageUris.add(path);
             } catch (IOException e) {
@@ -263,9 +261,7 @@ public class CaptureOverlayFragment extends Fragment
         }
         if (mImageBitmap != null) {
             try {
-                String path = Toolbox.getInternalStorageUriString(
-                        Toolbox.saveBitmapToInternalStorage(mImageBitmap, mName, mHostActivity),
-                        mHostActivity);
+                String path = Toolbox.saveBitmapToInternalStorage(mImageBitmap, mName, mHostActivity);
                 Timber.d("Saved image bitmap path: %s", path);
                 mImageUris.add(path);
             } catch (IOException e) {

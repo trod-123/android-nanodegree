@@ -163,7 +163,7 @@ public class DetailFragment extends Fragment {
         });
 
         // Image pager
-        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager());
+        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), false);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

@@ -27,26 +27,31 @@ public class DetailImageFragment extends Fragment {
 
     public static final String ARG_IMAGE_URI_STRING = Toolbox.createStaticKeyString(
             "detail_image_fragment.image_uri_string");
-    public static final String ARG_FOOD_ID = Toolbox.createStaticKeyString(
-            "detail_add_image_fragment.food_id");
+    public static final String ARG_EDIT_MODE = Toolbox.createStaticKeyString(
+            DetailImageFragment.class, "edit_mode");
 
     @BindView(R.id.iv_detail_image)
     ImageView mImageView;
     @BindView(R.id.iv_detail_add_image_icon)
     ImageView mIvAddIcon;
 
-    private long mFoodId;
+    private AddImageButtonClickListener mListener;
     private String mImageUriString;
+    private boolean mEditMode;
 
     public DetailImageFragment() {
         // Required empty public constructor
     }
 
-    public static DetailImageFragment newInstance(int foodId, String imageUri) {
+    public interface AddImageButtonClickListener {
+        void onAddImageButtonSelected();
+    }
+
+    public static DetailImageFragment newInstance(String imageUri, boolean editMode) {
         DetailImageFragment fragment = new DetailImageFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_FOOD_ID, foodId);
         args.putString(ARG_IMAGE_URI_STRING, imageUri);
+        args.putBoolean(ARG_EDIT_MODE, editMode);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,11 +59,21 @@ public class DetailImageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(DetailImageFragment.class.getSimpleName());
 
         Bundle args = getArguments();
         if (args != null) {
-            mFoodId = args.getInt(ARG_FOOD_ID);
             mImageUriString = args.getString(ARG_IMAGE_URI_STRING, null);
+            mEditMode = args.getBoolean(ARG_EDIT_MODE, false);
+        }
+
+        if (mEditMode) {
+            try {
+                mListener = (AddImageButtonClickListener) getParentFragment();
+            } catch (ClassCastException e) {
+                throw new ClassCastException("Parent fragment must implement " +
+                        "AddImageButtonClickListener");
+            }
         }
     }
 
@@ -92,7 +107,7 @@ public class DetailImageFragment extends Fragment {
             mIvAddIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toolbox.showToast(getContext(), "This will add an image");
+                    mListener.onAddImageButtonSelected();
                 }
             });
         }
