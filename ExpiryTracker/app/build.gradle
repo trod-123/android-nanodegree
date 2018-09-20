@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
@@ -84,7 +83,8 @@ dependencies {
     implementation "com.google.firebase:firebase-firestore:$firebaseCloudFirestoreVersion"
 
     // Firebase Authentication
-    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
+    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
+//    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
 
     // Firebase x Google AdMob
     implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
@@ -137,3 +137,5 @@ dependencies {
     // Joda time
     implementation "joda-time:joda-time:$jodatimeVersion"
 }
+
+apply plugin: 'com.google.gms.google-services'

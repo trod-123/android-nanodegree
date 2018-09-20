@@ -1,5 +1,6 @@
 package com.zn.expirytracker.settings;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -17,6 +18,7 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Toolbox;
 import com.zn.expirytracker.widget.UpdateWidgetService;
 
 import java.util.ArrayList;
@@ -37,11 +39,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceWipeDeviceData;
 
     private static FoodViewModel mViewModel;
+    private Activity mHostActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+        mHostActivity = getActivity();
     }
 
     @Override
@@ -80,7 +84,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     public void onResume() {
         super.onResume();
         // Show account settings only if the user is signed in
-        showAccountSettings(AuthToolbox.checkIfSignedIn());
+        showAccountSettings(AuthToolbox.isSignedIn());
     }
 
     /**
@@ -118,7 +122,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * Helper to show account settings only if user is currently logged in
      */
     private void showAccountSettings(boolean show) {
-        // TODO: Only show display name if user is logged in
         mPreferenceDisplayName.setVisible(show);
         mPreferenceAccountSignIn.setVisible(!show);
         mPreferenceAccountSignOut.setVisible(show);
@@ -137,19 +140,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignIn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // TODO: Launch the Sign-In activity here
-                AuthToolbox.signIn(preference.getContext(), true);
-                showAccountSettings(AuthToolbox.checkIfSignedIn());
-                return false;
+                AuthToolbox.startSignInActivity(mHostActivity); // Closes settings and clears back stack
+                return true;
             }
         });
         mPreferenceAccountSignOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // TODO: Sign out the user here
-                AuthToolbox.signIn(preference.getContext(), false);
-                showAccountSettings(AuthToolbox.checkIfSignedIn());
-                return false;
+                AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
+                AuthToolbox.signOut(mHostActivity); // Closes settings and clears back stack
+                return true;
             }
         });
         mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -162,14 +162,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // TODO: Delete the user's account here (including all local and remote data)
-                return false;
+                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT);
+                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+                return true;
             }
         });
         mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                showWipeDeviceDataConfirmationDialog();
+                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
+                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
                 return true;
             }
         });
@@ -197,13 +199,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     // Individual preference-specific actions
                     if (preference.getKey()
                             .equals(context.getString(R.string.pref_account_display_name_key))) {
-                        // Sync the display name with the database
-                        String displayName = (String) value;
-                        AuthToolbox.updateDisplayName(displayName);
+                        // Sync the display name with the database. This is a logged-in only feature
+                        if (AuthToolbox.isSignedIn()) {
+                            String displayName = (String) value;
+                            AuthToolbox.updateDisplayName(context, displayName);
 
-                        // If there is no name, set the summary to the default
-                        if (displayName.trim().isEmpty())
-                            preference.setSummary(R.string.pref_account_display_name_summary);
+                            // If there is no name, set the summary to the default
+                            if (displayName.trim().isEmpty())
+                                preference.setSummary(R.string.pref_account_display_name_summary);
+                        }
                     } else if (preference.getKey().equals(context.getString(R.string.pref_widget_num_days_key))) {
                         // Request update
                         UpdateWidgetService.updateFoodWidget(preference.getContext());
@@ -279,21 +283,31 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
-     * Shows a dialog for the user to confirm wiping device data
+     * Shows a dialog for the user to confirm wiping device data or the user account
      */
-    private void showWipeDeviceDataConfirmationDialog() {
+    private void showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType deleteType) {
         ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment
-                .newInstance(null, false, true);
+                .newInstance(null, false, deleteType);
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
     }
 
     @Override
-    public void onConfirmDeleteButtonClicked(int position) {
+    public void onConfirmDeleteButtonClicked(int position, boolean isLoggedIn,
+                                             ConfirmDeleteDialogFragment.DeleteType deleteType) {
         switch (position) {
             case Dialog.BUTTON_POSITIVE:
-                mViewModel.deleteAllFoods();
-                break;
+                // position or isLoggedIn does not matter here
+                switch (deleteType) {
+                    case ACCOUNT:
+                        // this also starts the sign-in activity. stack with the below
+                        AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
+                        AuthToolbox.deleteAccount(mHostActivity);
+                        break;
+                    case DEVICE:
+                        AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
+                        Toolbox.showToast(mHostActivity, "All app data deleted from device");
+                }
         }
     }
 }

@@ -397,8 +397,38 @@ public class Toolbox {
         // filepath: Android/data/com.zn.expirytracker.free.debug/files/Pictures
         // (also defined in file_paths.xml)
         File directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Timber.d("Image directory: %s", directory.getAbsolutePath());
         return File.createTempFile(filename, ".jpg", directory);
     }
+
+    /**
+     * Recursively deletes all files and folders
+     *
+     * @param fileOrDirectory
+     */
+    private static void deleteRecursive(@NonNull File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        }
+        fileOrDirectory.delete();
+    }
+
+    /**
+     * Deletes the app's bitmap directory and all of its contents
+     *
+     * @param context
+     */
+    public static void deleteBitmapDirectory(Context context) {
+        File directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (directory != null) {
+            deleteRecursive(directory);
+        } else {
+            Timber.e("There was an issue deleting the bitmap directory");
+        }
+    }
+
 
     /**
      * Copies a file

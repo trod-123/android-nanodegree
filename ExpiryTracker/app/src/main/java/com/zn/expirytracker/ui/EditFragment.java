@@ -627,7 +627,8 @@ public class EditFragment extends Fragment implements
      */
     private void showConfirmDeleteDialog() {
         ConfirmDeleteDialogFragment dialog = ConfirmDeleteDialogFragment.newInstance(
-                mFood.getFoodName(), AuthToolbox.checkIfSignedIn(), false);
+                mFood.getFoodName(), AuthToolbox.isSignedIn(),
+                ConfirmDeleteDialogFragment.DeleteType.ITEM);
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
     }
@@ -718,9 +719,11 @@ public class EditFragment extends Fragment implements
      * @param position
      */
     @Override
-    public void onConfirmDeleteButtonClicked(int position) {
+    public void onConfirmDeleteButtonClicked(int position, boolean isSignedIn,
+                                             ConfirmDeleteDialogFragment.DeleteType deleteType) {
         switch (position) {
-            case AlertDialog.BUTTON_POSITIVE: // delete
+            case AlertDialog.BUTTON_POSITIVE:
+                // None of the arguments matter here at this point
                 deleteItem();
                 break;
         }
@@ -1057,6 +1060,7 @@ public class EditFragment extends Fragment implements
                 // Indicate where photo output should be saved
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
 
+                // TODO: Need to get permissions first
                 startActivityForResult(cameraIntent, RC_CAMERA);
             }
         }

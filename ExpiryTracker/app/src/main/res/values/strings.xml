@@ -209,7 +209,9 @@
     <string name="edit_dialog_delete_confirm_delete">Delete</string>
     <string name="edit_dialog_delete_done">%1$s has been deleted</string>
     <string name="edit_dialog_delete_device_data_title">Delete all &appname; data on device</string>
+    <string name="edit_dialog_delete_account_title">Delete &appname; account</string>
     <string name="edit_dialog_delete_device_data_message">Are you sure you want to delete all of your food items on this device? This cannot be undone!</string>
+    <string name="edit_dialog_delete_account_message">Are you sure you want to delete your account? This will delete all your food items on this device and on the cloud. This cannot be undone!</string>
 
     <!-- endregion -->
 
