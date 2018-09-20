@@ -47,7 +47,7 @@ ext {
     firebaseAdsVersion = '15.0.1'
     firebaseMlKitVersion = '17.0.0'
     firebaseJobDispatcherVersion = '0.8.5'
-    googleAuthVersion = '15.0.1'
+    googleAuthVersion = '16.0.0'
     retrofitVersion = '2.4.0'
     moshiVersion = '1.6.0'
     glideVersion = '4.8.0'

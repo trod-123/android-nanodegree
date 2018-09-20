@@ -83,8 +83,8 @@ dependencies {
     implementation "com.google.firebase:firebase-firestore:$firebaseCloudFirestoreVersion"
 
     // Firebase Authentication
-    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
-//    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
+//    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
+    implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
 
     // Firebase x Google AdMob
     implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
@@ -97,7 +97,7 @@ dependencies {
     implementation "com.firebase:firebase-jobdispatcher:$firebaseJobDispatcherVersion"
 
     // Google Sign-in
-    //implementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
+    implementation "com.google.android.gms:play-services-auth:$googleAuthVersion"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"

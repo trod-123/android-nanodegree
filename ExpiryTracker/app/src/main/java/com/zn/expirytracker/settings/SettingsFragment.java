@@ -14,6 +14,9 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
@@ -24,6 +27,8 @@ import com.zn.expirytracker.widget.UpdateWidgetService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN;
 
 public class SettingsFragment extends PreferenceFragmentCompat
         implements ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener {
@@ -40,12 +45,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
+    private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
         mHostActivity = getActivity();
+
+        // For signing out and revoking access from Google authenticated accounts
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(mHostActivity, gso);
     }
 
     @Override
@@ -148,7 +161,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
-                AuthToolbox.signOut(mHostActivity); // Closes settings and clears back stack
+                // Closes settings and clears back stack
+                AuthToolbox.signOut(mHostActivity, mGoogleSignInClient);
                 return true;
             }
         });
@@ -302,7 +316,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     case ACCOUNT:
                         // this also starts the sign-in activity. stack with the below
                         AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
-                        AuthToolbox.deleteAccount(mHostActivity);
+                        // TODO: Disable all view clicks and dim the activity while this is happening
+                        AuthToolbox.deleteAccount(mHostActivity, mGoogleSignInClient);
                         break;
                     case DEVICE:
                         AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);

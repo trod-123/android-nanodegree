@@ -403,6 +403,8 @@ public class Toolbox {
 
     /**
      * Recursively deletes all files and folders
+     * <p>
+     * https://stackoverflow.com/questions/4943629/how-to-delete-a-whole-folder-and-content
      *
      * @param fileOrDirectory
      */

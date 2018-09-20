@@ -7,7 +7,8 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
-import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +26,8 @@ import timber.log.Timber;
  * Set of helper methods for user authentication
  */
 public class AuthToolbox {
+
+    public static final int DEFAULT_MIN_PASSWORD_LENGTH = 8; // number of characters
 
     /**
      * Starts the Sign-in activity and clears the existing backstack
@@ -57,8 +60,7 @@ public class AuthToolbox {
      * @param context
      * @throws IllegalStateException
      */
-    public static void syncSignInWithDevice(Context context) throws IllegalStateException {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    public static void syncSignInWithDevice(Context context, FirebaseUser user) throws IllegalStateException {
         if (user == null) {
             throw new IllegalStateException("Attempted to update display name when no user is logged in");
         }
@@ -128,47 +130,94 @@ public class AuthToolbox {
     }
 
     /**
-     * Signs the user out, updates SharedPreferences with the sign in status, and launches
-     * {@link SignInActivity}.  Clears the existing backstack
+     * Signs the user out of Firebase and Google, if applicable. Resets SharedPreferences and
+     * launches {@link SignInActivity}. Clears the existing backstack
      * <p>
      * Throws an error if user is not signed in
      *
      * @param context
      */
-    public static void signOut(final Context context) throws IllegalStateException {
+    public static void signOut(final Context context, GoogleSignInClient client)
+            throws IllegalStateException {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("Attempted to sign out when no user is logged in");
         }
-        AuthUI.getInstance()
-                .signOut(context)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Timber.d("Signing out the user");
-
-                            resetSharedPreferences(context);
-                            startSignInActivity(context);
-                        } else {
-                            Timber.e("There was a problem signing the user out");
-                            Toolbox.showToast(context, "There was a problem signing you out");
-                        }
+        // Check if user is signed into Google sign-in
+        // https://stackoverflow.com/questions/38190253/android-google-sign-in-check-if-user-is-signed-in
+        if (client != null && GoogleSignIn.getLastSignedInAccount(context) != null) {
+            // Attempt sign out from Google first, if available, before signing out of Firebase
+            client.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Timber.d("Signing out the user");
+                        signOutFromFirebase(context);
+                    } else {
+                        Timber.e(task.getException(), "GoogleApiClient sign out failure");
+                        Toolbox.showToast(context, "There was a problem signing you out");
                     }
-                });
+                }
+            });
+        } else {
+            // If user had not authenticated with Google, then just sign out of Firebase
+            signOutFromFirebase(context);
+        }
     }
 
     /**
-     * Helper for deleting the user's account from Firebase. Once delete is successful, launches
+     * Helper for signing the user out of Firebase, resetting SharedPreferences, and launching
      * {@link SignInActivity}. Clears the existing backstack
      *
      * @param context
      */
-    public static void deleteAccount(final Context context) throws IllegalStateException {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private static void signOutFromFirebase(Context context) {
+        FirebaseAuth.getInstance().signOut();
+        resetSharedPreferences(context);
+        startSignInActivity(context);
+    }
+
+    /**
+     * Deletes the user's Firebase account and revokes access from user's Google account, if
+     * applicable. Also resets SharedPreferences. Once delete is successful, launches
+     * {@link SignInActivity}. Clears the existing backstack
+     *
+     * @param context
+     */
+    public static void deleteAccount(final Context context, GoogleSignInClient client)
+            throws IllegalStateException {
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             throw new IllegalStateException("Attempted to sign out when no user is logged in");
         }
+        if (client != null && GoogleSignIn.getLastSignedInAccount(context) != null) {
+            // Attempt deleting Google account first before deleting Firebase
+            client.revokeAccess().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Timber.d("Deleting user account");
+                        deleteFirebaseAccount(user, context);
+                    } else {
+                        Timber.e(task.getException(), "GoogleApiClient revoke access failure");
+                        Toolbox.showToast(context, "There was a problem deleting your account");
+                    }
+                }
+            });
+        } else {
+            // If user had not authenticated with Google, then just delete Firebase account
+            deleteFirebaseAccount(user, context);
+        }
+    }
+
+    /**
+     * Helper for deleting the user's account from Firebase, and resetting SharedPreferences.
+     * Once delete is successful, launches {@link SignInActivity}. Clears the existing backstack
+     *
+     * @param user
+     * @param context
+     */
+    private static void deleteFirebaseAccount(@NonNull FirebaseUser user, final Context context) {
         user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -180,12 +229,12 @@ public class AuthToolbox {
                             resetSharedPreferences(context);
                             startSignInActivity(context);
                         } else {
-                            Timber.e("There was a problem deleting the user's account");
-                            Toolbox.showToast(context, "There was a problem deleting your account");
+                            Timber.e("Firebase delete account failure");
+                            Toolbox.showToast(context,
+                                    "There was a problem deleting your account");
                         }
                     }
                 });
-
     }
 
     /**
@@ -200,7 +249,6 @@ public class AuthToolbox {
 
     /**
      * Deletes all data from device, food and app images
-     *
      */
     public static void deleteDeviceData(FoodViewModel viewModel, final Context context) {
         Timber.d("Deleting all device data: foods, images, and Glide cache");

@@ -31,7 +31,8 @@
          https://stackoverflow.com/questions/11308198/start-new-activity-and-finish-current-one-in-android-->
         <activity
             android:name=".ui.SignInActivity"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,7 +71,8 @@
         <activity
             android:name=".ui.capture.CaptureActivity"
             android:label="@string/activity_capture_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

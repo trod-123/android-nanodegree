@@ -256,4 +256,25 @@
     <string name="expiring_food_none">No expiring foods during this time</string>
     <string name="add_photo_instruction">How do you want to add an image?</string>
 
+    <string name="sign_in_email_label">Email</string>
+    <string name="sign_in_password_label">Password</string>
+    <string name="sign_in_login_button">Log-in</string>
+    <string name="sign_in_create_account">No account yet? Create one</string>
+    <string name="sign_in_existing_account">Already a member? Log-in</string>
+
+    <!-- region Auth errors -->
+
+    <string name="auth_error_weak_password">Password must be at least 8 characters</string>
+    <string name="auth_error_invalid_email">Please enter a valid e-mail address</string>
+    <string name="auth_error_user_exists">Sorry, a user already exists with this address</string>
+    <string name="auth_error_wrong_password">Password is incorrect</string>
+    <string name="auth_error_email_already_in_use">This e-mail address is already in use</string>
+    <string name="auth_error_user_not_found">This user account does not exist. Are you a new user? Try making a new account.</string>
+    <string name="auth_error_timeout">Server timeout</string>
+    <string name="auth_error_sign_in_failed">Failed to sign-in</string>
+    <string name="auth_error_interrupted">Sign-in was interrupted</string>
+    <string name="auth_error_network">Couldn\'t sign-in due to network error</string>
+    <string name="auth_error_invalid_account">This account is invalid</string>
+
+    <!-- endregion -->
 </resources>

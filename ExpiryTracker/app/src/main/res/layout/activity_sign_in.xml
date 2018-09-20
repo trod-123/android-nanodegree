@@ -1,9 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.zn.expirytracker.ui.SignInActivity">
+    android:layout_height="match_parent">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layout_sign_in_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary"
+        tools:context="com.zn.expirytracker.ui.SignInActivity">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_sign_in_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:theme="@style/AppTheme.TextInputLayout.DarkBackground"
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/til_sign_in_password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_sign_in_app_name"
+            app:layout_constraintVertical_chainStyle="packed">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tiEt_sign_in_email"
+                style="@style/AppTheme.TextInputEditText.DarkBackground"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sign_in_email_label"
+                android:inputType="textEmailAddress" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_sign_in_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:theme="@style/AppTheme.TextInputLayout.DarkBackground"
+            app:errorEnabled="true"
+            app:layout_constraintBottom_toTopOf="@+id/btn_container_sign_in_login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_sign_in_email"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@android:color/white">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tiEt_sign_in_password"
+                style="@style/AppTheme.TextInputEditText.DarkBackground"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/sign_in_password_label"
+                android:inputType="textPassword" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <FrameLayout
+            android:id="@+id/btn_container_sign_in_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_container_sign_in_google"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/btn_sign_in_login"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_in_login_button"
+                android:textColor="@android:color/white" />
+
+            <ProgressBar
+                android:id="@+id/pb_sign_in_login"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btn_sign_in_create_account"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="@string/sign_in_create_account"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/tv_sign_in_app_version"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_sign_in_app_logo"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline3"
+            app:srcCompat="@drawable/web_hi_res_512" />
+
+        <TextView
+            android:id="@+id/tv_sign_in_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Expiry Tracker"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="@+id/iv_sign_in_app_logo"
+            app:layout_constraintStart_toStartOf="@+id/iv_sign_in_app_logo"
+            app:layout_constraintTop_toBottomOf="@+id/iv_sign_in_app_logo" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".2" />
+
+        <FrameLayout
+            android:id="@+id/btn_container_sign_in_google"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_sign_in_create_account"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/btn_sign_in_google"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:buttonSize="wide"
+                app:layout_constraintBottom_toTopOf="@+id/btn_sign_in_create_account"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ProgressBar
+                android:id="@+id/pb_sign_in_google"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tv_sign_in_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Version 1.0"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/overlay_sign_in_no_click"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#60000000"
+        android:visibility="gone" />
+
+</FrameLayout>

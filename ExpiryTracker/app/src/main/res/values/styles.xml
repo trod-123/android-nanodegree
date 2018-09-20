@@ -6,9 +6,15 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <!-- Prevents error: java.lang.IllegalStateException: Must specify preferenceTheme in theme -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
+    <!-- Base application theme with no action bar -->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.Icon" parent="AppTheme">
@@ -35,9 +41,22 @@
         <item name="android:textColorHint">@color/textColorPrimaryLight</item>
     </style>
 
+    <!-- From https://stackoverflow.com/questions/30546430/how-to-change-the-floating-label-color-of-textinputlayout/30914037#30914037 -->
+    <style name="AppTheme.TextInputLayout.DarkBackground" parent="AppTheme.TextInputLayout">
+        <!-- Hint color in the FALSE state -->
+        <item name="android:textColorHint">@android:color/white</item>
+        <!-- Hint color in the TRUE state -->
+        <item name="colorAccent">@color/md_purple_300</item>
+    </style>
+
     <style name="AppTheme.TextInputEditText" parent="AppTheme">
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditText.DarkBackground" parent="AppTheme.TextInputEditText">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:backgroundTint">@android:color/white</item>
     </style>
 
     <style name="AppTheme.TextInputEditText.Numeric" parent="AppTheme.TextInputEditText">
