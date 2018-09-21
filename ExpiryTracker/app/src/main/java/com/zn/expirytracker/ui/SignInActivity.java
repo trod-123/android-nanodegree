@@ -6,9 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -26,12 +23,10 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.OnEditClearErrorsTextWatcher;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -82,8 +77,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         mBtnCreateAccount.setOnClickListener(this);
         mNoClickOverlay.setOnClickListener(this);
 
-        mEtEmail.addTextChangedListener(new SignInTextInputWatcher(mTilEmail));
-        mEtPassword.addTextChangedListener(new SignInTextInputWatcher(mTilPassword));
+        mEtEmail.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilEmail));
+        mEtPassword.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilPassword));
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -99,18 +94,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     protected void onStart() {
         super.onStart();
         if (AuthToolbox.isSignedIn()) {
-            startMainActivity();
+            AuthToolbox.startMainActivity(this);
         } else {
             // Show UI
         }
-    }
-
-    /**
-     * Helper to start the main activity
-     */
-    private void startMainActivity() {
-        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -127,6 +114,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 signInWithGoogle();
                 break;
             case R.id.btn_sign_in_create_account:
+                startActivity(new Intent(SignInActivity.this, SignUpActivity.class));
                 break;
             case R.id.overlay_sign_in_no_click:
                 // Prevent click-handling for root view
@@ -145,22 +133,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
      */
     private boolean areInputsValid(String email, String password) {
         boolean valid = true;
-        // check e-mail
-        if (email.trim().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mTilEmail.setError("Please enter a valid e-mail address");
-            valid = false;
-        } else {
-            mTilEmail.setError(null);
-        }
-        // check password
-        if (password.trim().isEmpty() ||
-                password.trim().length() < AuthToolbox.DEFAULT_MIN_PASSWORD_LENGTH ||
-                password.contains(" ")) {
-            mTilPassword.setError("Please enter a valid password of at least 8 characters and no spaces");
-            valid = false;
-        } else {
-            mTilPassword.setError(null);
-        }
+        if (!AuthToolbox.isEmailValid(email, mTilEmail, this)) valid = false;
+        if (!AuthToolbox.isPasswordValid(password, mTilPassword, this)) valid = false;
+
         return valid;
     }
 
@@ -171,8 +146,13 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
      * @param password
      */
     private void signInWithEmail(String email, String password) {
-        Toolbox.showView(mNoClickOverlay, true, true);
-        Toolbox.showView(mPbSignIn, true, false);
+        AuthToolbox.showLoadingOverlay(true, mNoClickOverlay, mPbSignIn);
+        // TODO: There is an issue where if the user creates an account with a gmail address using
+        // email and password auth, and then "Signs in with Google" using that address, the user
+        // is no longer able to log-in via email and password auth methods with that address.
+        // However, the Firebase user id remains the same across
+        // TODO: That said, "Sign in with Google" automatically creates an account as well. Need
+        // to split up this functionality, which could fix the above
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -180,9 +160,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         if (task.isSuccessful()) {
                             // Sign in success
                             Timber.d("Sign in with email: success!");
-                            AuthToolbox.syncSignInWithDevice(getApplicationContext(),
+                            AuthToolbox.syncSignInWithDevice_FederatedProvidersAuth(getApplicationContext(),
                                     mAuth.getCurrentUser());
-                            startMainActivity();
+                            AuthToolbox.startMainActivity(getApplicationContext());
                         } else {
                             // Sign in failed
                             String error = ((FirebaseAuthException) task.getException()).getErrorCode();
@@ -190,48 +170,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             Toolbox.showSnackbarMessage(mRootView,
                                     "There was a problem signing in.");
                         }
-                        Toolbox.showView(mNoClickOverlay, false, true);
-                        Toolbox.showView(mPbSignIn, false, false);
-                    }
-                });
-    }
-
-    /**
-     * Creates a new account
-     *
-     * @param email
-     * @param password
-     */
-    private void signUpWithEmail(String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // New account is created successfully, also sign the user in
-                            Timber.d("Create user with email: success!");
-                            AuthToolbox.syncSignInWithDevice(getApplicationContext(),
-                                    mAuth.getCurrentUser());
-                            startMainActivity();
-                        } else {
-                            // Sign up failed
-                            try {
-                                throw task.getException();
-                            } catch (FirebaseAuthWeakPasswordException e) {
-                                mTilPassword.setError(getString(R.string.auth_error_weak_password));
-                                mTilPassword.requestFocus();
-                            } catch (FirebaseAuthInvalidCredentialsException e) {
-                                mTilEmail.setError(getString(R.string.auth_error_invalid_email));
-                                mTilEmail.requestFocus();
-                            } catch (FirebaseAuthUserCollisionException e) {
-                                mTilEmail.setError(getString(R.string.auth_error_user_exists));
-                                mTilEmail.requestFocus();
-                            } catch (Exception e) {
-                                Timber.w(e, "Sign up with email: failed");
-                            }
-                            Toolbox.showSnackbarMessage(mRootView,
-                                    "There was a problem creating your account.");
-                        }
+                        AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbSignIn);
                     }
                 });
     }
@@ -242,8 +181,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
-        Toolbox.showView(mNoClickOverlay, true, true);
-        Toolbox.showView(mPbGoogle, true, false);
+        AuthToolbox.showLoadingOverlay(true, mNoClickOverlay, mPbGoogle);
+
     }
 
     @Override
@@ -277,17 +216,16 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             if (task.isSuccessful()) {
                                 // Sign in success. Link with SP and then start main activity
                                 Timber.d("Firebase auth sign in with Google credential success!");
-                                AuthToolbox.syncSignInWithDevice(getApplicationContext(),
+                                AuthToolbox.syncSignInWithDevice_FederatedProvidersAuth(getApplicationContext(),
                                         mAuth.getCurrentUser());
-                                startMainActivity();
+                                AuthToolbox.startMainActivity(getApplicationContext());
                             } else {
                                 // Sign in failed
                                 Timber.w(task.getException(), "Firebase auth sign in with" +
                                         " Google credential failed");
                                 Toolbox.showSnackbarMessage(mRootView, "Authentication failed.");
                             }
-                            Toolbox.showView(mNoClickOverlay, false, true);
-                            Toolbox.showView(mPbGoogle, false, false);
+                            AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbGoogle);
                         }
                     });
         } catch (ApiException e) {
@@ -296,38 +234,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             int statusCode = e.getStatusCode();
             Timber.w(e, "Google Sign-in failed. Result code: %s", e.getStatusCode());
             handleGoogleSignInFailure(statusCode);
-            Toolbox.showView(mNoClickOverlay, false, true);
-            Toolbox.showView(mPbGoogle, false, false);
+            AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbGoogle);
         }
     }
 
-
-    /**
-     * Custom {@link TextWatcher} that hides errors for {@link TextInputLayout}s after the calling
-     * EditText has changed text
-     */
-    private class SignInTextInputWatcher implements TextWatcher {
-        private TextInputLayout mTil;
-
-        SignInTextInputWatcher(TextInputLayout til) {
-            mTil = til;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            mTil.setError(null);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-
-    }
-
+    // region Error handling
 
     /**
      * Helper to handle errors with sign in using e-mail
@@ -358,9 +269,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
             case "ERROR_WRONG_PASSWORD":
                 Timber.e("The password is invalid or the user does not have a password.");
+                mEtPassword.setText("");
                 mTilPassword.setError(getString(R.string.auth_error_wrong_password));
                 mTilPassword.requestFocus();
-                mEtPassword.setText("");
                 break;
 
             case "ERROR_USER_MISMATCH":
@@ -443,4 +354,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                         getString(R.string.auth_error_sign_in_failed));
         }
     }
+
+    // endregion
 }

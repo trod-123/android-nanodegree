@@ -12,6 +12,7 @@
     <string name="activity_edit_item_name">Edit</string>
     <string name="activity_add_item_name">Add new food item</string>
     <string name="activity_capture_name">Capture</string>
+    <string name="activity_sign_up_name">Create account</string>
 
     <string name="undefined_generic">Undefined</string>
 
@@ -264,7 +265,8 @@
 
     <!-- region Auth errors -->
 
-    <string name="auth_error_weak_password">Password must be at least 8 characters</string>
+    <string name="auth_error_no_name">Please enter a name</string>
+    <string name="auth_error_weak_password">Password must be at least 8 characters long with no spaces</string>
     <string name="auth_error_invalid_email">Please enter a valid e-mail address</string>
     <string name="auth_error_user_exists">Sorry, a user already exists with this address</string>
     <string name="auth_error_wrong_password">Password is incorrect</string>
@@ -275,6 +277,8 @@
     <string name="auth_error_interrupted">Sign-in was interrupted</string>
     <string name="auth_error_network">Couldn\'t sign-in due to network error</string>
     <string name="auth_error_invalid_account">This account is invalid</string>
+    <string name="sign_in_signup_button">Sign up!</string>
+    <string name="sign_up_name_label">Your name</string>
 
     <!-- endregion -->
 </resources>

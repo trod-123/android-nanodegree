@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
+import android.util.Patterns;
+import android.view.View;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -18,6 +21,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
 
 import timber.log.Timber;
@@ -29,15 +33,102 @@ public class AuthToolbox {
 
     public static final int DEFAULT_MIN_PASSWORD_LENGTH = 8; // number of characters
 
+    // region Auth fields validation
+
+    /**
+     * Name must not be empty
+     *
+     * @param name
+     * @param tilName
+     * @return
+     */
+    public static boolean isNameValid(String name, TextInputLayout tilName, Context context) {
+        if (name.trim().isEmpty()) {
+            tilName.setError(context.getString(R.string.auth_error_no_name));
+            return false;
+        } else {
+            tilName.setError(null);
+            return true;
+        }
+    }
+
+    /**
+     * E-mail address must be in a valid form: ***@***.***
+     *
+     * @param email
+     * @param tilEmail
+     * @return
+     */
+    public static boolean isEmailValid(String email, TextInputLayout tilEmail, Context context) {
+        if (email.trim().isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            tilEmail.setError(context.getString(R.string.auth_error_invalid_email));
+            return false;
+        } else {
+            tilEmail.setError(null);
+            return true;
+        }
+    }
+
+    /**
+     * Password must have at least 8 characters and must not contain any spaces
+     *
+     * @param password
+     * @param tilPassword
+     * @return
+     */
+    public static boolean isPasswordValid(String password, TextInputLayout tilPassword, Context context) {
+        if (password.trim().isEmpty() ||
+                password.trim().length() < AuthToolbox.DEFAULT_MIN_PASSWORD_LENGTH ||
+                password.contains(" ")) {
+            tilPassword.setError(context.getString(R.string.auth_error_weak_password));
+            return false;
+        } else {
+            tilPassword.setError(null);
+            return true;
+        }
+    }
+
+    // endregion
+
+    /**
+     * Helper to show or hide the SignIn loading overlay
+     *
+     * @param show
+     * @param noClickOverlay
+     * @param progressBar
+     */
+    public static void showLoadingOverlay(boolean show, View noClickOverlay, View progressBar) {
+        Toolbox.showView(noClickOverlay, show, true);
+        Toolbox.showView(progressBar, show, false);
+    }
+
     /**
      * Starts the Sign-in activity and clears the existing backstack
      * <p>
-     * https://stackoverflow.com/questions/5794506/android-clear-the-back-stack
      *
      * @param context
      */
     public static void startSignInActivity(Context context) {
-        Intent intent = new Intent(context, SignInActivity.class);
+        startActivityAndClearBackstack(context, SignInActivity.class);
+    }
+
+    /**
+     * Helper to start the main activity
+     */
+    public static void startMainActivity(Context context) {
+        startActivityAndClearBackstack(context, MainActivity.class);
+    }
+
+    /**
+     * Helper to start any activity and clears the existing backstack
+     * <p>
+     * https://stackoverflow.com/questions/5794506/android-clear-the-back-stack
+     *
+     * @param context
+     * @param activity
+     */
+    private static void startActivityAndClearBackstack(Context context, Class activity) {
+        Intent intent = new Intent(context, activity);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK |
                 Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
@@ -55,12 +146,16 @@ public class AuthToolbox {
 
     /**
      * Link the recently signed-in user with the app, including the user's information and their
-     * data
+     * data.
+     * <p>
+     * Note: This should only be used for Federated identity providers (e.g. Google, Facebook,
+     * Twitter, GitHub)
      *
      * @param context
      * @throws IllegalStateException
      */
-    public static void syncSignInWithDevice(Context context, FirebaseUser user) throws IllegalStateException {
+    public static void syncSignInWithDevice_FederatedProvidersAuth(Context context, FirebaseUser user)
+            throws IllegalStateException {
         if (user == null) {
             throw new IllegalStateException("Attempted to update display name when no user is logged in");
         }
@@ -79,6 +174,26 @@ public class AuthToolbox {
             String email = profile.getEmail();
             Uri photoUrl = profile.getPhotoUrl();
         }
+
+        // TODO: Download data from Firestore
+    }
+
+    /**
+     * Link the recently signed-in user with the app, including the user's information and their
+     * data.
+     * <p>
+     * Note: This should only be used for Email and Password based authentication
+     *
+     * @param context
+     * @throws IllegalStateException
+     */
+    public static void syncSignInWithDevice_EmailAuth(Context context, FirebaseUser user, String name)
+            throws IllegalStateException {
+        if (user == null) {
+            throw new IllegalStateException("Attempted to update display name when no user is logged in");
+        }
+        // sync user details
+        updateDisplayName(context, name);
 
         // TODO: Download data from Firestore
     }

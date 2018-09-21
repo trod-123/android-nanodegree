@@ -26,12 +26,8 @@
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="barcode, label, ocr, ica" />
 
-
-        <!-- Use noHistory to clear this activity from the backstack when leaving it
-         https://stackoverflow.com/questions/11308198/start-new-activity-and-finish-current-one-in-android-->
         <activity
             android:name=".ui.SignInActivity"
-            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,8 +35,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.MainActivity"></activity>
+        <activity
+            android:name=".ui.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.MainActivity" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/activity_settings_name" />
