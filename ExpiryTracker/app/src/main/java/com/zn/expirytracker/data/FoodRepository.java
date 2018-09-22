@@ -19,6 +19,12 @@ import com.zn.expirytracker.widget.UpdateWidgetService;
  * this seems like a "Content Provider", doesn't it?
  * <p>
  * It is common to assess whether to update data and fetch fresh data, or to provide cached data
+ * <p>
+ * This repository links the following data sources:
+ * <ul>
+ * <li>Internal room database
+ * <li>Firebase Realtime Database
+ * </ul>
  */
 public class FoodRepository {
     private static final int DEFAULT_PAGE_SIZE = 20;
@@ -108,6 +114,7 @@ public class FoodRepository {
      */
     public void updateFood(Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
+        FirebaseDatabaseHelper.write(food);
     }
 
     /**
@@ -117,6 +124,9 @@ public class FoodRepository {
      */
     public void updateFoods(Food... foods) {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
+        for (Food food : foods) {
+            FirebaseDatabaseHelper.write(food);
+        }
     }
 
     /**
@@ -126,6 +136,7 @@ public class FoodRepository {
      */
     public void deleteFoodById(long id) {
         new DeleteAsyncTask(mFoodDao, id).execute(mContext);
+        FirebaseDatabaseHelper.delete(id);
     }
 
     /**
@@ -135,6 +146,9 @@ public class FoodRepository {
      */
     public void deleteFoodsByIds(Long... ids) {
         new DeleteAsyncTask(mFoodDao, ids).execute(mContext);
+        for (long id : ids) {
+            FirebaseDatabaseHelper.delete(id);
+        }
     }
 
     /**
@@ -142,14 +156,16 @@ public class FoodRepository {
      */
     public void deleteAllFoods() {
         new DeleteAllFoodsAsyncTask(mFoodDao).execute(mContext);
+        FirebaseDatabaseHelper.deleteAll();
     }
 
     // region AsyncTasks
 
     /**
-     * Use an AsyncTask to properly insert a new {@link Food} into the database
+     * Use an AsyncTask to properly insert a new {@link Food} into the database. Also returns the
+     * id of the newly inserted food so we can push to Firebase RTD
      */
-    private static class InsertAsyncTask extends AsyncTask<Context, Void, Void> {
+    private static class InsertAsyncTask extends AsyncTask<Context, Void, Long[]> {
         private FoodDao mAsyncTaskDao;
         private Food[] mFoods;
 
@@ -159,11 +175,20 @@ public class FoodRepository {
         }
 
         @Override
-        protected Void doInBackground(Context... contexts) {
-            mAsyncTaskDao.insert(mFoods);
+        protected Long[] doInBackground(Context... contexts) {
+            Long[] insertedIds = mAsyncTaskDao.insert(mFoods);
             // Update the widget
             UpdateWidgetService.updateFoodWidget(contexts[0]);
-            return null;
+            return insertedIds;
+        }
+
+        @Override
+        protected void onPostExecute(Long[] ids) {
+            for (int i = 0; i < mFoods.length; i++) {
+                Food food = mFoods[i];
+                food.set_id(ids[i]);
+                FirebaseDatabaseHelper.write(food);
+            }
         }
     }
 

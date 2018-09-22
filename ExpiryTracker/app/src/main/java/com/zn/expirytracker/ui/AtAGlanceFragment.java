@@ -421,7 +421,7 @@ public class AtAGlanceFragment extends Fragment
                 barChartEntries);
         int entriesSize = barChartEntries.size();
         int foodsCountCurrent = entriesSize > 0 ? (int) barChartEntries.get(0).getY() : 0;
-        int foodsCountNextDay = entriesSize > 0 ? (int) barChartEntries.get(1).getY() : 0;
+        int foodsCountNextDay = entriesSize > 1 ? (int) barChartEntries.get(1).getY() : 0;
 
         mTvSummary.setText(DataToolbox.getFullSummary(mHostActivity, filter,
                 totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay));

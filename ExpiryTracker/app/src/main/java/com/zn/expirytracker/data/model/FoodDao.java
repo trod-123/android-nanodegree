@@ -19,7 +19,7 @@ public interface FoodDao {
      * @param food
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Food food);
+    Long insert(Food food);
 
     /**
      * Inserts an array of {@link Food} items to the database. Replaces any food item if it already
@@ -28,7 +28,7 @@ public interface FoodDao {
      * @param foods
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Food... foods);
+    Long[] insert(Food... foods);
 
     /**
      * Updates a single {@link Food} item in the database

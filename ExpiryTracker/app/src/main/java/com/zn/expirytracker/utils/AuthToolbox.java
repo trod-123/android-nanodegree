@@ -145,6 +145,39 @@ public class AuthToolbox {
     }
 
     /**
+     * Custom Exception that throws a message in the form:
+     * {@code Attempted to [ACTION] when no user is logged in}
+     */
+    public static class FirebaseAuthNotLoggedInException extends IllegalStateException {
+
+        public FirebaseAuthNotLoggedInException() {
+            super("Attempted to do a Firebase Auth user action when no user is logged in");
+        }
+
+        public FirebaseAuthNotLoggedInException(String action) {
+            super(String.format("Attempted to %s when no user is logged in", action));
+        }
+
+        public FirebaseAuthNotLoggedInException(String action, Throwable cause) {
+            super(String.format("Attempted to %s when no user is logged in", action), cause);
+        }
+    }
+
+    /**
+     * Gets the id of the currently logged in user
+     *
+     * @return
+     * @throws FirebaseAuthNotLoggedInException
+     */
+    public static String getUserId() throws FirebaseAuthNotLoggedInException {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            throw new FirebaseAuthNotLoggedInException("get user id");
+        }
+        return user.getUid();
+    }
+
+    /**
      * Link the recently signed-in user with the app, including the user's information and their
      * data.
      * <p>
@@ -152,12 +185,12 @@ public class AuthToolbox {
      * Twitter, GitHub)
      *
      * @param context
-     * @throws IllegalStateException
+     * @throws FirebaseAuthNotLoggedInException
      */
     public static void syncSignInWithDevice_FederatedProvidersAuth(Context context, FirebaseUser user)
-            throws IllegalStateException {
+            throws FirebaseAuthNotLoggedInException {
         if (user == null) {
-            throw new IllegalStateException("Attempted to update display name when no user is logged in");
+            throw new FirebaseAuthNotLoggedInException("update display name");
         }
         // sync user details
         for (UserInfo profile : user.getProviderData()) {
@@ -185,12 +218,12 @@ public class AuthToolbox {
      * Note: This should only be used for Email and Password based authentication
      *
      * @param context
-     * @throws IllegalStateException
+     * @throws FirebaseAuthNotLoggedInException
      */
     public static void syncSignInWithDevice_EmailAuth(Context context, FirebaseUser user, String name)
-            throws IllegalStateException {
+            throws FirebaseAuthNotLoggedInException {
         if (user == null) {
-            throw new IllegalStateException("Attempted to update display name when no user is logged in");
+            throw new FirebaseAuthNotLoggedInException("update display name");
         }
         // sync user details
         updateDisplayName(context, name);
@@ -205,13 +238,13 @@ public class AuthToolbox {
      * Throws an error if user is not signed in
      *
      * @param displayName
-     * @throws IllegalStateException
+     * @throws FirebaseAuthNotLoggedInException
      */
     public static void updateDisplayName(final Context context, final String displayName)
-            throws IllegalStateException {
+            throws FirebaseAuthNotLoggedInException {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            throw new IllegalStateException("Attempted to update display name when no user is logged in");
+            throw new FirebaseAuthNotLoggedInException("update display name");
         }
         UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
                 .setDisplayName(displayName)
@@ -253,10 +286,10 @@ public class AuthToolbox {
      * @param context
      */
     public static void signOut(final Context context, GoogleSignInClient client)
-            throws IllegalStateException {
+            throws FirebaseAuthNotLoggedInException {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            throw new IllegalStateException("Attempted to sign out when no user is logged in");
+            throw new FirebaseAuthNotLoggedInException("sign out");
         }
         // Check if user is signed into Google sign-in
         // https://stackoverflow.com/questions/38190253/android-google-sign-in-check-if-user-is-signed-in
@@ -300,10 +333,10 @@ public class AuthToolbox {
      * @param context
      */
     public static void deleteAccount(final Context context, GoogleSignInClient client)
-            throws IllegalStateException {
+            throws FirebaseAuthNotLoggedInException {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            throw new IllegalStateException("Attempted to sign out when no user is logged in");
+            throw new FirebaseAuthNotLoggedInException("sign out");
         }
         if (client != null && GoogleSignIn.getLastSignedInAccount(context) != null) {
             // Attempt deleting Google account first before deleting Firebase

@@ -2,6 +2,9 @@ package com.zn.expirytracker;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
+
 import timber.log.Timber;
 
 public class ExpiryTrackerApplication extends MultiDexApplication {
@@ -18,8 +21,14 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        // Persists cached data across app restarts. Needs to be called before getting first
+        // database instance
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(true);
+
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+            database.setLogLevel(Logger.Level.DEBUG);
         } else {
             // TODO: Initialize a crash reporting tree
             // https://github.com/JakeWharton/timber/blob/master/sample/src/main/java/com/example/timber/ExampleApp.java
