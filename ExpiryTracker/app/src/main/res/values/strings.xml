@@ -23,9 +23,8 @@
     <string name="action_search">Search</string>
     <string name="action_settings">@string/activity_settings_name</string>
     <string name="action_add_item">Add food item</string>
-    <string name="action_add_item_camera">Camera</string>
-    <string name="action_add_item_image">Image</string>
-    <string name="action_add_item_text">Text</string>
+    <string name="action_add_item_camera">Scan a barcode or take a picture</string>
+    <string name="action_add_item_text">Input text details</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete this item</string>
     <string name="action_try_again">Try again</string>
@@ -256,12 +255,17 @@
     <string name="widget_header">Expiring soon!</string>
     <string name="expiring_food_none">No expiring foods during this time</string>
     <string name="add_photo_instruction">How do you want to add an image?</string>
+    <string name="add_item_instruction">How do you want to add an item?</string>
+
+    <!-- region Sign-in -->
 
     <string name="sign_in_email_label">Email</string>
     <string name="sign_in_password_label">Password</string>
     <string name="sign_in_login_button">Log-in</string>
     <string name="sign_in_create_account">No account yet? Create one</string>
     <string name="sign_in_existing_account">Already a member? Log-in</string>
+
+    <!-- endregion -->
 
     <!-- region Auth errors -->
 

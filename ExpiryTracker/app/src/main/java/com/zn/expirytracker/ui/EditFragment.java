@@ -1,6 +1,7 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -78,7 +79,11 @@ public class EditFragment extends Fragment implements
     public static final String ARG_INPUT_TYPE = Toolbox.createStaticKeyString(
             "edit_fragment.input_type");
 
-    public static final int POSITION_ADD_MODE = -1024; // pass this as the position to enable add
+    /**
+     * Default code to use for {@link EditFragment#ARG_ITEM_ID_LONG} if adding a new item, not
+     * editing an existing one
+     */
+    public static final int POSITION_ADD_MODE = -1024;
 
     private static final int RC_LOAD_IMAGE = 1100;
     private static final int RC_CAMERA = 1101;
@@ -265,12 +270,15 @@ public class EditFragment extends Fragment implements
             }
         });
 
-        mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
+        final LiveData<Food> data = mViewModel.getSingleFoodById(mItemId, false);
+        data.observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
                 populateFields(food);
                 // this needs to be done AFTER fields are populated, but also call it when adding
                 mFormChangedDetector = getFormChangedDetector();
+                // do not make any changes to any fields once UI is loaded
+                data.removeObserver(this);
             }
         });
 

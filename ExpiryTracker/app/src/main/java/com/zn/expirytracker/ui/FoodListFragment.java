@@ -21,13 +21,15 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
+import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class FoodListFragment extends Fragment {
+public class FoodListFragment extends Fragment
+        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
 
     @BindView(R.id.container_list_fragment)
     View mRootview;
@@ -85,8 +87,7 @@ public class FoodListFragment extends Fragment {
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: Include scanning and image picker
-                startAddActivity();
+                showInputTypePickerDialog();
             }
         });
 
@@ -134,10 +135,27 @@ public class FoodListFragment extends Fragment {
         mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
     }
 
-    private void startAddActivity() {
-//        Intent intent = new Intent(mHostActivity, AddActivity.class);
-        // TODO: For testing only
+    // region Input type picker dialog
+
+    private void showInputTypePickerDialog() {
+        // Show the bottom sheet
+        AddItemInputPickerBottomSheet bottomSheet = new AddItemInputPickerBottomSheet();
+        bottomSheet.setTargetFragment(this, 0);
+        bottomSheet.show(getFragmentManager(),
+                AddItemInputPickerBottomSheet.class.getSimpleName());
+    }
+
+    @Override
+    public void onCameraInputSelected() {
         Intent intent = new Intent(mHostActivity, CaptureActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onTextInputSelected() {
+        Intent intent = new Intent(mHostActivity, AddActivity.class);
+        startActivity(intent);
+    }
+
+    // endregion
 }
