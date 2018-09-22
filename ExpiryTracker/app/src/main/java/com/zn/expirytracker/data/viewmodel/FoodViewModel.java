@@ -32,20 +32,20 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository = new FoodRepository(application);
     }
 
-    public void insert(Food food) {
-        mRepository.insertFood(food);
+    public void insert(boolean saveToCloud, Food food) {
+        mRepository.insertFood(saveToCloud, food);
     }
 
-    public void insert(Food... foods) {
-        mRepository.insertFoods(foods);
+    public void insert(boolean saveToCloud, Food... foods) {
+        mRepository.insertFoods(saveToCloud, foods);
     }
 
-    public void update(Food food) {
-        mRepository.updateFood(food);
+    public void update(boolean saveToCloud, Food food) {
+        mRepository.updateFood(saveToCloud, food);
     }
 
-    public void update(Food... foods) {
-        mRepository.updateFoods(foods);
+    public void update(boolean saveToCloud, Food... foods) {
+        mRepository.updateFoods(saveToCloud, foods);
     }
 
     // TODO: When deleting, delete all user-submitted pictures too

@@ -46,14 +46,14 @@ public class AddActivity extends AppCompatActivity {
         if (fragments.size() == 0) {
             super.onBackPressed();
         } else {
-            Fragment topFragment = fragments.get(fragments.size() - 1);
-            if (topFragment instanceof EditFragment &&
-                    ((EditFragment) topFragment).haveFieldsChanged()) {
-                // don't do anything. at this point the EditFragment is showing the
-                // FormChangedDialogFragment
-            } else {
-                super.onBackPressed();
+            for (Fragment fragment : fragments) {
+                String tag = fragment.getTag();
+                if (tag != null && tag.equals(EditFragment.class.getSimpleName()) &&
+                        ((EditFragment) fragment).haveFieldsChanged()) {
+                    return;
+                }
             }
         }
+        super.onBackPressed();
     }
 }

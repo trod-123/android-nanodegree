@@ -94,8 +94,8 @@ public class FoodRepository {
      *
      * @param food
      */
-    public void insertFood(Food food) {
-        new InsertAsyncTask(mFoodDao, food).execute(mContext);
+    public void insertFood(boolean saveToCloud, Food food) {
+        new InsertAsyncTask(mFoodDao, saveToCloud, food).execute(mContext);
     }
 
     /**
@@ -103,8 +103,8 @@ public class FoodRepository {
      *
      * @param foods
      */
-    public void insertFoods(Food... foods) {
-        new InsertAsyncTask(mFoodDao, foods).execute(mContext);
+    public void insertFoods(boolean saveToCloud, Food... foods) {
+        new InsertAsyncTask(mFoodDao, saveToCloud, foods).execute(mContext);
     }
 
     /**
@@ -112,9 +112,11 @@ public class FoodRepository {
      *
      * @param food
      */
-    public void updateFood(Food food) {
+    public void updateFood(boolean saveToCloud, Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
-        FirebaseDatabaseHelper.write(food);
+        if (saveToCloud) {
+            FirebaseDatabaseHelper.write(food);
+        }
     }
 
     /**
@@ -122,10 +124,12 @@ public class FoodRepository {
      *
      * @param foods
      */
-    public void updateFoods(Food... foods) {
+    public void updateFoods(boolean saveToCloud, Food... foods) {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
-        for (Food food : foods) {
-            FirebaseDatabaseHelper.write(food);
+        if (saveToCloud) {
+            for (Food food : foods) {
+                FirebaseDatabaseHelper.write(food);
+            }
         }
     }
 
@@ -173,10 +177,12 @@ public class FoodRepository {
      */
     private static class InsertAsyncTask extends AsyncTask<Context, Void, Long[]> {
         private FoodDao mAsyncTaskDao;
+        private boolean mSaveToCloud;
         private Food[] mFoods;
 
-        InsertAsyncTask(FoodDao foodDao, Food... foods) {
+        InsertAsyncTask(FoodDao foodDao, boolean saveToCloud, Food... foods) {
             mAsyncTaskDao = foodDao;
+            mSaveToCloud = saveToCloud;
             mFoods = foods;
         }
 
@@ -190,10 +196,12 @@ public class FoodRepository {
 
         @Override
         protected void onPostExecute(Long[] ids) {
-            for (int i = 0; i < mFoods.length; i++) {
-                Food food = mFoods[i];
-                food.set_id(ids[i]);
-                FirebaseDatabaseHelper.write(food);
+            if (mSaveToCloud) {
+                for (int i = 0; i < mFoods.length; i++) {
+                    Food food = mFoods[i];
+                    food.set_id(ids[i]);
+                    FirebaseDatabaseHelper.write(food);
+                }
             }
         }
     }

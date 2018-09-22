@@ -40,6 +40,7 @@ import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
 import com.zn.expirytracker.upcitemdb.UpcItemDbService;
 import com.zn.expirytracker.upcitemdb.model.Item;
 import com.zn.expirytracker.upcitemdb.model.UpcItem;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -240,7 +241,7 @@ public class CaptureOverlayFragment extends Fragment
 
         Food food = createFood(mName, mDescription, mDateExpiry, mBrand, mSize, mWeight,
                 mImageUris, mBarcode, mInputType, Storage.NOT_SET);
-        mViewModel.insert(food);
+        mViewModel.insert(true, food);
         Toolbox.showToast(mHostActivity, String.format("Saved %s!", mName));
         mHostActivity.onBackPressed();
     }
@@ -252,7 +253,8 @@ public class CaptureOverlayFragment extends Fragment
     private void saveBitmapsToFood() {
         if (mBarcodeBitmap != null) {
             try {
-                String path = Toolbox.saveBitmapToInternalStorage(mBarcodeBitmap, mName, mHostActivity);
+                String path = Toolbox.saveBitmapToInternalStorage(
+                        mBarcodeBitmap, Constants.DEFAULT_FILENAME, mHostActivity);
                 Timber.d("Saved barcode bitmap path: %s", path);
                 mImageUris.add(path);
             } catch (IOException e) {
@@ -261,7 +263,8 @@ public class CaptureOverlayFragment extends Fragment
         }
         if (mImageBitmap != null) {
             try {
-                String path = Toolbox.saveBitmapToInternalStorage(mImageBitmap, mName, mHostActivity);
+                String path = Toolbox.saveBitmapToInternalStorage(
+                        mImageBitmap, Constants.DEFAULT_FILENAME, mHostActivity);
                 Timber.d("Saved image bitmap path: %s", path);
                 mImageUris.add(path);
             } catch (IOException e) {

@@ -11,6 +11,10 @@ public class StringListTypeConverter {
     // https://stackoverflow.com/questions/599161/best-way-to-convert-an-arraylist-to-a-string
     @TypeConverter
     public static String fromStringList(List<String> strings) {
+        if (strings == null) {
+            // For when coming from RTD
+            return "";
+        }
         StringBuilder builder = new StringBuilder();
         for (String string : strings) {
             builder.append(string);

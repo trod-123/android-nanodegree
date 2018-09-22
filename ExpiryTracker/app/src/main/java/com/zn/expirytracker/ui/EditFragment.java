@@ -42,6 +42,7 @@ import com.zn.expirytracker.ui.dialog.FormChangedDialogFragment;
 import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.EditToolbox;
 import com.zn.expirytracker.utils.FormChangedDetector;
@@ -277,7 +278,8 @@ public class EditFragment extends Fragment implements
                 populateFields(food);
                 // this needs to be done AFTER fields are populated, but also call it when adding
                 mFormChangedDetector = getFormChangedDetector();
-                // do not make any changes to any fields once UI is loaded
+                // do not make any changes to any fields once UI is loaded. this also solves issue
+                // where adding an image resets the image adapter position back to 0
                 data.removeObserver(this);
             }
         });
@@ -571,13 +573,13 @@ public class EditFragment extends Fragment implements
             if (mAddMode) {
                 Food food = createFoodFromInputs(mExpiryDate, mGoodThruDate, mLoc, mBarcode,
                         mInputType, mImageUris);
-                mViewModel.insert(food);
+                mViewModel.insert(true, food);
                 Toolbox.showToast(mHostActivity, getString(R.string.message_item_added,
                         food.getFoodName()));
             } else {
                 Food food = updateFoodFromInputs(mItemId, mExpiryDate, mGoodThruDate, mLoc,
                         mBarcode, mInputType, mImageUris);
-                mViewModel.update(food);
+                mViewModel.update(true, food);
                 Toolbox.showToast(mHostActivity, getString(R.string.message_item_updated,
                         food.getFoodName()));
             }
@@ -897,7 +899,7 @@ public class EditFragment extends Fragment implements
                         mEtWeight,
                         mEtNotes)
         );
-        return new FormChangedDetector<>(editTexts);
+        return new FormChangedDetector<>(editTexts, mImageUris);
     }
 
     /**
@@ -1053,7 +1055,8 @@ public class EditFragment extends Fragment implements
             File outputFilePath = null;
             try {
                 // Get the path where file would be saved
-                outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity, mFood.getFoodName());
+                outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity,
+                        Constants.DEFAULT_FILENAME);
                 // Use File.getAbsolutePath() to get the String path that we can store in the
                 // Food images list, which could then be loaded up into Glide
                 mCurrentCameraCapturePath = outputFilePath.getAbsolutePath();
@@ -1110,28 +1113,29 @@ public class EditFragment extends Fragment implements
      * @param uri
      */
     private void addImageFromUri(Uri uri) {
-        // Save bitmap to internal storage and then update the food item
+        // Save bitmap to internal storage and then update the image uri list
         try {
-            File outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity, mFood.getFoodName());
+            File outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity,
+                    Constants.DEFAULT_FILENAME);
             String inputFilePath = Toolbox.getGalleryUriPath(mHostActivity, uri);
             Toolbox.copyFile(new File(inputFilePath), outputFilePath);
             String path = outputFilePath.getAbsolutePath();
             Timber.d("Saved image path: %s", path);
-            mFood.getImages().add(path);
-            mViewModel.update(mFood);
-            Toolbox.showToast(mHostActivity, "Image added!");
+            mImageUris.add(path);
+            mPagerAdapter.notifyDataSetChanged();
+            Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
         } catch (IOException e) {
             Timber.e(e, "There was a problem saving the image to internal storage");
         }
     }
 
     /**
-     * Updates the food item with the newly captured photo, with the path
+     * Updates the image uri list with the newly captured photo, with the path
      */
     private void addImageFromCamera(String imagePath) {
-        mFood.getImages().add(imagePath);
-        mViewModel.update(mFood);
-        Toolbox.showToast(mHostActivity, "Image added!");
+        mImageUris.add(imagePath);
+        mPagerAdapter.notifyDataSetChanged();
+        Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
     }
 
     /**
@@ -1141,7 +1145,7 @@ public class EditFragment extends Fragment implements
      * @param uri
      */
     private void deleteImage(Uri uri) {
-
+        // TODO: Implement
     }
 
     // endregion

@@ -62,6 +62,11 @@ public class Food {
     @ColumnInfo(name = DatabaseContract.COLUMN_IMAGES)
     private List<String> images;
 
+    @Ignore
+    public Food() {
+        // Default constructor required for calls to DataSnapshot.getValue(Food.class);
+    }
+
     /**
      * Default {@link Food} constructor used by Room, without an {@code _id} field
      *

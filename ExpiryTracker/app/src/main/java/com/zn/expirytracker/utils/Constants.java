@@ -27,4 +27,5 @@ public class Constants {
 
     public static final String BITMAP_SAVING_DIRECTORY = "scannedImagesDir";
     public static final int BITMAP_SAVING_QUALITY = 30; // out of 100
+    public static final String DEFAULT_FILENAME = "food";
 }

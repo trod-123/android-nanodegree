@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
@@ -29,7 +34,8 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class FoodListFragment extends Fragment
-        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
+        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener,
+        ChildEventListener {
 
     @BindView(R.id.container_list_fragment)
     View mRootview;
@@ -84,6 +90,8 @@ public class FoodListFragment extends Fragment
             }
         });
 
+        FirebaseDatabaseHelper.addChildEventListener(this);
+
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,6 +142,42 @@ public class FoodListFragment extends Fragment
         helper.attachToRecyclerView(mRvFoodList);
         mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
     }
+
+    // region Firebase ChildEventListener
+
+    @Override
+    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        Food food = dataSnapshot.getValue(Food.class);
+        Timber.d("Food added from RTD: id_%s", food.get_id());
+        mViewModel.insert(false, food);
+    }
+
+    @Override
+    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        Food food = dataSnapshot.getValue(Food.class);
+        Timber.d("Food changed from RTD: id_%s", food.get_id());
+        mViewModel.update(false, food);
+    }
+
+    @Override
+    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        Food food = dataSnapshot.getValue(Food.class);
+        Timber.d("Food deleted from RTD: id_%s", food.get_id());
+        mViewModel.delete(false, food.get_id());
+    }
+
+    @Override
+    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        // Not used here
+    }
+
+    @Override
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+        Timber.e("Error pulling from RTD: %s", databaseError.getMessage());
+    }
+
+
+    // endregion
 
     // region Input type picker dialog
 
