@@ -396,11 +396,36 @@ public class AuthToolbox {
     }
 
     /**
-     * Deletes all data from device, food and app images
+     * Deletes all data from device: food and app images. Does NOT delete cloud data
+     *
+     * @param viewModel
+     * @param context
      */
     public static void deleteDeviceData(FoodViewModel viewModel, final Context context) {
         Timber.d("Deleting all device data: foods, images, and Glide cache");
-        viewModel.deleteAllFoods();
+        deleteData(viewModel, context, false);
+    }
+
+    /**
+     * Deletes all data from device AND cloud: food and app images
+     *
+     * @param viewModel
+     * @param context
+     */
+    public static void deleteDeviceAndCloudData(FoodViewModel viewModel, final Context context) {
+        Timber.d("Deleting all device AND cloud data: foods, images, and Glide cache");
+        deleteData(viewModel, context, true);
+    }
+
+    /**
+     * Deletes device data. Pass in {@code wipeCloudData == true} to also wipe all cloud data
+     *
+     * @param viewModel
+     * @param context
+     * @param wipeCloudData
+     */
+    private static void deleteData(FoodViewModel viewModel, final Context context, boolean wipeCloudData) {
+        viewModel.deleteAllFoods(wipeCloudData);
         // Remove all images from app's images directory
         new Thread(new Runnable() {
             @Override

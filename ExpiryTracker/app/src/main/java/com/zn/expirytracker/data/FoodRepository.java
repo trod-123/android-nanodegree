@@ -134,9 +134,11 @@ public class FoodRepository {
      *
      * @param id
      */
-    public void deleteFoodById(long id) {
+    public void deleteFoodById(boolean wipeCloudStorage, long id) {
         new DeleteAsyncTask(mFoodDao, id).execute(mContext);
-        FirebaseDatabaseHelper.delete(id);
+        if (wipeCloudStorage) {
+            FirebaseDatabaseHelper.delete(id);
+        }
     }
 
     /**
@@ -144,19 +146,23 @@ public class FoodRepository {
      *
      * @param ids
      */
-    public void deleteFoodsByIds(Long... ids) {
+    public void deleteFoodsByIds(boolean wipeCloudStorage, Long... ids) {
         new DeleteAsyncTask(mFoodDao, ids).execute(mContext);
-        for (long id : ids) {
-            FirebaseDatabaseHelper.delete(id);
+        if (wipeCloudStorage) {
+            for (long id : ids) {
+                FirebaseDatabaseHelper.delete(id);
+            }
         }
     }
 
     /**
      * Deletes all {@link Food} items in the database
      */
-    public void deleteAllFoods() {
+    public void deleteAllFoods(boolean wipeCloudStorage) {
         new DeleteAllFoodsAsyncTask(mFoodDao).execute(mContext);
-        FirebaseDatabaseHelper.deleteAll();
+        if (wipeCloudStorage) {
+            FirebaseDatabaseHelper.deleteAll();
+        }
     }
 
     // region AsyncTasks

@@ -314,14 +314,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // position or isLoggedIn does not matter here
                 switch (deleteType) {
                     case ACCOUNT:
-                        // this also starts the sign-in activity. stack with the below
-                        AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
+                        // this also starts the sign-in activity
+                        AuthToolbox.deleteDeviceAndCloudData(mViewModel, mHostActivity);
                         // TODO: Disable all view clicks and dim the activity while this is happening
                         AuthToolbox.deleteAccount(mHostActivity, mGoogleSignInClient);
                         break;
                     case DEVICE:
                         AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
                         Toolbox.showToast(mHostActivity, "All app data deleted from device");
+                        break;
                 }
         }
     }

@@ -50,16 +50,16 @@ public class FoodViewModel extends AndroidViewModel {
 
     // TODO: When deleting, delete all user-submitted pictures too
 
-    public void delete(long id) {
-        mRepository.deleteFoodById(id);
+    public void delete(boolean wipeCloudStorage, long id) {
+        mRepository.deleteFoodById(wipeCloudStorage, id);
     }
 
-    public void delete(Long... ids) {
-        mRepository.deleteFoodsByIds(ids);
+    public void delete(boolean wipeCloudStorage, Long... ids) {
+        mRepository.deleteFoodsByIds(wipeCloudStorage, ids);
     }
 
-    public void deleteAllFoods() {
-        mRepository.deleteAllFoods();
+    public void deleteAllFoods(boolean wipeCloudStorage) {
+        mRepository.deleteAllFoods(wipeCloudStorage);
     }
 
     public LiveData<Food> getSingleFoodById(long id, boolean summaryColumns) {

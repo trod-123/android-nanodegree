@@ -132,7 +132,7 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void deleteItem() {
         Food food = mFoodsList.get(mCurrentPosition);
-        mViewModel.delete(food.get_id());
+        mViewModel.delete(true, food.get_id());
         Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
                 food.getFoodName()));
     }

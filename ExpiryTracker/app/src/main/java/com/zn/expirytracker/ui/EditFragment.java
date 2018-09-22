@@ -587,7 +587,7 @@ public class EditFragment extends Fragment implements
 
     private void deleteItem() {
         mFormChangedDetector.updateCachedFields();
-        mViewModel.delete(mItemId);
+        mViewModel.delete(true, mItemId);
         mHostActivity.finish();
     }
 

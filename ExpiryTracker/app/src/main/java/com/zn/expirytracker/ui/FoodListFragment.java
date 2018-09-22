@@ -126,7 +126,7 @@ public class FoodListFragment extends Fragment
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 Food food = mListAdapter.getFoodAtPosition(position);
-                mViewModel.delete(food.get_id());
+                mViewModel.delete(true, food.get_id());
                 Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
                         food.getFoodName()));
             }
