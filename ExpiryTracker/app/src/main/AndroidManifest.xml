@@ -68,6 +68,7 @@
         </activity>
         <activity
             android:name=".ui.capture.CaptureActivity"
+            android:fitsSystemWindows="true"
             android:label="@string/activity_capture_name"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
