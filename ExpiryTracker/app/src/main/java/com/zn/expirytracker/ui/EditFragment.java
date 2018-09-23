@@ -75,7 +75,8 @@ public class EditFragment extends Fragment implements
         FormChangedDialogFragment.OnFormChangedButtonClickListener,
         ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener,
         DetailImageFragment.AddImageButtonClickListener,
-        AddImageMethodPickerBottomSheet.OnAddImageMethodSelectedListener {
+        AddImageMethodPickerBottomSheet.OnAddImageMethodSelectedListener,
+        View.OnClickListener {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "edit_fragment.item_id_long");
@@ -285,7 +286,9 @@ public class EditFragment extends Fragment implements
                 // this needs to be done AFTER fields are populated, but also call it when adding
                 mFormChangedDetector = getFormChangedDetector();
                 // do not make any changes to any fields once UI is loaded. this also solves issue
-                // where adding an image resets the image adapter position back to 0
+                // where adding an image resets the image adapter position back to 0 (though it
+                // could probably be because we were saving new images to food before even saving
+                // the food itself
                 data.removeObserver(this);
             }
         });
@@ -397,7 +400,7 @@ public class EditFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence != null && charSequence.length() > 0) {
+                if (charSequence != null && charSequence.toString().trim().length() > 0) {
                     showFieldError(false, FieldError.REQUIRED_NAME);
                 } else {
                     showFieldError(true, FieldError.REQUIRED_NAME);
@@ -438,73 +441,61 @@ public class EditFragment extends Fragment implements
         mEtNotes.addTextChangedListener(new HideViewTextWatcher(mIvNotesClear));
     }
 
-    /**
-     * Helper that sets the OnClickListeners
-     */
-    private void setClickListeners() {
-        mFabVoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_edit_voice:
                 // TODO: Start speech input
                 Toolbox.showToast(mHostActivity, "This will start the speech input!");
-            }
-        });
-        mEtFoodNameError.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.tiEt_edit_food_name_error:
                 showFieldErrorMessage(FieldError.REQUIRED_NAME);
-            }
-        });
-        mEtDateExpiry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.tiEt_edit_date_expiry:
                 showDatePickerDialog(ExpiryDatePickerDialogFragment.DateType.EXPIRY);
-            }
-        });
-        mEtDateGood.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.tiEt_edit_date_good:
                 showDatePickerDialog(ExpiryDatePickerDialogFragment.DateType.GOOD_THRU);
-            }
-        });
-        mIvMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.iv_edit_minus_btn:
                 decreaseCount();
-            }
-        });
-        mIvPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.iv_edit_plus_btn:
                 increaseCount();
-            }
-        });
-        mEtCountError.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.tiEt_edit_count_error:
                 if (mCurrentFieldErrors.contains(FieldError.INVALID_COUNT)) {
                     showFieldErrorMessage(FieldError.INVALID_COUNT);
                 } else if (mCurrentFieldErrors.contains(FieldError.REQUIRED_COUNT)) {
                     showFieldErrorMessage(FieldError.REQUIRED_COUNT);
                 }
-            }
-        });
-        mEtLoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.tiEt_edit_storage_location:
                 showLocationDialog();
-            }
-        });
-
-        mIvDateGoodClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.iv_edit_date_good_clear:
                 mGoodThruDate = mExpiryDate;
                 String fieldFormattedDate = DataToolbox.getFieldFormattedDate(mGoodThruDate);
                 mEtDateGood.setText(fieldFormattedDate);
                 setGoodThruDateViewAttributes();
-            }
-        });
+                break;
+        }
+    }
+
+    /**
+     * Helper that sets the OnClickListeners
+     */
+    private void setClickListeners() {
+        mFabVoice.setOnClickListener(this);
+        mEtFoodNameError.setOnClickListener(this);
+        mEtDateExpiry.setOnClickListener(this);
+        mEtDateGood.setOnClickListener(this);
+        mIvMinus.setOnClickListener(this);
+        mIvPlus.setOnClickListener(this);
+        mEtCountError.setOnClickListener(this);
+        mEtLoc.setOnClickListener(this);
+
+        mIvDateGoodClear.setOnClickListener(this);
         mIvDescriptionClear.setOnClickListener(new ClearTextClickListener(mEtDescription));
         mIvBrandClear.setOnClickListener(new ClearTextClickListener(mEtBrand));
         mIvSizeClear.setOnClickListener(new ClearTextClickListener(mEtSize));
@@ -1165,6 +1156,7 @@ public class EditFragment extends Fragment implements
             Timber.d("Saved image path: %s", path);
             mImageUris.add(path);
             mPagerAdapter.notifyDataSetChanged();
+            mPageIndicatorView.setCount(mPagerAdapter.getCount());
             Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
         } catch (IOException e) {
             Timber.e(e, "There was a problem saving the image to internal storage");
@@ -1177,6 +1169,7 @@ public class EditFragment extends Fragment implements
     private void addImageFromCamera(String imagePath) {
         mImageUris.add(imagePath);
         mPagerAdapter.notifyDataSetChanged();
+        mPageIndicatorView.setCount(mPagerAdapter.getCount());
         Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
     }
 

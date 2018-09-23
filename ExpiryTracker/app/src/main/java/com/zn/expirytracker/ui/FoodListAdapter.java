@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
@@ -114,6 +115,8 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         TextView mCount;
         @BindView(R.id.iv_list_item_image)
         ImageView mImage;
+        @BindView(R.id.pb_list_item_image)
+        ProgressBar mPb;
 
         FoodViewHolder(View itemView) {
             super(itemView);
@@ -150,14 +153,18 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             List<String> images = food.getImages();
             if (images != null && images.size() > 0) {
                 mImage.setVisibility(View.VISIBLE);
+                Toolbox.showView(mPb, true, false);
                 Toolbox.loadImageFromUrl(mContext, images.get(0), mImage, new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        Timber.e(e, "Error loading image in adapter");
+                        Toolbox.showView(mPb, false, false);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        Toolbox.showView(mPb, false, false);
                         return false;
                     }
                 });

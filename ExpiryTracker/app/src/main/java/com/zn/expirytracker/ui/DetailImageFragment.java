@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -32,6 +33,8 @@ public class DetailImageFragment extends Fragment {
 
     @BindView(R.id.iv_detail_image)
     ImageView mImageView;
+    @BindView(R.id.pb_detail_image)
+    ProgressBar mPb;
     @BindView(R.id.iv_detail_add_image_icon)
     ImageView mIvAddIcon;
 
@@ -87,15 +90,18 @@ public class DetailImageFragment extends Fragment {
 
         if (mImageUriString != null) {
             mImageView.setImageDrawable(null);
+            Toolbox.showView(mPb, true, false);
             Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView, new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                     Timber.e(e, "There was an error loading the image: %s", mImageUriString);
+                    Toolbox.showView(mPb, false, false);
                     return false;
                 }
 
                 @Override
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                    Toolbox.showView(mPb, false, false);
                     return false;
                 }
             });

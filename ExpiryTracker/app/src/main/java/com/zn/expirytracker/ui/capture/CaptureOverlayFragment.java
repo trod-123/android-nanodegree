@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -107,6 +108,8 @@ public class CaptureOverlayFragment extends Fragment
     TextView mTvAttr;
     @BindView(R.id.iv_overlay_scanned_image)
     ImageView mIvImage;
+    @BindView(R.id.pb_overlay_scanned_image)
+    ProgressBar mPbImage;
     @BindView(R.id.iv_overlay_scanned_barcode)
     ImageView mIvBarcode;
 
@@ -300,23 +303,31 @@ public class CaptureOverlayFragment extends Fragment
             mName = item.getTitle();
             mTvName.setText(mName);
             mDescription = item.getDescription();
-            mTvDescription.setText(mDescription);
+            if (mDescription.trim().isEmpty()) {
+                mTvDescription.setVisibility(View.GONE);
+            } else {
+                mTvDescription.setText(mDescription);
+            }
             mImageUris = item.getImages();
             String imageUri = "";
             if (mImageUris != null && mImageUris.size() > 0) {
                 imageUri = mImageUris.get(0);
             }
+            Toolbox.showView(mPbImage, true, false);
             Toolbox.loadImageFromUrl(mHostActivity, imageUri, mIvImage, new RequestListener<Bitmap>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                             Target<Bitmap> target, boolean isFirstResource) {
-                    // TODO: If there is no image, hide the view
+                    // If there is no image, hide the view
+                    mIvImage.setVisibility(View.GONE);
+                    Toolbox.showView(mPbImage, false, false);
                     return false;
                 }
 
                 @Override
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                DataSource dataSource, boolean isFirstResource) {
+                    Toolbox.showView(mPbImage, false, false);
                     return false;
                 }
             });
@@ -333,8 +344,26 @@ public class CaptureOverlayFragment extends Fragment
             Toolbox.showToast(mHostActivity, "Item not in online database");
             mTvDescription.setVisibility(View.GONE);
             // Load the barcode in the main image instead and hide the other
+            Toolbox.showView(mPbImage, true, false);
             GlideApp.with(mHostActivity)
                     .load(mBarcodeBitmap)
+                    .addListener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Drawable> target, boolean isFirstResource) {
+                            Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model,
+                                                       Target<Drawable> target, DataSource dataSource,
+                                                       boolean isFirstResource) {
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
+                    })
                     .into(mIvImage);
             mIvBarcode.setVisibility(View.GONE);
             mTvAttr.setVisibility(View.GONE);
@@ -350,8 +379,26 @@ public class CaptureOverlayFragment extends Fragment
     private void populateFieldsFromImageOnly(@NonNull Bitmap image) {
         mTvDescription.setVisibility(View.GONE);
         // Load the barcode in the main image instead and hide the other
+        Toolbox.showView(mPbImage, true, false);
         GlideApp.with(mHostActivity)
                 .load(image)
+                .addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Drawable> target, boolean isFirstResource) {
+                        Timber.e(e, "Error loading barcode bitmap into overlay / image only");
+                        Toolbox.showView(mPbImage, false, false);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                                                   Target<Drawable> target, DataSource dataSource,
+                                                   boolean isFirstResource) {
+                        Toolbox.showView(mPbImage, false, false);
+                        return false;
+                    }
+                })
                 .into(mIvImage);
         mTvBarcode.setVisibility(View.GONE);
         mIvBarcode.setVisibility(View.GONE);

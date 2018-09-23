@@ -240,47 +240,41 @@ public class DataToolbox {
         return totalFoodsCountFromFilter;
     }
 
+    private static final int NO_MAX_SIZE_INT_FREQUENCIES = 0;
+
     /**
      * Gets a list of {@link BarEntry} xy mappings, where x is numDays, and y is the frequency of
      * each numDays
      *
      * @param foods
      * @param baseDateInMillis
+     * @param filter
      * @return
      */
-    public static List<BarEntry> getBarEntries(List<Food> foods, long baseDateInMillis) {
+    public static List<BarEntry> getBarEntries(List<Food> foods, long baseDateInMillis,
+                                               WeeklyDateFilter filter) {
+        int maxSize;
+        switch (filter) {
+            case NEXT_7:
+                maxSize = 7;
+                break;
+            case NEXT_14:
+                maxSize = 14;
+                break;
+            case NEXT_21:
+                maxSize = 21;
+                break;
+            default:
+                maxSize = NO_MAX_SIZE_INT_FREQUENCIES;
+        }
         long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
-        SparseIntArray data = getIntFrequencies(numDaysUntilCurrent, true);
+        SparseIntArray data = getIntFrequencies(numDaysUntilCurrent, true, maxSize);
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             entries.add(new BarEntry(data.keyAt(i), data.valueAt(i)));
         }
         return entries;
-    }
-
-    /**
-     * For testing. Appends a "current date" to the array that would then be passed to
-     * {@link DataToolbox#getIntFrequencies(int[], boolean)}. If the "current date" already exists,
-     * then this passes the original array instead
-     * <p>
-     * Combining two integer arrays source: https://stackoverflow.com/questions/4697255/combine-two-integer-arrays
-     *
-     * @param data
-     * @return
-     */
-    private static SparseIntArray getDateFrequenciesFromCurrentDate(int[] data) {
-        Arrays.sort(data);
-        if (Arrays.binarySearch(data, 0) < 0) {
-            // Add the 0
-            int[] appendedData = new int[data.length + 1];
-            System.arraycopy(new int[]{0}, 0, appendedData, 0, 1);
-            System.arraycopy(data, 0, appendedData, 1, data.length);
-            return getIntFrequencies(appendedData, true);
-        } else {
-            // 0 already is in there, just pass in the data (sorting is harmless here)
-            return getIntFrequencies(data, true);
-        }
     }
 
     /**
@@ -293,14 +287,16 @@ public class DataToolbox {
      *
      * @param data
      * @param fillInGaps
+     * @param maxSize    Provides a guaranteed size for the array, if {@code fillInGaps == true}
      * @return
      */
-    private static SparseIntArray getIntFrequencies(int[] data, boolean fillInGaps) {
+    private static SparseIntArray getIntFrequencies(int[] data, boolean fillInGaps, int maxSize) {
+        int limit = maxSize == NO_MAX_SIZE_INT_FREQUENCIES ? data.length : maxSize;
         if (data.length > 0) {
             Arrays.sort(data);
             SparseIntArray array = new SparseIntArray();
             if (fillInGaps) {
-                for (int i = 0; i < data[data.length - 1]; i++) {
+                for (int i = 0; i < limit; i++) {
                     // create a key for every element in data, including for those elements that
                     // don't exist. initialize each value to 0
                     array.put(i, 0);
@@ -340,7 +336,7 @@ public class DataToolbox {
     private static SparseIntArray getIntFrequencies(List<Food> foods, long baseDateInMillis, boolean fillInGaps) {
         long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
-        return getIntFrequencies(numDaysUntilCurrent, fillInGaps);
+        return getIntFrequencies(numDaysUntilCurrent, fillInGaps, NO_MAX_SIZE_INT_FREQUENCIES);
     }
 
     /**

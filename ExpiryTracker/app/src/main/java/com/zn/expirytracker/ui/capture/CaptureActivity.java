@@ -1,10 +1,12 @@
 package com.zn.expirytracker.ui.capture;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -65,6 +67,10 @@ public class CaptureActivity extends AppCompatActivity implements
     @BindView(R.id.btn_capture_image)
     View mBtnImgRec;
 
+    // Scanner feedback
+    private boolean mVibrate;
+    private boolean mBeep;
+
     private CameraSource mCameraSource;
     private InputType mCurrentInputType = DEFAULT_INPUT_TYPE;
     private boolean mCameraActivated;
@@ -85,6 +91,10 @@ public class CaptureActivity extends AppCompatActivity implements
         mBtnCaptureImgrec.setOnClickListener(this);
         mBtnCaptureImgonly.setOnClickListener(this);
         mFragmentRoot.setOnClickListener(this);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        mBeep = sp.getBoolean(getString(R.string.pref_capture_beep_key), true);
+        mVibrate = sp.getBoolean(getString(R.string.pref_capture_vibrate_key), true);
 
         if (allPermissionsGranted()) {
             startCameraSource();
@@ -189,6 +199,16 @@ public class CaptureActivity extends AppCompatActivity implements
     @Override
     public void handleBarcode(FirebaseVisionBarcode barcode, Bitmap barcodeBitmap) {
         if (!mScanJitter) {
+            if (mBeep) {
+                try {
+                    Toolbox.playBeep(this);
+                } catch (IOException e) {
+                    Timber.e(e, "barcode/beep error");
+                }
+            }
+            if (mVibrate) {
+                Toolbox.vibrate(this);
+            }
             loadResultOverlay(barcode.getDisplayValue(), barcodeBitmap);
             mScanJitter = true;
         }
@@ -202,7 +222,10 @@ public class CaptureActivity extends AppCompatActivity implements
      */
     @Override
     public void handleImage(@NonNull List<FirebaseVisionLabel> labels, Bitmap bitmap) {
-        if (mCurrentInputType == InputType.IMG_REC) {
+        if (!mScanJitter && mCurrentInputType == InputType.IMG_REC) {
+            if (mVibrate) {
+                Toolbox.vibrate(this);
+            }
             // TODO: Implement and pass to overlay. Currently shows dummy toast with labels
             StringBuilder sb = new StringBuilder();
             for (FirebaseVisionLabel label : labels) {
@@ -211,6 +234,9 @@ public class CaptureActivity extends AppCompatActivity implements
             }
             Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
         } else if (mCurrentInputType == InputType.IMG_ONLY) {
+            if (mVibrate) {
+                Toolbox.vibrate(this);
+            }
             // TODO: Get IMGONLY its own method, it will not be called from here
             loadResultOverlay(bitmap);
             mScanJitter = true;

@@ -1,6 +1,5 @@
 package com.zn.expirytracker.ui;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
@@ -32,7 +31,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.container_detail_activity)
     View mRootview;
     @BindView(R.id.viewPager_detail)
-    ViewPager mViewPager;
+    NonSwipeableViewPager mViewPager;
 
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
@@ -73,6 +72,8 @@ public class DetailActivity extends AppCompatActivity {
                         }
                         mPagerAdapter.setFoodsList(foods);
                     }
+                    // There is a jitter bug in scrolling if there is only one page. This should fix
+                    mViewPager.setPagingEnabled(foods.size() > 1);
                     mFoodsList = foods;
                 }
             }

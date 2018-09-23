@@ -20,10 +20,17 @@
         android:padding="@dimen/detail_add_image_icon_padding"
         android:tint="#A0FFFFFF"
         android:visibility="gone"
-        android:background="?selectableItemBackground"
+        android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         app:srcCompat="@drawable/ic_add_black_24dp"
         tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/pb_detail_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:alpha="0"/>
 
 </FrameLayout>

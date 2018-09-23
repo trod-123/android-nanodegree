@@ -19,7 +19,7 @@ public class EditToolbox {
     public static List<String> getStringsFromEditTexts(List<? extends EditText> editTexts) {
         List<String> values = new ArrayList<>();
         for (EditText editText : editTexts) {
-            values.add(editText.getText().toString());
+            values.add(editText.getText().toString().trim());
         }
         return values;
     }

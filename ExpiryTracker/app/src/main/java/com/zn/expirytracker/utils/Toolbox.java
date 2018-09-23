@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -495,4 +497,42 @@ public class Toolbox {
     public static Uri getUriFromImagePath(String imagePath) {
         return Uri.fromFile(new File(imagePath));
     }
+
+    /**
+     * Plays a beep sound
+     * <p>
+     * Sound source: https://freesound.org/people/zerolagtime/sounds/144418/
+     * <p>
+     * https://stackoverflow.com/questions/3289038/play-audio-file-from-the-assets-directory
+     *
+     * @param context
+     * @throws IOException
+     */
+    public static void playBeep(Context context) throws IOException {
+        AssetFileDescriptor afd = context.getAssets().openFd("beep.mp3");
+        MediaPlayer mp = new MediaPlayer();
+        mp.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        afd.close();
+
+        mp.prepare();
+        mp.setVolume(0.25f, 0.25f);
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });
+        mp.start();
+    }
+
+    /**
+     * Vibrates the device for a brief period
+     *
+     * @param context
+     */
+    public static void vibrate(Context context) {
+        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(Constants.DEFAULT_VIBRATION_BUTTON_PRESS_LENGTH);
+    }
+
 }

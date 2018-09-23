@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +18,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +29,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
 import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
+import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -39,6 +42,12 @@ public class FoodListFragment extends Fragment
 
     @BindView(R.id.container_list_fragment)
     View mRootview;
+    @BindView(R.id.tv_food_list_empty)
+    View mEmptyView;
+    @BindView(R.id.iv_food_list_empty_animal)
+    ImageView mIvEmpty;
+    @BindView(R.id.sr_food_list)
+    SwipeRefreshLayout mSrFoodList;
     @BindView(R.id.rv_food_list)
     RecyclerView mRvFoodList;
     @BindView(R.id.fab_food_list_add)
@@ -86,6 +95,7 @@ public class FoodListFragment extends Fragment
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
                     mListAdapter.submitList(foods);
+                    showEmptyView(foods.size() == 0);
                 }
             }
         });
@@ -141,6 +151,21 @@ public class FoodListFragment extends Fragment
         });
         helper.attachToRecyclerView(mRvFoodList);
         mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
+
+        mSrFoodList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toolbox.showToast(mHostActivity, "This will refresh the list!");
+                mSrFoodList.setRefreshing(false);
+            }
+        });
+    }
+
+    private void showEmptyView(boolean show) {
+        Toolbox.showView(mEmptyView, show, false);
+        if (show) {
+            mIvEmpty.setImageResource(DataToolbox.getRandomAnimalDrawableId());
+        }
     }
 
     // region Firebase ChildEventListener

@@ -204,23 +204,13 @@ public class AtAGlanceFragment extends Fragment
     }
 
     /**
-     * TODO: Encapsulate determination for showing or hiding the bar chart, based not only on
-     * whether the list of bar entries is empty, but also if the highest frequency is 0. This is
-     * equivalent to having no data at all
-     * <p>
-     * Currently, the bar chart shows even when the highest frequency is 0
-     */
-    private boolean showBarChart(List<Food> allFoods) {
-        return false;
-    }
-
-    /**
      * Loads the barchart with data
      *
      * @param allFoods
      */
     private void loadBarChartData(List<Food> allFoods) {
-        mFullList_barChartEntries = DataToolbox.getBarEntries(allFoods, mCurrentDateTimeStartOfDay.getMillis());
+        mFullList_barChartEntries = DataToolbox.getBarEntries(allFoods,
+                mCurrentDateTimeStartOfDay.getMillis(), mCurrentFilter);
         if (mFullList_barChartEntries.size() > 0) {
             BarDataSet dataSet = new BarDataSet(mFullList_barChartEntries, null);
             dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.colorAccent)); // set color of bars
