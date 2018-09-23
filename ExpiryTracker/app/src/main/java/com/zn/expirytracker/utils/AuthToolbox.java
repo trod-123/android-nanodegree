@@ -20,6 +20,7 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
@@ -397,6 +398,9 @@ public class AuthToolbox {
 
     /**
      * Deletes all data from device: food and app images. Does NOT delete cloud data
+     * <p>
+     * Note: This needs to be called from a background thread since we're getting food data from
+     * the view model
      *
      * @param viewModel
      * @param context
@@ -408,6 +412,9 @@ public class AuthToolbox {
 
     /**
      * Deletes all data from device AND cloud: food and app images
+     * <p>
+     * Note: This needs to be called from a background thread since we're getting food data from
+     * the view model
      *
      * @param viewModel
      * @param context
@@ -418,14 +425,20 @@ public class AuthToolbox {
     }
 
     /**
-     * Deletes device data. Pass in {@code wipeCloudData == true} to also wipe all cloud data
+     * Deletes device data. Pass in {@code wipeCloudData == true} to also wipe all cloud data.
+     * <p>
+     * Note: This needs to be called from a background thread since we're getting food data from
+     * the view model. Food is deleted one at a time because we need to ensure Firebase Storage is
+     * being updated properly, and this can only be done by iterating each of the uris of the food
+     * image lists. Firebase Storage does not have capability to delete directories, only individual
+     * files.
      *
      * @param viewModel
      * @param context
      * @param wipeCloudData
      */
     private static void deleteData(FoodViewModel viewModel, final Context context, boolean wipeCloudData) {
-        viewModel.deleteAllFoods(wipeCloudData);
+        viewModel.delete(wipeCloudData, viewModel.getAllFoods_List().toArray(new Food[]{}));
         // Remove all images from app's images directory
         new Thread(new Runnable() {
             @Override

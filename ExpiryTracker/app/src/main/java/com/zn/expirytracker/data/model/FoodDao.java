@@ -3,6 +3,7 @@ package com.zn.expirytracker.data.model;
 import android.arch.lifecycle.LiveData;
 import android.arch.paging.DataSource;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
@@ -68,6 +69,12 @@ public interface FoodDao {
     @Query("DELETE from food_table WHERE _id in (:ids) ")
     void delete(Long... ids);
 
+    @Delete
+    void delete(Food food);
+
+    @Delete
+    void delete(Food... foods);
+
     /**
      * Returns a single {@link Food} object that matches the provided {@code id}, providing only the
      * summary columns (all other values will be null)
@@ -113,6 +120,17 @@ public interface FoodDao {
     DataSource.Factory<Integer, Food> getAllFoods();
 
     /**
+     * Returns a list of all {@link Food} objects stored in the database
+     * <p>
+     * Order by increasing expiration date, so those closer to expiring are shown first. All columns
+     * provided
+     *
+     * @return
+     */
+    @Query("SELECT * FROM food_table ORDER BY date_expiry, food_name ASC")
+    List<Food> getAllFoods_List();
+
+    /**
      * Returns a list of {@link Food} filtered to those expiring on or before the provided
      * {@code date}.
      * <p>
@@ -152,7 +170,7 @@ public interface FoodDao {
      */
     @Query("SELECT _id, food_name, date_expiry, date_good_thru, count, storage_location, images" +
             " FROM food_table WHERE date_expiry <= :date ORDER BY date_expiry, food_name ASC")
-    List<Food> getAllFoodExpiringBeforeDate_Widget(long date);
+    List<Food> getAllFoodExpiringBeforeDate_List(long date);
 
     /**
      * Returns a random single {@link Food} item. If there are no {@link Food} in the database,

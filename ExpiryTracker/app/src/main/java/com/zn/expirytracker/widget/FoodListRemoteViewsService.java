@@ -90,7 +90,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
                     mCurrentBaseDateTimeInMillis, daysFilter);
 
             FoodRoomDb db = FoodRoomDb.getDatabase(mContext);
-            mFoodsList = db.foodDao().getAllFoodExpiringBeforeDate_Widget(expiryDateFilter);
+            mFoodsList = db.foodDao().getAllFoodExpiringBeforeDate_List(expiryDateFilter);
         }
 
         @Override

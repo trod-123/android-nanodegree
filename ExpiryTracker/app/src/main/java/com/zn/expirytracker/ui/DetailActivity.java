@@ -1,5 +1,6 @@
 package com.zn.expirytracker.ui;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
@@ -40,7 +41,7 @@ public class DetailActivity extends AppCompatActivity {
     private int mCurrentPosition;
 
     // TODO: Save in savedInstanceState
-    private boolean mInitialized; // true once PagerAdapter has been loaded for the first time
+    private boolean mInitialized; // only set the current position when loaded for the first time
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,7 +133,7 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void deleteItem() {
         Food food = mFoodsList.get(mCurrentPosition);
-        mViewModel.delete(true, food.get_id());
+        mViewModel.delete(true, food);
         Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
                 food.getFoodName()));
     }

@@ -1,19 +1,23 @@
 package com.zn.expirytracker.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -88,6 +92,8 @@ public class EditFragment extends Fragment implements
 
     private static final int RC_LOAD_IMAGE = 1100;
     private static final int RC_CAMERA = 1101;
+    private static final int RC_PERMISSIONS_CAMERA = 4011;
+    private static final int RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 4012;
 
     public static final int DEFAULT_STARTING_COUNT = 1;
     public static final Storage DEFAULT_STARTING_STORAGE = Storage.NOT_SET;
@@ -589,7 +595,7 @@ public class EditFragment extends Fragment implements
 
     private void deleteItem() {
         mFormChangedDetector.updateCachedFields();
-        mViewModel.delete(true, mItemId);
+        mViewModel.delete(true, mFood);
         mHostActivity.finish();
     }
 
@@ -1049,6 +1055,12 @@ public class EditFragment extends Fragment implements
      * https://developer.android.com/training/camera/photobasics
      */
     public void captureImageFromCamera() {
+        if (ContextCompat.checkSelfPermission(mHostActivity, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Always ask (unless user ticked "don't ask again")
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, RC_PERMISSIONS_CAMERA);
+            return;
+        }
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure device has camera activity to handle this first
         if (cameraIntent.resolveActivity(mHostActivity.getPackageManager()) != null) {
@@ -1070,8 +1082,6 @@ public class EditFragment extends Fragment implements
                         mHostActivity, "com.zn.expirytracker.fileprovider", outputFilePath);
                 // Indicate where photo output should be saved
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-
-                // TODO: Need to get permissions first
                 startActivityForResult(cameraIntent, RC_CAMERA);
             }
         }
@@ -1081,10 +1091,42 @@ public class EditFragment extends Fragment implements
      * Prompts the user to pick an image from storage
      */
     public void getImageFromStorage() {
+        if (ContextCompat.checkSelfPermission(mHostActivity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Always ask (unless user ticked "don't ask again")
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+            return;
+        }
+
         // Get image from user storage
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, RC_LOAD_IMAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RC_PERMISSIONS_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    captureImageFromCamera();
+                } else {
+                    Toolbox.showSnackbarMessage(mRootLayout,
+                            "Please enable camera permissions to take photos");
+                }
+                break;
+            case RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getImageFromStorage();
+                } else {
+                    Toolbox.showSnackbarMessage(mRootLayout,
+                            "Please enable storage permissions to pick photos");
+                }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override

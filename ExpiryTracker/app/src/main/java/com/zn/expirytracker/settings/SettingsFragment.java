@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v14.preference.MultiSelectListPreference;
 import android.support.v14.preference.SwitchPreference;
@@ -160,9 +161,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
-                // Closes settings and clears back stack
-                AuthToolbox.signOut(mHostActivity, mGoogleSignInClient);
+                new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
+                        mGoogleSignInClient).execute();
                 return true;
             }
         });
@@ -314,16 +314,78 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // position or isLoggedIn does not matter here
                 switch (deleteType) {
                     case ACCOUNT:
-                        // this also starts the sign-in activity
-                        AuthToolbox.deleteDeviceAndCloudData(mViewModel, mHostActivity);
-                        // TODO: Disable all view clicks and dim the activity while this is happening
-                        AuthToolbox.deleteAccount(mHostActivity, mGoogleSignInClient);
+                        new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT,
+                                mGoogleSignInClient).execute();
                         break;
                     case DEVICE:
-                        AuthToolbox.deleteDeviceData(mViewModel, mHostActivity);
-                        Toolbox.showToast(mHostActivity, "All app data deleted from device");
+                        new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.DEVICE,
+                                mGoogleSignInClient).execute();
                         break;
                 }
+        }
+    }
+
+    /**
+     * AsyncTask that handles deleting food data in a background thread. Subsequent actions depend
+     * on the {@link com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment.DeleteType} passed
+     * into the constructor, as follows:
+     * <ul>
+     * <li>{@code ACCOUNT} - Deletes all device and cloud data, and deletes the user account</li>
+     * <li>{@code DEVICE} - Deletes device data only, and shows a toast</li>
+     * <li>{@code SIGN_OUT} - Deletes device data only, and signs the user out</li>
+     * </ul>
+     */
+    private static class DeleteDataAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        private ConfirmDeleteDialogFragment.DeleteType mDeleteType;
+        private GoogleSignInClient mClient;
+
+        DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType, GoogleSignInClient client) {
+            mDeleteType = deleteType;
+            mClient = client;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // TODO: Disable all view clicks and dim the activity while this is happening
+            switch (mDeleteType) {
+                case ACCOUNT:
+                    Toolbox.showToast(mClient.getApplicationContext(), "Deleting account...");
+                    break;
+                case DEVICE:
+                    Toolbox.showToast(mClient.getApplicationContext(), "Deleting app data on device...");
+                    break;
+            }
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            switch (mDeleteType) {
+                case ACCOUNT:
+                    AuthToolbox.deleteDeviceAndCloudData(mViewModel, mClient.getApplicationContext());
+                    break;
+                default:
+                    AuthToolbox.deleteDeviceData(mViewModel, mClient.getApplicationContext());
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            switch (mDeleteType) {
+                case ACCOUNT:
+                    AuthToolbox.deleteAccount(mClient.getApplicationContext(), mClient);
+                    break;
+                case DEVICE:
+                    Toolbox.showToast(mClient.getApplicationContext(), "All app data deleted from device");
+                    break;
+                case SIGN_OUT:
+                    // Closes settings and clears back stack
+                    AuthToolbox.signOut(mClient.getApplicationContext(), mClient);
+                    break;
+            }
         }
     }
 }

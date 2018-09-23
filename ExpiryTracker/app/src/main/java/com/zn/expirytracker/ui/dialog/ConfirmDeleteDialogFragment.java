@@ -37,7 +37,8 @@ public class ConfirmDeleteDialogFragment extends DialogFragment {
     public enum DeleteType {
         ITEM, // for deleting a single item
         DEVICE, // for deleting all device data only
-        ACCOUNT // for deleting user account and device data
+        ACCOUNT, // for deleting user account and device data
+        SIGN_OUT // for deleting all device data only, but following with a different action from DEVICE
     }
 
     /**

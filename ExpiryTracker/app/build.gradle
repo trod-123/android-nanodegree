@@ -79,8 +79,11 @@ dependencies {
     // Firebase Realtime Database
     implementation "com.google.firebase:firebase-database:$firebaseRealtimeDbVersion"
 
+    // Firebase Storage
+    implementation "com.google.firebase:firebase-storage:$firebaseStorageVersion"
+
     // Firebase Cloud Firestore
-    implementation "com.google.firebase:firebase-firestore:$firebaseCloudFirestoreVersion"
+//    implementation "com.google.firebase:firebase-firestore:$firebaseCloudFirestoreVersion"
 
     // Firebase Authentication
 //    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"

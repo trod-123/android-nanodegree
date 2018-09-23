@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import com.zn.expirytracker.BuildConfig;
 import com.zn.expirytracker.data.model.Cache;
 import com.zn.expirytracker.data.model.DatabaseContract;
 import com.zn.expirytracker.data.model.Food;
@@ -19,6 +20,9 @@ import java.util.List;
 @Database(entities = {Food.class, Temp.class, Cache.class},
         version = DatabaseContract.CURRENT_VERSION)
 public abstract class FoodRoomDb extends RoomDatabase {
+
+    private static final boolean POPULATE_DUMMY_DATA = false;
+
     public abstract FoodDao foodDao();
 
     private static FoodRoomDb INSTANCE;
@@ -51,7 +55,10 @@ public abstract class FoodRoomDb extends RoomDatabase {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
-            new PopulateDbAsync(INSTANCE).execute();
+            if (BuildConfig.DEBUG && POPULATE_DUMMY_DATA) {
+                // Only populate in debug mode, if dummy enabled. Otherwise listener does nothing
+                new PopulateDbAsync(INSTANCE).execute();
+            }
         }
     };
 

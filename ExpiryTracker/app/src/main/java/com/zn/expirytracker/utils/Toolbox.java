@@ -375,10 +375,6 @@ public class Toolbox {
         return path.getAbsolutePath();
     }
 
-    public static void deleteBitmapFromInternalStorage(Uri uri) {
-        // TODO: Implement and send to FoodViewModel
-    }
-
     /**
      * Generates a file to be used for outputting a bitmap, with the following filename syntax:
      * {@code currentTime_filename.jpg}
@@ -407,14 +403,15 @@ public class Toolbox {
      * https://stackoverflow.com/questions/4943629/how-to-delete-a-whole-folder-and-content
      *
      * @param fileOrDirectory
+     * @return {@code true} if the deletion was successful, false otherwise
      */
-    private static void deleteRecursive(@NonNull File fileOrDirectory) {
+    private static boolean deleteRecursive(@NonNull File fileOrDirectory) {
         if (fileOrDirectory.isDirectory()) {
             for (File child : fileOrDirectory.listFiles()) {
                 deleteRecursive(child);
             }
         }
-        fileOrDirectory.delete();
+        return fileOrDirectory.delete();
     }
 
     /**
@@ -431,6 +428,16 @@ public class Toolbox {
         }
     }
 
+    /**
+     * Deletes a single file, assuming it is in app's internal data
+     *
+     * @param uriToDelete
+     * @return {@code true} if the file is successfully deleted, false otherwise
+     */
+    public static boolean deleteBitmapFromInternalStorage(Uri uriToDelete) {
+        File file = new File(uriToDelete.getPath());
+        return file.delete();
+    }
 
     /**
      * Copies a file
@@ -458,6 +465,9 @@ public class Toolbox {
      * Returns the path for a Uri obtained through {@code Intent.ACTION_PICK} for the gallery so
      * it can be fed into new File(path)
      * <p>
+     * The purpose of this method is to make a copy of an image from a user's library and save it
+     * to the app's internal photo directory
+     * <p>
      * http://stackoverflow.com/q/6935497/42619
      *
      * @param context
@@ -471,5 +481,18 @@ public class Toolbox {
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    /**
+     * Returns a Uri for a given path (e.g. /storage/emulated/0/Android/data/) through making a temp
+     * file
+     * <p>
+     * The purpose of this method is to allow local image uris to be uploaded to FBS
+     *
+     * @param imagePath
+     * @return
+     */
+    public static Uri getUriFromImagePath(String imagePath) {
+        return Uri.fromFile(new File(imagePath));
     }
 }

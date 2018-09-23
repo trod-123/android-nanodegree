@@ -11,6 +11,8 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.widget.UpdateWidgetService;
 
+import java.util.List;
+
 /**
  * Repositories abstract access to multiple data sources, if your app has any. It is a convenience
  * class that handles data operations and liaising updates between the Dao and a Network. Access
@@ -71,6 +73,19 @@ public class FoodRepository {
     }
 
     /**
+     * Returns all {@link Food} items, with columns specified by {@code summaryColumns}. The list
+     * returned is not {@link LiveData}
+     * <p>
+     * Order by increasing expiration date, so those closer to expiring are
+     * shown first.
+     *
+     * @return
+     */
+    public List<Food> getAllFoods_List() {
+        return mFoodDao.getAllFoods_List();
+    }
+
+    /**
      * Returns all {@link Food} expiring on or before {@code date}, with columns specified by
      * {@code summaryColumns}.
      * <p>
@@ -115,7 +130,9 @@ public class FoodRepository {
     public void updateFood(boolean saveToCloud, Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
         if (saveToCloud) {
-            FirebaseDatabaseHelper.write(food);
+            // TODO: Once deleteImage() is implemented, need to see which images are deleted so
+            // they can be deleted from FBS too
+            FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
         }
     }
 
@@ -128,51 +145,87 @@ public class FoodRepository {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
         if (saveToCloud) {
             for (Food food : foods) {
-                FirebaseDatabaseHelper.write(food);
+                // TODO: Once deleteImage() is implemented, need to see which images are deleted so
+                // they can be deleted from FBS too
+                FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
             }
         }
     }
 
     /**
-     * Deletes a single {@link Food} item by {@code id}
+     * Deletes the passed {@link Food} item
      *
-     * @param id
+     * @param wipeCloudStorage
+     * @param food
      */
-    public void deleteFoodById(boolean wipeCloudStorage, long id) {
-        new DeleteAsyncTask(mFoodDao, id).execute(mContext);
+    public void deleteFood(boolean wipeCloudStorage, Food food) {
+        new DeleteAsyncTask(mFoodDao, food).execute(mContext);
         if (wipeCloudStorage) {
-            FirebaseDatabaseHelper.delete(id);
+            FirebaseDatabaseHelper.delete(food.get_id());
+            FirebaseStorageHelper.delete(food);
         }
     }
 
     /**
-     * Deletes a list of {@link Food} items by {@code ids}
+     * Deletes the passed list of {@link Food} items
      *
-     * @param ids
+     * @param wipeCloudStorage
+     * @param foods
      */
-    public void deleteFoodsByIds(boolean wipeCloudStorage, Long... ids) {
-        new DeleteAsyncTask(mFoodDao, ids).execute(mContext);
+    public void deleteFoods(boolean wipeCloudStorage, Food... foods) {
+        new DeleteAsyncTask(mFoodDao, foods).execute(mContext);
         if (wipeCloudStorage) {
-            for (long id : ids) {
-                FirebaseDatabaseHelper.delete(id);
+            for (Food food : foods) {
+                FirebaseDatabaseHelper.delete(food.get_id());
+                FirebaseStorageHelper.delete(food);
             }
         }
     }
 
-    /**
-     * Deletes all {@link Food} items in the database
-     */
-    public void deleteAllFoods(boolean wipeCloudStorage) {
-        new DeleteAllFoodsAsyncTask(mFoodDao).execute(mContext);
-        if (wipeCloudStorage) {
-            FirebaseDatabaseHelper.deleteAll();
-        }
-    }
+    // NOTE: Since Firebase Storage does not support deleting directories (e.g. directories
+    // titled by food_id), we will need to implement deletion on a Food rather than _id level
+
+
+//    /**
+//     * Deletes a single {@link Food} item by {@code id}
+//     *
+//     * @param id
+//     */
+//    public void deleteFoodById(boolean wipeCloudStorage, long id) {
+//        new DeleteAsyncTask(mFoodDao, id).execute(mContext);
+//        if (wipeCloudStorage) {
+//            FirebaseDatabaseHelper.delete(id);
+//        }
+//    }
+
+//    /**
+//     * Deletes a list of {@link Food} items by {@code ids}
+//     *
+//     * @param ids
+//     */
+//    public void deleteFoodsByIds(boolean wipeCloudStorage, Long... ids) {
+//        new DeleteAsyncTask(mFoodDao, ids).execute(mContext);
+//        if (wipeCloudStorage) {
+//            for (long id : ids) {
+//                FirebaseDatabaseHelper.delete(id);
+//            }
+//        }
+//    }
+
+//    /**
+//     * Deletes all {@link Food} items in the database
+//     */
+//    public void deleteAllFoods(boolean wipeCloudStorage) {
+//        new DeleteAllFoodsAsyncTask(mFoodDao).execute(mContext);
+//        if (wipeCloudStorage) {
+//            FirebaseDatabaseHelper.deleteAll();
+//        }
+//    }
 
     // region AsyncTasks
 
     /**
-     * Use an AsyncTask to properly insert a new {@link Food} into the database. Also returns the
+     * Use an AsyncTask to properly insert a new {@link Food} into the database. Also sets the
      * id of the newly inserted food so we can push to Firebase RTD
      */
     private static class InsertAsyncTask extends AsyncTask<Context, Void, Long[]> {
@@ -200,7 +253,8 @@ public class FoodRepository {
                 for (int i = 0; i < mFoods.length; i++) {
                     Food food = mFoods[i];
                     food.set_id(ids[i]);
-                    FirebaseDatabaseHelper.write(food);
+                    // This uploads the images first before saving to RTD
+                    FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
                 }
             }
         }
@@ -233,15 +287,37 @@ public class FoodRepository {
     private static class DeleteAsyncTask extends AsyncTask<Context, Void, Void> {
         private FoodDao mAsyncTaskDao;
         private Long[] mIds;
+        private Food[] mFoods;
 
+        /**
+         * Delete a food via passing its ids
+         *
+         * @param foodDao
+         * @param ids
+         */
         DeleteAsyncTask(FoodDao foodDao, Long... ids) {
             mAsyncTaskDao = foodDao;
             mIds = ids;
         }
 
+        /**
+         * Delete a food via passing the foods themselves
+         *
+         * @param foodDao
+         * @param foods
+         */
+        DeleteAsyncTask(FoodDao foodDao, Food... foods) {
+            mAsyncTaskDao = foodDao;
+            mFoods = foods;
+        }
+
         @Override
         protected Void doInBackground(Context... contexts) {
-            mAsyncTaskDao.delete(mIds);
+            if (mIds != null) {
+                mAsyncTaskDao.delete(mIds);
+            } else if (mFoods != null) {
+                mAsyncTaskDao.delete(mFoods);
+            }
             // Update the widget
             UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;

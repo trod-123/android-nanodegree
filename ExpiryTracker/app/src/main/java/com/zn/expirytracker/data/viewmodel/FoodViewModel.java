@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import com.zn.expirytracker.data.FoodRepository;
 import com.zn.expirytracker.data.model.Food;
 
+import java.util.List;
+
 /**
  * ViewModels live beyond the activity and fragment lifecycle, so it can serve as an effective
  * holder for your data that would be presented to the users. Interact with your repository
@@ -48,19 +50,17 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository.updateFoods(saveToCloud, foods);
     }
 
-    // TODO: When deleting, delete all user-submitted pictures too
-
-    public void delete(boolean wipeCloudStorage, long id) {
-        mRepository.deleteFoodById(wipeCloudStorage, id);
+    public void delete(boolean wipeCloudStorage, Food food) {
+        mRepository.deleteFood(wipeCloudStorage, food);
     }
 
-    public void delete(boolean wipeCloudStorage, Long... ids) {
-        mRepository.deleteFoodsByIds(wipeCloudStorage, ids);
+    public void delete(boolean wipeCloudStorage, Food... foods) {
+        mRepository.deleteFoods(wipeCloudStorage, foods);
     }
 
-    public void deleteAllFoods(boolean wipeCloudStorage) {
-        mRepository.deleteAllFoods(wipeCloudStorage);
-    }
+//    public void deleteAllFoods(boolean wipeCloudStorage) {
+//        mRepository.deleteAllFoods(wipeCloudStorage);
+//    }
 
     public LiveData<Food> getSingleFoodById(long id, boolean summaryColumns) {
         return mRepository.getSingleFoodById(id, summaryColumns);
@@ -72,5 +72,12 @@ public class FoodViewModel extends AndroidViewModel {
 
     public LiveData<PagedList<Food>> getAllFoodsExpiringBeforeDate(long date, boolean summaryColumns) {
         return mRepository.getAllFoodsExpiringBeforeDate(date, summaryColumns);
+    }
+
+    /**
+     * Needs to be called from a background thread
+     */
+    public List<Food> getAllFoods_List() {
+        return mRepository.getAllFoods_List();
     }
 }

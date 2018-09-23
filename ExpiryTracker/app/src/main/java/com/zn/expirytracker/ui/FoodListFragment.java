@@ -134,7 +134,7 @@ public class FoodListFragment extends Fragment
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 Food food = mListAdapter.getFoodAtPosition(position);
-                mViewModel.delete(true, food.get_id());
+                mViewModel.delete(true, food);
                 Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
                         food.getFoodName()));
             }
@@ -163,7 +163,7 @@ public class FoodListFragment extends Fragment
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
         Food food = dataSnapshot.getValue(Food.class);
         Timber.d("Food deleted from RTD: id_%s", food.get_id());
-        mViewModel.delete(false, food.get_id());
+        mViewModel.delete(false, food);
     }
 
     @Override

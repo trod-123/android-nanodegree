@@ -21,17 +21,17 @@ import timber.log.Timber;
  */
 public class FirebaseDatabaseHelper {
 
-    // Food data stored in: https://expirytracker-94b90.firebaseio.com/food_table
     private static DatabaseReference mDatabase = FirebaseDatabase.getInstance()
-            .getReference(DatabaseContract.FOOD_TABLE_NAME);
+            .getReference(DatabaseContract.DATABASE_NAME + "/" +
+                    DatabaseContract.FOOD_TABLE_NAME);
 
     /**
      * Custom {@link OnCompleteListener} for Firebase RTD that accepts a tag
      */
-    private static class FirebaseOnCompleteListener implements OnCompleteListener<Void> {
+    private static class FirebaseRTD_OnCompleteListener implements OnCompleteListener<Void> {
         private String TAG;
 
-        FirebaseOnCompleteListener(String tag) {
+        FirebaseRTD_OnCompleteListener(String tag) {
             TAG = tag;
         }
 
@@ -76,7 +76,7 @@ public class FirebaseDatabaseHelper {
         checkConnection();
         Timber.d("firebase/rtd/push...");
         mDatabase.child(uid).child(foodId).setValue(food)
-                .addOnCompleteListener(new FirebaseOnCompleteListener("firebase/rtd/write"));
+                .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write"));
     }
 
     /**
@@ -94,7 +94,7 @@ public class FirebaseDatabaseHelper {
         checkConnection();
         Timber.d("firebase/rtd/delete...");
         mDatabase.child(uid).child(String.valueOf(id)).removeValue()
-                .addOnCompleteListener(new FirebaseOnCompleteListener("firebase/rtd/delete"));
+                .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/delete"));
     }
 
     /**
@@ -111,7 +111,7 @@ public class FirebaseDatabaseHelper {
         checkConnection();
         Timber.d("firebase/rtd/deleteAll...");
         mDatabase.child(uid).removeValue().addOnCompleteListener(
-                new FirebaseOnCompleteListener("firebase/rtd/deleteAll"));
+                new FirebaseRTD_OnCompleteListener("firebase/rtd/deleteAll"));
     }
 
     /**
