@@ -47,15 +47,15 @@
 
     </ScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_edit_voice"
-        android:layout_width="@dimen/fab_size"
-        android:layout_height="@dimen/fab_size"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"
-        android:focusable="true"
-        android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_mic_black_24dp" />
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/fab_edit_voice"-->
+        <!--android:layout_width="@dimen/fab_size"-->
+        <!--android:layout_height="@dimen/fab_size"-->
+        <!--android:layout_gravity="bottom|center_horizontal"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:clickable="true"-->
+        <!--android:focusable="true"-->
+        <!--android:tint="@android:color/white"-->
+        <!--app:srcCompat="@drawable/ic_mic_black_24dp" />-->
 
 </android.support.design.widget.CoordinatorLayout>

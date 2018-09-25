@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -102,8 +101,9 @@ public class EditFragment extends Fragment implements
 
     @BindView(R.id.layout_edit_root)
     View mRootLayout;
-    @BindView(R.id.fab_edit_voice)
-    FloatingActionButton mFabVoice;
+    // TODO: Hide for now
+//    @BindView(R.id.fab_edit_voice)
+//    FloatingActionButton mFabVoice;
 
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
@@ -268,13 +268,13 @@ public class EditFragment extends Fragment implements
                 // if keypad is shown, the r.bottom is smaller than that before.
                 int keypadHeight = screenHeight - r.bottom;
 
-                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
-                    // keyboard is opened
-                    mFabVoice.hide();
-                } else {
-                    // keyboard is closed
-                    mFabVoice.show();
-                }
+//                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+//                    // keyboard is opened
+//                    mFabVoice.hide();
+//                } else {
+//                    // keyboard is closed
+//                    mFabVoice.show();
+//                }
             }
         });
 
@@ -444,10 +444,10 @@ public class EditFragment extends Fragment implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fab_edit_voice:
-                // TODO: Start speech input
-                Toolbox.showToast(mHostActivity, "This will start the speech input!");
-                break;
+//            case R.id.fab_edit_voice:
+//                // TODO: Start speech input
+//                Toolbox.showToast(mHostActivity, "This will start the speech input!");
+//                break;
             case R.id.tiEt_edit_food_name_error:
                 showFieldErrorMessage(FieldError.REQUIRED_NAME);
                 break;
@@ -486,7 +486,7 @@ public class EditFragment extends Fragment implements
      * Helper that sets the OnClickListeners
      */
     private void setClickListeners() {
-        mFabVoice.setOnClickListener(this);
+//        mFabVoice.setOnClickListener(this);
         mEtFoodNameError.setOnClickListener(this);
         mEtDateExpiry.setOnClickListener(this);
         mEtDateGood.setOnClickListener(this);
