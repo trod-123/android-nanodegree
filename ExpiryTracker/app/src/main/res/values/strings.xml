@@ -254,6 +254,7 @@
     <string name="internal_storage_uri_path" translatable="false">file://%1$s</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_header">Expiring soon!</string>
+    <string name="widget_signed_out">You need to be signed in to use this widget.\nClick here to sign in!</string>
     <string name="expiring_food_none">No expiring foods during this time</string>
     <string name="add_photo_instruction">How do you want to add an image?</string>
     <string name="add_item_instruction">How do you want to add an item?</string>
