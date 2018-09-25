@@ -256,7 +256,8 @@ public class DataToolbox {
      * @return
      */
     public static int getTotalFoodsCountFromFilter(WeeklyDateFilter filter,
-                                                   @NonNull List<BarEntry> barChartEntries) {
+                                                   @NonNull List<BarEntry> barChartEntries,
+                                                   boolean includeNegativeXValues) {
         int limit;
         switch (filter) {
             case NEXT_7:
@@ -270,7 +271,16 @@ public class DataToolbox {
                 limit = 21;
         }
         int totalFoodsCountFromFilter = 0;
-        for (int i = 0; i < limit && i < barChartEntries.size(); i++) {
+
+        int entriesSize = barChartEntries.size();
+        int index = 0;
+        if (!includeNegativeXValues) {
+            while (index < limit && index < entriesSize - 1) {
+                if (barChartEntries.get(index).getX() >= 0) break;
+                index++;
+            }
+        }
+        for (int i = index; i < limit && i < entriesSize; i++) {
             totalFoodsCountFromFilter += barChartEntries.get(i).getY();
         }
         return totalFoodsCountFromFilter;

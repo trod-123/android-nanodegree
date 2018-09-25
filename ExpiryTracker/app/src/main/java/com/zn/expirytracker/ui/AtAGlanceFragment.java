@@ -89,11 +89,6 @@ public class AtAGlanceFragment extends Fragment
         // Required empty public constructor
     }
 
-    /**
-     * TODO: Temp, for if we need to pass any arguments
-     *
-     * @return
-     */
     public static AtAGlanceFragment newInstance() {
         AtAGlanceFragment fragment = new AtAGlanceFragment();
         return fragment;
@@ -154,7 +149,6 @@ public class AtAGlanceFragment extends Fragment
                         });
             }
         });
-        mRootLayout.setAlpha(0f); // hide the views until data is ready TODO: Add progress bar
         updateViewModelWithFilter(mCurrentFilter);
 
         // Prepare the UI elements first - these can be done independently of data
@@ -197,7 +191,7 @@ public class AtAGlanceFragment extends Fragment
                     resetYAxisMaximum(foods, mCurrentDateTimeStartOfDay.getMillis());
                     updateListHeader(foods, mCurrentFilter);
                     updateSummary(mCurrentFilter, mFullList_barChartEntries);
-                    mRootLayout.animate().setDuration(500).alpha(1f);
+                    mRootLayout.animate().setDuration(750).alpha(1f);
                 }
             }
         });
@@ -408,10 +402,18 @@ public class AtAGlanceFragment extends Fragment
             return;
         }
         int totalFoodsCountFromFilter = DataToolbox.getTotalFoodsCountFromFilter(filter,
-                barChartEntries);
+                barChartEntries, false);
         int entriesSize = barChartEntries.size();
-        int foodsCountCurrent = entriesSize > 0 ? (int) barChartEntries.get(0).getY() : 0;
-        int foodsCountNextDay = entriesSize > 1 ? (int) barChartEntries.get(1).getY() : 0;
+
+        // Don't include expired foods (negative X values)
+        int index = 0;
+        while (index < entriesSize - 1) {
+            if (barChartEntries.get(index).getX() >= 0) break;
+            index++;
+        }
+
+        int foodsCountCurrent = entriesSize > index ? (int) barChartEntries.get(index).getY() : 0;
+        int foodsCountNextDay = entriesSize > index + 1 ? (int) barChartEntries.get(index + 1).getY() : 0;
 
         mTvSummary.setText(DataToolbox.getFullSummary(mHostActivity, filter,
                 totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay));
