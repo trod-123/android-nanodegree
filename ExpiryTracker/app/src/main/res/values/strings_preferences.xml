@@ -15,24 +15,8 @@
 
     <!-- When to receive notifications -->
     <string name="pref_notifications_days_key" translatable="false">Notification days</string>
-    <string name="pref_notifications_days_label">When to show notifications</string>
+    <string name="pref_notifications_days_label">Be notified when foods expire</string>
     <string name="pref_notifications_days_summary">How many days before your foods expire do you want to be reminded?</string>
-    <string name="pref_notifications_days_entries_0">Day of when foods expire</string>
-    <string name="pref_notifications_days_entries_1">1 day before foods expire</string>
-    <string name="pref_notifications_days_entries_2">2 days before foods expire</string>
-    <string name="pref_notifications_days_entries_3">3 days before foods expire</string>
-    <string-array name="pref_notifications_days_entries">
-        <item>@string/pref_notifications_days_entries_0</item>
-        <item>@string/pref_notifications_days_entries_1</item>
-        <item>@string/pref_notifications_days_entries_2</item>
-        <item>@string/pref_notifications_days_entries_3</item>
-    </string-array>
-    <string-array name="pref_notifications_days_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <!-- Time of day to receive notifications -->
     <string name="pref_notifications_tod_key" translatable="false">Notification time of day</string>
@@ -66,25 +50,27 @@
     <string name="pref_widget_num_days_key" translatable="false">Number of days</string>
     <string name="pref_widget_num_days_label">Show only foods expiring</string>
     <string name="pref_widget_num_days_summary">Food to show based on number of days until expiry date</string>
-    <string name="pref_widget_num_days_entries_0">Today</string>
-    <string name="pref_widget_num_days_entries_1">Tomorrow</string>
-    <string name="pref_widget_num_days_entries_2">Within the next 2 days</string>
-    <string name="pref_widget_num_days_entries_3">Within the next 3 days</string>
-    <string name="pref_widget_num_days_entries_4">Within the next 4 days</string>
-    <string name="pref_widget_num_days_entries_5">Within the next 5 days</string>
-    <string name="pref_widget_num_days_entries_6">Within the next 6 days</string>
-    <string name="pref_widget_num_days_entries_7">Within this week</string>
-    <string-array name="pref_widget_num_days_entries">
-        <item>@string/pref_widget_num_days_entries_0</item>
-        <item>@string/pref_widget_num_days_entries_1</item>
-        <item>@string/pref_widget_num_days_entries_2</item>
-        <item>@string/pref_widget_num_days_entries_3</item>
-        <item>@string/pref_widget_num_days_entries_4</item>
-        <item>@string/pref_widget_num_days_entries_5</item>
-        <item>@string/pref_widget_num_days_entries_6</item>
-        <item>@string/pref_widget_num_days_entries_7</item>
+
+    <!-- Response list for Notifications and Widgets -->
+    <string name="pref_expire_num_days_entries_0">Today</string>
+    <string name="pref_expire_num_days_entries_1">Today and tomorrow</string>
+    <string name="pref_expire_num_days_entries_2">Within the next 2 days</string>
+    <string name="pref_expire_num_days_entries_3">Within the next 3 days</string>
+    <string name="pref_expire_num_days_entries_4">Within the next 4 days</string>
+    <string name="pref_expire_num_days_entries_5">Within the next 5 days</string>
+    <string name="pref_expire_num_days_entries_6">Within the next 6 days</string>
+    <string name="pref_expire_num_days_entries_7">Within this week</string>
+    <string-array name="pref_expire_num_days_entries">
+        <item>@string/pref_expire_num_days_entries_0</item>
+        <item>@string/pref_expire_num_days_entries_1</item>
+        <item>@string/pref_expire_num_days_entries_2</item>
+        <item>@string/pref_expire_num_days_entries_3</item>
+        <item>@string/pref_expire_num_days_entries_4</item>
+        <item>@string/pref_expire_num_days_entries_5</item>
+        <item>@string/pref_expire_num_days_entries_6</item>
+        <item>@string/pref_expire_num_days_entries_7</item>
     </string-array>
-    <string-array name="pref_widget_num_days_values">
+    <string-array name="pref_expire_num_days_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -94,7 +80,7 @@
         <item>6</item>
         <item>7</item>
     </string-array>
-    <string name="pref_widget_num_days_default">3</string>
+    <string name="pref_expire_num_days_default">3</string>
 
     <!-- endregion -->
 

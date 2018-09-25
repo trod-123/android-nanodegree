@@ -100,6 +100,7 @@
     <string name="at_a_glance_list_header">Foods expiring in the %1$s:</string>
 
     <!-- Date range. To be used with WeeklyDateFilter.class  -->
+    <string name="date_filter_x_days">Next %1$d days</string>
     <string name="date_weekly_filter_7_days">Next 7 days</string>
     <string name="date_weekly_filter_14_days">Next 14 days</string>
     <string name="date_weekly_filter_21_days">Next 21 days</string>
@@ -285,4 +286,8 @@
     <string name="sign_up_name_label">Your name</string>
 
     <!-- endregion -->
+
+    <string name="notification_channel_id" translatable="false">ch_reminders</string>
+    <string name="notification_channel_name">Food expiry reminders</string>
+    <string name="notification_content_title">Reminder: You have foods expiring soon!</string>
 </resources>

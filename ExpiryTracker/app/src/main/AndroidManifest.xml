@@ -95,6 +95,13 @@
             android:name=".widget.UpdateWidgetService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".notifications.NotificationJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
 
         <!-- authorities must be full name, not just ".fileprovider" -->
         <provider

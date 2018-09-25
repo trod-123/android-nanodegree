@@ -7,13 +7,11 @@
             android:key="@string/pref_notifications_receive_key"
             android:summary="@string/pref_notifications_receive_summary"
             android:title="@string/pref_notifications_title" />
-        <MultiSelectListPreference
-            android:defaultValue="@array/pref_notifications_days_values"
-            android:entries="@array/pref_notifications_days_entries"
-            android:entryValues="@array/pref_notifications_days_values"
+        <ListPreference
+            android:defaultValue="@string/pref_expire_num_days_default"
+            android:entries="@array/pref_expire_num_days_entries"
+            android:entryValues="@array/pref_expire_num_days_values"
             android:key="@string/pref_notifications_days_key"
-            android:negativeButtonText="@string/button_cancel_label"
-            android:positiveButtonText="@string/button_ok_label"
             android:summary="@string/pref_notifications_days_summary"
             android:title="@string/pref_notifications_days_label" />
         <ListPreference
@@ -27,9 +25,9 @@
 
     <PreferenceCategory android:title="@string/pref_widget_title">
         <ListPreference
-            android:defaultValue="@string/pref_widget_num_days_default"
-            android:entries="@array/pref_widget_num_days_entries"
-            android:entryValues="@array/pref_widget_num_days_values"
+            android:defaultValue="@string/pref_expire_num_days_default"
+            android:entries="@array/pref_expire_num_days_entries"
+            android:entryValues="@array/pref_expire_num_days_values"
             android:key="@string/pref_widget_num_days_key"
             android:summary="@string/pref_widget_num_days_summary"
             android:title="@string/pref_widget_num_days_label" />

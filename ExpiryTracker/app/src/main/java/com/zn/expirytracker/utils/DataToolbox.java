@@ -89,7 +89,43 @@ public class DataToolbox {
     public static String getFullSummary(Context context, WeeklyDateFilter filter,
                                         int totalFoodsCountFromFilter, int foodsCountCurrent,
                                         int foodsCountNextDay) {
-        String filterString = getWeeklyDateFilterString(context, filter).toLowerCase();
+        return getFullSummaryHelper(context,
+                getWeeklyDateFilterString(context, filter).toLowerCase(),
+                totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay);
+    }
+
+    /**
+     * Returns the full summary based on the filtered food counts, and counts for the current day
+     * and the next
+     *
+     * @param context
+     * @param numDaysFilter
+     * @param totalFoodsCountFromFilter
+     * @param foodsCountCurrent
+     * @param foodsCountNextDay
+     * @return
+     */
+    public static String getFullSummary(Context context, int numDaysFilter,
+                                        int totalFoodsCountFromFilter, int foodsCountCurrent,
+                                        int foodsCountNextDay) {
+        return getFullSummaryHelper(context,
+                context.getString(R.string.date_filter_x_days, numDaysFilter).toLowerCase(),
+                totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay);
+    }
+
+    /**
+     * Helper to generate the full summary
+     *
+     * @param context
+     * @param filterString
+     * @param totalFoodsCountFromFilter
+     * @param foodsCountCurrent
+     * @param foodsCountNextDay
+     * @return
+     */
+    private static String getFullSummaryHelper(Context context, String filterString,
+                                               int totalFoodsCountFromFilter, int foodsCountCurrent,
+                                               int foodsCountNextDay) {
         StringBuilder builder = new StringBuilder();
         if (totalFoodsCountFromFilter != 0) {
             builder.append(context.getResources().getQuantityString(R.plurals.at_a_glance_summary,
@@ -333,10 +369,11 @@ public class DataToolbox {
      * @param fillInGaps
      * @return
      */
-    private static SparseIntArray getIntFrequencies(List<Food> foods, long baseDateInMillis, boolean fillInGaps) {
+    public static SparseIntArray getIntFrequencies(List<Food> foods, long baseDateInMillis,
+                                                   boolean fillInGaps, int maxSize) {
         long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
-        return getIntFrequencies(numDaysUntilCurrent, fillInGaps, NO_MAX_SIZE_INT_FREQUENCIES);
+        return getIntFrequencies(numDaysUntilCurrent, fillInGaps, maxSize);
     }
 
     /**
@@ -347,8 +384,10 @@ public class DataToolbox {
      * @param baseDateInMillis
      * @return
      */
-    private static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis, boolean fillInGaps) {
-        SparseIntArray frequencies = getIntFrequencies(foods, baseDateInMillis, fillInGaps);
+    private static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis,
+                                                boolean fillInGaps) {
+        SparseIntArray frequencies = getIntFrequencies(foods, baseDateInMillis, fillInGaps,
+                NO_MAX_SIZE_INT_FREQUENCIES);
         int highest = 0;
         for (int i = 0; i < frequencies.size(); i++) {
             int current = frequencies.get(i);

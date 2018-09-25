@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v14.preference.MultiSelectListPreference;
@@ -15,11 +16,15 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.notifications.NotificationHelper;
+import com.zn.expirytracker.notifications.NotificationJobService;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -34,6 +39,7 @@ import static com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT
 public class SettingsFragment extends PreferenceFragmentCompat
         implements ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener {
 
+    static Preference mPreferenceNotifications;
     static Preference mPreferenceNotificationsNumDays;
     static Preference mPreferenceNotificationsTod;
     static Preference mPreferenceWidget;
@@ -47,6 +53,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
     private GoogleSignInClient mGoogleSignInClient;
+
+    /**
+     * Guard for preventing OnPreferenceChange actions to run when we're just setting up the
+     * OnPreferenceChangeListener. {@code true} means such actions will not occur.
+     */
+    static boolean mInitializeGuard = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +79,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         // Keep a reference to preferences that will be enabled or disabled
+        mPreferenceNotifications = findPreference(
+                getString(R.string.pref_notifications_receive_key));
         mPreferenceNotificationsNumDays =
                 findPreference(getString(R.string.pref_notifications_days_key));
         mPreferenceNotificationsTod =
@@ -80,8 +94,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
 
         // Set summaries and enabled based on switches or checkboxes
-        setOnPreferenceChangeListener(findPreference(
-                getString(R.string.pref_notifications_receive_key)));
+        setOnPreferenceChangeListener(mPreferenceNotifications);
         setOnPreferenceChangeListener(mPreferenceNotificationsNumDays);
         setOnPreferenceChangeListener(mPreferenceNotificationsTod);
         setOnPreferenceChangeListener(mPreferenceWidget);
@@ -116,6 +129,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         // Trigger the listener immediately with the preference's
         // current value.
+        mInitializeGuard = true;
         if (preference instanceof MultiSelectListPreference) {
             sOnPreferenceChangeListener.onPreferenceChange(preference,
                     PreferenceManager.getDefaultSharedPreferences(preference.getContext())
@@ -210,26 +224,70 @@ public class SettingsFragment extends PreferenceFragmentCompat
                         enablePreference(preference, value, context);
                     }
 
-                    // Individual preference-specific actions
-                    if (preference.getKey()
-                            .equals(context.getString(R.string.pref_account_display_name_key))) {
-                        // Sync the display name with the database. This is a logged-in only feature
-                        if (AuthToolbox.isSignedIn()) {
-                            String displayName = (String) value;
-                            AuthToolbox.updateDisplayName(context, displayName);
+                    /*
+                        Individual preference-specific actions. Do an action right away when the
+                        preference's value changes
+                    */
+                    handleIndividualPreferenceChangeActions(preference, context, value);
 
-                            // If there is no name, set the summary to the default
-                            if (displayName.trim().isEmpty())
-                                preference.setSummary(R.string.pref_account_display_name_summary);
-                        }
-                    } else if (preference.getKey().equals(context.getString(R.string.pref_widget_num_days_key))) {
-                        // Request update
-                        UpdateWidgetService.updateFoodWidget(preference.getContext());
-                        return true;
-                    }
+                    mInitializeGuard = false;
                     return true;
                 }
             };
+
+    /**
+     * Perform action right away based on the specific preference updated. Note at this point,
+     * the new preference value has NOT yet been saved to the preference, so getting the
+     * preference value directly from SharedPreferences will return the old value
+     *
+     * @param preference
+     * @param context
+     * @param value
+     */
+    private static void handleIndividualPreferenceChangeActions(Preference preference,
+                                                                Context context, Object value) {
+        if (preference.getKey()
+                .equals(context.getString(R.string.pref_account_display_name_key))) {
+            // Sync the display name with the database. This is a logged-in only feature
+            if (AuthToolbox.isSignedIn()) {
+                String displayName = (String) value;
+                AuthToolbox.updateDisplayName(context, displayName);
+
+                // If there is no name, set the summary to the default
+                if (displayName.trim().isEmpty())
+                    preference.setSummary(R.string.pref_account_display_name_summary);
+            }
+        } else if (preference.getKey().equals(context.getString(R.string.pref_widget_num_days_key))) {
+            // Request update
+            UpdateWidgetService.updateFoodWidget(preference.getContext());
+        } else if (preference.equals(mPreferenceNotifications) ||
+                preference.equals(mPreferenceNotificationsTod)) {
+            // Update notification jobscheduler
+            if (!mInitializeGuard)
+                // Do not call when we've just initialized the OnPreferenceChangeListener
+                scheduleNotifications(context);
+        }
+    }
+
+    /**
+     * Helper to schedule the app's notifications only if they're enabled. Cancel scheduling
+     * otherwise. Handle showing the first notification here, and then handle recurring
+     * notifications through {@link NotificationHelper}
+     */
+    private static void scheduleNotifications(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        // Note this is the old, pre-changed value, since we haven't finished writing the
+        // preference change yet
+        boolean oldEnabled = sp.getBoolean(context.getString(R.string.pref_notifications_receive_key),
+                context.getResources().getBoolean(R.bool.pref_notifications_receive_default));
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        if (oldEnabled) {
+            // Cancel the job if notifications are not enabled
+            dispatcher.cancel(NotificationJobService.class.getSimpleName());
+        } else {
+            NotificationHelper.scheduleNotification(context, false);
+        }
+    }
 
     /**
      * Helper for setting the PreferenceSummary

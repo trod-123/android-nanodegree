@@ -65,7 +65,7 @@ public class FoodWidget extends AppWidgetProvider {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
             int spValue = Integer.parseInt(sp.getString(context.getString(R.string.pref_widget_num_days_key), "3"));
             String spEntry = context.getResources()
-                    .getStringArray(R.array.pref_widget_num_days_entries)[spValue].toLowerCase();
+                    .getStringArray(R.array.pref_expire_num_days_entries)[spValue].toLowerCase();
             String header = context.getString(R.string.expiry_msg_generic_pp, spEntry);
             views.setTextViewText(R.id.tv_widget_header, header);
 
