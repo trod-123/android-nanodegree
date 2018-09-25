@@ -52,8 +52,9 @@ public class CaptureActivity extends AppCompatActivity implements
     View mRootView;
     @BindView(R.id.layout_capture_barcode)
     View mBtnCaptureBarcode;
-    @BindView(R.id.layout_capture_imgrec)
-    View mBtnCaptureImgrec;
+    // TODO: Hide for now
+//    @BindView(R.id.layout_capture_imgrec)
+//    View mBtnCaptureImgrec;
     @BindView(R.id.layout_capture_imgonly)
     View mBtnCaptureImgonly;
     @BindView(R.id.tv_capture_instruction)
@@ -88,7 +89,7 @@ public class CaptureActivity extends AppCompatActivity implements
         detectCamera(); // confirm if device has camera before proceeding
 
         mBtnCaptureBarcode.setOnClickListener(this);
-        mBtnCaptureImgrec.setOnClickListener(this);
+//        mBtnCaptureImgrec.setOnClickListener(this);
         mBtnCaptureImgonly.setOnClickListener(this);
         mFragmentRoot.setOnClickListener(this);
 
@@ -176,9 +177,9 @@ public class CaptureActivity extends AppCompatActivity implements
             case R.id.layout_capture_barcode:
                 setInputType(InputType.BARCODE);
                 break;
-            case R.id.layout_capture_imgrec:
-                setInputType(InputType.IMG_REC);
-                break;
+//            case R.id.layout_capture_imgrec:
+//                setInputType(InputType.IMG_REC);
+//                break;
             case R.id.layout_capture_imgonly:
                 setInputType(InputType.IMG_ONLY);
                 break;
@@ -300,7 +301,7 @@ public class CaptureActivity extends AppCompatActivity implements
         };
         mRootView.animate().setDuration(Constants.DURATION_TRANSITION).alpha(alpha);
         mBtnCaptureImgonly.setEnabled(activate);
-        mBtnCaptureImgrec.setEnabled(activate);
+//        mBtnCaptureImgrec.setEnabled(activate);
         mBtnCaptureBarcode.setEnabled(activate);
         mRootView.setOnClickListener(listener);
 
@@ -385,7 +386,7 @@ public class CaptureActivity extends AppCompatActivity implements
      */
     private void fadeInOutInputTypes(InputType inputType) {
         mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_DEACTIVATED);
-        mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_DEACTIVATED);
+//        mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_DEACTIVATED);
         mBtnCaptureImgonly.animate().alpha(Constants.ALPHA_DEACTIVATED);
 
         switch (inputType) {
@@ -393,7 +394,7 @@ public class CaptureActivity extends AppCompatActivity implements
                 mBtnCaptureBarcode.animate().alpha(Constants.ALPHA_ACTIVATED);
                 break;
             case IMG_REC:
-                mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_ACTIVATED);
+//                mBtnCaptureImgrec.animate().alpha(Constants.ALPHA_ACTIVATED);
                 break;
             case IMG_ONLY:
                 mBtnCaptureImgonly.animate().alpha(Constants.ALPHA_ACTIVATED);
