@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:paddingBottom="@dimen/list_item_padding_vertical"
@@ -79,18 +79,28 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/iv_list_item_image_broken"
+            style="@style/AppTheme.Icon"
+            android:layout_width="@dimen/list_image_broken_size"
+            android:layout_height="@dimen/list_image_broken_size"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:background="@color/imageBackground_none"
+            android:src="@drawable/ic_image_broken_black_24dp"
+            android:tint="@android:color/white" />
+
+        <ImageView
             android:id="@+id/iv_list_item_image"
             android:layout_width="@dimen/list_item_image_size"
             android:layout_height="@dimen/list_item_image_size"
-            android:scaleType="centerCrop"
-            tools:src="@color/textColorPrimary" />
+            android:scaleType="centerCrop" />
 
         <ProgressBar
             android:id="@+id/pb_list_item_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:alpha="0"/>
+            android:alpha="0" />
 
     </FrameLayout>
 

@@ -24,6 +24,8 @@ import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -39,6 +41,8 @@ public class DetailFragment extends Fragment {
     ImageView mImageScrim;
     @BindView(R.id.pageIndicatorView_detail_image)
     PageIndicatorView mPageIndicatorView;
+    @BindView(R.id.iv_detail_pager_empty)
+    ImageView mIvPagerEmpty;
     @BindView(R.id.tv_detail_food_name)
     TextView mTvFoodName;
     @BindView(R.id.tv_detail_expiry_date)
@@ -150,14 +154,11 @@ public class DetailFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Food food) {
                 if (food != null) {
-                    mPagerAdapter.setImageUris(food.getImages());
-                    mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
                     populateViewElements(food);
                 } else {
                     // When other fragments are removed from the pager dynamically, while
                     // onChanged() is called since the database changes, this block never gets
                     // called because this fragment is recreated with a new slate
-
                 }
             }
         });
@@ -198,6 +199,14 @@ public class DetailFragment extends Fragment {
     }
 
     private void populateViewElements(Food food) {
+        // ViewPager
+        List<String> images = food.getImages();
+        mPagerAdapter.setImageUris(images);
+        mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
+        if (images.isEmpty()) {
+            Toolbox.showView(mIvPagerEmpty, true, false);
+        }
+
         // Main layout
         mTvFoodName.setText(food.getFoodName());
         mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(

@@ -37,6 +37,8 @@ public class DetailImageFragment extends Fragment {
     ProgressBar mPb;
     @BindView(R.id.iv_detail_add_image_icon)
     ImageView mIvAddIcon;
+    @BindView(R.id.iv_detail_image_broken)
+    ImageView mIvBroken;
 
     private AddImageButtonClickListener mListener;
     private String mImageUriString;
@@ -91,17 +93,22 @@ public class DetailImageFragment extends Fragment {
         if (mImageUriString != null) {
             mImageView.setImageDrawable(null);
             Toolbox.showView(mPb, true, false);
-            Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView, new RequestListener<Bitmap>() {
+            Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView,
+                    new RequestListener<Bitmap>() {
                 @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                            Target<Bitmap> target, boolean isFirstResource) {
                     Timber.e(e, "There was an error loading the image: %s", mImageUriString);
                     Toolbox.showView(mPb, false, false);
+                    Toolbox.showView(mIvBroken, true, false);
                     return false;
                 }
 
                 @Override
-                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                               DataSource dataSource, boolean isFirstResource) {
                     Toolbox.showView(mPb, false, false);
+                    Toolbox.showView(mIvBroken, false, false);
                     return false;
                 }
             });

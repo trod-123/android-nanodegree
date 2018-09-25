@@ -117,6 +117,8 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         ImageView mImage;
         @BindView(R.id.pb_list_item_image)
         ProgressBar mPb;
+        @BindView(R.id.iv_list_item_image_broken)
+        ImageView mIvBroken;
 
         FoodViewHolder(View itemView) {
             super(itemView);
@@ -151,7 +153,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
 
             // Load image only if there is any
             List<String> images = food.getImages();
-            if (images != null && images.size() > 0) {
+            if (images != null && !images.isEmpty()) {
                 mImage.setVisibility(View.VISIBLE);
                 Toolbox.showView(mPb, true, false);
                 Toolbox.loadImageFromUrl(mContext, images.get(0), mImage, new RequestListener<Bitmap>() {
@@ -159,17 +161,20 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                         Timber.e(e, "Error loading image in adapter");
                         Toolbox.showView(mPb, false, false);
+                        Toolbox.showView(mIvBroken, true, false);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                         Toolbox.showView(mPb, false, false);
+                        Toolbox.showView(mIvBroken, false, false);
                         return false;
                     }
                 });
             } else {
                 mImage.setVisibility(View.GONE);
+                Toolbox.showView(mIvBroken, false, false);
             }
 
             // Set the color of a drawable

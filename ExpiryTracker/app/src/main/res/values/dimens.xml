@@ -45,6 +45,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="divider_list_item_height">1dp</dimen>
     <dimen name="widget_actionBarSize">56dp</dimen>
     <dimen name="empty_list_icon_size">96dp</dimen>
+    <dimen name="list_image_broken_size">48dp</dimen>
     <dimen name="bottom_root_padding">112dp</dimen>
     <dimen name="bottom_sheet_item_height">56dp</dimen>
     <dimen name="bottom_sheet_item_margins">16dp</dimen>
