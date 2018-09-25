@@ -52,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 launchSettings();
                 return true;
-            case R.id.action_search:
-                launchSearch();
-                return true;
+                // TODO: Hide for now
+//            case R.id.action_search:
+//                launchSearch();
+//                return true;
         }
         return super.onOptionsItemSelected(item);
     }
