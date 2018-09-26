@@ -1,5 +1,6 @@
 package com.zn.expirytracker.widget;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -20,6 +21,8 @@ import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
+import org.joda.time.DateTime;
+
 import java.util.Random;
 
 import timber.log.Timber;
@@ -29,13 +32,137 @@ import timber.log.Timber;
  */
 public class FoodWidget extends AppWidgetProvider {
 
+    private static final String ACTION_SCHEDULED_UPDATE = "action_scheduled_update";
+    private static final String KEY_SCHEDULED_UPDATE_SET = Toolbox.createStaticKeyString(
+            FoodWidget.class, "scheduled_update_set");
+
+    private static final int RC_SCHEDULED_UPDATE = 103;
+
+    /**
+     * Enable for debugging purposes only. Allows refreshing to be done quickly for testing
+     */
+    private static final boolean DEBUG_ENABLE_QUICK_REFRESH = false;
+
+    private static final int HOUR_MIDNIGHT = 0;
     public static final int REFRESH_JITTER = 10;
-    public static final String EXTRA_ITEM = Toolbox.createStaticKeyString(FoodWidget.class,
-            "extra_item");
 
     public FoodWidget() {
         super();
         Timber.tag(FoodWidget.class.getSimpleName());
+    }
+
+    // This runs every time when either:
+    // 1) First widget is placed on home screen (e.g. after all having been removed)
+    // 2) After device restarts
+    //
+    // Since alarms do not persist across device restarts, we will need to reset the alarm upon
+    // restarting
+    @Override
+    public void onEnabled(Context context) {
+        Timber.d("We have a widget!");
+        enableNextUpdate(context, true);
+        scheduleNextUpdate(context);
+        super.onEnabled(context);
+    }
+
+    // This runs whenever the last widget on home screen is removed. Cancels the
+    @Override
+    public void onDisabled(Context context) {
+        Timber.d("No more widgets jumping on the bed");
+        cancelNextUpdate(context);
+        super.onDisabled(context);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent != null && intent.getAction() != null) {
+            switch (intent.getAction()) {
+                // Update the widget whenever the user's time or locale changes, or when it reaches
+                // midnight
+                case Intent.ACTION_TIMEZONE_CHANGED:
+                case Intent.ACTION_TIME_CHANGED:
+                case ACTION_SCHEDULED_UPDATE:
+                    // Clear the update status keeper so we can set the next update
+                    Timber.d("Received Widget update broadcast");
+                    enableNextUpdate(context, true);
+                    UpdateWidgetService.updateFoodWidget(context);
+                    break;
+            }
+        }
+        super.onReceive(context, intent);
+    }
+
+    /**
+     * Schedules the next widget update at midnight, only if the update had not already been set
+     *
+     * @param context
+     */
+    private static void scheduleNextUpdate(Context context) {
+        SharedPreferences sp = context.getSharedPreferences(
+                FoodWidget.class.getSimpleName(), Context.MODE_PRIVATE);
+        // true by default to prevent alarms from being scheduled before widgets are added
+        if (!sp.getBoolean(KEY_SCHEDULED_UPDATE_SET, true)) {
+            // Prevent manually updating the widget from scheduling the next update.
+            // Only schedule the next update if update status is reset (as in coming from
+            // onReceive())
+            Intent intent = new Intent(context, FoodWidget.class).setAction(ACTION_SCHEDULED_UPDATE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    context, RC_SCHEDULED_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            DateTime dateTime;
+            long midnight;
+            if (!DEBUG_ENABLE_QUICK_REFRESH) {
+                // Set the widget update time to midnight of the next day
+                dateTime = new DateTime().withTimeAtStartOfDay().hourOfDay()
+                        .setCopy(HOUR_MIDNIGHT).plusDays(1);
+                midnight = dateTime.getMillis();
+            } else {
+                // For debugging, allows quicker updating
+                dateTime = new DateTime().plusMinutes(2);
+                midnight = dateTime.getMillis();
+            }
+
+            // Since we call this every time widget is updated, there is no need to set an actual
+            // repeating alarm. Note, if the time we set the alarm to occur is a time in the past,
+            // the alarm will run immediately
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            am.set(AlarmManager.RTC, midnight, pendingIntent);
+            // Mark that the update had been set
+            enableNextUpdate(context, false);
+            Timber.d("Next widget update scheduled for: %s %s %s %s %s",
+                    dateTime.getMonthOfYear(), dateTime.getDayOfMonth(), dateTime.getHourOfDay(),
+                    dateTime.getMinuteOfHour(), dateTime.getSecondOfMinute());
+        }
+    }
+
+    /**
+     * Cancels the auto update widget process
+     *
+     * @param context
+     */
+    public static void cancelNextUpdate(Context context) {
+        Intent intent = new Intent(context, FoodWidget.class).setAction(ACTION_SCHEDULED_UPDATE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, RC_SCHEDULED_UPDATE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(pendingIntent);
+
+        // Reset the SP value
+        enableNextUpdate(context, true);
+        Timber.d("Widget updates cancelled");
+    }
+
+    /**
+     * Updates SP to allow subsequent enabling of Widget updates
+     *
+     * @param context
+     * @param enabled {@code false} to allow updating
+     */
+    private static void enableNextUpdate(Context context, boolean enabled) {
+        SharedPreferences sp = context.getSharedPreferences(
+                FoodWidget.class.getSimpleName(), Context.MODE_PRIVATE);
+        sp.edit().putBoolean(KEY_SCHEDULED_UPDATE_SET, !enabled).apply();
     }
 
     /**
@@ -48,15 +175,15 @@ public class FoodWidget extends AppWidgetProvider {
      */
     public static void updateAppWidgets(Context context, AppWidgetManager apm, int[] appWigetIds,
                                         boolean hideProgressBar) {
+        Timber.d("Widgets updated");
         for (int i : appWigetIds) {
             updateAppWidget(context, apm, i, hideProgressBar);
         }
+        scheduleNextUpdate(context);
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, boolean hideProgressBar) {
-        Timber.e("In updateAppWidget(): appWidgetId=%s", appWidgetId);
-
         RemoteViews views;
 
         if (AuthToolbox.isSignedIn()) {
@@ -128,8 +255,6 @@ public class FoodWidget extends AppWidgetProvider {
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
-        Timber.e("End of updateAppWidget() with appWidgetId=%s", appWidgetId);
-        //appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_widget);
     }
 
     @Override

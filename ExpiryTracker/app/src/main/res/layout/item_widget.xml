@@ -4,7 +4,7 @@
     android:id="@+id/layout_item_widget"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:paddingBottom="@dimen/list_item_padding_vertical"
     android:paddingEnd="@dimen/list_item_padding_horizontal"
@@ -50,7 +50,7 @@
             android:layout_width="@dimen/list_item_image_size_widget"
             android:layout_height="@dimen/list_item_image_size_widget"
             android:scaleType="centerCrop"
-            android:src="@color/colorPrimary" />
+            tools:src="@color/colorPrimary" />
 
         <ProgressBar
             android:id="@+id/pb_widget_iv_item"

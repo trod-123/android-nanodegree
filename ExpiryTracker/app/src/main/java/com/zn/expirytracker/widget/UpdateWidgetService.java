@@ -38,11 +38,9 @@ public class UpdateWidgetService extends JobIntentService {
             switch (intent.getAction()) {
                 case ACTION_UPDATE_FOOD_WIDGET:
                     handleUpdateFoodWidget(false);
-                    Timber.d("Called handleUpdateFoodWidget(false)");
                     break;
                 case ACTION_HIDE_PROGRESS_BAR:
                     handleUpdateFoodWidget(true);
-                    Timber.d("Called handleUpdateFoodWidget(true)");
             }
         }
     }
@@ -53,7 +51,6 @@ public class UpdateWidgetService extends JobIntentService {
      * @param context
      */
     public static void updateFoodWidget(Context context) {
-        // TODO: Update the widget automatically at 00:00 every day
         Intent intent = new Intent(context, UpdateWidgetService.class);
         intent.setAction(ACTION_UPDATE_FOOD_WIDGET);
         enqueueWork(context, UpdateWidgetService.class, JOB_ID, intent);

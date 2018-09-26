@@ -25,6 +25,7 @@ import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
+import com.zn.expirytracker.widget.FoodWidget;
 
 import timber.log.Timber;
 
@@ -383,12 +384,13 @@ public class AuthToolbox {
 
     /**
      * Helper for resetting all values in shared preferences to their defaults and cancels
-     * all notifications
+     * all notifications and automatic widget updates
      *
      * @param context
      */
     private static void resetSharedPreferences(Context context) {
         NotificationHelper.cancelNotificationJob(context);
+        FoodWidget.cancelNextUpdate(context);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit().clear().apply();
     }

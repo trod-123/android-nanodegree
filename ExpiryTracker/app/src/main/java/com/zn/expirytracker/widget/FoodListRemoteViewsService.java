@@ -33,7 +33,6 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
     public FoodListRemoteViewsService() {
         super();
         Timber.tag(FoodListRemoteViewsService.class.getSimpleName());
-        Timber.e("Created foodlistremoteviewsservice");
     }
 
     @Override
@@ -53,13 +52,11 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
 
         FoodListRemoteViewsFactory(Context context) {
             mContext = context;
-            Timber.e("Created foodlistremoteviewsfactory");
         }
 
         @Override
         public void onCreate() {
             Timber.tag(FoodListRemoteViewsFactory.class.getSimpleName());
-            Timber.e("In onCreate()");
             // get days filter directly from settings
             mCurrentBaseDateTimeInMillis = DataToolbox.getTimeInMillisStartOfDay(
                     System.currentTimeMillis());
@@ -72,7 +69,6 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
          */
         @Override
         public void onDataSetChanged() {
-            Timber.e("In onDatasetChanged()");
             if (mFoodsList != null) {
                 mFoodsList.clear();
             }
@@ -112,9 +108,6 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
                 Timber.e(e, "There was a problem while waiting in " +
                         "FoodListRemoteViewsFactory.getCount()");
             }
-            Timber.e("In getCount(), Setting the new foods list. Size: " +
-                    (mFoodsList != null ? mFoodsList.size() : "null"));
-
             return mFoodsList != null ? mFoodsList.size() : 0;
         }
 
