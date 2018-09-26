@@ -329,6 +329,7 @@ public class DataToolbox {
                 limit = 21;
         }
         int index = includeNegativeXValues ? 0 : getStartingPositiveIndex(barChartEntries, limit);
+        limit += index; // offset limit so it's based off where x=0
         return getTotalFrequencyCounts(barChartEntries, index, limit);
     }
 
@@ -351,6 +352,7 @@ public class DataToolbox {
         while (index < limit && index < entriesSize - 1) {
             if (barChartEntries.get(index).getX() >= 0) break;
             index++;
+            limit++; // offset limit since we haven't reached point where x = 0
         }
         return index;
     }
@@ -369,6 +371,7 @@ public class DataToolbox {
         while (index < limit && index < entriesSize - 1) {
             if (data.get(index) >= 0) break;
             index++;
+            limit++; // offset limit since we haven't reached point where key is 0
         }
         return index;
     }
