@@ -2,6 +2,9 @@
 
 <resources>
 
+    <!-- Note zero-quantity plurals don't work as intended. Need to handle separately
+    https://stackoverflow.com/questions/5651902/android-plurals-treatment-of-zero -->
+
     <!-- region App and screen names -->
 
     <string name="app_name" translatable="false">&appname;</string>
@@ -73,13 +76,21 @@
     <string name="complete_greeting">%1$s, %2$s!</string>
     <string name="greeting_no_name">%1$s!</string>
 
-    <string name="at_a_glance_summary_none">You have no foods expiring in the %2$s</string>
-    <string name="at_a_glance_summary_one">You have only %1$d food expiring in the %2$s</string>
-    <string name="at_a_glance_summary_many">You have %1$d foods expiring in the %2$s</string>
+    <string name="at_a_glance_summary_none">You have no foods expiring within %2$s</string>
+    <string name="at_a_glance_summary_one">You have only %1$d food expiring within %2$s</string>
+    <string name="at_a_glance_summary_many">You have %1$d foods expiring within %2$s</string>
     <plurals name="at_a_glance_summary">
         <item quantity="zero">@string/at_a_glance_summary_none</item>
         <item quantity="one">@string/at_a_glance_summary_one</item>
         <item quantity="other">@string/at_a_glance_summary_many</item>
+    </plurals>
+    <string name="at_a_glance_summary_none_no_within">You have no foods expiring %2$s</string>
+    <string name="at_a_glance_summary_one_no_within">You have only %1$d food expiring %2$s</string>
+    <string name="at_a_glance_summary_many_no_within">You have %1$d foods expiring %2$s</string>
+    <plurals name="at_a_glance_summary_no_within">
+        <item quantity="zero">@string/at_a_glance_summary_none_no_within</item>
+        <item quantity="one">@string/at_a_glance_summary_one_no_within</item>
+        <item quantity="other">@string/at_a_glance_summary_many_no_within</item>
     </plurals>
     <string name="at_a_glance_summary_postfix_none">, with no foods expiring %2$s</string>
     <string name="at_a_glance_summary_postfix_one">, with only 1 food expiring %2$s</string>
@@ -97,13 +108,16 @@
         <item quantity="one">@string/at_a_glance_summary_super_postfix_one</item>
         <item quantity="other">@string/at_a_glance_summary_super_postfix_many</item>
     </plurals>
-    <string name="at_a_glance_list_header">Foods expiring in the %1$s:</string>
+    <string name="at_a_glance_list_header">Foods expiring within %1$s:</string>
 
     <!-- Date range. To be used with WeeklyDateFilter.class  -->
-    <string name="date_filter_x_days">Next %1$d days</string>
-    <string name="date_weekly_filter_7_days">Next 7 days</string>
-    <string name="date_weekly_filter_14_days">Next 14 days</string>
-    <string name="date_weekly_filter_21_days">Next 21 days</string>
+    <string name="date_filter_x_days">%1$d days</string>
+    <string name="date_weekly_filter_7_days_btn">7 days</string>
+    <string name="date_weekly_filter_14_days_btn">14 days</string>
+    <string name="date_weekly_filter_21_days_btn">21 days</string>
+    <string name="date_weekly_filter_7_days_text">A week</string>
+    <string name="date_weekly_filter_14_days_text">2 weeks</string>
+    <string name="date_weekly_filter_21_days_text">3 weeks</string>
 
     <!-- endregion -->
 
@@ -121,13 +135,14 @@
     <string name="expiry_msg_generic">Expires %1$s</string>
     <string name="expiry_msg_generic_pp">Expiring %1$s</string>
 
-    <string name="date_today">today</string>
-    <string name="date_tomorrow">tomorrow</string>
-    <string name="date_soon">soon</string>
-    <string name="date_next_week">next week</string>
-    <string name="date_this_week">this week</string>
+    <string name="date_today">Today</string>
+    <string name="date_tomorrow">Tomorrow</string>
+    <string name="date_today_or_tomorrow">Today or tomorrow</string>
+    <string name="date_soon">Soon</string>
+    <string name="date_next_week">Next week</string>
+    <string name="date_this_week">This week</string>
     <string name="date_next">next %1$s</string>
-    <string name="date_generic">on this day</string>
+    <string name="date_generic">On this day</string>
     <string name="date_formatted_full">%1$s %2$d, %3$d</string>
 
     <!-- endregion -->

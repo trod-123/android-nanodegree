@@ -323,7 +323,7 @@ public class AtAGlanceFragment extends Fragment
      */
     private void resetYAxisMaximum(List<Food> filteredFoodList, long baseDateTime) {
         int highestFrequency = DataToolbox.getHighestDailyFrequency(
-                filteredFoodList, baseDateTime);
+                filteredFoodList, baseDateTime, false);
         float yMax = highestFrequency + (float) Math.ceil(highestFrequency * 0.10);
         mBarChart.getAxisLeft().setAxisMaximum(yMax > 0 ? yMax : 2);
         mBarChart.zoomOut(); // calling this is needed to reset the axes
@@ -333,13 +333,13 @@ public class AtAGlanceFragment extends Fragment
         String text;
         switch (filter) {
             case NEXT_7:
-                text = getString(R.string.date_weekly_filter_7_days);
+                text = getString(R.string.date_weekly_filter_7_days_btn);
                 break;
             case NEXT_14:
-                text = getString(R.string.date_weekly_filter_14_days);
+                text = getString(R.string.date_weekly_filter_14_days_btn);
                 break;
             case NEXT_21:
-                text = getString(R.string.date_weekly_filter_21_days);
+                text = getString(R.string.date_weekly_filter_21_days_btn);
                 break;
             default:
                 text = getString(R.string.at_a_glance_date_range_label);
@@ -406,11 +406,8 @@ public class AtAGlanceFragment extends Fragment
         int entriesSize = barChartEntries.size();
 
         // Don't include expired foods (negative X values)
-        int index = 0;
-        while (index < entriesSize - 1) {
-            if (barChartEntries.get(index).getX() >= 0) break;
-            index++;
-        }
+        int index = DataToolbox.getStartingPositiveIndex(
+                barChartEntries, DataToolbox.NO_INDEX_LIMIT);
 
         int foodsCountCurrent = entriesSize > index ? (int) barChartEntries.get(index).getY() : 0;
         int foodsCountNextDay = entriesSize > index + 1 ? (int) barChartEntries.get(index + 1).getY() : 0;

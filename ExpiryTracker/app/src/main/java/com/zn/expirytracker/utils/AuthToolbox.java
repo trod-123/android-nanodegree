@@ -22,6 +22,7 @@ import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
 
@@ -208,8 +209,6 @@ public class AuthToolbox {
             String email = profile.getEmail();
             Uri photoUrl = profile.getPhotoUrl();
         }
-
-        // TODO: Download data from Firestore
     }
 
     /**
@@ -228,8 +227,6 @@ public class AuthToolbox {
         }
         // sync user details
         updateDisplayName(context, name);
-
-        // TODO: Download data from Firestore
     }
 
     /**
@@ -373,8 +370,6 @@ public class AuthToolbox {
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             Timber.d("Deleted the user");
-                            // TODO: Make sure this also deletes all images from Cloud Firestore
-
                             resetSharedPreferences(context);
                             startSignInActivity(context);
                         } else {
@@ -387,11 +382,13 @@ public class AuthToolbox {
     }
 
     /**
-     * Helper for resetting all values in shared preferences to their defaults
+     * Helper for resetting all values in shared preferences to their defaults and cancels
+     * all notifications
      *
      * @param context
      */
     private static void resetSharedPreferences(Context context) {
+        NotificationHelper.cancelNotificationJob(context);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit().clear().apply();
     }

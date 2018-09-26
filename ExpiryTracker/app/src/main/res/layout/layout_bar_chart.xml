@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:text="@string/date_weekly_filter_7_days"
+            android:text="@string/date_weekly_filter_7_days_btn"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             tools:text="Next 7 days" />

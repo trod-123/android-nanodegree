@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/action_filter_7_days"
-        android:title="@string/date_weekly_filter_7_days"/>
+        android:title="@string/date_weekly_filter_7_days_btn"/>
     <item
         android:id="@+id/action_filter_14_days"
-        android:title="@string/date_weekly_filter_14_days"/>
+        android:title="@string/date_weekly_filter_14_days_btn"/>
     <item
         android:id="@+id/action_filter_21_days"
-        android:title="@string/date_weekly_filter_21_days"/>
+        android:title="@string/date_weekly_filter_21_days_btn"/>
 
 </menu>

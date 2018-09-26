@@ -76,6 +76,57 @@ public class DataToolbox {
     }
 
     /**
+     * Returns a partial summary based on only the filtered food counts for only the current
+     * and next day
+     * <p>
+     * For example: You have 2 foods expiring today, and no foods expiring tomorrow.
+     *
+     * @param context
+     * @param numDaysFilter
+     * @param foodsCountCurrent
+     * @param foodsCountNextDay
+     * @return
+     */
+    public static String getPartialSummary(Context context, int numDaysFilter,
+                                           int foodsCountCurrent, int foodsCountNextDay) {
+        String emptyCurrentDayString = context.getString(R.string.at_a_glance_summary_none_no_within,
+                null, context.getString(R.string.date_today).toLowerCase());
+        String notEmptyCurrentDayString = context.getResources().getQuantityString(
+                R.plurals.at_a_glance_summary_no_within, foodsCountCurrent, foodsCountCurrent,
+                context.getString(R.string.date_today).toLowerCase());
+        if (numDaysFilter == 0) {
+            // Only foods expiring on the current date. foodsCountNextDay irrelevant here
+            if (foodsCountCurrent != 0) {
+                return notEmptyCurrentDayString;
+            } else {
+                return emptyCurrentDayString;
+            }
+        } else {
+            // Only foods expiring on the current or next date
+            String emptyNextDayString = context.getString(
+                    R.string.at_a_glance_summary_super_postfix_none, null,
+                    context.getString(R.string.date_tomorrow).toLowerCase());
+            String notEmptyNextDayString = context.getResources().getQuantityString(
+                    R.plurals.at_a_glance_summary_super_postfix, foodsCountNextDay,
+                    foodsCountNextDay, context.getString(R.string.date_tomorrow).toLowerCase());
+            if (foodsCountCurrent == 0 && foodsCountNextDay == 0) {
+                // No foods either date
+                return context.getString(R.string.at_a_glance_summary_none_no_within, null,
+                        context.getString(R.string.date_today_or_tomorrow).toLowerCase());
+            } else if (foodsCountCurrent == 0) {
+                // No foods current date, but yes foods next date
+                return String.format("%s%s", emptyCurrentDayString, notEmptyNextDayString);
+            } else if (foodsCountNextDay == 0) {
+                // Foods current date, but no foods next date
+                return String.format("%s%s", notEmptyCurrentDayString, emptyNextDayString);
+            } else {
+                // Foods on both current and next dates, append the tw0
+                return String.format("%s%s", notEmptyCurrentDayString, notEmptyNextDayString);
+            }
+        }
+    }
+
+    /**
      * Returns the full summary based on the filtered food counts, and counts for the current day
      * and the next
      *
@@ -108,8 +159,13 @@ public class DataToolbox {
     public static String getFullSummary(Context context, int numDaysFilter,
                                         int totalFoodsCountFromFilter, int foodsCountCurrent,
                                         int foodsCountNextDay) {
-        return getFullSummaryHelper(context,
-                context.getString(R.string.date_filter_x_days, numDaysFilter).toLowerCase(),
+        String filterString;
+        if (numDaysFilter == 6) {
+            filterString = context.getString(R.string.date_weekly_filter_7_days_text);
+        } else {
+            filterString = context.getString(R.string.date_filter_x_days, numDaysFilter);
+        }
+        return getFullSummaryHelper(context, filterString.toLowerCase(),
                 totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay);
     }
 
@@ -126,6 +182,8 @@ public class DataToolbox {
     private static String getFullSummaryHelper(Context context, String filterString,
                                                int totalFoodsCountFromFilter, int foodsCountCurrent,
                                                int foodsCountNextDay) {
+        // Plurals don't have any difference for 0 quantities
+        // https://stackoverflow.com/questions/5651902/android-plurals-treatment-of-zero
         StringBuilder builder = new StringBuilder();
         if (totalFoodsCountFromFilter != 0) {
             builder.append(context.getResources().getQuantityString(R.plurals.at_a_glance_summary,
@@ -137,18 +195,18 @@ public class DataToolbox {
         if (foodsCountCurrent != 0) {
             builder.append(context.getResources().getQuantityString(
                     R.plurals.at_a_glance_summary_postfix, foodsCountCurrent,
-                    foodsCountCurrent, context.getString(R.string.date_today)));
+                    foodsCountCurrent, context.getString(R.string.date_today).toLowerCase()));
         } else {
             builder.append(context.getString(R.string.at_a_glance_summary_postfix_none,
-                    null, context.getString(R.string.date_today)));
+                    null, context.getString(R.string.date_today).toLowerCase()));
         }
         if (foodsCountNextDay != 0) {
             builder.append(context.getResources().getQuantityString(
                     R.plurals.at_a_glance_summary_super_postfix, foodsCountNextDay,
-                    foodsCountNextDay, context.getString(R.string.date_tomorrow)));
+                    foodsCountNextDay, context.getString(R.string.date_tomorrow).toLowerCase()));
         } else {
             builder.append(context.getString(R.string.at_a_glance_summary_super_postfix_none,
-                    null, context.getString(R.string.date_tomorrow)));
+                    null, context.getString(R.string.date_tomorrow).toLowerCase()));
         }
         builder.append(".");
         return builder.toString();
@@ -178,11 +236,11 @@ public class DataToolbox {
     private static String getWeeklyDateFilterString(Context context, WeeklyDateFilter filter) {
         switch (filter) {
             case NEXT_7:
-                return context.getString(R.string.date_weekly_filter_7_days);
+                return context.getString(R.string.date_weekly_filter_7_days_text);
             case NEXT_14:
-                return context.getString(R.string.date_weekly_filter_14_days);
+                return context.getString(R.string.date_weekly_filter_14_days_text);
             case NEXT_21:
-                return context.getString(R.string.date_weekly_filter_21_days);
+                return context.getString(R.string.date_weekly_filter_21_days_text);
             default:
                 // We shouldn't come here
                 return context.getString(R.string.undefined_generic);
@@ -210,13 +268,13 @@ public class DataToolbox {
         int plusDays;
         switch (filter) {
             case NEXT_7:
-                plusDays = 7;
+                plusDays = 6;
                 break;
             case NEXT_14:
-                plusDays = 14;
+                plusDays = 13;
                 break;
             case NEXT_21:
-                plusDays = 21;
+                plusDays = 20;
                 break;
             default:
                 plusDays = 0;
@@ -270,18 +328,90 @@ public class DataToolbox {
             default:
                 limit = 21;
         }
-        int totalFoodsCountFromFilter = 0;
+        int index = includeNegativeXValues ? 0 : getStartingPositiveIndex(barChartEntries, limit);
+        return getTotalFrequencyCounts(barChartEntries, index, limit);
+    }
 
+    /**
+     * Used to disable the max index used for finding starting indices and total value counts
+     */
+    public static final int NO_INDEX_LIMIT = Integer.MAX_VALUE;
+
+    /**
+     * Gets the index of the first non-negative X-value. Assumes {@code barChartEntries} x-values
+     * are sorted in increasing order
+     *
+     * @param barChartEntries List sorted in increasing order
+     * @param limit
+     * @return
+     */
+    public static int getStartingPositiveIndex(List<BarEntry> barChartEntries, int limit) {
         int entriesSize = barChartEntries.size();
         int index = 0;
-        if (!includeNegativeXValues) {
-            while (index < limit && index < entriesSize - 1) {
-                if (barChartEntries.get(index).getX() >= 0) break;
-                index++;
-            }
+        while (index < limit && index < entriesSize - 1) {
+            if (barChartEntries.get(index).getX() >= 0) break;
+            index++;
         }
-        for (int i = index; i < limit && i < entriesSize; i++) {
+        return index;
+    }
+
+    /**
+     * Gets the index of the first non-negative key-value. Assumes {@code data} keys are sorted in
+     * increasing order
+     *
+     * @param data
+     * @param limit
+     * @return
+     */
+    public static int getStartingPositiveIndex(SparseIntArray data, int limit) {
+        int entriesSize = data.size();
+        int index = 0;
+        while (index < limit && index < entriesSize - 1) {
+            if (data.get(index) >= 0) break;
+            index++;
+        }
+        return index;
+    }
+
+    /**
+     * Returns the total sum of y-values, starting from a provided {@code startIndex} and iterating
+     * through the end of the list, or a provided {@code limit}, whichever comes first
+     * <p>
+     * Pass {@link DataToolbox#NO_INDEX_LIMIT} for {@code limit} to disable the limit and stop
+     * iterating at the end of the list
+     *
+     * @param barChartEntries
+     * @param startIndex
+     * @param limit
+     * @return
+     */
+    public static int getTotalFrequencyCounts(List<BarEntry> barChartEntries,
+                                              int startIndex, int limit) {
+        int entriesSize = barChartEntries.size();
+        int totalFoodsCountFromFilter = 0;
+        for (int i = startIndex; i < limit && i < entriesSize; i++) {
             totalFoodsCountFromFilter += barChartEntries.get(i).getY();
+        }
+        return totalFoodsCountFromFilter;
+    }
+
+    /**
+     * Returns the total sum of values, starting from a provided {@code startIndex} and iterating
+     * through the end of the array, or a provided {@code limit}, whichever comes first
+     * <p>
+     * Pass {@link DataToolbox#NO_INDEX_LIMIT} for {@code limit} to disable the limit and stop
+     * iterating at the end of the array
+     *
+     * @param data
+     * @param startIndex
+     * @param limit
+     * @return
+     */
+    public static int getTotalFrequencyCounts(SparseIntArray data, int startIndex, int limit) {
+        int entriesSize = data.size();
+        int totalFoodsCountFromFilter = 0;
+        for (int i = startIndex; i < limit && i < entriesSize; i++) {
+            totalFoodsCountFromFilter += data.get(i);
         }
         return totalFoodsCountFromFilter;
     }
@@ -395,11 +525,13 @@ public class DataToolbox {
      * @return
      */
     private static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis,
-                                                boolean fillInGaps) {
+                                                boolean fillInGaps, boolean includeNegativeKeys) {
         SparseIntArray frequencies = getIntFrequencies(foods, baseDateInMillis, fillInGaps,
                 NO_MAX_SIZE_INT_FREQUENCIES);
         int highest = 0;
-        for (int i = 0; i < frequencies.size(); i++) {
+        int startIndex = includeNegativeKeys ? 0 :
+                getStartingPositiveIndex(frequencies, NO_INDEX_LIMIT);
+        for (int i = startIndex; i < frequencies.size(); i++) {
             int current = frequencies.get(i);
             if (current > highest) {
                 highest = current;
@@ -416,10 +548,10 @@ public class DataToolbox {
      * @param baseDateInMillis
      * @return
      */
-    public static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis) {
-        return getHighestDailyFrequency(foods, baseDateInMillis, true);
+    public static int getHighestDailyFrequency(List<Food> foods, long baseDateInMillis,
+                                               boolean includeNegativeKeys) {
+        return getHighestDailyFrequency(foods, baseDateInMillis, true, includeNegativeKeys);
     }
-
 
     /**
      * Returns an array of just the dates from the provided food list
@@ -606,10 +738,10 @@ public class DataToolbox {
         DateTime currentDate = startDate.plusDays(numDaysFromStartDate);
         if (numDaysFromStartDate == 0) {
             // today
-            return context.getString(R.string.date_today);
+            return context.getString(R.string.date_today).toLowerCase();
         } else if (numDaysFromStartDate == 1) {
             // tomorrow
-            return context.getString(R.string.date_tomorrow);
+            return context.getString(R.string.date_tomorrow).toLowerCase();
         } else if (numDaysFromStartDate >= 2 && numDaysFromStartDate < 7) {
             // full DOW
             return currentDate.dayOfWeek().getAsText();
@@ -618,7 +750,7 @@ public class DataToolbox {
             return context.getString(R.string.date_next, currentDate.dayOfWeek().getAsText());
         } else {
             // on this day
-            return context.getString(R.string.date_generic);
+            return context.getString(R.string.date_generic).toLowerCase();
         }
     }
 

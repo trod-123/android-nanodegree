@@ -28,10 +28,11 @@ import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.utils.DataToolbox;
 
 import org.joda.time.DateTime;
-import org.joda.time.Hours;
 import org.joda.time.Minutes;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 public class NotificationHelper {
 
@@ -40,18 +41,18 @@ public class NotificationHelper {
     /**
      * The start period, in minutes, before the notification can show again
      */
-    private static final int RECURRING_TRIGGER_START = (23 * 60 + 59) * 60; // 23 hours and 59 minutes, in seconds
+    private static final int RECURRING_TRIGGER_START = (23 * 60 + 59) * 60 + 30; // 23:59:30 in seconds
 
     /**
      * The end period, in minutes, before the notification must show again
      */
-    private static final int RECURRING_TRIGGER_END = (24 * 60 + 1) * 60; // 24 hours and 1 minute, in seconds
+    private static final int RECURRING_TRIGGER_END = (24 * 60) * 60 + 30; // 24:00:30 in seconds
 
     /**
      * The end period, in minutes, before the notification must show again. If specifying a
      * trigger determined by the user-selected {@link TimeOfDay} from preferences, use this
      */
-    private static final int DEFAULT_TRIGGER_END_JITTER = 60; // 1 hour, in minutes
+    private static final int DEFAULT_TRIGGER_END_JITTER = 1; // 1 minute
 
     private static final int DEFAULT_MORNING_HOUR = 9;
     private static final int DEFAULT_AFTERNOON_HOUR = 15;
@@ -63,19 +64,43 @@ public class NotificationHelper {
     }
 
     /**
-     * Schedules the notification using {@link FirebaseJobDispatcher}
+     * Schedules the notification using {@link FirebaseJobDispatcher}, with the "Time of Day"
+     * value passed as an argument. To be used within
+     * {@link com.zn.expirytracker.settings.SettingsFragment#sOnPreferenceChangeListener} with
+     * the fresh value
      *
      * @param context
      * @param recurring
      */
-    public static void scheduleNotification(Context context, boolean recurring) {
+    public static void scheduleNotificationJob(Context context, boolean recurring, String todValue) {
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String todValue = sp.getString(context.getString(R.string.pref_notifications_tod_key),
-                context.getString(R.string.pref_notifications_tod_default));
         NotificationHelper.TimeOfDay tod = getTimeOfDayFromPreferenceValue(todValue);
         Job notifJob = NotificationHelper.getNotificationJobBuilder(dispatcher, recurring, tod);
         dispatcher.mustSchedule(notifJob);
+    }
+
+    /**
+     * Schedules the notification using {@link FirebaseJobDispatcher}. Gets the "Time of Day" value
+     * directly from SharedPreferences. This should not be used within
+     * {@link com.zn.expirytracker.settings.SettingsFragment#sOnPreferenceChangeListener} since
+     * the SharedPreferences will be stale
+     *
+     * @param context
+     * @param recurring
+     */
+    public static void scheduleNotificationJob(Context context, boolean recurring) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String todValue = sp.getString(context.getString(R.string.pref_notifications_tod_key),
+                context.getString(R.string.pref_notifications_tod_default));
+        scheduleNotificationJob(context, recurring, todValue);
+    }
+
+    /**
+     * Cancels all current notification jobs
+     */
+    public static void cancelNotificationJob(Context context) {
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        dispatcher.cancel(NotificationJobService.class.getSimpleName());
     }
 
     /**
@@ -142,12 +167,18 @@ public class NotificationHelper {
             // If we're running for first time, et the trigger to meet the user-specified
             // notification time
             Pair<Integer, Integer> triggerRange = getNotificationTriggerRange(tod);
-            builder.setTrigger(Trigger.executionWindow(triggerRange.first, triggerRange.second));
+            Timber.d("Non-recurring triggerRange in seconds: %s %s",
+                    triggerRange.first * 60, triggerRange.second * 60);
+            builder.setTrigger(Trigger.executionWindow(
+                    triggerRange.first * 60, triggerRange.second * 60));
         } else {
             // The notification has been set, so set the trigger so notification can recur in the
             // next ~24 hours
+            Timber.d("Recurring triggerRange in seconds: %s %s",
+                    RECURRING_TRIGGER_START, RECURRING_TRIGGER_END);
             builder.setTrigger(
                     Trigger.executionWindow(RECURRING_TRIGGER_START, RECURRING_TRIGGER_END));
+
         }
         return builder.build();
     }
@@ -186,8 +217,8 @@ public class NotificationHelper {
         }
         desiredDateTime = currentDateTime.withTimeAtStartOfDay()
                 .hourOfDay().setCopy(hour);
-        if (Hours.hoursBetween(currentDateTime, desiredDateTime).getHours() < 0) {
-            // Adjust if desired is a day behind
+        if (desiredDateTime.isBefore(currentDateTime)) {
+            // Adjust if desi red is a day behind
             desiredDateTime = desiredDateTime.plusDays(1);
         }
         int numMinutesStart = Minutes.minutesBetween(currentDateTime, desiredDateTime).getMinutes();
@@ -195,7 +226,7 @@ public class NotificationHelper {
     }
 
     /**
-     * Shows the notification
+     * Shows the notification for the provided list of foods
      *
      * @param context
      * @param daysFilter
@@ -217,6 +248,11 @@ public class NotificationHelper {
         if (foods.size() == 1) {
             // Single food case
             Food food = foods.get(0);
+
+            if (food.getDateExpiry() < currentTimeStartOfDay) {
+                // Do not show notification if food is already expired
+                return;
+            }
 
             // Get the readable date food is expiring, and set in message
             String formattedDate = DataToolbox.getFormattedExpiryDateString(context, currentTimeStartOfDay,
@@ -249,12 +285,26 @@ public class NotificationHelper {
             // Get the number of foods expiring today and tomorrow
             SparseIntArray frequencies = DataToolbox.getIntFrequencies(
                     foods, currentTimeStartOfDay, true, 7); // 7 days in a week. Guaranteed array will have size = 7
-            int foodsCountCurrent = frequencies.get(0);
-            int foodsCountNextDay = frequencies.get(1);
 
-            // Use the same summary for AAG to set in message. Instead of WeeklyDaysFilter, use number of days
-            contentText = DataToolbox.getFullSummary(context, daysFilter, foods.size(),
-                    foodsCountCurrent, foodsCountNextDay);
+            // Don't include expired foods (negative X values)
+            int startIndex = DataToolbox.getStartingPositiveIndex(
+                    frequencies, DataToolbox.NO_INDEX_LIMIT);
+            int foodsCountCurrent = frequencies.get(startIndex);
+            int foodsCountNextDay = frequencies.get(startIndex + 1);
+
+            // Get the total number of foods expiring, without including foods already expired
+            int totalFoodCountsFromFilter = DataToolbox.getTotalFrequencyCounts(
+                    frequencies, startIndex, DataToolbox.NO_INDEX_LIMIT);
+
+            if (daysFilter < 2) {
+                // Set a shorter summary if we're only looking at current and/or next day
+                contentText = DataToolbox.getPartialSummary(context, daysFilter,
+                        foodsCountCurrent, foodsCountNextDay);
+            } else {
+                // Use the same summary for AAG to set in message. Instead of WeeklyDaysFilter, use number of days
+                contentText = DataToolbox.getFullSummary(context, daysFilter, totalFoodCountsFromFilter,
+                        foodsCountCurrent, foodsCountNextDay);
+            }
 
             // Set pending intent to launch AAG fragment
             Intent intent = new Intent(context, MainActivity.class);
@@ -291,7 +341,7 @@ public class NotificationHelper {
         nm.notify(ID_REMINDER_NOTIFICATIONS, builder.build());
 
         // Set the recurring notification
-        scheduleNotification(context, true);
+        scheduleNotificationJob(context, true);
     }
 
     /**

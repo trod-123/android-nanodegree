@@ -52,14 +52,13 @@
     <string name="pref_widget_num_days_summary">Food to show based on number of days until expiry date</string>
 
     <!-- Response list for Notifications and Widgets -->
-    <string name="pref_expire_num_days_entries_0">Today</string>
-    <string name="pref_expire_num_days_entries_1">Today and tomorrow</string>
-    <string name="pref_expire_num_days_entries_2">Within the next 2 days</string>
-    <string name="pref_expire_num_days_entries_3">Within the next 3 days</string>
-    <string name="pref_expire_num_days_entries_4">Within the next 4 days</string>
-    <string name="pref_expire_num_days_entries_5">Within the next 5 days</string>
-    <string name="pref_expire_num_days_entries_6">Within the next 6 days</string>
-    <string name="pref_expire_num_days_entries_7">Within this week</string>
+    <string name="pref_expire_num_days_entries_0">@string/date_today</string>
+    <string name="pref_expire_num_days_entries_1">@string/date_today_or_tomorrow</string>
+    <string name="pref_expire_num_days_entries_2">Within 2 days</string>
+    <string name="pref_expire_num_days_entries_3">Within 3 days</string>
+    <string name="pref_expire_num_days_entries_4">Within 4 days</string>
+    <string name="pref_expire_num_days_entries_5">Within 5 days</string>
+    <string name="pref_expire_num_days_entries_6">Within a week</string>
     <string-array name="pref_expire_num_days_entries">
         <item>@string/pref_expire_num_days_entries_0</item>
         <item>@string/pref_expire_num_days_entries_1</item>
@@ -68,7 +67,6 @@
         <item>@string/pref_expire_num_days_entries_4</item>
         <item>@string/pref_expire_num_days_entries_5</item>
         <item>@string/pref_expire_num_days_entries_6</item>
-        <item>@string/pref_expire_num_days_entries_7</item>
     </string-array>
     <string-array name="pref_expire_num_days_values">
         <item>0</item>
@@ -78,7 +76,6 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
-        <item>7</item>
     </string-array>
     <string name="pref_expire_num_days_default">3</string>
 
