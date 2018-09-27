@@ -7,6 +7,7 @@ import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -32,7 +33,11 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.WeeklyDateFilter;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
@@ -164,6 +169,16 @@ public class AtAGlanceFragment extends Fragment
         super.onResume();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
         sp.registerOnSharedPreferenceChangeListener(this);
+        // For listening for SharedPreference changes from Firebase RTD
+        FirebaseDatabaseHelper.addChildEventListener_Preferences(
+                mFirebasePreferencesChildEventListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        FirebaseDatabaseHelper.removeChildEventListener_Preferences(
+                mFirebasePreferencesChildEventListener);
     }
 
     @Override
@@ -438,4 +453,73 @@ public class AtAGlanceFragment extends Fragment
             updateGreeting(mCurrentDateTime);
         }
     }
+
+    // region Firebase RTD SharedPreferences Listener
+
+    /**
+     * One-way reading from Firebase RTD to get the freshest Preference values stored. Only takes
+     * action from {@link ChildEventListener#onChildAdded(DataSnapshot, String)}. All Preference
+     * changes are managed in {@link com.zn.expirytracker.settings.SettingsFragment}
+     */
+    private ChildEventListener mFirebasePreferencesChildEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
+            updateSharedPreferencesFromFirebase(dataSnapshot);
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            Timber.d("Preference changed from RTD: %s", dataSnapshot.getKey());
+            updateSharedPreferencesFromFirebase(dataSnapshot);
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            // Not used here
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            // Not used here
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Timber.e("Error pulling Preference from RTD: %s", databaseError.getMessage());
+        }
+    };
+
+    /**
+     * Writes the updated Preference value from Firebase to SharedPreferences
+     *
+     * @param snapshot
+     */
+    private void updateSharedPreferencesFromFirebase(DataSnapshot snapshot) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        String key = snapshot.getKey();
+        Object value = snapshot.getValue();
+
+        if (key != null) {
+            if (key.equals(getString(R.string.pref_notifications_receive_key)) ||
+                    key.equals(getString(R.string.pref_capture_beep_key)) ||
+                    key.equals(getString(R.string.pref_capture_vibrate_key)) ||
+                    key.equals(getString(R.string.pref_capture_voice_input_key))) {
+                // Handle booleans
+                sp.edit().putBoolean(key, (boolean) value).apply();
+            } else if (key.equals(getString(R.string.pref_notifications_days_key)) ||
+                    key.equals(getString(R.string.pref_notifications_tod_key)) ||
+                    key.equals(getString(R.string.pref_widget_num_days_key)) ||
+                    key.equals(getString(R.string.pref_account_display_name_key))) {
+                sp.edit().putString(key, (String) value).apply();
+            }
+
+            // special cases
+            if (key.equals(getString(R.string.pref_account_display_name_key))) {
+
+            }
+        }
+    }
+
+    // endregion
 }
