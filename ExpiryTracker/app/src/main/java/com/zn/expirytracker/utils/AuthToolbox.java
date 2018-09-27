@@ -20,6 +20,7 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.notifications.NotificationHelper;
@@ -374,7 +375,7 @@ public class AuthToolbox {
                             resetSharedPreferences(context);
                             startSignInActivity(context);
                         } else {
-                            Timber.e("Firebase delete account failure");
+                            Timber.e(task.getException(), "Firebase delete account failure");
                             Toolbox.showToast(context,
                                     "There was a problem deleting your account");
                         }
@@ -421,6 +422,7 @@ public class AuthToolbox {
     public static void deleteDeviceAndCloudData(FoodViewModel viewModel, final Context context) {
         Timber.d("Deleting all device AND cloud data: foods, images, and Glide cache");
         deleteData(viewModel, context, true);
+        FirebaseDatabaseHelper.deleteAll_Preferences();
     }
 
     /**

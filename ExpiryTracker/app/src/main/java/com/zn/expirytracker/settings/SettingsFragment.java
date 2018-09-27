@@ -1,11 +1,15 @@
 package com.zn.expirytracker.settings;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v14.preference.MultiSelectListPreference;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.CheckBoxPreference;
@@ -18,7 +22,11 @@ import android.text.TextUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
@@ -30,6 +38,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import timber.log.Timber;
+
 import static com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN;
 
 public class SettingsFragment extends PreferenceFragmentCompat
@@ -39,6 +49,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceNotificationsNumDays;
     static Preference mPreferenceNotificationsTod;
     static Preference mPreferenceWidget;
+    static Preference mPreferenceCaptureBeep;
+    static Preference mPreferenceCaptureVibrate;
+    static Preference mPreferenceCaptureVoice;
     static Preference mPreferenceAccountSignIn;
     static Preference mPreferenceAccountSignOut;
     static Preference mPreferenceAccountSync;
@@ -49,10 +62,19 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
     private GoogleSignInClient mGoogleSignInClient;
+    private static SharedPreferences mSp;
 
     /**
      * Guard for preventing OnPreferenceChange actions to run when we're just setting up the
      * OnPreferenceChangeListener. {@code true} means such actions will not occur.
+     * <p>
+     * Between device and Firebase RTD, guard helps prevent
+     * (1) Initial SP defaults from overwriting user-set preferences in RTD
+     * (2) Infinite update loop between read and write between device and RTD
+     * <p>
+     * Regarding the above, while guard prevents initial SP values from being loaded to RTD for
+     * the first time, this does not matter since these will always be the same. Only when default
+     * preferences are changed are they written to and preserved in RTD
      */
     static boolean mInitializeGuard = false;
 
@@ -68,6 +90,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(mHostActivity, gso);
+
+        mSp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
     }
 
     @Override
@@ -82,6 +106,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceNotificationsTod =
                 findPreference(getString(R.string.pref_notifications_tod_key));
         mPreferenceWidget = findPreference(getString(R.string.pref_widget_num_days_key));
+        mPreferenceCaptureBeep = findPreference(getString(R.string.pref_capture_beep_key));
+        mPreferenceCaptureVibrate = findPreference(getString(R.string.pref_capture_vibrate_key));
+        mPreferenceCaptureVoice = findPreference(getString(R.string.pref_capture_voice_input_key));
         mPreferenceAccountSignIn = findPreference(getString(R.string.pref_account_sign_in_key));
         mPreferenceAccountSignOut = findPreference(getString(R.string.pref_account_sign_out_key));
         mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
@@ -94,10 +121,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setOnPreferenceChangeListener(mPreferenceNotificationsNumDays);
         setOnPreferenceChangeListener(mPreferenceNotificationsTod);
         setOnPreferenceChangeListener(mPreferenceWidget);
-        setOnPreferenceChangeListener(findPreference(
-                getString(R.string.pref_widget_num_days_key)));
-        setOnPreferenceChangeListener(findPreference(
-                getString(R.string.pref_account_display_name_key)));
+        setOnPreferenceChangeListener(mPreferenceCaptureBeep);
+        setOnPreferenceChangeListener(mPreferenceCaptureVibrate);
+        setOnPreferenceChangeListener(mPreferenceCaptureVoice);
+        setOnPreferenceChangeListener(mPreferenceDisplayName);
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
@@ -108,6 +135,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onResume();
         // Show account settings only if the user is signed in
         showAccountSettings(AuthToolbox.isSignedIn());
+
+        if (sChildEventListener == null) {
+            sChildEventListener = createNewChildEventListener();
+        }
+        // Only listen to changes to food_database/preferences_table/uid/{child}
+        FirebaseDatabaseHelper.addChildEventListener_Preferences(sChildEventListener);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (sChildEventListener != null) {
+            FirebaseDatabaseHelper.removeChildEventListener_Preferences(sChildEventListener);
+        }
     }
 
     /**
@@ -126,6 +167,17 @@ public class SettingsFragment extends PreferenceFragmentCompat
         // Trigger the listener immediately with the preference's
         // current value.
         mInitializeGuard = true;
+        updatePreferenceValue(preference);
+    }
+
+    /**
+     * Updates the UI with the newly updated preference value. See
+     * {@link SettingsFragment#sOnPreferenceChangeListener}
+     *
+     * @param preference
+     * @see SettingsFragment#sOnPreferenceChangeListener
+     */
+    private static void updatePreferenceValue(Preference preference) {
         if (preference instanceof MultiSelectListPreference) {
             sOnPreferenceChangeListener.onPreferenceChange(preference,
                     PreferenceManager.getDefaultSharedPreferences(preference.getContext())
@@ -171,8 +223,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
-                        mGoogleSignInClient).execute();
+                startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
+                        mGoogleSignInClient);
                 return true;
             }
         });
@@ -202,6 +254,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
+     * Helper to start the delete async task. Removes the Firebase RTD listener first before
+     * proceeding
+     *
+     * @param deleteType
+     * @param signInClient
+     */
+    private void startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType,
+                                          GoogleSignInClient signInClient) {
+        FirebaseDatabaseHelper.removeChildEventListener_Preferences(sChildEventListener);
+        sChildEventListener = null;
+        new DeleteDataAsyncTask(deleteType, signInClient).execute();
+    }
+
+    /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value. Also adds individual preference-specific actions
      */
@@ -217,7 +283,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     } else {
                         // Enable preferences based on values for SwitchPreferences and 
                         // CheckBoxPreferences
-                        enablePreference(preference, value, context);
+                        enablePreference(preference, value);
                     }
 
                     /*
@@ -226,10 +292,126 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     */
                     handleIndividualPreferenceChangeActions(preference, context, value);
 
+                    // Update Firebase RTD
+                    if (!mInitializeGuard)
+                        // Guard is needed to prevent
+                        // (1) Initial SP defaults from overwriting user-set preferences in RTD
+                        // (2) Infinite update loop between read and write between device and RTD
+                        updatePreferencesToFirebaseRTD(preference, value);
+
                     mInitializeGuard = false;
                     return true;
                 }
             };
+
+    // region Firebase RTD ChildEventListener
+
+    private static ChildEventListener sChildEventListener;
+
+    private static ChildEventListener createNewChildEventListener() {
+        return new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
+                updatePreferencesFromFirebaseRTD(dataSnapshot);
+                // Not used here
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Timber.d("Preference changed from RTD: %s", dataSnapshot.getKey());
+                updatePreferencesFromFirebaseRTD(dataSnapshot);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                // Not used here
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                // Not used here
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Timber.e("Error pulling Preference from RTD: %s", databaseError.getMessage());
+            }
+        };
+    }
+
+    /**
+     * Update Firebase RTD with the newly set preferences
+     *
+     * @param preference
+     * @param newValue
+     */
+    private static void updatePreferencesToFirebaseRTD(Preference preference, Object newValue) {
+        FirebaseDatabaseHelper.write_Preference(preference, newValue);
+    }
+
+    /**
+     * Updates SharedPreferences downloaded from Firebase RTD, and updates the UI of the new value
+     *
+     * @param snapshot
+     */
+    @SuppressLint("RestrictedApi")
+    // https://stackoverflow.com/questions/41150995/appcompatactivity-oncreate-can-only-be-called-from-within-the-same-library-group
+    private static void updatePreferencesFromFirebaseRTD(DataSnapshot snapshot) {
+        String key = snapshot.getKey();
+        boolean click = false;
+        if (key != null) {
+            if (key.equals(mPreferenceNotifications.getKey()) ||
+                    key.equals(mPreferenceCaptureBeep.getKey()) ||
+                    key.equals(mPreferenceCaptureVibrate.getKey()) ||
+                    key.equals(mPreferenceCaptureVoice.getKey())) {
+                // Boolean cases. Auto-click the toggle only if old and new values are different
+                boolean newValue = (boolean) snapshot.getValue();
+                boolean oldValue = mSp.getBoolean(key, true);
+                if (newValue != oldValue) {
+                    click = true;
+                }
+            } else if (key.equals(mPreferenceNotificationsNumDays.getKey()) ||
+                    key.equals(mPreferenceNotificationsTod.getKey()) ||
+                    key.equals(mPreferenceWidget.getKey()) ||
+                    key.equals(mPreferenceDisplayName.getKey())) {
+                // String cases
+                String value = (String) snapshot.getValue();
+                mSp.edit().putString(key, value).apply();
+            }
+
+            // Update the preference UI
+
+            // For the toggles, update the button state (and preference value) if changed.
+            // performClick() also updates the Preference value, so no need to write the new value
+            // to SP like we do for Strings
+            if (key.equals(mPreferenceNotifications.getKey())) {
+                if (click) mPreferenceNotifications.performClick();
+            } else if (key.equals(mPreferenceCaptureBeep.getKey())) {
+                if (click) mPreferenceCaptureBeep.performClick();
+            } else if (key.equals(mPreferenceCaptureVibrate.getKey())) {
+                if (click) mPreferenceCaptureVibrate.performClick();
+            } else if (key.equals(mPreferenceCaptureVoice.getKey())) {
+                if (click) mPreferenceCaptureVoice.performClick();
+            }
+
+            // For the Strings, update the summaries
+            else if (key.equals(mPreferenceNotificationsNumDays.getKey())) {
+                updatePreferenceValue(mPreferenceNotificationsNumDays);
+            } else if (key.equals(mPreferenceNotificationsTod.getKey())) {
+                updatePreferenceValue(mPreferenceNotificationsTod);
+            } else if (key.equals(mPreferenceWidget.getKey())) {
+                updatePreferenceValue(mPreferenceWidget);
+            } else if (key.equals(mPreferenceDisplayName.getKey())) {
+                updatePreferenceValue(mPreferenceDisplayName);
+            }
+        } else {
+            Timber.d("Preference key was null");
+        }
+    }
+
+    // endregion
 
     /**
      * Perform action right away based on the specific preference updated. Note at this point,
@@ -242,8 +424,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     private static void handleIndividualPreferenceChangeActions(Preference preference,
                                                                 Context context, Object value) {
-        if (preference.getKey()
-                .equals(context.getString(R.string.pref_account_display_name_key))) {
+        if (preference.equals(mPreferenceDisplayName)) {
             // Sync the display name with the database. This is a logged-in only feature
             if (AuthToolbox.isSignedIn()) {
                 String displayName = (String) value;
@@ -253,7 +434,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 if (displayName.trim().isEmpty())
                     preference.setSummary(R.string.pref_account_display_name_summary);
             }
-        } else if (preference.getKey().equals(context.getString(R.string.pref_widget_num_days_key))) {
+        } else if (preference.equals(mPreferenceWidget)) {
             // Request update
             UpdateWidgetService.updateFoodWidget(preference.getContext());
         } else if (preference.equals(mPreferenceNotifications)) {
@@ -346,9 +527,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * @param preference
      * @param value
      */
-    private static void enablePreference(Preference preference, Object value, Context context) {
-        if (preference.getKey()
-                .equals(context.getString(R.string.pref_notifications_receive_key))) {
+    private static void enablePreference(Preference preference, Object value) {
+        if (preference.equals(mPreferenceNotifications)) {
             // Enable notification settings only if notifications are enabled
             boolean enabled = (boolean) value;
             mPreferenceNotificationsNumDays.setEnabled(enabled);
@@ -374,12 +554,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 // position or isLoggedIn does not matter here
                 switch (deleteType) {
                     case ACCOUNT:
-                        new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT,
-                                mGoogleSignInClient).execute();
+                        startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT,
+                                mGoogleSignInClient);
                         break;
                     case DEVICE:
-                        new DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.DEVICE,
-                                mGoogleSignInClient).execute();
+                        startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.DEVICE,
+                                mGoogleSignInClient);
                         break;
                 }
         }
@@ -400,7 +580,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         private ConfirmDeleteDialogFragment.DeleteType mDeleteType;
         private GoogleSignInClient mClient;
 
-        DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType, GoogleSignInClient client) {
+        DeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType,
+                            GoogleSignInClient client) {
             mDeleteType = deleteType;
             mClient = client;
         }
