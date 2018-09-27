@@ -36,6 +36,11 @@ import timber.log.Timber;
 
 public class NotificationHelper {
 
+    /**
+     * For debugging. {@code true} allows notifications to show up immediately after enabling them
+     */
+    private static final boolean DEBUG_ENABLE_QUICK_REMINDERS = false;
+
     private static final int ID_REMINDER_NOTIFICATIONS = 10;
 
     /**
@@ -167,14 +172,19 @@ public class NotificationHelper {
             // If we're running for first time, et the trigger to meet the user-specified
             // notification time
             Pair<Integer, Integer> triggerRange = getNotificationTriggerRange(tod);
-            Timber.d("Non-recurring triggerRange in seconds: %s %s",
-                    triggerRange.first * 60, triggerRange.second * 60);
-            builder.setTrigger(Trigger.executionWindow(
-                    triggerRange.first * 60, triggerRange.second * 60));
+            if (!DEBUG_ENABLE_QUICK_REMINDERS) {
+                Timber.d("Notification non-recurring triggerRange in seconds: %s %s",
+                        triggerRange.first * 60, triggerRange.second * 60);
+                builder.setTrigger(Trigger.executionWindow(
+                        triggerRange.first * 60, triggerRange.second * 60));
+            } else {
+                // For debugging
+                builder.setTrigger(Trigger.NOW);
+            }
         } else {
             // The notification has been set, so set the trigger so notification can recur in the
             // next ~24 hours
-            Timber.d("Recurring triggerRange in seconds: %s %s",
+            Timber.d("Notification recurring triggerRange in seconds: %s %s",
                     RECURRING_TRIGGER_START, RECURRING_TRIGGER_END);
             builder.setTrigger(
                     Trigger.executionWindow(RECURRING_TRIGGER_START, RECURRING_TRIGGER_END));
