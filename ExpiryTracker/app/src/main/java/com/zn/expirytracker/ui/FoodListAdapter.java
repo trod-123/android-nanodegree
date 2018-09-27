@@ -38,8 +38,10 @@ import timber.log.Timber;
  */
 public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.FoodViewHolder> {
 
+    @NonNull
     private Context mContext;
     private long mCurrentTime;
+    @NonNull
     private FoodListAdapterClickListener mClickListener;
 
     interface FoodListAdapterClickListener {
@@ -59,7 +61,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         }
     };
 
-    FoodListAdapter(Context context) {
+    FoodListAdapter(@NonNull Context context) {
         super(DIFF_CALLBACK);
         mContext = context;
         mCurrentTime = System.currentTimeMillis();
@@ -93,7 +95,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
 
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
-        Food food = getItem(position);
+        @Nullable Food food = getItem(position);
         if (food != null) {
             holder.bind(food);
         } else {
@@ -126,19 +128,19 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             itemView.setOnClickListener(this);
         }
 
-        private void bind(Food food) {
+        private void bind(@NonNull Food food) {
             mName.setText(food.getFoodName());
             mExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, food.getDateExpiry()));
             int count = food.getCount();
             if (count != 1) {
                 mCount.setVisibility(View.VISIBLE);
-                mCount.setText("x" + String.valueOf(count));
+                mCount.setText(String.format("x%s", String.valueOf(count)));
             } else {
                 mCount.setVisibility(View.GONE);
             }
-            Storage storageLocation = food.getStorageLocation();
-            if (storageLocation != Storage.NOT_SET) {
+            @Nullable Storage storageLocation = food.getStorageLocation();
+            if (storageLocation != null && storageLocation != Storage.NOT_SET) {
                 // don't show icon if no storage set
                 mStorageIcon.setVisibility(View.VISIBLE);
                 mStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storageLocation));
@@ -152,7 +154,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                     R.plurals.food_days_label, daysUntilExpiry));
 
             // Load image only if there is any
-            List<String> images = food.getImages();
+            @Nullable List<String> images = food.getImages();
             if (images != null && !images.isEmpty()) {
                 mImage.setVisibility(View.VISIBLE);
                 Toolbox.showView(mPb, true, false);
@@ -201,7 +203,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         @Override
         @OnClick(R.id.item_food_layout)
         public void onClick(View view) {
-            Food food = getItem(getAdapterPosition());
+            @Nullable Food food = getItem(getAdapterPosition());
             if (food != null) {
                 mClickListener.onItemClicked(food.get_id());
             } else {

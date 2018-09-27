@@ -1,6 +1,7 @@
-package com.zn.expirytracker.data;
+package com.zn.expirytracker.data.firebase;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -10,10 +11,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.zn.expirytracker.data.model.DatabaseContract;
+import com.zn.expirytracker.data.contracts.DatabaseContract;
+import com.zn.expirytracker.data.contracts.UserDatabaseContract;
 import com.zn.expirytracker.data.model.Food;
-import com.zn.expirytracker.settings.SettingsDatabaseContract;
+import com.zn.expirytracker.data.contracts.SettingsDatabaseContract;
 import com.zn.expirytracker.utils.AuthToolbox;
 
 import timber.log.Timber;
@@ -30,6 +34,10 @@ public class FirebaseDatabaseHelper {
     private static DatabaseReference mDatabase_Preferences = FirebaseDatabase.getInstance()
             .getReference(SettingsDatabaseContract.DATABASE_NAME + "/" +
                     SettingsDatabaseContract.PREFERENCES_TABLE_NAME);
+
+    private static DatabaseReference mDatabase_UserData = FirebaseDatabase.getInstance()
+            .getReference(UserDatabaseContract.DATABASE_NAME + "/" +
+                    UserDatabaseContract.USER_DATA_TABLE_NAME);
 
     /**
      * Custom {@link OnCompleteListener} for Firebase RTD that accepts a tag
@@ -120,6 +128,42 @@ public class FirebaseDatabaseHelper {
         Timber.d("firebase/rtd/push_preference...");
         mDatabase_Preferences.child(uid).child(key).setValue(newValue)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write_preference"));
+    }
+
+    /**
+     * Increments a tracking metric by 1. Should only be called while the user is logged in or else
+     * this throws an error
+     * <p>
+     * Needs to be called on the main thread since we get user info here
+     *
+     * @param key
+     */
+    public static void incrementUserMetricCount(String key) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+
+        // Check connection for logging, then save the food. Use food id as RTD id
+        checkConnection();
+        Timber.d("firebase/rtd/transaction_incrementUserMetricCount: %s", key);
+        mDatabase_UserData.child(uid).child(key).runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                Object data = mutableData.getValue();
+                if (data == null) {
+                    mutableData.setValue(1);
+                } else {
+                    long count = (long) mutableData.getValue();
+                    mutableData.setValue(count + 1);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                Timber.d("firebase/rtd/transaction_incrementUserMetricCount complete: %s", databaseError);
+            }
+        });
     }
 
     /**

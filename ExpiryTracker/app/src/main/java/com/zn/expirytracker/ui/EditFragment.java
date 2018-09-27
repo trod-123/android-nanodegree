@@ -8,7 +8,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -28,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -257,17 +255,17 @@ public class EditFragment extends Fragment implements
 
         // Hide the fab when the keyboard is opened
         // https://stackoverflow.com/questions/4745988/how-do-i-detect-if-software-keyboard-is-visible-on-android-device
-        mRootLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                mRootLayout.getWindowVisibleDisplayFrame(r);
-                int screenHeight = mRootLayout.getRootView().getHeight();
-
-                // r.bottom is the position above soft keypad or device button.
-                // if keypad is shown, the r.bottom is smaller than that before.
-                int keypadHeight = screenHeight - r.bottom;
-
+//        mRootLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                Rect r = new Rect();
+//                mRootLayout.getWindowVisibleDisplayFrame(r);
+//                int screenHeight = mRootLayout.getRootView().getHeight();
+//
+//                // r.bottom is the position above soft keypad or device button.
+//                // if keypad is shown, the r.bottom is smaller than that before.
+//                int keypadHeight = screenHeight - r.bottom;
+//
 //                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
 //                    // keyboard is opened
 //                    mFabVoice.hide();
@@ -275,8 +273,8 @@ public class EditFragment extends Fragment implements
 //                    // keyboard is closed
 //                    mFabVoice.show();
 //                }
-            }
-        });
+//            }
+//        });
 
         final LiveData<Food> data = mViewModel.getSingleFoodById(mItemId, false);
         data.observe(this, new Observer<Food>() {
@@ -290,6 +288,7 @@ public class EditFragment extends Fragment implements
                 // could probably be because we were saving new images to food before even saving
                 // the food itself
                 data.removeObserver(this);
+
             }
         });
 
@@ -510,7 +509,7 @@ public class EditFragment extends Fragment implements
      * @param view
      */
     private void hideViewIfEmptyString(@Nullable String string, View view) {
-        view.setVisibility(string != null && !string.isEmpty() ? View.VISIBLE : View.GONE);
+        Toolbox.showView(view, string != null && !string.isEmpty(), true);
     }
 
     /**
@@ -1075,6 +1074,9 @@ public class EditFragment extends Fragment implements
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(cameraIntent, RC_CAMERA);
             }
+        } else {
+            Timber.d("Attempted to start Capture, but device does not have a camera");
+            Toolbox.showSnackbarMessage(mRootLayout, "Your device needs a camera to do this");
         }
     }
 
@@ -1083,8 +1085,7 @@ public class EditFragment extends Fragment implements
      */
     public void getImageFromStorage() {
         if (ContextCompat.checkSelfPermission(mHostActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // Always ask (unless user ticked "don't ask again")
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE);

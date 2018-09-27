@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.DataToolbox;
@@ -33,7 +35,7 @@ import timber.log.Timber;
 public class DetailFragment extends Fragment {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
-            "detail_fragment.item_id_long");
+            DetailFragment.class, "item_id_long");
 
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
@@ -104,6 +106,11 @@ public class DetailFragment extends Fragment {
 
     @BindView(R.id.tv_detail_input)
     TextView mTvInput;
+    @BindView(R.id.iv_detail_input)
+    ImageView mIvInput;
+    @BindView(R.id.tv_detail_input_label)
+    TextView mTvInputLabel;
+
     @BindView(R.id.tv_detail_credit_upcitemdb)
     TextView mTvCreditUpcItemDb;
     @BindView(R.id.tv_detail_credit_googleimgrec)
@@ -198,14 +205,12 @@ public class DetailFragment extends Fragment {
         return rootView;
     }
 
-    private void populateViewElements(Food food) {
+    private void populateViewElements(@NonNull Food food) {
         // ViewPager
-        List<String> images = food.getImages();
+        @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
         mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
-        if (images.isEmpty()) {
-            Toolbox.showView(mIvPagerEmpty, true, false);
-        }
+        Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
 
         // Main layout
         mTvFoodName.setText(food.getFoodName());
@@ -215,8 +220,8 @@ public class DetailFragment extends Fragment {
         mTvCalendarDay.setText(String.valueOf(dateTime.getDayOfMonth()));
         mTvCalendarMonth.setText(dateTime.monthOfYear().getAsShortText());
 
-        Storage storage = food.getStorageLocation();
-        if (storage != Storage.NOT_SET) {
+        @Nullable Storage storage = food.getStorageLocation();
+        if (storage != null && storage != Storage.NOT_SET) {
             mTvStorage.setText(getString(R.string.storage_location_description,
                     DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
             mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
@@ -239,46 +244,66 @@ public class DetailFragment extends Fragment {
                 ContextCompat.getColor(mHostActivity, DataToolbox.getAlertColorResource(
                         daysUntilExpiry, DataToolbox.DEFAULT_ALERT_THRESHOLD)));
 
-        String description = food.getDescription();
+        @Nullable String description = food.getDescription();
         mTvDescription.setText(description);
-        mTvDescription.setVisibility(description.isEmpty() ? View.GONE : View.VISIBLE);
+        mTvDescription.setVisibility(
+                description == null || description.isEmpty() ? View.GONE : View.VISIBLE);
 
         // Other info layout
-        String brandName = food.getBrandName();
+        @Nullable String brandName = food.getBrandName();
         mTvBrand.setText(brandName);
-        setInfoVisibility(mIvBrand, mTvBrandLabel, mTvBrand, !brandName.isEmpty());
-        String size = food.getSize();
+        setInfoVisibility(mIvBrand, mTvBrandLabel, mTvBrand,
+                brandName != null && !brandName.isEmpty());
+        @Nullable String size = food.getSize();
         mTvSize.setText(size);
-        setInfoVisibility(mIvSize, mTvSizeLabel, mTvSize, !size.isEmpty());
-        String weight = food.getWeight();
+        setInfoVisibility(mIvSize, mTvSizeLabel, mTvSize,
+                size != null && !size.isEmpty());
+        @Nullable String weight = food.getWeight();
         mTvWeight.setText(weight);
-        setInfoVisibility(mIvWeight, mTvWeightLabel, mTvWeight, !weight.isEmpty());
-        String notes = food.getNotes();
+        setInfoVisibility(mIvWeight, mTvWeightLabel, mTvWeight,
+                weight != null && !weight.isEmpty());
+        @Nullable String notes = food.getNotes();
         mTvNotes.setText(notes);
-        setInfoVisibility(mIvNotes, mTvNotesLabel, mTvNotes, !notes.isEmpty());
+        setInfoVisibility(mIvNotes, mTvNotesLabel, mTvNotes,
+                notes != null && !notes.isEmpty());
 
         // Hide the "Other info" section if all of its fields are blank
-        if (brandName.isEmpty() && size.isEmpty() && weight.isEmpty() && notes.isEmpty()) {
+        if ((brandName == null || brandName.isEmpty()) && (size == null || size.isEmpty()) &&
+                (weight == null || weight.isEmpty()) && (notes == null || notes.isEmpty())) {
             mRootOtherInfo.setVisibility(View.GONE);
             mBorderOtherInfo.setVisibility(View.GONE);
         }
 
         // Meta data layout
-        String barcode = food.getBarcode();
+        @Nullable String barcode = food.getBarcode();
         mTvBarcode.setText(barcode);
-        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode, !barcode.isEmpty());
-        mTvInput.setText(food.getInputType().toString());
-        switch (food.getInputType()) {
-            case BARCODE:
-                mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
-                break;
-            case IMG_REC:
-                mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
-                break;
+        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode,
+                barcode != null && !barcode.isEmpty());
+        @Nullable InputType inputType = food.getInputType();
+        if (inputType != null) {
+            switch (inputType) {
+                case BARCODE:
+                    mTvInput.setText(R.string.food_input_type_barcode);
+                    mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
+                    break;
+                case IMG_REC:
+                    mTvInput.setText(R.string.food_input_type_imgrec);
+                    mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
+                    break;
+                case IMG_ONLY:
+                    mTvInput.setText(R.string.food_input_type_imgonly);
+                    break;
+                case TEXT_ONLY:
+                    mTvInput.setText(R.string.food_input_type_textonly);
+                    break;
+            }
+        } else {
+            setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, false);
         }
     }
 
-    private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView, boolean show) {
+    private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView,
+                                   boolean show) {
         int visibility = show ? View.VISIBLE : View.GONE;
         iconView.setVisibility(visibility);
         labelView.setVisibility(visibility);

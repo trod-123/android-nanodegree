@@ -15,6 +15,7 @@ import android.view.View;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -36,7 +37,10 @@ public class DetailActivity extends AppCompatActivity {
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
     private List<Food> mFoodsList; // sync'd with pager adapter in onChanged()
-    private long mLaunchedItemId;
+    /**
+     * For setting up the first page the user sees
+     */
+    private long mLaunchedItemId = 0;
     private int mCurrentPosition;
 
     // TODO: Save in savedInstanceState
@@ -45,6 +49,13 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Start sign-in if user is not signed-in
+        if (!AuthToolbox.isSignedIn()) {
+            AuthToolbox.startSignInActivity(this);
+            return;
+        }
+
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
@@ -135,7 +146,7 @@ public class DetailActivity extends AppCompatActivity {
     private void deleteItem() {
         Food food = mFoodsList.get(mCurrentPosition);
         mViewModel.delete(true, food);
-        Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
+        Toolbox.showToast(this, getString(R.string.message_item_removed,
                 food.getFoodName()));
     }
 }

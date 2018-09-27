@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.support.annotation.NonNull;
 
+import com.zn.expirytracker.data.contracts.DatabaseContract;
+
 import java.util.List;
 
 @Entity(tableName = DatabaseContract.CACHE_TABLE_NAME)

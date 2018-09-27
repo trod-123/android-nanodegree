@@ -626,7 +626,7 @@ public class CameraSource {
             if (!mProcessingThreadPaused) {
                 stopProcessingThreadOnly();
             } else {
-                Timber.e("Attempted to pause frame processor when it is already paused. Doing nothing...");
+                Timber.d("Attempted to pause frame processor when it is already paused. Doing nothing...");
             }
             processingRunnable.release();
             cleanScreen();
@@ -644,7 +644,7 @@ public class CameraSource {
             if (mProcessingThreadPaused) {
                 startProcessingThreadOnly();
             } else {
-                Timber.e("Attempted to start frame processor when it is already started. Proceeding");
+                Timber.d("Attempted to start frame processor when it is already started. Proceeding");
             }
             cleanScreen();
             if (frameProcessor != null) {
@@ -653,6 +653,59 @@ public class CameraSource {
             frameProcessor = processor;
         }
     }
+
+    // TODO: Get this up and running to replace VisionImageProcessor taking care of IMG_ONLY
+
+    // region Image only handling
+
+//    private OnCameraTapListener mCameraTapListener;
+//    private View mCameraTapView;
+//
+//    public interface OnCameraTapListener {
+//        void onHandleImageOnly(Bitmap bitmap);
+//    }
+//
+//    public void setOnClickListener(View view, OnCameraTapListener listener) {
+//        camera.startPreview();
+//        mCameraTapListener = listener;
+//        mCameraTapView = view;
+//
+//        if (mProcessingThreadPaused) {
+//            mCameraTapView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    captureImage();
+//                }
+//            });
+//        } else {
+//            mCameraTapView.setOnClickListener(null);
+//        }
+//    }
+//
+//    public void removeOnClickListener() {
+//        if (mCameraTapView != null) {
+//            mCameraTapView.setOnClickListener(null);
+//        }
+//    }
+//
+//    private void captureImage() {
+//        camera.takePicture(
+//                new Camera.ShutterCallback() {
+//                    @Override
+//                    public void onShutter() {
+//                    }
+//                },
+//                null,
+//                new Camera.PictureCallback() {
+//                    @Override
+//                    public void onPictureTaken(byte[] data, Camera camera) {
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+//                        mCameraTapListener.onHandleImageOnly(bitmap);
+//                    }
+//                });
+//    }
+
+    // endregion
 
     /**
      * This runnable controls access to the underlying receiver, calling it to process frames when
@@ -707,10 +760,8 @@ public class CameraSource {
                 }
 
                 if (!bytesToByteBuffer.containsKey(data)) {
-                    Log.d(
-                            TAG,
-                            "Skipping frame. Could not find ByteBuffer associated with the image "
-                                    + "data from the camera.");
+                    Timber.i("Skipping frame. Could not find ByteBuffer associated with the image "
+                            + "data from the camera.");
                     return;
                 }
 
@@ -748,7 +799,8 @@ public class CameraSource {
                             // don't have it yet.
                             lock.wait();
                         } catch (InterruptedException e) {
-                            Log.d(TAG, "Frame processing loop terminated.", e);
+                            Timber.w(e, "Camera Source: FrameProcessingRunnable Frame " +
+                                    "processing loop terminated.");
                             return;
                         }
                     }
@@ -774,7 +826,7 @@ public class CameraSource {
 
                 try {
                     synchronized (processorLock) {
-                        Log.d(TAG, "Process an image");
+                        Timber.i("Process an image");
                         frameProcessor.process(
                                 data,
                                 new FrameMetadata.Builder()
@@ -786,9 +838,13 @@ public class CameraSource {
                                 graphicOverlay);
                     }
                 } catch (Throwable t) {
-                    Log.e(TAG, "Exception thrown from receiver.", t);
+                    Timber.e(t, "CameraSource: FrameProcessingRunnable exception thrown from receiver.");
                 } finally {
-                    camera.addCallbackBuffer(data.array());
+                    if (data != null) {
+                        camera.addCallbackBuffer(data.array());
+                    } else {
+                        Timber.e("CameraSource: FrameProcessingRunnable/run/addCallbackBuffer data is null");
+                    }
                 }
             }
         }

@@ -16,6 +16,8 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
 //        MultiDex.install(this);
 //    }
 
+    boolean DEBUG_ENABLE_FIREBASE_DATABASE_DEEP_LOGGING = false;
+
 
     @Override
     public void onCreate() {
@@ -28,7 +30,9 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-            database.setLogLevel(Logger.Level.DEBUG);
+            if (DEBUG_ENABLE_FIREBASE_DATABASE_DEEP_LOGGING) {
+                database.setLogLevel(Logger.Level.DEBUG);
+            }
         } else {
             // TODO: Initialize a crash reporting tree
             // https://github.com/JakeWharton/timber/blob/master/sample/src/main/java/com/example/timber/ExampleApp.java

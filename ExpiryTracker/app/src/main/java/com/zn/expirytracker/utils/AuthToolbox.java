@@ -20,13 +20,14 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.notifications.NotificationHelper;
+import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
-import com.zn.expirytracker.widget.FoodWidget;
+import com.zn.expirytracker.ui.widget.FoodWidget;
+import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 
 import timber.log.Timber;
 
@@ -107,13 +108,14 @@ public class AuthToolbox {
     }
 
     /**
-     * Starts the Sign-in activity and clears the existing backstack
-     * <p>
+     * Starts the Sign-in activity and clears the existing backstack. Updates any widgets to show
+     * the signed-out view
      *
      * @param context
      */
     public static void startSignInActivity(Context context) {
         startActivityAndClearBackstack(context, SignInActivity.class);
+        UpdateWidgetService.updateFoodWidget(context);
     }
 
     /**

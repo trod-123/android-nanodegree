@@ -11,6 +11,7 @@ import com.zn.expirytracker.data.model.InputType;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -18,6 +19,7 @@ public class AddActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+        Timber.tag(AddActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
         getSupportFragmentManager().beginTransaction()

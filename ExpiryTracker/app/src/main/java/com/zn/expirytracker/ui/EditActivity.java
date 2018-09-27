@@ -12,6 +12,7 @@ import com.zn.expirytracker.data.model.InputType;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class EditActivity extends AppCompatActivity {
 
@@ -19,6 +20,7 @@ public class EditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        Timber.tag(EditActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
@@ -32,6 +34,8 @@ public class EditActivity extends AppCompatActivity {
                             EditFragment.newInstance(id, barcode, inputType),
                             EditFragment.class.getSimpleName())
                     .commit();
+        } else {
+            Timber.e("In EditActivity, but intent was null. So I did nothing");
         }
     }
 

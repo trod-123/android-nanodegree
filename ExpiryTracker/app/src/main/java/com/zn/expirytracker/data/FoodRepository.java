@@ -7,9 +7,11 @@ import android.arch.paging.PagedList;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseStorageHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
-import com.zn.expirytracker.widget.UpdateWidgetService;
+import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 
 import java.util.List;
 

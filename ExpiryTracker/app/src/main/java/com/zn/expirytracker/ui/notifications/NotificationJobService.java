@@ -1,4 +1,4 @@
-package com.zn.expirytracker.notifications;
+package com.zn.expirytracker.ui.notifications;
 
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;

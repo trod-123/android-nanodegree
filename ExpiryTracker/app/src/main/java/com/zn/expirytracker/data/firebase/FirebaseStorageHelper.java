@@ -1,4 +1,4 @@
-package com.zn.expirytracker.data;
+package com.zn.expirytracker.data.firebase;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,7 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.zn.expirytracker.data.model.DatabaseContract;
+import com.zn.expirytracker.data.contracts.DatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;

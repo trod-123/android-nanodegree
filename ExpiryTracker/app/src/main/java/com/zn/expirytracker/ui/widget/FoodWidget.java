@@ -1,4 +1,4 @@
-package com.zn.expirytracker.widget;
+package com.zn.expirytracker.ui.widget;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

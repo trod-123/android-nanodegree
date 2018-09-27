@@ -27,7 +27,7 @@ import timber.log.Timber;
 public class DetailImageFragment extends Fragment {
 
     public static final String ARG_IMAGE_URI_STRING = Toolbox.createStaticKeyString(
-            "detail_image_fragment.image_uri_string");
+            DetailImageFragment.class, "image_uri_string");
     public static final String ARG_EDIT_MODE = Toolbox.createStaticKeyString(
             DetailImageFragment.class, "edit_mode");
 
@@ -41,7 +41,7 @@ public class DetailImageFragment extends Fragment {
     ImageView mIvBroken;
 
     private AddImageButtonClickListener mListener;
-    private String mImageUriString;
+    @Nullable private String mImageUriString;
     private boolean mEditMode;
 
     public DetailImageFragment() {

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.settings.SettingsActivity;
+import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -28,7 +29,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Start sign-in if user is not signed-in
+        if (!AuthToolbox.isSignedIn()) {
+            AuthToolbox.startSignInActivity(this);
+            return;
+        }
+
         setContentView(R.layout.activity_main);
+        Timber.tag(MainActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
         mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());

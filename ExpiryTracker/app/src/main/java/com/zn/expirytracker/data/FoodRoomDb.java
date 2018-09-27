@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 
 import com.zn.expirytracker.BuildConfig;
 import com.zn.expirytracker.data.model.Cache;
-import com.zn.expirytracker.data.model.DatabaseContract;
+import com.zn.expirytracker.data.contracts.DatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.data.model.Temp;

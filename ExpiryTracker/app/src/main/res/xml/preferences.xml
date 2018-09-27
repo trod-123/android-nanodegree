@@ -63,10 +63,10 @@
             android:singleLine="true"
             android:summary="@string/pref_account_display_name_summary"
             android:title="@string/pref_account_display_name_label" />
-        <Preference
-            android:key="@string/pref_account_sync_key"
-            android:summary="@string/pref_account_sync_summary"
-            android:title="@string/pref_account_sync_label" />
+        <!--<Preference-->
+            <!--android:key="@string/pref_account_sync_key"-->
+            <!--android:summary="@string/pref_account_sync_summary"-->
+            <!--android:title="@string/pref_account_sync_label" />-->
         <Preference
             android:key="@string/pref_account_delete_key"
             android:summary="@string/pref_account_delete_summary"

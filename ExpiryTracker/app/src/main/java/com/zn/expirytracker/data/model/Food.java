@@ -7,6 +7,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
+import com.zn.expirytracker.data.contracts.DatabaseContract;
 import com.zn.expirytracker.data.typeconv.InputTypeTypeConverter;
 import com.zn.expirytracker.data.typeconv.StorageTypeConverter;
 import com.zn.expirytracker.data.typeconv.StringListTypeConverter;

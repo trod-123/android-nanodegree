@@ -26,13 +26,13 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.notifications.NotificationHelper;
+import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;
-import com.zn.expirytracker.widget.UpdateWidgetService;
+import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,7 +54,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceCaptureVoice;
     static Preference mPreferenceAccountSignIn;
     static Preference mPreferenceAccountSignOut;
-    static Preference mPreferenceAccountSync;
+    // TODO: Hide for now
+//    static Preference mPreferenceAccountSync;
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
@@ -111,7 +112,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceCaptureVoice = findPreference(getString(R.string.pref_capture_voice_input_key));
         mPreferenceAccountSignIn = findPreference(getString(R.string.pref_account_sign_in_key));
         mPreferenceAccountSignOut = findPreference(getString(R.string.pref_account_sign_out_key));
-        mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
+//        mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
@@ -202,7 +203,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignIn.setVisible(!show);
         mPreferenceAccountSignOut.setVisible(show);
         boolean hasAccount = mPreferenceAccountSignOut.isVisible();
-        mPreferenceAccountSync.setVisible(hasAccount);
+//        mPreferenceAccountSync.setVisible(hasAccount);
         mPreferenceAccountDelete.setVisible(hasAccount);
         // TODO: Scroll automatically to the newly visible settings
     }
@@ -228,13 +229,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return true;
             }
         });
-        mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                // TODO: Sync Room and Firebase here
-                return false;
-            }
-        });
+//        mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                // TODO: Sync Room and Firebase here
+//                return false;
+//            }
+//        });
         mPreferenceAccountDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -315,7 +316,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
                 updatePreferencesFromFirebaseRTD(dataSnapshot);
-                // Not used here
             }
 
             @Override
@@ -358,7 +358,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     @SuppressLint("RestrictedApi")
     // https://stackoverflow.com/questions/41150995/appcompatactivity-oncreate-can-only-be-called-from-within-the-same-library-group
-    private static void updatePreferencesFromFirebaseRTD(DataSnapshot snapshot) {
+    private static void updatePreferencesFromFirebaseRTD(@NonNull DataSnapshot snapshot) {
         String key = snapshot.getKey();
         boolean click = false;
         if (key != null) {
@@ -367,18 +367,28 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     key.equals(mPreferenceCaptureVibrate.getKey()) ||
                     key.equals(mPreferenceCaptureVoice.getKey())) {
                 // Boolean cases. Auto-click the toggle only if old and new values are different
-                boolean newValue = (boolean) snapshot.getValue();
-                boolean oldValue = mSp.getBoolean(key, true);
-                if (newValue != oldValue) {
-                    click = true;
+                try {
+                    boolean newValue = (boolean) snapshot.getValue();
+                    boolean oldValue = mSp.getBoolean(key, true);
+                    if (newValue != oldValue) {
+                        click = true;
+                    }
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
                 }
             } else if (key.equals(mPreferenceNotificationsNumDays.getKey()) ||
                     key.equals(mPreferenceNotificationsTod.getKey()) ||
                     key.equals(mPreferenceWidget.getKey()) ||
                     key.equals(mPreferenceDisplayName.getKey())) {
                 // String cases
-                String value = (String) snapshot.getValue();
-                mSp.edit().putString(key, value).apply();
+                try {
+                    String value = (String) snapshot.getValue();
+                    mSp.edit().putString(key, value).apply();
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
+                }
             }
 
             // Update the preference UI
@@ -591,10 +601,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
             // TODO: Disable all view clicks and dim the activity while this is happening
             switch (mDeleteType) {
                 case ACCOUNT:
-                    Toolbox.showToast(mClient.getApplicationContext(), "Deleting account...");
+                    Toolbox.showToast(mClient.getApplicationContext(),
+                            "Deleting account...");
                     break;
                 case DEVICE:
-                    Toolbox.showToast(mClient.getApplicationContext(), "Deleting app data on device...");
+                    Toolbox.showToast(mClient.getApplicationContext(),
+                            "Deleting app data on device...");
                     break;
             }
             super.onPreExecute();
@@ -604,7 +616,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         protected Void doInBackground(Void... voids) {
             switch (mDeleteType) {
                 case ACCOUNT:
-                    AuthToolbox.deleteDeviceAndCloudData(mViewModel, mClient.getApplicationContext());
+                    AuthToolbox.deleteDeviceAndCloudData(mViewModel,
+                            mClient.getApplicationContext());
                     break;
                 default:
                     AuthToolbox.deleteDeviceData(mViewModel, mClient.getApplicationContext());
@@ -620,7 +633,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     AuthToolbox.deleteAccount(mClient.getApplicationContext(), mClient);
                     break;
                 case DEVICE:
-                    Toolbox.showToast(mClient.getApplicationContext(), "All app data deleted from device");
+                    Toolbox.showToast(mClient.getApplicationContext(),
+                            "All app data deleted from device");
                     break;
                 case SIGN_OUT:
                     // Closes settings and clears back stack

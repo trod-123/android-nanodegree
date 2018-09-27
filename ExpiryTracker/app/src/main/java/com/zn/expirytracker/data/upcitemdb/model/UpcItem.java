@@ -1,4 +1,4 @@
-package com.zn.expirytracker.upcitemdb.model;
+package com.zn.expirytracker.data.upcitemdb.model;
 
 import com.squareup.moshi.Json;
 

@@ -17,6 +17,7 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,13 +35,13 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
+import com.zn.expirytracker.data.upcitemdb.UpcItemDbService;
+import com.zn.expirytracker.data.upcitemdb.model.Item;
+import com.zn.expirytracker.data.upcitemdb.model.UpcItem;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
 import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
-import com.zn.expirytracker.upcitemdb.UpcItemDbService;
-import com.zn.expirytracker.upcitemdb.model.Item;
-import com.zn.expirytracker.upcitemdb.model.UpcItem;
 import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -292,7 +293,7 @@ public class CaptureOverlayFragment extends Fragment
     /**
      * Populates overlay with {@code upcItem} data gathered.
      * <p>
-     * If {@code upcItem == null}, then close fragment
+     * If {@code upcItem == null}, then prompt user for name and date
      *
      * @param upcItem
      */
@@ -341,7 +342,6 @@ public class CaptureOverlayFragment extends Fragment
             mWeight = item.getWeight();
         } else {
             // upcItem is null or has no results
-            Toolbox.showToast(mHostActivity, "Item not in online database");
             mTvDescription.setVisibility(View.GONE);
             // Load the barcode in the main image instead and hide the other
             Toolbox.showView(mPbImage, true, false);
@@ -471,12 +471,14 @@ public class CaptureOverlayFragment extends Fragment
     /**
      * Fetches info about the provided barcode from the upcitemdb
      */
-    private class GetProductsAsyncTask extends AsyncTask<String, Void, UpcItem> {
+    private class GetProductsAsyncTask extends
+            AsyncTask<String, Void, Pair<UpcItem, UpcItemDbService.ResponseCode>> {
         UpcItemDbService service;
 
         @Override
-        protected void onPostExecute(@Nullable UpcItem upcItem) {
-            populateFieldsFromBarcode(upcItem);
+        protected void onPostExecute(@Nullable Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
+            populateFieldsFromBarcode(upcItem.first);
+            handleResponseCode(upcItem);
         }
 
         @Override
@@ -486,9 +488,10 @@ public class CaptureOverlayFragment extends Fragment
 
         // https://api.upcitemdb.com/prod/trial/search?s=google%20pixel%202&match_mode=0&type=product
         @Override
-        protected UpcItem doInBackground(String... barcodes) {
+        protected Pair<UpcItem, UpcItemDbService.ResponseCode> doInBackground(String... barcodes) {
             if (DEBUG_MODE_NO_API_CALL) {
-                return new UpcItem();
+                // empty upcitem simulates no response
+                return new Pair<>(new UpcItem(), UpcItemDbService.ResponseCode.OTHER);
             } else {
                 try {
                     return service.fetchUpcItemInfo(barcodes[0]);
@@ -497,6 +500,43 @@ public class CaptureOverlayFragment extends Fragment
                 }
                 return null;
             }
+        }
+    }
+
+    /**
+     * Display a toast to the user pertaining to the UpcItemDb response code
+     *
+     * @param upcItem
+     */
+    private void handleResponseCode(Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
+        String errorToast = null;
+        switch (upcItem.second) {
+            case OK:
+                // Even with a good response, the items may be empty
+                if (upcItem.first.getItems().size() == 0) {
+                    errorToast = "Item not found in database";
+                }
+                break;
+            case NO_INTERNET:
+                errorToast = "Internet connection lost while getting data. Please try again later";
+                break;
+            case NOT_FOUND:
+            case INVALID_QUERY:
+                errorToast = "Item not found in database";
+                break;
+            case EXCEED_LIMIT:
+                errorToast = "API calls limit has been reached. Please contact the developer";
+                break;
+            case SERVER_ERR:
+                errorToast = "Server error. Please try again later";
+                break;
+            case OTHER:
+            default:
+                errorToast = "Unknown error";
+                break;
+        }
+        if (errorToast != null) {
+            Toolbox.showToast(mHostActivity, errorToast);
         }
     }
 

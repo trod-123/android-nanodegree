@@ -64,10 +64,14 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     @BindView(R.id.btn_sign_in_create_account)
     Button mBtnCreateAccount;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (AuthToolbox.isSignedIn()) {
+            // Skip sign in if already signed in
+            AuthToolbox.startMainActivity(this);
+            return;
+        }
         Timber.tag(SignInActivity.class.getSimpleName());
         setContentView(R.layout.activity_sign_in);
         ButterKnife.bind(this);
@@ -88,16 +92,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (AuthToolbox.isSignedIn()) {
-            AuthToolbox.startMainActivity(this);
-        } else {
-            // Show UI
-        }
     }
 
     @Override

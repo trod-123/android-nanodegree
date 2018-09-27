@@ -28,4 +28,12 @@ public class Constants {
     public static final String BITMAP_SAVING_DIRECTORY = "scannedImagesDir";
     public static final int BITMAP_SAVING_QUALITY = 30; // out of 100
     public static final String DEFAULT_FILENAME = "food";
+
+    public static final double GREETING_GENERIC_THRESHOLD = 0.7; // above = TOD greet, below = generic
+    public static final int GREETING_EVENING_BOUNDS = 17; // 24 hours
+    public static final int GREETING_MORNING_BOUNDS = 5;
+    public static final int GREETING_AFTERNOON_BOUNDS = 12;
+
+    public static final float DEFAULT_DETAIL_PAGE_WIDTH = 0.98f;
+
 }

@@ -21,6 +21,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static com.zn.expirytracker.utils.Constants.GREETING_AFTERNOON_BOUNDS;
+import static com.zn.expirytracker.utils.Constants.GREETING_EVENING_BOUNDS;
+import static com.zn.expirytracker.utils.Constants.GREETING_GENERIC_THRESHOLD;
+import static com.zn.expirytracker.utils.Constants.GREETING_MORNING_BOUNDS;
+
 /**
  * Set of helper methods for returning data
  */
@@ -31,10 +36,6 @@ public class DataToolbox {
     private static final Random mRandomizer = new Random();
 
     private static final int NO_MAPPING_FOUND = -65536;
-    private static final double GREETING_GENERIC_THRESHOLD = 0.7; // above = TOD greet, below = generic
-    private static final int GREETING_EVENING_BOUNDS = 17; // 24 hours
-    private static final int GREETING_MORNING_BOUNDS = 5;
-    private static final int GREETING_AFTERNOON_BOUNDS = 12;
 
     public static final int POSITION_NO_FOOD = -1;
     public static final int NO_STORAGE_ICON_RESOURCE = -1;

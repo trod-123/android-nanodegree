@@ -23,8 +23,10 @@ import android.widget.ImageView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
@@ -62,11 +64,6 @@ public class FoodListFragment extends Fragment
         // Required empty public constructor
     }
 
-    /**
-     * TODO: Temp, for if we need to pass any arguments
-     *
-     * @return
-     */
     public static FoodListFragment newInstance() {
         FoodListFragment fragment = new FoodListFragment();
         return fragment;
@@ -96,11 +93,12 @@ public class FoodListFragment extends Fragment
                 if (foods != null) {
                     mListAdapter.submitList(foods);
                     showEmptyView(foods.size() == 0);
+                } else {
+                    Timber.e("ListFragment ViewModel foods list was null. Showing empty view...");
+                    showEmptyView(true);
                 }
             }
         });
-
-        FirebaseDatabaseHelper.addChildEventListener(this);
 
         mFabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +108,20 @@ public class FoodListFragment extends Fragment
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Only listen to changes to food_database/food_table/uid/{child}
+        FirebaseDatabaseHelper.addChildEventListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        FirebaseDatabaseHelper.removeChildEventListener(this);
     }
 
     private void setupRecyclerView() {
@@ -136,7 +148,8 @@ public class FoodListFragment extends Fragment
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                                  RecyclerView.ViewHolder target) {
                 return false;
             }
 
@@ -150,15 +163,18 @@ public class FoodListFragment extends Fragment
             }
         });
         helper.attachToRecyclerView(mRvFoodList);
-        mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
+        mRvFoodList.addItemDecoration(
+                new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
 
-        mSrFoodList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Toolbox.showToast(mHostActivity, "This will refresh the list!");
-                mSrFoodList.setRefreshing(false);
-            }
-        });
+        // TODO: Disable swipes for now
+//        mSrFoodList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                Toolbox.showToast(mHostActivity, "This will refresh the list!");
+//                mSrFoodList.setRefreshing(false);
+//            }
+//        });
+        mSrFoodList.setEnabled(false);
     }
 
     private void showEmptyView(boolean show) {
@@ -168,27 +184,51 @@ public class FoodListFragment extends Fragment
         }
     }
 
-    // region Firebase ChildEventListener
+    // region Firebase RTD ChildEventListener
 
     @Override
     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Food food = dataSnapshot.getValue(Food.class);
-        Timber.d("Food added from RTD: id_%s", food.get_id());
-        mViewModel.insert(false, food);
+        try {
+            Food food = dataSnapshot.getValue(Food.class);
+            if (food != null) {
+                Timber.d("Food added from RTD: id_%s", food.get_id());
+                mViewModel.insert(false, food); // don't save to cloud to avoid infinite loop
+            } else {
+                Timber.e("Food added from RTD was null. Not updating DB...");
+            }
+        } catch (DatabaseException e) {
+            Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
+        }
     }
 
     @Override
     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        Food food = dataSnapshot.getValue(Food.class);
-        Timber.d("Food changed from RTD: id_%s", food.get_id());
-        mViewModel.update(false, food);
+        try {
+            Food food = dataSnapshot.getValue(Food.class);
+            if (food != null) {
+                Timber.d("Food changed from RTD: id_%s", food.get_id());
+                mViewModel.update(false, food); // don't save to cloud to avoid infinite loop
+            } else {
+                Timber.e("Food changed from RTD was null. Not updating DB...");
+            }
+        } catch (DatabaseException e) {
+            Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
+        }
     }
 
     @Override
     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-        Food food = dataSnapshot.getValue(Food.class);
-        Timber.d("Food deleted from RTD: id_%s", food.get_id());
-        mViewModel.delete(false, food);
+        try {
+            Food food = dataSnapshot.getValue(Food.class);
+            if (food != null) {
+                Timber.d("Food removed from RTD: id_%s", food.get_id());
+                mViewModel.delete(false, food); // don't save to cloud to avoid infinite loop
+            } else {
+                Timber.e("Food removed from RTD was null. Not updating DB...");
+            }
+        } catch (DatabaseException e) {
+            Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
+        }
     }
 
     @Override
@@ -198,9 +238,8 @@ public class FoodListFragment extends Fragment
 
     @Override
     public void onCancelled(@NonNull DatabaseError databaseError) {
-        Timber.e("Error pulling from RTD: %s", databaseError.getMessage());
+        Timber.e("Cancelled error pulling from RTD: %s", databaseError.getMessage());
     }
-
 
     // endregion
 
@@ -216,12 +255,19 @@ public class FoodListFragment extends Fragment
 
     @Override
     public void onCameraInputSelected() {
-        Intent intent = new Intent(mHostActivity, CaptureActivity.class);
-        startActivity(intent);
+        // Ensure device has camera activity to handle this first
+        if (Toolbox.checkCameraHardware(mHostActivity)) {
+            Intent intent = new Intent(mHostActivity, CaptureActivity.class);
+            startActivity(intent);
+        } else {
+            Timber.d("Attempted to start Capture, but device does not have a camera");
+            Toolbox.showSnackbarMessage(mRootview, "Your device needs a camera to do this");
+        }
     }
 
     @Override
     public void onTextInputSelected() {
+        UserMetrics.incrementUserTextOnlyInputCount();
         Intent intent = new Intent(mHostActivity, AddActivity.class);
         startActivity(intent);
     }

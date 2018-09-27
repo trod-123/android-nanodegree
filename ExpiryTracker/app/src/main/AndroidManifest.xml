@@ -80,7 +80,7 @@
         </activity>
 
         <receiver
-            android:name=".widget.FoodWidget"
+            android:name=".ui.widget.FoodWidget"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -91,15 +91,15 @@
         </receiver>
 
         <service
-            android:name=".widget.FoodListRemoteViewsService"
+            android:name=".ui.widget.FoodListRemoteViewsService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
-            android:name=".widget.UpdateWidgetService"
+            android:name=".ui.widget.UpdateWidgetService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
-            android:name=".notifications.NotificationJobService"
+            android:name=".ui.notifications.NotificationJobService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />

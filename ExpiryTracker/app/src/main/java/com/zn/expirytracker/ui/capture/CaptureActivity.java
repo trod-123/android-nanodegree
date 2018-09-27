@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.ui.capture.barcodescanning.BarcodeScanningProcessor;
 import com.zn.expirytracker.ui.capture.helpers.GraphicOverlay;
@@ -200,6 +202,7 @@ public class CaptureActivity extends AppCompatActivity implements
     @Override
     public void handleBarcode(FirebaseVisionBarcode barcode, Bitmap barcodeBitmap) {
         if (!mScanJitter) {
+            UserMetrics.incrementBarcodeScansCount();
             if (mBeep) {
                 try {
                     Toolbox.playBeep(this);
@@ -224,21 +227,28 @@ public class CaptureActivity extends AppCompatActivity implements
     @Override
     public void handleImage(@NonNull List<FirebaseVisionLabel> labels, Bitmap bitmap) {
         if (!mScanJitter && mCurrentInputType == InputType.IMG_REC) {
+            UserMetrics.incrementImgRecInputCount();
             if (mVibrate) {
                 Toolbox.vibrate(this);
             }
             // TODO: Implement and pass to overlay. Currently shows dummy toast with labels
             StringBuilder sb = new StringBuilder();
             for (FirebaseVisionLabel label : labels) {
-                sb.append(label.getLabel());
+                if (label != null) {
+                    sb.append(label.getLabel());
+                } else {
+                    sb.append("label was null");
+                }
                 sb.append(", ");
             }
             Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
+            mScanJitter = true;
         } else if (mCurrentInputType == InputType.IMG_ONLY) {
+            UserMetrics.incrementImgOnlyInputCount();
             if (mVibrate) {
                 Toolbox.vibrate(this);
             }
-            // TODO: Get IMGONLY its own method, it will not be called from here
+            // TODO: Get IMG_ONLY its own method, it will not be called from here
             loadResultOverlay(bitmap);
             mScanJitter = true;
         }
@@ -433,6 +443,7 @@ public class CaptureActivity extends AppCompatActivity implements
             mCameraSource = new CameraSource(this, mGraphicOverlay);
         }
         switch (inputType) {
+            // TODO: Perhaps include these too one day?
 //                case CLASSIFICATION:
 //                    Log.i(TAG, "Using Custom Image Classifier Processor");
 //                    mCameraSource.setMachineLearningFrameProcessor(new CustomImageClassifierProcessor(this));
@@ -442,8 +453,14 @@ public class CaptureActivity extends AppCompatActivity implements
 //                    mCameraSource.setMachineLearningFrameProcessor(new TextRecognitionProcessor());
 //                    break;
             case BARCODE:
-                Timber.i("Using Barcode Detector Processor");
-                mCameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor(this));
+                if (Toolbox.isNetworkAvailable(this)) {
+                    Timber.i("Using Barcode Detector Processor");
+                    mCameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor(this));
+                } else {
+                    Toolbox.showSnackbarMessage(mRootView,
+                            "Fetching barcode data online requires internet connection");
+                    mCameraSource.setMachineLearningFrameProcessor(null);
+                }
                 break;
             case IMG_ONLY:
                 // TODO: Null the frame processor, but still have a way to capture the image
@@ -537,14 +554,26 @@ public class CaptureActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
+        // Show user message if permissions are denied, and allow users to request permissions again
+        Snackbar snackPermissions = Snackbar.make(mRootView,
+                "Please enable permissions to use the camera", Snackbar.LENGTH_INDEFINITE)
+                .setAction("Enable", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getRuntimePermissions();
+                    }
+                });
         Timber.i("Permission granted!");
         if (allPermissionsGranted()) {
             setupFrameProcessing(mCurrentInputType);
+            snackPermissions.dismiss();
+        } else {
+            snackPermissions.show();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private static boolean isPermissionGranted(Context context, String permission) {
+    private boolean isPermissionGranted(Context context, String permission) {
         if (ContextCompat.checkSelfPermission(context, permission)
                 == PackageManager.PERMISSION_GRANTED) {
             Timber.i("Permission granted: %s", permission);

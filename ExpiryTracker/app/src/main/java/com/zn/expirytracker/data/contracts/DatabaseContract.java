@@ -1,4 +1,4 @@
-package com.zn.expirytracker.data.model;
+package com.zn.expirytracker.data.contracts;
 
 public class DatabaseContract {
 

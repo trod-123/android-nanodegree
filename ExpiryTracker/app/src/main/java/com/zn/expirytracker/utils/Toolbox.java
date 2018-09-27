@@ -61,7 +61,7 @@ public class Toolbox {
      * Check if this device has a camera
      *
      * @param context
-     * @return
+     * @return {@code true} if this device has a camera
      */
     public static boolean checkCameraHardware(Context context) {
         return (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA));

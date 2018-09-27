@@ -6,13 +6,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.utils.Constants;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 // TODO: After submission, animate deleting items
 public class DetailPagerAdapter extends FragmentStatePagerAdapter {
-
-    private static final float DEFAULT_PAGE_WIDTH = 0.98f;
 
     private List<Food> mFoodsList;
 
@@ -20,14 +21,19 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
-    public void setFoodsList(List<Food> foodsList) {
+    public void setFoodsList(@NonNull List<Food> foodsList) {
         mFoodsList = foodsList;
         notifyDataSetChanged();
     }
 
     @Override
     public Fragment getItem(int position) {
-        return DetailFragment.newInstance(mFoodsList.get(position).get_id());
+        if (mFoodsList != null) {
+            return DetailFragment.newInstance(mFoodsList.get(position).get_id());
+        } else {
+            Timber.e("Attempted to getItem in DetailPagerAdapter but there are no items. Returning null...");
+            return null;
+        }
     }
 
     @Override
@@ -44,6 +50,6 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public float getPageWidth(int position) {
-        return DEFAULT_PAGE_WIDTH;
+        return Constants.DEFAULT_DETAIL_PAGE_WIDTH;
     }
 }

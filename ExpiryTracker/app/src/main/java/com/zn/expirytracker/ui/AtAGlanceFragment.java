@@ -37,7 +37,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.WeeklyDateFilter;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
@@ -506,12 +506,22 @@ public class AtAGlanceFragment extends Fragment
                     key.equals(getString(R.string.pref_capture_vibrate_key)) ||
                     key.equals(getString(R.string.pref_capture_voice_input_key))) {
                 // Handle booleans
-                sp.edit().putBoolean(key, (boolean) value).apply();
+                try {
+                    sp.edit().putBoolean(key, (boolean) value).apply();
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
+                }
             } else if (key.equals(getString(R.string.pref_notifications_days_key)) ||
                     key.equals(getString(R.string.pref_notifications_tod_key)) ||
                     key.equals(getString(R.string.pref_widget_num_days_key)) ||
                     key.equals(getString(R.string.pref_account_display_name_key))) {
-                sp.edit().putString(key, (String) value).apply();
+                try {
+                    sp.edit().putString(key, (String) value).apply();
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
+                }
             }
 
             // special cases
