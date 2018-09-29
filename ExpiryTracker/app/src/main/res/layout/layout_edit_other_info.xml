@@ -23,6 +23,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/food_brand_label"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
@@ -51,6 +52,7 @@
     <ImageView
         android:id="@+id/iv_edit_brand_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
+        android:contentDescription="@string/edit_clear_brand"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,6 +63,7 @@
     <ImageView
         android:id="@+id/iv_edit_size"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_size_label"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_brand"
         app:layout_constraintTop_toTopOf="@+id/til_edit_size"
@@ -89,6 +92,7 @@
     <ImageView
         android:id="@+id/iv_edit_size_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
+        android:contentDescription="@string/edit_clear_size"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,6 +103,7 @@
     <ImageView
         android:id="@+id/iv_edit_weight"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_weight_label"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_size"
         app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
@@ -127,6 +132,7 @@
     <ImageView
         android:id="@+id/iv_edit_weight_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
+        android:contentDescription="@string/edit_clear_weight"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
         app:layout_constraintEnd_toEndOf="parent"
@@ -137,6 +143,7 @@
     <ImageView
         android:id="@+id/iv_edit_notes"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_notes_label"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_weight"
         app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
@@ -165,6 +172,7 @@
     <ImageView
         android:id="@+id/iv_edit_notes_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
+        android:contentDescription="@string/edit_clear_notes"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
         app:layout_constraintEnd_toEndOf="parent"

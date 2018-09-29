@@ -10,21 +10,21 @@
         android:id="@+id/tv_chart_header_num_foods"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="3 expiring foods"
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="3 expiring foods" />
 
     <TextView
         android:id="@+id/tv_chart_header_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Wed, Aug 29"
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tv_chart_header_num_foods"
-        app:layout_constraintTop_toBottomOf="@+id/tv_chart_header_num_foods" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_chart_header_num_foods"
+        tools:text="Wed, Aug 29" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/chart_at_a_glance"
@@ -46,7 +46,7 @@
         android:clickable="true"
         android:elevation="@dimen/fab_elevation_rest"
         android:focusable="true"
-        android:foreground="?selectableItemBackground"
+        android:foreground="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:stateListAnimator="@animator/fab_elevation"
         app:layout_constraintEnd_toEndOf="@+id/chart_at_a_glance"
@@ -61,15 +61,19 @@
             android:text="@string/date_weekly_filter_7_days_btn"
             android:textColor="@android:color/white"
             android:textSize="14sp"
-            tools:text="Next 7 days" />
+            tools:text="Next 7 days"
+            android:importantForAccessibility="no"/>
 
+        <!-- Content description set in Java in parent view -->
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="4dp"
             android:tint="@android:color/white"
-            app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp" />
+            app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp"
+            tools:ignore="contentDescription"
+            android:importantForAccessibility="no"/>
 
     </LinearLayout>
 

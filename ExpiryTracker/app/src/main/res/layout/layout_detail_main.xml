@@ -34,12 +34,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Stored in the fridge"
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tv_detail_expiry_date"
-        app:layout_constraintTop_toBottomOf="@+id/tv_detail_expiry_date" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_expiry_date"
+        tools:text="Stored in the fridge" />
 
+    <!-- Content description is handled in Java -->
     <ImageView
         android:id="@+id/iv_detail_storage_icon"
         android:layout_width="wrap_content"
@@ -50,8 +51,10 @@
         app:layout_constraintStart_toEndOf="@+id/tv_detail_storage_label"
         app:layout_constraintTop_toTopOf="@+id/tv_detail_storage_label"
         app:srcCompat="@drawable/ic_fridge_black_24dp"
+        tools:ignore="contentDescription"
         tools:srcCompat="@drawable/ic_fridge_black_24dp" />
 
+    <!-- Content description is handled in Java -->
     <com.zn.expirytracker.ui.NumberCircleView
         android:id="@+id/ncv_detail_count_days"
         android:layout_width="@dimen/number_circle_size_detail"
@@ -63,6 +66,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_storage_label" />
 
+    <!-- Content description is handled in Java -->
     <com.zn.expirytracker.ui.NumberCircleView
         android:id="@+id/ncv_detail_count"
         android:layout_width="@dimen/number_circle_size_detail"

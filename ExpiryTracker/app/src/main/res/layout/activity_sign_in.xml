@@ -12,6 +12,36 @@
         android:background="@color/colorPrimary"
         tools:context="com.zn.expirytracker.ui.SignInActivity">
 
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline_sign_in_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".2" />
+
+        <ImageView
+            android:id="@+id/iv_sign_in_app_logo"
+            android:layout_width="@dimen/sign_in_app_logo_size"
+            android:layout_height="@dimen/sign_in_app_logo_size"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_sign_in_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline_sign_in_logo"
+            app:srcCompat="@drawable/web_hi_res_512" />
+
+        <TextView
+            android:id="@+id/tv_sign_in_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            app:layout_constraintEnd_toEndOf="@+id/iv_sign_in_app_logo"
+            app:layout_constraintStart_toStartOf="@+id/iv_sign_in_app_logo"
+            app:layout_constraintTop_toBottomOf="@+id/iv_sign_in_app_logo" />
+
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_sign_in_email"
             android:layout_width="match_parent"
@@ -103,35 +133,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <ImageView
-            android:id="@+id/iv_sign_in_app_logo"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"
-            app:srcCompat="@drawable/web_hi_res_512" />
-
-        <TextView
-            android:id="@+id/tv_sign_in_app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Expiry Tracker"
-            android:textColor="@android:color/white"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="@+id/iv_sign_in_app_logo"
-            app:layout_constraintStart_toStartOf="@+id/iv_sign_in_app_logo"
-            app:layout_constraintTop_toBottomOf="@+id/iv_sign_in_app_logo" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".2" />
-
         <FrameLayout
             android:id="@+id/btn_container_sign_in_google"
             android:layout_width="wrap_content"
@@ -166,7 +167,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Version 1.0"
+            tools:text="@string/version_num"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -178,7 +179,7 @@
         android:id="@+id/overlay_sign_in_no_click"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#60000000"
+        android:background="@color/dimmed_overlay"
         android:visibility="gone" />
 
 </FrameLayout>

@@ -12,14 +12,17 @@
         android:layout_height="match_parent"
         app:enablePaging="false">
 
+        <!-- Even for RTL layouts, use layoutDirection="ltr" to properly neutralize instantiating
+        fragments in reversed order -->
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout_main"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_gravity="bottom"
             android:background="@color/colorPrimary"
-            app:tabTextColor="@color/colorPrimaryLight"
+            android:layoutDirection="ltr"
             app:tabSelectedTextColor="@android:color/white"
-            android:layout_gravity="bottom"/>
+            app:tabTextColor="@color/colorPrimaryLight" />
 
     </com.zn.expirytracker.ui.NonSwipeableViewPager>
 

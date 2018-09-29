@@ -10,15 +10,18 @@
         android:id="@+id/iv_detail_image_broken"
         android:layout_width="@dimen/empty_list_icon_size"
         android:layout_height="@dimen/empty_list_icon_size"
-        android:src="@drawable/ic_image_broken_black_24dp"
-        android:tint="@android:color/white"
         android:layout_gravity="center"
-        android:alpha="0"/>
+        android:alpha="0"
+        android:contentDescription="@string/image_broken_content_description"
+        android:src="@drawable/ic_image_broken_black_24dp"
+        android:tint="@android:color/white" />
 
+    <!-- Content description is set in Java -->
     <ImageView
         android:id="@+id/iv_detail_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:ignore="contentDescription" />
 
     <ImageView
         android:id="@+id/iv_detail_add_image_icon"
@@ -27,6 +30,7 @@
         android:layout_gravity="center"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
+        android:contentDescription="@string/action_add_photo"
         android:focusable="true"
         android:gravity="center"
         android:padding="@dimen/detail_add_image_icon_padding"

@@ -13,19 +13,22 @@
         android:src="@drawable/ic_image_off_black_24dp"
         android:tint="@android:color/white"
         android:layout_gravity="center"
-        android:alpha="0"/>
+        android:alpha="0"
+        android:contentDescription="@string/empty_image_list"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager_detail_image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_image_height" />
 
+    <!-- Content description not needed here -->
     <ImageView
         android:id="@+id/iv_scrim_detail_image"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:src="@drawable/scrim_gradient_upwards_dark" />
+        android:src="@drawable/scrim_gradient_upwards_dark"
+        tools:ignore="contentDescription"/>
 
     <com.rd.PageIndicatorView
         android:id="@+id/pageIndicatorView_detail_image"

@@ -8,6 +8,7 @@
     <!-- region App and screen names -->
 
     <string name="app_name" translatable="false">&appname;</string>
+    <string name="version_num">Version %1$s</string>
     <string name="activity_settings_name">Settings</string>
     <string name="fragment_at_a_glance_name">At a glance</string>
     <string name="fragment_food_list_name">Foods</string>
@@ -24,7 +25,7 @@
     <!-- region Actions -->
 
     <string name="action_search">Search</string>
-    <string name="action_settings">@string/activity_settings_name</string>
+    <string name="action_settings" translatable="false">@string/activity_settings_name</string>
     <string name="action_add_item">Add food item</string>
     <string name="action_add_item_camera">Scan a barcode or take a picture</string>
     <string name="action_add_item_text">Input text details</string>
@@ -33,6 +34,11 @@
     <string name="action_try_again">Try again</string>
     <string name="action_add_photo_camera">Take a photo</string>
     <string name="action_add_photo_library">Choose from library</string>
+    <string name="action_edit_item">Edit this food item</string>
+    <string name="action_change_date_filter">Change date filter. Currently showing foods expiring within %1$s</string>
+    <string name="action_add_count">Add count by 1</string>
+    <string name="action_subtract_count">Subtract count by 1</string>
+    <string name="action_add_photo">Add image</string>
 
     <!-- endregion -->
 
@@ -73,8 +79,8 @@
         <item>@string/greeting_afternoon</item>
         <item>@string/greeting_day</item>
     </string-array>
-    <string name="complete_greeting">%1$s, %2$s!</string>
-    <string name="greeting_no_name">%1$s!</string>
+    <string name="complete_greeting" translatable="false">%1$s, %2$s!</string>
+    <string name="greeting_no_name" translatable="false">%1$s!</string>
 
     <string name="at_a_glance_summary_none">You have no foods expiring within %2$s</string>
     <string name="at_a_glance_summary_one">You have only %1$d food expiring within %2$s</string>
@@ -134,6 +140,7 @@
     <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
     <string name="expiry_msg_generic">Expires %1$s</string>
     <string name="expiry_msg_generic_pp">Expiring %1$s</string>
+    <string name="expiry_msg_num_days">Expires in %1$s %2$s</string>
 
     <string name="date_today">Today</string>
     <string name="date_tomorrow">Tomorrow</string>
@@ -163,6 +170,7 @@
     <string name="food_storage_location_label">Stored in</string>
     <string name="food_count_label">Count</string>
     <string name="food_count">Count: %1$d</string>
+    <string name="food_msg_count">%1$s %2$s of this item</string>
     <string name="food_description_label">Description</string>
     <string name="food_other_info_label">Other info</string>
     <string name="food_brand_label">Brand</string>
@@ -211,6 +219,14 @@
     <string name="edit_error_count">Count must be larger than 0</string>
     <string name="edit_error_date_expiry">The Expiry date must be today or later</string>
     <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
+
+    <string name="edit_clear_date_good_thru">Clear the good thru date</string>
+    <string name="edit_clear_description">Clear the description</string>
+    <string name="edit_clear_brand">Clear the brand name</string>
+    <string name="edit_clear_size">Clear the food size</string>
+    <string name="edit_clear_weight">Clear the food weight</string>
+    <string name="edit_clear_notes">Clear the notes</string>
+
 
     <!-- region Delete dialog -->
 
@@ -306,4 +322,8 @@
     <string name="notification_channel_id" translatable="false">ch_reminders</string>
     <string name="notification_channel_name">Food expiry reminders</string>
     <string name="notification_content_title">Reminder: You have foods expiring soon!</string>
+    <string name="image_broken_content_description">Failed to load image</string>
+    <string name="empty_image_list">Empty image list</string>
+    <string name="food_image_list">Food image list</string>
+    <string name="image_scanned_barcode">Scanned barcode image</string>
 </resources>

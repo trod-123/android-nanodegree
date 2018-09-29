@@ -40,8 +40,10 @@ public class MainActivity extends AppCompatActivity {
         Timber.tag(MainActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
-        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), Toolbox.isLeftToRightLayout());
         mViewPager.setAdapter(mPagerAdapter);
+        // Required for RTL layouts, so AAG is always the first tab
+        mViewPager.setCurrentItem(MainPagerAdapter.FRAGMENT_AT_A_GLANCE);
         // This needs to be set so tab layout can be linked with view pager. Despite what the
         // documentation says, this is required to be called, otherwise tab layout will have no tabs
         mTabLayout.setupWithViewPager(mViewPager);
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 launchSettings();
                 return true;
-                // TODO: Hide for now
+            // TODO: Hide for now
 //            case R.id.action_search:
 //                launchSearch();
 //                return true;
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         if (tabAtAGlance != null) {
             tabAtAGlance.setText(R.string.fragment_at_a_glance_name);
             tabAtAGlance.setIcon(R.drawable.ic_chart_bar_white_24dp);
+            tabAtAGlance.setContentDescription(R.string.fragment_at_a_glance_name);
         } else {
             Timber.e("At a glance tab was null! Not setting tab elements...");
         }
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         if (tabList != null) {
             tabList.setText(R.string.fragment_food_list_name);
             tabList.setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
+            tabList.setContentDescription(R.string.fragment_food_list_name);
         } else {
             Timber.e("List tab was null! Not setting tab elements...");
         }

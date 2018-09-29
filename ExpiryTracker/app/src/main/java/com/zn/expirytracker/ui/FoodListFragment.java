@@ -180,7 +180,10 @@ public class FoodListFragment extends Fragment
     private void showEmptyView(boolean show) {
         Toolbox.showView(mEmptyView, show, false);
         if (show) {
-            mIvEmpty.setImageResource(DataToolbox.getRandomAnimalDrawableId());
+            int animalDrawableId = DataToolbox.getRandomAnimalDrawableId();
+            mIvEmpty.setImageResource(animalDrawableId);
+            mIvEmpty.setContentDescription(
+                    DataToolbox.getAnimalContentDescriptionById(animalDrawableId));
         }
     }
 

@@ -18,12 +18,12 @@
 
         <ImageView
             android:id="@+id/iv_widget_app_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:layout_gravity="center_vertical"
-            android:padding="16dp"
-            android:src="@drawable/ic_cube_black_24dp"
-            android:tint="@android:color/white" />
+            android:layout_margin="16dp"
+            android:src="@drawable/web_hi_res_512"
+            android:contentDescription="@string/app_name"/>
 
         <TextView
             android:id="@+id/tv_widget_header"
@@ -45,7 +45,8 @@
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_settings_white_24dp"
-            android:tint="@android:color/white" />
+            android:tint="@android:color/white"
+            android:contentDescription="@string/action_settings"/>
 
     </LinearLayout>
 
@@ -61,7 +62,8 @@
             android:layout_gravity="center"
             android:layout_marginEnd="32dp"
             android:layout_marginStart="32dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -73,13 +75,15 @@
                 android:textColor="@color/textColorPrimaryLight"
                 android:textSize="18sp" />
 
+            <!-- Content description set in Java -->
             <ImageView
                 android:id="@+id/iv_widget_empty_animal"
                 style="@style/AppTheme.Icon"
                 android:layout_width="@dimen/empty_list_icon_size"
                 android:layout_height="@dimen/empty_list_icon_size"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_dog_black_24dp" />
+                android:src="@drawable/ic_dog_black_24dp"
+                tools:ignore="contentDescription"/>
 
         </LinearLayout>
 

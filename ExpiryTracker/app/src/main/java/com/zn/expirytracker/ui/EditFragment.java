@@ -329,7 +329,8 @@ public class EditFragment extends Fragment implements
         if (!mAddMode && food != null) {
             // Image adapter
             mImageUris = food.getImages();
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true);
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
+                    Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
 
             // Dates
@@ -368,7 +369,8 @@ public class EditFragment extends Fragment implements
         } else {
             // Set ADD_MODE defaults
             mImageUris = new ArrayList<>();
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true);
+            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
+                    Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
             showFieldError(true, FieldError.REQUIRED_NAME);
             mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
@@ -377,6 +379,10 @@ public class EditFragment extends Fragment implements
 
         // Common fields
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setCurrentItem(mImageUris != null && !Toolbox.isLeftToRightLayout() ?
+                mImageUris.size() : 0, false); // set for RTL layouts
+        mViewPager.setContentDescription(
+                mFood != null ? mFood.getFoodName() : getString(R.string.food_image_list));
         mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
         mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
         if (mLoc != Storage.NOT_SET) {
@@ -790,6 +796,7 @@ public class EditFragment extends Fragment implements
             }
             if (show) {
                 errorEditTextView.setError(errorMessage);
+                errorEditTextView.setContentDescription(errorMessage);
                 editTextView.setTextColor(mHostActivity.getResources().getColor(R.color.textColorError));
 
                 if (!mCurrentFieldErrors.contains(error)) {
@@ -798,6 +805,7 @@ public class EditFragment extends Fragment implements
                 }
             } else {
                 errorEditTextView.setError(null);
+                errorEditTextView.setContentDescription(null);
                 editTextView.setTextColor(mHostActivity.getResources().getColor(R.color.textColorPrimary));
 
                 mCurrentFieldErrors.remove(error); // auto handles absent case, so no need to check
@@ -1155,9 +1163,7 @@ public class EditFragment extends Fragment implements
             Toolbox.copyFile(new File(inputFilePath), outputFilePath);
             String path = outputFilePath.getAbsolutePath();
             Timber.d("Saved image path: %s", path);
-            mImageUris.add(path);
-            mPagerAdapter.notifyDataSetChanged();
-            mPageIndicatorView.setCount(mPagerAdapter.getCount());
+            addImageToUrisList(path);
             Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
         } catch (IOException e) {
             Timber.e(e, "There was a problem saving the image to internal storage");
@@ -1168,10 +1174,25 @@ public class EditFragment extends Fragment implements
      * Updates the image uri list with the newly captured photo, with the path
      */
     private void addImageFromCamera(String imagePath) {
-        mImageUris.add(imagePath);
-        mPagerAdapter.notifyDataSetChanged();
-        mPageIndicatorView.setCount(mPagerAdapter.getCount());
+        addImageToUrisList(imagePath);
         Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
+    }
+
+    /**
+     * Helper to add an image to the food image uris list. Updates the list maintaining its order,
+     * while handling LTR and RTL differences accordingly
+     *
+     * @param path
+     */
+    private void addImageToUrisList(String path) {
+        mImageUris.add(path);
+        if (!Toolbox.isLeftToRightLayout()) {
+            mPagerAdapter.setImageUris(mImageUris);
+            mViewPager.setCurrentItem(1);
+        } else {
+            mPagerAdapter.notifyDataSetChanged();
+        }
+        mPageIndicatorView.setCount(mPagerAdapter.getCount());
     }
 
     /**

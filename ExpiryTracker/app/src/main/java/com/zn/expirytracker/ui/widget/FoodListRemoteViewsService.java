@@ -120,7 +120,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
         @Override
         public RemoteViews getViewAt(int i) {
             final RemoteViews views = new RemoteViews(mContext.getPackageName(), R.layout.item_widget);
-            Food food = mFoodsList.get(i);
+            final Food food = mFoodsList.get(i);
 
             views.setTextViewText(R.id.tv_widget_name, food.getFoodName());
             views.setTextViewText(R.id.tv_widget_date, DataToolbox.getFormattedExpiryDateString(
@@ -147,6 +147,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
                                                        Target<Bitmap> target, DataSource dataSource,
                                                        boolean isFirstResource) {
                             views.setImageViewBitmap(R.id.iv_widget, resource); // load into real iv
+                            views.setContentDescription(R.id.iv_widget, food.getFoodName());
                             views.setViewVisibility(R.id.pb_widget_iv_item, View.GONE);
                             return true;
                         }
@@ -161,6 +162,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
                     }
                     if (bitmap != null) {
                         views.setImageViewBitmap(R.id.iv_widget, bitmap);
+                        views.setContentDescription(R.id.iv_widget, food.getFoodName());
                         views.setViewVisibility(R.id.pb_widget_iv_item, View.GONE);
                     }
                 }

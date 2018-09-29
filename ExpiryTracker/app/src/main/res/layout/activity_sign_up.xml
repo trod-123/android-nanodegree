@@ -14,9 +14,10 @@
 
         <ImageView
             android:id="@+id/iv_sign_up_app_logo"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_marginTop="32dp"
+            android:layout_width="@dimen/sign_up_app_logo_size"
+            android:layout_height="@dimen/sign_up_app_logo_size"
+            android:layout_marginTop="80dp"
+            android:contentDescription="@string/app_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -27,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Expiry Tracker"
+            android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="@+id/iv_sign_up_app_logo"
@@ -167,7 +168,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:text="Version 1.0"
+            tools:text="@string/version_num"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -179,7 +180,7 @@
         android:id="@+id/overlay_sign_up_no_click"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#60000000"
+        android:background="@color/dimmed_overlay"
         android:visibility="gone" />
 
 </FrameLayout>

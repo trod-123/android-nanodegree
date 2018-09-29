@@ -1,6 +1,7 @@
 package com.zn.expirytracker.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -63,6 +65,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     ProgressBar mPbGoogle;
     @BindView(R.id.btn_sign_in_create_account)
     Button mBtnCreateAccount;
+    @BindView(R.id.tv_sign_in_app_version)
+    TextView mTvVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        try {
+            mTvVersion.setText(getString(R.string.version_num, Toolbox.getAppVersionName(this)));
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e, "SignIn: Error getting version name. Not populating Version text");
+        }
     }
 
     @Override

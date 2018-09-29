@@ -59,6 +59,8 @@ public class DetailFragment extends Fragment {
     NumberCircleView mNcvCount;
     @BindView(R.id.tv_detail_description)
     TextView mTvDescription;
+    @BindView(R.id.layout_date_calendar)
+    View mCalendarLayout;
     @BindView(R.id.tv_date_calendar_day)
     TextView mTvCalendarDay;
     @BindView(R.id.tv_date_calendar_month)
@@ -171,7 +173,8 @@ public class DetailFragment extends Fragment {
         });
 
         // Image pager
-        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), false);
+        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), false,
+                Toolbox.isLeftToRightLayout());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -210,7 +213,10 @@ public class DetailFragment extends Fragment {
         @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
         mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
+        mViewPager.setCurrentItem(images != null && !Toolbox.isLeftToRightLayout() ?
+                images.size() - 1 : 0, false);
         Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
+        mViewPager.setContentDescription(food.getFoodName());
 
         // Main layout
         mTvFoodName.setText(food.getFoodName());
@@ -219,12 +225,17 @@ public class DetailFragment extends Fragment {
         DateTime dateTime = new DateTime(food.getDateExpiry());
         mTvCalendarDay.setText(String.valueOf(dateTime.getDayOfMonth()));
         mTvCalendarMonth.setText(dateTime.monthOfYear().getAsShortText());
+        mCalendarLayout.setContentDescription(getString(R.string.expiry_msg_month_day,
+                mTvCalendarMonth.getText(), Integer.parseInt(mTvCalendarDay.getText().toString())));
 
         @Nullable Storage storage = food.getStorageLocation();
         if (storage != null && storage != Storage.NOT_SET) {
             mTvStorage.setText(getString(R.string.storage_location_description,
                     DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
             mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
+            mIvStorageIcon.setContentDescription(mHostActivity.getString(
+                    R.string.storage_location_description,
+                    DataToolbox.getStorageIconString(storage, mHostActivity)));
         } else {
             // Don't show text-icon if storage not set
             mTvStorage.setVisibility(View.GONE);
@@ -233,12 +244,14 @@ public class DetailFragment extends Fragment {
 
         mNcvCount.mTvValue.setText(String.valueOf(food.getCount()));
         mNcvCount.mTvLabel.setText(getString(R.string.food_count_label));
+        mNcvCount.updateContentDescription(R.string.food_msg_count);
         int daysUntilExpiry = DataToolbox.getNumDaysBetweenDates(
                 mCurrentDateTimeStartOfDay.getMillis(),
                 food.getDateExpiry());
         mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));
         mNcvCountDays.mTvLabel.setText(mHostActivity.getResources().getQuantityString(
                 R.plurals.food_days_label, daysUntilExpiry));
+        mNcvCountDays.updateContentDescription(R.string.expiry_msg_num_days);
         mNcvCountDays.setOutlineWidthAndColor(mHostActivity.getResources()
                         .getDimensionPixelSize(R.dimen.number_circle_outline_width),
                 ContextCompat.getColor(mHostActivity, DataToolbox.getAlertColorResource(

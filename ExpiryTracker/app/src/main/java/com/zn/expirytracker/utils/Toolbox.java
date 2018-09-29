@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
@@ -19,6 +20,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.View;
@@ -44,6 +46,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import timber.log.Timber;
@@ -56,6 +59,31 @@ public class Toolbox {
     private static Toast mToast;
     private static Snackbar mSnackbar;
     private static String mSnackbarMessage;
+
+    /**
+     * Retrieves the version name from the app level build.gradle file
+     * <p>
+     * https://stackoverflow.com/questions/4616095/how-to-get-the-build-version-number-of-your-android-application
+     *
+     * @param context
+     * @return
+     * @throws PackageManager.NameNotFoundException
+     */
+    public static String getAppVersionName(Context context) throws PackageManager.NameNotFoundException {
+        PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        return pInfo.versionName;
+    }
+
+    /**
+     * Returns true if device is currently in LTR layout
+     * <p>
+     * https://stackoverflow.com/questions/26549354/android-determine-if-device-is-in-right-to-left-language-layout
+     *
+     * @return
+     */
+    public static boolean isLeftToRightLayout() {
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_LTR;
+    }
 
     /**
      * Check if this device has a camera

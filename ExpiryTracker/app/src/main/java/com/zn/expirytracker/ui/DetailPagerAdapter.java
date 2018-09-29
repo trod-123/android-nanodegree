@@ -21,7 +21,14 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
+    /**
+     * Sets the food list for this adapter. Note for RTL layout, this assumes the list has already
+     * been reversed as this class does not handle RTL idiosyncrasies
+     *
+     * @param foodsList
+     */
     public void setFoodsList(@NonNull List<Food> foodsList) {
+        // By here, list will already have been reversed if in RTL
         mFoodsList = foodsList;
         notifyDataSetChanged();
     }

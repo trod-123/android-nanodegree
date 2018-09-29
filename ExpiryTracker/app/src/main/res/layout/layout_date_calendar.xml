@@ -1,26 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!-- Convert this to a custom view -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="48dp"
-    android:layout_height="48dp">
+    android:layout_width="@dimen/detail_calendar_size"
+    android:layout_height="@dimen/detail_calendar_size">
 
+    <!-- Content description is handled in Java -->
     <ImageView
+        android:id="@+id/layout_date_calendar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/ic_calendar_black_24dp"
-        android:tint="@color/icon_tint"/>
+        android:tint="@color/icon_tint"
+        tools:ignore="contentDescription" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Accessibility is handled by parent -->
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tv_date_calendar_day"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="2dp"
             android:gravity="center"
+            android:importantForAccessibility="no"
             android:includeFontPadding="false"
             android:textColor="@color/textColorPrimary"
             app:autoSizeMinTextSize="8sp"
@@ -31,12 +36,14 @@
             app:layout_constraintTop_toTopOf="@+id/date_calendar_guideline_top"
             tools:text="23" />
 
+        <!-- Accessibility is handled by parent -->
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tv_date_calendar_month"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="2dp"
             android:gravity="center"
+            android:importantForAccessibility="no"
             android:includeFontPadding="false"
             android:textColor="@color/textColorPrimary"
             app:autoSizeMinTextSize="8sp"

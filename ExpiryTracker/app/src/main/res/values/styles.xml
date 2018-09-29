@@ -8,6 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <!-- Prevents error: java.lang.IllegalStateException: Must specify preferenceTheme in theme -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <!-- For automatically adjusting text to match LTR or RTL layout -->
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:textDirection">locale</item>
     </style>
 
     <!-- Base application theme with translucent status bar and no action bar -->

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="32dp"
     android:clickable="true"
     android:focusable="true"
@@ -22,12 +23,14 @@
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="18sp" />
 
+    <!-- Content description set in Java -->
     <ImageView
         android:id="@+id/iv_widget_empty_animal"
         style="@style/AppTheme.Icon"
         android:layout_width="@dimen/empty_list_icon_size"
         android:layout_height="@dimen/empty_list_icon_size"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_dog_black_24dp" />
+        android:src="@drawable/ic_dog_black_24dp"
+        tools:ignore="contentDescription"/>
 
 </LinearLayout>

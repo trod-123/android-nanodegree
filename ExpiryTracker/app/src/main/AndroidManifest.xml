@@ -30,17 +30,17 @@
 
         <activity
             android:name=".ui.SignInActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ui.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.SignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.MainActivity" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/activity_settings_name" />

@@ -26,6 +26,7 @@
 
         <ImageView
             style="@style/AppTheme.Icon.BottomSheetIcon"
+            android:contentDescription="@string/action_add_item_camera"
             app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
         <TextView
@@ -49,6 +50,7 @@
 
         <ImageView
             style="@style/AppTheme.Icon.BottomSheetIcon"
+            android:contentDescription="@string/action_add_item_text"
             app:srcCompat="@drawable/ic_text_fields_black_24dp" />
 
         <TextView

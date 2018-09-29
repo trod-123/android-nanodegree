@@ -306,6 +306,11 @@ public class NotificationHelper {
             int totalFoodCountsFromFilter = DataToolbox.getTotalFrequencyCounts(
                     frequencies, startIndex, DataToolbox.NO_INDEX_LIMIT);
 
+            if (totalFoodCountsFromFilter == 0) {
+                // Don't show notification if there are no foods expiring!
+                return;
+            }
+
             if (daysFilter < 2) {
                 // Set a shorter summary if we're only looking at current and/or next day
                 contentText = DataToolbox.getPartialSummary(context, daysFilter,

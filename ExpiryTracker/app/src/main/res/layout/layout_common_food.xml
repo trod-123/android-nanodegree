@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     android:paddingBottom="@dimen/list_item_padding_vertical"
     android:paddingEnd="@dimen/list_item_padding_horizontal"
     android:paddingStart="@dimen/list_item_padding_horizontal"
     android:paddingTop="@dimen/list_item_padding_vertical">
 
+    <!-- Content description set in Java -->
     <com.zn.expirytracker.ui.NumberCircleView
         android:id="@+id/ncv_list_item_count_days"
         android:layout_width="@dimen/number_circle_size"
@@ -48,6 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_list_item_food_name"
         tools:text="Expires today!" />
 
+    <!-- Content description set in Java -->
     <ImageView
         android:id="@+id/iv_list_item_storage_icon"
         android:layout_width="wrap_content"
@@ -57,6 +59,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_list_item_food_name"
         app:layout_constraintEnd_toStartOf="@+id/tv_list_item_count"
         app:layout_constraintTop_toTopOf="@+id/tv_list_item_food_name"
+        tools:ignore="contentDescription"
         tools:src="@drawable/ic_tabletop_black_24dp" />
 
     <TextView
@@ -86,14 +89,17 @@
             android:layout_gravity="center"
             android:alpha="0"
             android:background="@color/imageBackground_none"
+            android:contentDescription="@string/image_broken_content_description"
             android:src="@drawable/ic_image_broken_black_24dp"
             android:tint="@android:color/white" />
 
+        <!-- Content description set in Java -->
         <ImageView
             android:id="@+id/iv_list_item_image"
             android:layout_width="@dimen/list_item_image_size"
             android:layout_height="@dimen/list_item_image_size"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            tools:ignore="contentDescription" />
 
         <ProgressBar
             android:id="@+id/pb_list_item_image"

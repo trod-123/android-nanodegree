@@ -329,6 +329,7 @@ public class CaptureOverlayFragment extends Fragment
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                DataSource dataSource, boolean isFirstResource) {
                     Toolbox.showView(mPbImage, false, false);
+                    mIvImage.setContentDescription(mName);
                     return false;
                 }
             });
@@ -595,6 +596,7 @@ public class CaptureOverlayFragment extends Fragment
     private void setItemName(String name, boolean promptExpiryDate) {
         mTvName.setText(name);
         mName = name;
+        mIvImage.setContentDescription(mName);
 
         // Expiry date is the next step, which is required. Putting the call here to ensure it is
         // not forgotten since UI shows only after expiry date is provided

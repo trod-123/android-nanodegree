@@ -20,6 +20,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:tint="@android:color/white"
         app:srcCompat="@drawable/ic_edit_black_24dp"
-        android:onClick="startEditActivity"/>
+        android:onClick="startEditActivity"
+        android:contentDescription="@string/action_edit_item"/>
 
 </android.support.design.widget.CoordinatorLayout>

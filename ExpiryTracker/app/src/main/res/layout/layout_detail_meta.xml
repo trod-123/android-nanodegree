@@ -24,7 +24,8 @@
         android:tint="@color/icon_tint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_meta_label"
-        app:srcCompat="@drawable/ic_barcode_black_24dp" />
+        app:srcCompat="@drawable/ic_barcode_black_24dp"
+        android:contentDescription="@string/food_barcode_label"/>
 
     <ImageView
         android:id="@+id/iv_detail_input"
@@ -35,7 +36,8 @@
         android:tint="@color/icon_tint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_detail_barcode"
-        app:srcCompat="@drawable/ic_edit_black_24dp" />
+        app:srcCompat="@drawable/ic_edit_black_24dp"
+        android:contentDescription="@string/food_input_type_label"/>
 
     <TextView
         android:id="@+id/tv_detail_barcode_label"

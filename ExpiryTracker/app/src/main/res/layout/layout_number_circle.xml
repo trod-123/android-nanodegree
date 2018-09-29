@@ -7,11 +7,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Content description not needed here -->
     <ImageView
         android:id="@+id/iv_number_circle_outline"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/number_circle" />
+        android:background="@drawable/number_circle"
+        tools:ignore="contentDescription" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/layout_number_circle"
@@ -27,6 +29,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
             android:gravity="center"
+            android:importantForAccessibility="no"
             android:includeFontPadding="false"
             android:textColor="@color/textColorPrimary"
             app:autoSizeTextType="uniform"
@@ -45,6 +48,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-smallcaps"
             android:gravity="center"
+            android:importantForAccessibility="no"
             android:includeFontPadding="false"
             android:textColor="@color/textColorPrimary"
             app:autoSizeTextType="uniform"

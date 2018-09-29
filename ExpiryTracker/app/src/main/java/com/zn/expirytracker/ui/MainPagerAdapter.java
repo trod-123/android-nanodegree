@@ -4,25 +4,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import timber.log.Timber;
+
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private static final int NUM_ITEMS = 2;
-    public static final int FRAGMENT_AT_A_GLANCE = 0;
-    public static final int FRAGMENT_LIST = 1;
+    public static int FRAGMENT_AT_A_GLANCE = 0;
+    public static int FRAGMENT_LIST = 1;
 
-    public MainPagerAdapter(FragmentManager fm) {
+    public MainPagerAdapter(FragmentManager fm, boolean leftToRightLayout) {
         super(fm);
+        if (!leftToRightLayout) {
+            FRAGMENT_AT_A_GLANCE = 1;
+            FRAGMENT_LIST = 0;
+        }
     }
 
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case FRAGMENT_AT_A_GLANCE:
-                return AtAGlanceFragment.newInstance();
-            case FRAGMENT_LIST:
-                return FoodListFragment.newInstance();
-            default:
-                return null;
+        if (position == FRAGMENT_AT_A_GLANCE) {
+            return AtAGlanceFragment.newInstance();
+        } else if (position == FRAGMENT_LIST) {
+            return FoodListFragment.newInstance();
+        } else {
+            Timber.e("MainPagerAdapter: invalid position provided. Returning no fragment...");
+            return null;
         }
     }
 

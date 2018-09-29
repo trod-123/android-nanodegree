@@ -233,8 +233,6 @@ public class FoodWidget extends AppWidgetProvider {
 
                 // hides the empty view until needed
                 views.setEmptyView(R.id.lv_widget, R.id.tv_widget_empty);
-                views.setImageViewResource(R.id.iv_widget_empty_animal,
-                        DataToolbox.getRandomAnimalDrawableId());
             } else {
                 // We're just hiding the progress bar; all views are already updated
                 views.setViewVisibility(R.id.pb_widget, View.GONE);
@@ -248,10 +246,12 @@ public class FoodWidget extends AppWidgetProvider {
             PendingIntent signInPendingIntent = PendingIntent.getActivity(
                     context, appWidgetId, signInIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.layout_widget_signed_out, signInPendingIntent);
-
-            views.setImageViewResource(R.id.iv_widget_empty_animal,
-                    DataToolbox.getRandomAnimalDrawableId());
         }
+
+        int animalDrawableId = DataToolbox.getRandomAnimalDrawableId();
+        views.setImageViewResource(R.id.iv_widget_empty_animal, animalDrawableId);
+        views.setContentDescription(R.id.iv_widget_empty_animal,
+                DataToolbox.getAnimalContentDescriptionById(animalDrawableId));
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

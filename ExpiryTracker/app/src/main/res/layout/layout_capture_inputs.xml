@@ -36,23 +36,29 @@
             android:layout_weight="1"
             android:clickable="true"
             android:focusable="true"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="UseCompoundDrawables"
+            android:contentDescription="@string/capture_mode_barcode">
 
+            <!-- Content description set by parent -->
             <ImageView
                 android:id="@+id/iv_capture_barcode"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_barcode_scan_black_24dp" />
+                app:srcCompat="@drawable/ic_barcode_scan_black_24dp"
+                android:importantForAccessibility="no"/>
 
+            <!-- Content description set by parent -->
             <TextView
                 android:id="@+id/tv_capture_barcode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/capture_mode_barcode"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:importantForAccessibility="no"/>
 
         </LinearLayout>
 
@@ -91,23 +97,29 @@
             android:alpha="0.3"
             android:clickable="true"
             android:focusable="true"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="useCompoundDrawables"
+            android:contentDescription="@string/capture_mode_imgonly">
 
+            <!-- Content description set by parent -->
             <ImageView
                 android:id="@+id/iv_capture_imgonly"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_photo_camera_black_24dp"
-                android:tint="@android:color/white"/>
+                android:tint="@android:color/white"
+                android:importantForAccessibility="no"/>
 
+            <!-- Content description set by parent -->
             <TextView
                 android:id="@+id/tv_capture_imgonly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/capture_mode_imgonly"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:importantForAccessibility="no"/>
 
         </LinearLayout>
 

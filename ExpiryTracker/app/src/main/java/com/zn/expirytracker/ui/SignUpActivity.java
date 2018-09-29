@@ -1,5 +1,6 @@
 package com.zn.expirytracker.ui;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -8,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +53,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     ProgressBar mPbSignup;
     @BindView(R.id.btn_sign_up_existing_account)
     Button mBtnLogin;
+    @BindView(R.id.tv_sign_in_app_version)
+    TextView mTvVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mEtPassword.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilPassword));
 
         mAuth = FirebaseAuth.getInstance();
+
+        try {
+            mTvVersion.setText(getString(R.string.version_num, Toolbox.getAppVersionName(this)));
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e, "SignIn: Error getting version name. Not populating Version text");
+        }
     }
 
     @Override

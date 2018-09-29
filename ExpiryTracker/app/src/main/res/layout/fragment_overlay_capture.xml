@@ -49,19 +49,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_overlay_capture_barcode"
                 app:layout_constraintVertical_chainStyle="packed">
 
+                <!-- Content description handled in Java -->
                 <ImageView
                     android:id="@+id/iv_overlay_scanned_image"
                     android:layout_width="128dp"
                     android:layout_height="96dp"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@color/imageBackground_none" />
+                    app:srcCompat="@color/imageBackground_none"
+                    tools:ignore="contentDescription" />
 
                 <ProgressBar
                     android:id="@+id/pb_overlay_scanned_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:alpha="0"/>
+                    android:alpha="0" />
 
             </FrameLayout>
 
@@ -118,6 +120,7 @@
                 android:layout_height="64dp"
                 android:layout_marginBottom="@dimen/dialog_button_margin"
                 android:layout_marginTop="8dp"
+                android:contentDescription="@string/image_scanned_barcode"
                 app:layout_constraintEnd_toEndOf="@+id/tv_overlay_scanned_name"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintTop_toBottomOf="@+id/tv_overlay_scanned_expiry_date"

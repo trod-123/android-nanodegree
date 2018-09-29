@@ -19,6 +19,8 @@ import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -30,7 +32,7 @@ public class DetailActivity extends AppCompatActivity {
             "detail_activity.item_id_long");
 
     @BindView(R.id.container_detail_activity)
-    View mRootview;
+    View mRootView;
     @BindView(R.id.viewPager_detail)
     NonSwipeableViewPager mViewPager;
 
@@ -69,23 +71,28 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
+                    List<Food> foodsList = new ArrayList<>(foods); // required for reversing list
                     // Don't do anything if foods is null
+                    if (!Toolbox.isLeftToRightLayout()) {
+                        // Reverse foods list for RTL layout
+                        Collections.reverse(foodsList);
+                    }
                     if (!mInitialized) {
-                        mPagerAdapter.setFoodsList(foods);
+                        mPagerAdapter.setFoodsList(foodsList);
                         mViewPager.setCurrentItem(
-                                DataToolbox.getFoodPositionFromId(foods, mLaunchedItemId),
+                                DataToolbox.getFoodPositionFromId(foodsList, mLaunchedItemId),
                                 false);
                         mInitialized = true;
                     } else {
-                        if (foods.size() == 0) {
+                        if (foodsList.size() == 0) {
                             // If there are no more foods, close Details
                             finish();
                         }
-                        mPagerAdapter.setFoodsList(foods);
+                        mPagerAdapter.setFoodsList(foodsList);
                     }
                     // There is a jitter bug in scrolling if there is only one page. This should fix
-                    mViewPager.setPagingEnabled(foods.size() > 1);
-                    mFoodsList = foods;
+                    mViewPager.setPagingEnabled(foodsList.size() > 1);
+                    mFoodsList = foodsList;
                 }
             }
         });

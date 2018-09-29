@@ -27,4 +27,6 @@
     <color name="number_circle_outline_default">@color/textColorPrimaryDark</color>
     <color name="divider_list_item">#dfdfdf</color>
 
+    <color name="dimmed_overlay">#60000000</color>
+
 </resources>

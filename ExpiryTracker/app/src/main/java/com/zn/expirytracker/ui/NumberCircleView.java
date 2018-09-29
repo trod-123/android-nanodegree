@@ -91,7 +91,24 @@ public class NumberCircleView extends FrameLayout {
     }
 
     /**
+     * Helper for updating the content description with current field values
+     *
+     * @param stringResource Resource id for the string template. Requires it contains 2 string
+     *                       placeholders for the value field and the label field. Sets content
+     *                       description to null if error
+     */
+    public void updateContentDescription(int stringResource) {
+        try {
+            setContentDescription(mContext.getString(stringResource,
+                    mTvValue.getText(), mTvLabel.getText()));
+        } catch (Exception e) {
+            setContentDescription(null);
+        }
+    }
+
+    /**
      * Get references to the views
+     *
      * @param context
      */
     private void init(Context context) {

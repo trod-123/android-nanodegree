@@ -353,7 +353,8 @@ public class DataToolbox {
         while (index < limit && index < entriesSize - 1) {
             if (barChartEntries.get(index).getX() >= 0) break;
             index++;
-            limit++; // offset limit since we haven't reached point where x = 0
+            if (limit != NO_INDEX_LIMIT)
+                limit++; // offset limit since we haven't reached point where x = 0
         }
         return index;
     }
@@ -372,7 +373,8 @@ public class DataToolbox {
         while (index < limit && index < entriesSize - 1) {
             if (data.get(index) >= 0) break;
             index++;
-            limit++; // offset limit since we haven't reached point where key is 0
+            if (limit != NO_INDEX_LIMIT)
+                limit++; // offset limit since we haven't reached point where key is 0
         }
         return index;
     }
@@ -969,5 +971,30 @@ public class DataToolbox {
         };
 
         return drawableIds[mRandomizer.nextInt(drawableIds.length - 1)];
+    }
+
+    /**
+     * Does what it says
+     *
+     * @param id
+     * @return
+     */
+    public static String getAnimalContentDescriptionById(int id) {
+        switch (id) {
+            case R.drawable.ic_cat_black_24dp:
+                return "meow";
+            case R.drawable.ic_dog_black_24dp:
+                return "woof";
+            case R.drawable.ic_duck_black_24dp:
+                return "quack";
+            case R.drawable.ic_easter_black_24dp:
+                return "crack";
+            case R.drawable.ic_fish_black_24dp:
+                return "oop oop oop";
+            case R.drawable.ic_poop_black_24dp:
+                return "poop";
+            default:
+                return "null";
+        }
     }
 }

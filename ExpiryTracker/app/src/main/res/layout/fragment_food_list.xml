@@ -29,7 +29,8 @@
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
         android:orientation="vertical"
-        android:alpha="0">
+        android:alpha="0"
+        tools:ignore="useCompoundDrawables">
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,13 +42,15 @@
             android:textColor="@color/textColorPrimaryLight"
             android:textSize="18sp" />
 
+        <!-- Content description set in Java -->
         <ImageView
             android:id="@+id/iv_food_list_empty_animal"
             style="@style/AppTheme.Icon"
             android:layout_width="@dimen/empty_list_icon_size"
             android:layout_height="@dimen/empty_list_icon_size"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_dog_black_24dp" />
+            android:src="@drawable/ic_dog_black_24dp"
+            tools:ignore="contentDescription"/>
 
     </LinearLayout>
 
@@ -60,6 +63,7 @@
         android:clickable="true"
         android:focusable="true"
         android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_add_black_24dp" />
+        app:srcCompat="@drawable/ic_add_black_24dp"
+        android:contentDescription="@string/action_add_item"/>
 
 </android.support.design.widget.CoordinatorLayout>

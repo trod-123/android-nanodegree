@@ -41,7 +41,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_date_expiry"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_expiry"
-        app:srcCompat="@drawable/ic_date_range_black_24dp" />
+        app:srcCompat="@drawable/ic_date_range_black_24dp"
+        android:contentDescription="@string/food_expiry_date_label"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_edit_date_expiry"
@@ -68,7 +69,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_date_good"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_date_expiry"
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_good"
-        app:srcCompat="@drawable/ic_calendar_black_24dp" />
+        app:srcCompat="@drawable/ic_calendar_black_24dp"
+        android:contentDescription="@string/food_good_thru_date_label"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_edit_date_good"
@@ -98,7 +100,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_good"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
+        app:srcCompat="@drawable/ic_clear_black_24dp"
+        android:contentDescription="@string/edit_clear_date_good_thru"/>
 
     <ImageView
         android:id="@+id/iv_edit_count"
@@ -106,7 +109,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_edit_count"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_date_good"
         app:layout_constraintTop_toTopOf="@+id/tv_edit_count"
-        app:srcCompat="@drawable/ic_counter_black_24dp" />
+        app:srcCompat="@drawable/ic_counter_black_24dp"
+        android:contentDescription="@string/food_count_label"/>
 
     <TextView
         android:id="@+id/tv_edit_count"
@@ -126,7 +130,8 @@
         android:layout_marginEnd="32dp"
         app:layout_constraintEnd_toStartOf="@+id/edit_guideline_center"
         app:layout_constraintTop_toBottomOf="@+id/tv_edit_count"
-        app:srcCompat="@drawable/ic_minus_black_24dp" />
+        app:srcCompat="@drawable/ic_minus_black_24dp"
+        android:contentDescription="@string/action_subtract_count"/>
 
     <android.support.design.widget.TextInputEditText
         android:id="@+id/tiEt_edit_count"
@@ -158,7 +163,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/tiEt_edit_count"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_center"
         app:layout_constraintTop_toTopOf="@+id/tiEt_edit_count"
-        app:srcCompat="@drawable/ic_add_black_24dp" />
+        app:srcCompat="@drawable/ic_add_black_24dp"
+        android:contentDescription="@string/action_add_count"/>
 
     <ImageView
         android:id="@+id/iv_edit_storage_location"
@@ -166,7 +172,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_storage_location"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_count"
         app:layout_constraintTop_toTopOf="@+id/til_edit_storage_location"
-        app:srcCompat="@drawable/ic_map_marker_black_24dp" />
+        app:srcCompat="@drawable/ic_map_marker_black_24dp"
+        android:contentDescription="@string/food_storage_location_label"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_edit_storage_location"
@@ -217,7 +224,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
         app:layout_constraintTop_toTopOf="@+id/til_edit_description"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
+        app:srcCompat="@drawable/ic_clear_black_24dp"
+        android:contentDescription="@string/edit_clear_description"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/edit_guideline_start"
