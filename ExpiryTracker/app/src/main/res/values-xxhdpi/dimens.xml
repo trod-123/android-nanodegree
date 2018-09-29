@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="btn_margin_small">8dp</dimen>
+    <dimen name="btn_margin_medium">16dp</dimen>
+    <dimen name="btn_margin_large">24dp</dimen>
+    <dimen name="sign_in_app_logo_size">96dp</dimen>
+    <dimen name="sign_in_app_name_size">28sp</dimen>
+</resources>

@@ -49,7 +49,11 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="bottom_root_padding">112dp</dimen>
     <dimen name="bottom_sheet_item_height">56dp</dimen>
     <dimen name="bottom_sheet_item_margins">16dp</dimen>
-    <dimen name="sign_in_app_logo_size">128dp</dimen>
     <dimen name="sign_up_app_logo_size">96dp</dimen>
     <dimen name="detail_calendar_size">48dp</dimen>
+    <dimen name="btn_margin_small">4dp</dimen>
+    <dimen name="btn_margin_medium">8dp</dimen>
+    <dimen name="btn_margin_large">12dp</dimen>
+    <dimen name="sign_in_app_logo_size">80dp</dimen>
+
 </resources>
