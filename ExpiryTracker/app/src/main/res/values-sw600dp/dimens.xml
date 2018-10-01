@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="auth_fields_horizontal_margin">160dp</dimen>
+    <dimen name="edit_fields_horizontal_margin">80dp</dimen>
+
+    <item name="detail_page_width" format="float" type="dimen">0.9</item>
+    <dimen name="detail_horizontal_margin">48dp</dimen>
+
+</resources>

@@ -69,4 +69,6 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
 
     <dimen name="detail_horizontal_margin">16dp</dimen>
     <dimen name="detail_vertical_margin">16dp</dimen>
+    <dimen name="auth_fields_horizontal_margin">32dp</dimen>
+    <dimen name="edit_fields_horizontal_margin">0dp</dimen>
 </resources>

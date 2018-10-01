@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_edit_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <!-- Wrapping CardView inside a LinearLayout wrapper fixes bottom of card not showing
+        https://stackoverflow.com/questions/38572747/cardview-bottom-border-is-cut-off-inside-scrollview-android/39474127 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="96dp">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical">
+
+                    <include layout="@layout/fragment_detail_image_pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/detail_image_height"/>
+
+                    <include
+                        layout="@layout/layout_edit_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginStart="@dimen/edit_fields_horizontal_margin"
+                        android:layout_marginEnd="@dimen/edit_fields_horizontal_margin"/>
+
+                    <include layout="@layout/layout_edit_other_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/edit_fields_horizontal_margin"
+                        android:layout_marginEnd="@dimen/edit_fields_horizontal_margin"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- TODO: Hide for now -->
+    <!--<android.support.design.widget.FloatingActionButton-->
+    <!--android:id="@+id/fab_edit_voice"-->
+    <!--android:layout_width="@dimen/fab_size"-->
+    <!--android:layout_height="@dimen/fab_size"-->
+    <!--android:layout_gravity="bottom|center_horizontal"-->
+    <!--android:layout_margin="@dimen/fab_margin"-->
+    <!--android:clickable="true"-->
+    <!--android:focusable="true"-->
+    <!--android:tint="@android:color/white"-->
+    <!--app:srcCompat="@drawable/ic_mic_black_24dp" />-->
+
+</android.support.design.widget.CoordinatorLayout>

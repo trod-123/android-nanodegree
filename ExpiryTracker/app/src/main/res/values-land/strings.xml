@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_photo_instruction">How do you want to add an image? (2 options - swipe up)</string>
+    <string name="add_item_instruction">How do you want to add an item? (2 options - swipe up)</string>
+</resources>
