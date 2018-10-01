@@ -45,6 +45,11 @@ public class CaptureActivity extends AppCompatActivity implements
         BarcodeScanningProcessor.OnRecognizedBarcodeListener,
         ImageLabelingProcessor.OnImageRecognizedListener {
 
+    private static final String KEY_ROOT_ENABLED_BOOLEAN =
+            Toolbox.createStaticKeyString(CaptureActivity.class, "root_enabled");
+    private static final String KEY_CURRENT_INPUT_TYPE =
+            Toolbox.createStaticKeyString(CaptureActivity.class, "current_input");
+
     private static final InputType DEFAULT_INPUT_TYPE = InputType.BARCODE;
 
     private static final int PERMISSION_REQUESTS = 1;
@@ -81,6 +86,14 @@ public class CaptureActivity extends AppCompatActivity implements
     private Thread mJitterThread;
 
     private boolean mScanJitter = false; // prevent consecutive scans from happening too close with each other
+    private boolean mRootEnabled = true;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(KEY_ROOT_ENABLED_BOOLEAN, mRootEnabled);
+        outState.putSerializable(KEY_CURRENT_INPUT_TYPE, mCurrentInputType);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +111,12 @@ public class CaptureActivity extends AppCompatActivity implements
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         mBeep = sp.getBoolean(getString(R.string.pref_capture_beep_key), true);
         mVibrate = sp.getBoolean(getString(R.string.pref_capture_vibrate_key), true);
+
+        if (savedInstanceState != null) {
+            mRootEnabled = savedInstanceState.getBoolean(KEY_ROOT_ENABLED_BOOLEAN);
+            setInputType((InputType) savedInstanceState.getSerializable(KEY_CURRENT_INPUT_TYPE));
+            activateRoot(mRootEnabled);
+        }
 
         if (allPermissionsGranted()) {
             startCameraSource();
@@ -322,6 +341,8 @@ public class CaptureActivity extends AppCompatActivity implements
         if (activate) {
             startJitterCountdown();
         }
+
+        mRootEnabled = activate;
     }
 
     /**
