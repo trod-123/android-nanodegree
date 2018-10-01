@@ -115,7 +115,6 @@ public class CaptureActivity extends AppCompatActivity implements
         if (savedInstanceState != null) {
             mRootEnabled = savedInstanceState.getBoolean(KEY_ROOT_ENABLED_BOOLEAN);
             setInputType((InputType) savedInstanceState.getSerializable(KEY_CURRENT_INPUT_TYPE));
-            activateRoot(mRootEnabled);
         }
 
         if (allPermissionsGranted()) {
@@ -124,6 +123,8 @@ public class CaptureActivity extends AppCompatActivity implements
         } else {
             getRuntimePermissions();
         }
+
+        activateRoot(mRootEnabled);
     }
 
     @Override

@@ -127,6 +127,8 @@ public class CaptureOverlayFragment extends Fragment
     private String mBarcode = "";
     private Bitmap mBarcodeBitmap;
     private Bitmap mImageBitmap;
+    private String mBarcodeBitmapPath;
+    private String mImageBitmapPath;
     private String mName = "";
     private String mDescription = "";
     long mDateExpiry;
@@ -140,6 +142,18 @@ public class CaptureOverlayFragment extends Fragment
 
     // Only store values that weren't generated from CaptureActivity (those values are retained
     // in Fragment arguments
+
+    /**
+     * Restore not from Fragment args to prevent crash when bringing app to background
+     */
+    private static final String KEY_BARCODE_BITMAP_URI = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "barcode_bitmap");
+
+    /**
+     * Restore not from fragment args to prevent crash when bringing app to background
+     */
+    private static final String KEY_IMAGE_BITMAP_URI = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "image_bitmap");
 
     private static final String KEY_FOOD_NAME_STRING = Toolbox.createStaticKeyString(
             CaptureOverlayFragment.class, "food_name");
@@ -168,6 +182,28 @@ public class CaptureOverlayFragment extends Fragment
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // Store current food object values
+        if (mBarcodeBitmap != null) {
+            try {
+                String path = Toolbox.saveBitmapToInternalStorage(
+                        mBarcodeBitmap, Constants.DEFAULT_FILENAME, mHostActivity);
+                outState.putString(KEY_BARCODE_BITMAP_URI, path);
+            } catch (IOException e) {
+                Timber.e(e, "There was an error saving the barcode bitmap into outState. Not saving...");
+            }
+        } else {
+            outState.putString(KEY_BARCODE_BITMAP_URI, mBarcodeBitmapPath);
+        }
+        if (mImageBitmap != null) {
+            try {
+                String path = Toolbox.saveBitmapToInternalStorage(
+                        mImageBitmap, Constants.DEFAULT_FILENAME, mHostActivity);
+                outState.putString(KEY_IMAGE_BITMAP_URI, path);
+            } catch (IOException e) {
+                Timber.e(e, "There was an error saving the image bitmap into outState. Not saving...");
+            }
+        } else {
+            outState.putString(KEY_IMAGE_BITMAP_URI, mImageBitmapPath);
+        }
         outState.putString(KEY_FOOD_NAME_STRING, mName);
         outState.putLong(KEY_EXPIRY_DATE_LONG, mDateExpiry);
         outState.putString(KEY_DESCRIPTION_STRING, mDescription);
@@ -226,6 +262,12 @@ public class CaptureOverlayFragment extends Fragment
             mBarcode = args.getString(ARG_BARCODE, "");
             mBarcodeBitmap = args.getParcelable(ARG_BARCODE_BITMAP);
             mImageBitmap = args.getParcelable(ARG_IMAGE_BITMAP);
+            // remove bitmaps from args to prevent java.lang.RuntimeException:
+            // android.os.TransactionTooLargeException when bringing app to background
+            // (so we save these as uris in onSaveInstanceState)
+            args.remove(ARG_BARCODE_BITMAP);
+            args.remove(ARG_IMAGE_BITMAP);
+            setArguments(args);
         }
 
         mHostActivity = getActivity();
@@ -259,6 +301,8 @@ public class CaptureOverlayFragment extends Fragment
         });
 
         if (savedInstanceState != null) {
+            mBarcodeBitmapPath = savedInstanceState.getString(KEY_BARCODE_BITMAP_URI);
+            mImageBitmapPath = savedInstanceState.getString(KEY_IMAGE_BITMAP_URI);
             mName = savedInstanceState.getString(KEY_FOOD_NAME_STRING, "");
             mDateExpiry = savedInstanceState.getLong(KEY_EXPIRY_DATE_LONG, mCurrentDateStartOfDay);
             mDescription = savedInstanceState.getString(KEY_DESCRIPTION_STRING, "");
@@ -284,7 +328,7 @@ public class CaptureOverlayFragment extends Fragment
                     break;
                 case IMG_ONLY:
                     // For image only, there is no data to fetch, so just populate views
-                    populateFieldsFromImageOnly(mImageBitmap);
+                    populateFieldsFromImageOnly(mImageBitmap, mImageBitmapPath);
                     break;
             }
         }
@@ -406,7 +450,8 @@ public class CaptureOverlayFragment extends Fragment
         }
         mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
                 DataToolbox.getFormattedFullDateString(dateExpiry)));
-        if (mBarcodeBitmap != null) {
+        if (mBarcodeBitmap != null || mBarcodeBitmapPath != null) {
+            // TODO: Clean up code here
             if (mImageUris != null && mImageUris.size() > 0) {
                 // Set the main image to the first image from the list
                 String imageUri = imageUris.get(0);
@@ -430,38 +475,76 @@ public class CaptureOverlayFragment extends Fragment
                         return false;
                     }
                 });
-                GlideApp.with(mHostActivity)
-                        .load(mBarcodeBitmap)
-                        .into(mIvBarcode);
+
+                // Set the barcode bitmap with either the bitmap itself, or the bitmap path
+                if (mBarcodeBitmap != null) {
+                    GlideApp.with(mHostActivity)
+                            .load(mBarcodeBitmap)
+                            .into(mIvBarcode);
+                } else {
+                    // Barcode bitmap is null, but we have the bitmap uri from outState
+                    Toolbox.loadImageFromUrl(mHostActivity, mBarcodeBitmapPath, mIvBarcode, new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                       DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    });
+                }
                 mTvAttr.setText(R.string.data_attribution_upcitemdb);
             } else {
                 // upcItem is null, so load the barcode in the main image instead and hide the other
-                GlideApp.with(mHostActivity)
-                        .load(mBarcodeBitmap)
-                        .addListener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                        Target<Drawable> target, boolean isFirstResource) {
-                                Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
-                                Toolbox.showView(mPbImage, false, false);
-                                return false;
-                            }
+                if (mBarcodeBitmapPath == null) {
+                    GlideApp.with(mHostActivity)
+                            .load(mBarcodeBitmap)
+                            .addListener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                            Target<Drawable> target, boolean isFirstResource) {
+                                    Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
+                                    Toolbox.showView(mPbImage, false, false);
+                                    return false;
+                                }
 
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model,
-                                                           Target<Drawable> target, DataSource dataSource,
-                                                           boolean isFirstResource) {
-                                Toolbox.showView(mPbImage, false, false);
-                                return false;
-                            }
-                        })
-                        .into(mIvImage);
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model,
+                                                               Target<Drawable> target, DataSource dataSource,
+                                                               boolean isFirstResource) {
+                                    Toolbox.showView(mPbImage, false, false);
+                                    return false;
+                                }
+                            })
+                            .into(mIvImage);
+                } else {
+                    Toolbox.loadImageFromUrl(mHostActivity, mBarcodeBitmapPath, mIvImage, new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Bitmap> target, boolean isFirstResource) {
+                            Timber.e(e, "Error loading barcode bitmap into overlay / barcode uri");
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                       DataSource dataSource, boolean isFirstResource) {
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
+                    });
+                }
                 mIvBarcode.setVisibility(View.GONE);
                 mTvAttr.setVisibility(View.GONE);
             }
         } else {
             // Barcode bitmap is null, so we only have the image bitmap
-            populateFieldsFromImageOnly(mImageBitmap);
+            populateFieldsFromImageOnly(mImageBitmap, mImageBitmapPath);
         }
         promptForMissingInfo();
     }
@@ -471,30 +554,49 @@ public class CaptureOverlayFragment extends Fragment
      *
      * @param image
      */
-    private void populateFieldsFromImageOnly(@NonNull Bitmap image) {
+    private void populateFieldsFromImageOnly(@Nullable Bitmap image, @Nullable String imagePath) {
         mTvDescription.setVisibility(View.GONE);
         // Load the barcode in the main image instead and hide the other
         Toolbox.showView(mPbImage, true, false);
-        GlideApp.with(mHostActivity)
-                .load(image)
-                .addListener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                Target<Drawable> target, boolean isFirstResource) {
-                        Timber.e(e, "Error loading barcode bitmap into overlay / image only");
-                        Toolbox.showView(mPbImage, false, false);
-                        return false;
-                    }
+        if (image != null) {
+            GlideApp.with(mHostActivity)
+                    .load(image)
+                    .addListener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Drawable> target, boolean isFirstResource) {
+                            Timber.e(e, "Error loading image bitmap into overlay / image only");
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                                                   Target<Drawable> target, DataSource dataSource,
-                                                   boolean isFirstResource) {
-                        Toolbox.showView(mPbImage, false, false);
-                        return false;
-                    }
-                })
-                .into(mIvImage);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model,
+                                                       Target<Drawable> target, DataSource dataSource,
+                                                       boolean isFirstResource) {
+                            Toolbox.showView(mPbImage, false, false);
+                            return false;
+                        }
+                    })
+                    .into(mIvImage);
+        } else if (imagePath != null) {
+            Toolbox.loadImageFromUrl(mHostActivity, imagePath, mIvImage, new RequestListener<Bitmap>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                            Target<Bitmap> target, boolean isFirstResource) {
+                    Timber.e(e, "Error loading image bitmap into overlay / image only path");
+                    Toolbox.showView(mPbImage, false, false);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                               DataSource dataSource, boolean isFirstResource) {
+                    Toolbox.showView(mPbImage, false, false);
+                    return false;
+                }
+            });
+        }
         mTvBarcode.setVisibility(View.GONE);
         mIvBarcode.setVisibility(View.GONE);
         mTvAttr.setVisibility(View.GONE);
