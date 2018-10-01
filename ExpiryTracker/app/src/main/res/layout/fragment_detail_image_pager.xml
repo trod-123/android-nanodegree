@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/imageBackground_none">
 
     <ImageView
@@ -19,7 +19,8 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager_detail_image"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_image_height" />
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
 
     <!-- Content description not needed here -->
     <ImageView

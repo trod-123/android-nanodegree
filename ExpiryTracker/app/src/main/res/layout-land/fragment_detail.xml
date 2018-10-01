@@ -25,29 +25,37 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <include
-                    layout="@layout/fragment_detail_image_pager"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/detail_image_height" />
-
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <include
+                        layout="@layout/fragment_detail_image_pager"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/layout_detail_main"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_weight="2" />
+
+                </LinearLayout>
+
+                <include
+                    layout="@layout/layout_detail_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/detail_vertical_margin"
                     android:layout_marginEnd="@dimen/detail_horizontal_margin"
                     android:layout_marginStart="@dimen/detail_horizontal_margin"
-                    android:layout_marginTop="@dimen/detail_vertical_margin"
-                    android:orientation="vertical">
-
-                    <include
-                        layout="@layout/layout_detail_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/detail_vertical_margin" />
-
-                    <include layout="@layout/layout_detail_info" />
-
-                </LinearLayout>
+                    android:layout_marginTop="@dimen/detail_vertical_margin" />
 
             </LinearLayout>
 

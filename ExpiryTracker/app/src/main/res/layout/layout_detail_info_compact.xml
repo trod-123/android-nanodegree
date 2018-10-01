@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_detail_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="During this 1 hour interactive event on Zoom, Udacity will share a few tips on how to prepare for an interview. Next, students will be broken up into smaller groups (using the breakout session in Zoom) to conduct mock interviews with one another. " />
+
+    <include
+        android:id="@+id/border_detail_other_info"
+        layout="@layout/layout_border_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_margin"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_description" />
+
+    <!-- region Other Info -->
+
+    <TextView
+        android:id="@+id/tv_detail_other_info_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_margin"
+        android:text="@string/food_other_info_label"
+        android:textColor="@color/textColorPrimary"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/border_detail_other_info" />
+
+    <TextView
+        android:id="@+id/tv_detail_brand_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_brand_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_brand"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_brand"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_other_info_label" />
+
+    <TextView
+        android:id="@+id/tv_detail_size_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_size_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_size"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_size"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_brand" />
+
+    <TextView
+        android:id="@+id/tv_detail_weight_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_weight_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_weight"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_weight"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_size" />
+
+    <TextView
+        android:id="@+id/tv_detail_notes_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_notes_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_notes"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_notes"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_weight" />
+
+    <TextView
+        android:id="@+id/tv_detail_notes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_notes_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_notes_label"
+        tools:text="During this 1 hour interactive event on Zoom, Udacity will share a few tips on how to prepare for an interview. Next, students will be broken up into smaller groups (using the breakout session in Zoom) to conduct mock interviews with one another." />
+
+    <TextView
+        android:id="@+id/tv_detail_brand"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_brand_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_brand_label"
+        tools:text="Kellogg's" />
+
+    <TextView
+        android:id="@+id/tv_detail_size"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_size_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_size_label"
+        tools:text="12'' x 10 ''" />
+
+    <TextView
+        android:id="@+id/tv_detail_weight"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_weight_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_weight_label"
+        tools:text="16 lbs" />
+
+    <ImageView
+        android:id="@+id/iv_detail_brand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_brand_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_brand_label"
+        app:srcCompat="@drawable/ic_domain_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_detail_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_size_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_size_label"
+        app:srcCompat="@drawable/ic_ruler_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_detail_weight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_weight_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_weight_label"
+        app:srcCompat="@drawable/ic_scale_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_detail_notes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_notes_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_notes_label"
+        app:srcCompat="@drawable/ic_clipboard_outline_black_24dp" />
+
+    <!-- endregion -->
+
+    <include
+        android:id="@+id/border_detail"
+        layout="@layout/layout_border_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_notes" />
+
+    <!-- region Meta -->
+
+    <TextView
+        android:id="@+id/tv_detail_meta_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_margin"
+        android:text="@string/food_meta_data_label"
+        android:textColor="@color/textColorPrimary"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/border_detail" />
+
+    <ImageView
+        android:id="@+id/iv_detail_barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_barcode_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_barcode_label"
+        app:srcCompat="@drawable/ic_barcode_black_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_detail_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/food_input_type_label"
+        android:tint="@color/icon_tint"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_detail_input_label"
+        app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+    <TextView
+        android:id="@+id/tv_detail_barcode_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_barcode_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_barcode"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_barcode"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_meta_label" />
+
+    <TextView
+        android:id="@+id/tv_detail_input_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/food_input_type_label"
+        android:textColor="@color/textColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_detail_input"
+        app:layout_constraintStart_toEndOf="@+id/iv_detail_input"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_barcode" />
+
+    <TextView
+        android:id="@+id/tv_detail_barcode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_barcode_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_barcode_label"
+        tools:text="1330002918470" />
+
+    <TextView
+        android:id="@+id/tv_detail_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tv_detail_input_label"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_input_label"
+        tools:text="@string/food_input_type_barcode" />
+
+    <TextView
+        android:id="@+id/tv_detail_credit_upcitemdb"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/data_attribution_upcitemdb"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_input" />
+
+    <TextView
+        android:id="@+id/tv_detail_credit_googleimgrec"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/data_attribution_google_imgrec"
+        android:textColor="@color/textColorPrimaryLight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_detail_credit_upcitemdb" />
+
+    <!-- endregion -->
+
+</android.support.constraint.ConstraintLayout>

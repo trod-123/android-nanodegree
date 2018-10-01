@@ -1,6 +1,7 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -37,6 +38,14 @@ public class DetailFragment extends Fragment {
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             DetailFragment.class, "item_id_long");
 
+    /**
+     * For restoring current image pager position after screen rotation
+     */
+    private static final String KEY_CURRENT_IMAGE_PAGER_POSITION =
+            Toolbox.createStaticKeyString(DetailFragment.class, "current_image_pager_position");
+
+    private static final int IMAGE_PAGER_POSITION_NOT_SET = -1;
+
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
     @BindView(R.id.iv_scrim_detail_image)
@@ -68,8 +77,8 @@ public class DetailFragment extends Fragment {
 
     @BindView(R.id.border_detail_other_info)
     View mBorderOtherInfo;
-    @BindView(R.id.layout_detail_other_info_root)
-    View mRootOtherInfo;
+    @BindView(R.id.tv_detail_other_info_label)
+    TextView mTvOtherInfoLabel;
 
     @BindView(R.id.tv_detail_brand)
     TextView mTvBrand;
@@ -125,12 +134,22 @@ public class DetailFragment extends Fragment {
     private DateTime mCurrentDateTimeStartOfDay;
     private long mItemId;
 
+    // for savedInstanceState
+    private int mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_CURRENT_IMAGE_PAGER_POSITION, mCurrentImagePosition);
+        super.onSaveInstanceState(outState);
+    }
+
     public DetailFragment() {
         // Required empty public constructor
     }
 
     public static DetailFragment newInstance(long itemId) {
         DetailFragment fragment = new DetailFragment();
+
         Bundle args = new Bundle();
         args.putLong(ARG_ITEM_ID_LONG, itemId);
         fragment.setArguments(args);
@@ -149,6 +168,10 @@ public class DetailFragment extends Fragment {
         if (args != null) {
             mItemId = args.getLong(ARG_ITEM_ID_LONG, 0);
         }
+
+        if (savedInstanceState != null) {
+            mCurrentImagePosition = savedInstanceState.getInt(KEY_CURRENT_IMAGE_PAGER_POSITION);
+        }
     }
 
     @Override
@@ -159,16 +182,16 @@ public class DetailFragment extends Fragment {
         Timber.tag(DetailFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
-        mViewModel.getSingleFoodById(mItemId, false).observe(this, new Observer<Food>() {
+        final LiveData<Food> liveData = mViewModel.getSingleFoodById(mItemId, false);
+        liveData.observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
                 if (food != null) {
                     populateViewElements(food);
                 } else {
-                    // When other fragments are removed from the pager dynamically, while
-                    // onChanged() is called since the database changes, this block never gets
-                    // called because this fragment is recreated with a new slate
+                    // Called when a fragment is removed. Leaves fragment with an unpopulated shell
                 }
+                liveData.removeObserver(this);
             }
         });
 
@@ -186,6 +209,7 @@ public class DetailFragment extends Fragment {
             public void onPageSelected(int position) {
                 // Keep the current selected position in sync between ViewPager and PageIndicator
                 mPageIndicatorView.setSelection(position);
+                mCurrentImagePosition = position;
             }
 
             @Override
@@ -213,7 +237,8 @@ public class DetailFragment extends Fragment {
         @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
         mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
-        mViewPager.setCurrentItem(images != null && !Toolbox.isLeftToRightLayout() ?
+        mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
+                mCurrentImagePosition : images != null && !Toolbox.isLeftToRightLayout() ?
                 images.size() - 1 : 0, false);
         Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
         mViewPager.setContentDescription(food.getFoodName());
@@ -281,11 +306,10 @@ public class DetailFragment extends Fragment {
                 notes != null && !notes.isEmpty());
 
         // Hide the "Other info" section if all of its fields are blank
-        if ((brandName == null || brandName.isEmpty()) && (size == null || size.isEmpty()) &&
-                (weight == null || weight.isEmpty()) && (notes == null || notes.isEmpty())) {
-            mRootOtherInfo.setVisibility(View.GONE);
-            mBorderOtherInfo.setVisibility(View.GONE);
-        }
+        boolean hide = (brandName == null || brandName.isEmpty()) && (size == null || size.isEmpty()) &&
+                (weight == null || weight.isEmpty()) && (notes == null || notes.isEmpty());
+        mTvOtherInfoLabel.setVisibility(hide ? View.GONE : View.VISIBLE);
+        mBorderOtherInfo.setVisibility(hide ? View.GONE : View.VISIBLE);
 
         // Meta data layout
         @Nullable String barcode = food.getBarcode();
@@ -310,9 +334,8 @@ public class DetailFragment extends Fragment {
                     mTvInput.setText(R.string.food_input_type_textonly);
                     break;
             }
-        } else {
-            setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, false);
         }
+        setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, inputType != null);
     }
 
     private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView,

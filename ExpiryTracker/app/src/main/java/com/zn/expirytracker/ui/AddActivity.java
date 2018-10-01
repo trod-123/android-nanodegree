@@ -22,6 +22,12 @@ public class AddActivity extends AppCompatActivity {
         Timber.tag(AddActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
+        if (savedInstanceState != null) {
+            // To retain current fragment it is necessary to return here to prevent additional
+            // detail fragments when changing orientation
+            return;
+        }
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_edit_fragment, EditFragment.newInstance(
                         EditFragment.POSITION_ADD_MODE, "", InputType.TEXT_ONLY),

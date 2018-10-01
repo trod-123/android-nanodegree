@@ -23,6 +23,12 @@ public class EditActivity extends AppCompatActivity {
         Timber.tag(EditActivity.class.getSimpleName());
         ButterKnife.bind(this);
 
+        if (savedInstanceState != null) {
+            // To retain current fragment it is necessary to return here to prevent additional
+            // detail fragments when changing orientation
+            return;
+        }
+
         Intent intent = getIntent();
         if (intent != null) {
             long id = intent.getLongExtra(EditFragment.ARG_ITEM_ID_LONG, 0);

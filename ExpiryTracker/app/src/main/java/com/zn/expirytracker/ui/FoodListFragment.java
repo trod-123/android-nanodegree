@@ -5,6 +5,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,8 +45,12 @@ public class FoodListFragment extends Fragment
         implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener,
         ChildEventListener {
 
+    private static final String KEY_DRAWABLE_ID_INT = Toolbox.createStaticKeyString(
+            FoodListFragment.class, "drawable_id_int");
+    private static final int RESOURCE_ID_NOT_SET = -1;
+
     @BindView(R.id.container_list_fragment)
-    View mRootview;
+    View mRootView;
     @BindView(R.id.tv_food_list_empty)
     View mEmptyView;
     @BindView(R.id.iv_food_list_empty_animal)
@@ -60,6 +67,8 @@ public class FoodListFragment extends Fragment
     private FoodListAdapter mListAdapter;
     private FoodViewModel mViewModel;
 
+    private int mResourceId = RESOURCE_ID_NOT_SET;
+
     public FoodListFragment() {
         // Required empty public constructor
     }
@@ -70,11 +79,21 @@ public class FoodListFragment extends Fragment
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_DRAWABLE_ID_INT, mResourceId);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mHostActivity = getActivity();
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+
+        if (savedInstanceState != null) {
+            mResourceId = savedInstanceState.getInt(KEY_DRAWABLE_ID_INT, RESOURCE_ID_NOT_SET);
+        }
     }
 
     @Override
@@ -92,6 +111,10 @@ public class FoodListFragment extends Fragment
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
                     mListAdapter.submitList(foods);
+                    if (!mDividersAdjusted) {
+                        // Only adjust once
+                        setRecyclerViewDividers(true);
+                    }
                     showEmptyView(foods.size() == 0);
                 } else {
                     Timber.e("ListFragment ViewModel foods list was null. Showing empty view...");
@@ -124,11 +147,14 @@ public class FoodListFragment extends Fragment
         FirebaseDatabaseHelper.removeChildEventListener(this);
     }
 
+    // region RecyclerView setup
+
     private void setupRecyclerView() {
-        mRvFoodList.setLayoutManager(new LinearLayoutManager(mHostActivity,
-                LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mHostActivity,
+                LinearLayoutManager.VERTICAL, false);
+        mRvFoodList.setLayoutManager(layoutManager);
         mRvFoodList.setHasFixedSize(true);
-        mListAdapter = new FoodListAdapter(mHostActivity);
+        mListAdapter = new FoodListAdapter(mHostActivity, true);
         mRvFoodList.setAdapter(mListAdapter);
         mRvFoodList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -158,13 +184,13 @@ public class FoodListFragment extends Fragment
                 int position = viewHolder.getAdapterPosition();
                 Food food = mListAdapter.getFoodAtPosition(position);
                 mViewModel.delete(true, food);
-                Toolbox.showSnackbarMessage(mRootview, getString(R.string.message_item_removed,
+                Toolbox.showSnackbarMessage(mRootView, getString(R.string.message_item_removed,
                         food.getFoodName()));
             }
         });
         helper.attachToRecyclerView(mRvFoodList);
-        mRvFoodList.addItemDecoration(
-                new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
+
+        setRecyclerViewDividers(false);
 
         // TODO: Disable swipes for now
 //        mSrFoodList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -177,15 +203,60 @@ public class FoodListFragment extends Fragment
         mSrFoodList.setEnabled(false);
     }
 
+    /**
+     * Holds a reference to the latest divider set for the RecyclerView so it can be removed and
+     * replaced
+     */
+    private DividerItemDecoration mLastDecor;
+
+    /**
+     * Keeps track of when dividers were adjusted successfully, so adjustment can only be done once
+     */
+    private boolean mDividersAdjusted;
+
+    /**
+     * Sets the item dividers for the RecyclerView, which can be adjusted to match the item's
+     * drawn widths, if they do not already match their parent's (specify using {@code withCutOffs}
+     * <p>
+     * Source for adjusting margins: https://stackoverflow.com/questions/41546983/add-margins-to-divider-in-recyclerview
+     * <p>
+     * Getting view at position: https://stackoverflow.com/questions/33784369/recyclerview-get-view-at-particular-position
+     *
+     * @param withCutOffs {@code true} to adjust divider margins to match item parent margins
+     */
+    private void setRecyclerViewDividers(boolean withCutOffs) {
+        RecyclerView.ViewHolder vh = mRvFoodList.findViewHolderForAdapterPosition(0);
+        DividerItemDecoration decor = new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL);
+        if (withCutOffs && vh != null) {
+            int marginSize =
+                    vh.itemView.findViewById(R.id.guideline_list_start).getLeft(); // should be the same for marginEnd
+            int[] attrs = new int[]{android.R.attr.listDivider};
+            TypedArray a = mHostActivity.obtainStyledAttributes(attrs);
+            Drawable divider = a.getDrawable(0);
+            InsetDrawable insetDivider = new InsetDrawable(divider, marginSize, 0, marginSize, 0);
+            a.recycle();
+            decor.setDrawable(insetDivider);
+
+            // mark if successful only to prevent adding decor again when list updates
+            mDividersAdjusted = true;
+        }
+        mRvFoodList.removeItemDecoration(mLastDecor); // ensure only one item decoration is added
+        mRvFoodList.addItemDecoration(mLastDecor = decor);
+    }
+
     private void showEmptyView(boolean show) {
         Toolbox.showView(mEmptyView, show, false);
         if (show) {
-            int animalDrawableId = DataToolbox.getRandomAnimalDrawableId();
-            mIvEmpty.setImageResource(animalDrawableId);
+            if (mResourceId == RESOURCE_ID_NOT_SET) {
+                mResourceId = DataToolbox.getRandomAnimalDrawableId();
+            }
+            mIvEmpty.setImageResource(mResourceId);
             mIvEmpty.setContentDescription(
-                    DataToolbox.getAnimalContentDescriptionById(animalDrawableId));
+                    DataToolbox.getAnimalContentDescriptionById(mResourceId));
         }
     }
+
+    // endregion
 
     // region Firebase RTD ChildEventListener
 
@@ -264,7 +335,7 @@ public class FoodListFragment extends Fragment
             startActivity(intent);
         } else {
             Timber.d("Attempted to start Capture, but device does not have a camera");
-            Toolbox.showSnackbarMessage(mRootview, "Your device needs a camera to do this");
+            Toolbox.showSnackbarMessage(mRootView, "Your device needs a camera to do this");
         }
     }
 

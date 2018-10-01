@@ -1,12 +1,14 @@
 package com.zn.expirytracker.ui;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
 
@@ -15,10 +17,12 @@ import timber.log.Timber;
 // TODO: After submission, animate deleting items
 public class DetailPagerAdapter extends FragmentStatePagerAdapter {
 
+    private Context mContext;
     private List<Food> mFoodsList;
 
-    public DetailPagerAdapter(FragmentManager fm) {
+    public DetailPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
+        mContext = context;
     }
 
     /**
@@ -27,9 +31,11 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
      *
      * @param foodsList
      */
-    public void setFoodsList(@NonNull List<Food> foodsList) {
+    public void setFoodsList(List<Food> foodsList) {
         // By here, list will already have been reversed if in RTL
         mFoodsList = foodsList;
+        // Setting the below after the data has changed will not invalidate views. needs to be
+        // called again by hosting activity or fragment
         notifyDataSetChanged();
     }
 
@@ -42,6 +48,7 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
             return null;
         }
     }
+
 
     @Override
     public int getItemPosition(@NonNull Object object) {
@@ -57,6 +64,6 @@ public class DetailPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public float getPageWidth(int position) {
-        return Constants.DEFAULT_DETAIL_PAGE_WIDTH;
+        return Toolbox.getFloatFromResources(mContext.getResources(), R.dimen.detail_page_width);
     }
 }

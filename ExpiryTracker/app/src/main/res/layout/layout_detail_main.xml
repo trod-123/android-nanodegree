@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="24sp"
+        android:textSize="@dimen/detail_food_name_size"
         app:layout_constraintEnd_toStartOf="@+id/include"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -36,6 +36,7 @@
         android:layout_marginTop="8dp"
         android:textColor="@color/textColorPrimaryLight"
         android:textSize="14sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="@+id/tv_detail_expiry_date"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_expiry_date"
         tools:text="Stored in the fridge" />
@@ -47,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/icon_padding_narrow"
         android:tint="@color/icon_tint"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/tv_detail_storage_label"
         app:layout_constraintStart_toEndOf="@+id/tv_detail_storage_label"
         app:layout_constraintTop_toTopOf="@+id/tv_detail_storage_label"
@@ -62,7 +64,6 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_detail_description"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tv_detail_storage_label" />
 
@@ -76,19 +77,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/ncv_detail_count_days"
         app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tv_detail_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:textColor="@color/textColorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ncv_detail_count_days"
-        tools:text="During this 1 hour interactive event on Zoom, Udacity will share a few tips on how to prepare for an interview. Next, students will be broken up into smaller groups (using the breakout session in Zoom) to conduct mock interviews with one another. " />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"

@@ -11,9 +11,9 @@ import java.util.List;
  * Detects whether changes have been made to a form by keeping a list of {@link EditText} references
  */
 public class FormChangedDetector<T extends EditText> {
-    private List<T> mEditTextsReference; // store the references, and cache their current values
-    private List<String> mCachedStrings;
-    private List<String> mStringListReference;
+    private List<T> mEditTextsReference; // store the references
+    private List<String> mCachedStrings; // cache current values
+    private List<String> mStringListReference; // for image uris
     private List<String> mCachedStringList;
 
     public FormChangedDetector(@NonNull List<T> editTexts, @Nullable List<String> stringList) {
@@ -23,6 +23,31 @@ public class FormChangedDetector<T extends EditText> {
             mStringListReference = stringList;
             mCachedStringList = copyListContents(mStringListReference);
         }
+    }
+
+    public List<String> getCachedEditTextStrings() {
+        return mCachedStrings;
+    }
+
+    public List<String> getCachedStringsList() {
+        return mCachedStringList;
+    }
+
+    /**
+     * Restores the form changed detector with existing lists
+     *
+     * @param editTextsReference
+     * @param cachedStrings
+     * @param stringListReference
+     * @param cachedStringList
+     */
+    public FormChangedDetector(@NonNull List<T> editTextsReference,
+                               @Nullable List<String> stringListReference,
+                               List<String> cachedStrings, List<String> cachedStringList) {
+        mEditTextsReference = editTextsReference;
+        mStringListReference = stringListReference;
+        mCachedStrings = cachedStrings;
+        mCachedStringList = cachedStringList;
     }
 
     private List<String> copyListContents(List<String> list) {
@@ -44,6 +69,7 @@ public class FormChangedDetector<T extends EditText> {
      * @return {@code true} if any {@link EditText} strings are different
      */
     public boolean haveFieldsChanged() {
+        // Check the Edit Texts
         List<String> updatedStrings = EditToolbox.getStringsFromEditTexts(mEditTextsReference);
         for (int i = 0; i < mCachedStrings.size(); i++) {
             String cached = mCachedStrings.get(i);
@@ -52,6 +78,8 @@ public class FormChangedDetector<T extends EditText> {
                 return true;
             }
         }
+
+        // Check the Strings list
         if (mCachedStringList != null && mStringListReference != null) {
             // Check size first to see if necessary to iterate through individual items
             if (mCachedStringList.size() != mStringListReference.size()) {

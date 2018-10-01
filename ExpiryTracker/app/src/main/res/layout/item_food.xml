@@ -6,6 +6,8 @@
 
     <include
         android:id="@+id/item_food_layout"
-        layout="@layout/layout_common_food" />
+        layout="@layout/layout_common_food"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </FrameLayout>

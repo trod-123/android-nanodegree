@@ -13,12 +13,17 @@
         <item name="android:textDirection">locale</item>
     </style>
 
-    <!-- Base application theme with translucent status bar and no action bar -->
+    <!-- Base application theme with no action bar -->
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="AppTheme.NoActionBar.Translucent" parent="AppTheme.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
 
     <style name="AppTheme.Icon" parent="AppTheme">
         <item name="android:tint">@color/icon_tint</item>
@@ -54,7 +59,7 @@
 
     <style name="AppTheme.TextInputEditText" parent="AppTheme">
         <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/text_input_edit_text_size</item>
     </style>
 
     <style name="AppTheme.TextInputEditText.DarkBackground" parent="AppTheme.TextInputEditText">
@@ -66,7 +71,7 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:inputType">number</item>
         <item name="android:maxLength">2</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">@dimen/text_input_edit_text_numeric_size</item>
     </style>
 
     <style name="AppTheme.TextInputEditText.NonClickable" parent="AppTheme.TextInputEditText">

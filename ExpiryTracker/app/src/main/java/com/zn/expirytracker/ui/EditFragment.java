@@ -83,6 +83,39 @@ public class EditFragment extends Fragment implements
             "edit_fragment.input_type");
 
     /**
+     * For keeping track of the original EditText values after screen rotation
+     */
+    private static final String KEY_FORM_CHANGED_EDIT_TEXT_STRINGS_CACHE =
+            Toolbox.createStaticKeyString(EditFragment.class,
+                    "form_changed_edit_text_strings_cache");
+
+    /**
+     * For keeping track of the original Image uris values after screen rotation
+     */
+    private static final String KEY_FORM_CHANGED_STRINGS_LIST_CACHE =
+            Toolbox.createStaticKeyString(EditFragment.class,
+                    "form_changed_strings_list_cache");
+
+    /**
+     * For keeping track of the updated image uris values after screen rotation
+     */
+    private static final String KEY_CURRENT_IMAGE_URIS_LIST =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_image_uris_list");
+
+    /**
+     * For restoring current image pager position after screen rotation
+     */
+    private static final String KEY_CURRENT_IMAGE_PAGER_POSITION =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_image_pager_position");
+
+    private static final String KEY_CURRENT_EXPIRY_DATE_LONG =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_expiry_date");
+    private static final String KEY_CURRENT_GOOD_THRU_DATE_LONG =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_good_thru_date");
+    private static final String KEY_CURRENT_STORAGE_LOC_ENUM =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_storage_loc");
+
+    /**
      * Default code to use for {@link EditFragment#ARG_ITEM_ID_LONG} if adding a new item, not
      * editing an existing one
      */
@@ -96,6 +129,8 @@ public class EditFragment extends Fragment implements
     public static final int DEFAULT_STARTING_COUNT = 1;
     public static final Storage DEFAULT_STARTING_STORAGE = Storage.NOT_SET;
     public static final InputType DEFAULT_INPUT_TYPE = InputType.NONE;
+
+    private static final int IMAGE_PAGER_POSITION_NOT_SET = -1;
 
     @BindView(R.id.layout_edit_root)
     View mRootLayout;
@@ -158,7 +193,7 @@ public class EditFragment extends Fragment implements
 
     private Activity mHostActivity;
     private FoodViewModel mViewModel;
-    private FormChangedDetector mFormChangedDetector;
+    private FormChangedDetector<TextInputEditText> mFormChangedDetector;
     private Food mFood;
     private long mItemId;
     private boolean mAddMode = false;
@@ -170,6 +205,27 @@ public class EditFragment extends Fragment implements
     private Storage mLoc;
     private String mBarcode;
     private InputType mInputType;
+
+    // For savedInstanceState
+    private List<String> mCachedEditTextInputs;
+    private List<String> mCachedImageUris;
+    private int mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
+    private boolean mRestoredInstance;
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putStringArrayList(KEY_FORM_CHANGED_EDIT_TEXT_STRINGS_CACHE,
+                new ArrayList<>(mFormChangedDetector.getCachedEditTextStrings()));
+        outState.putStringArrayList(KEY_FORM_CHANGED_STRINGS_LIST_CACHE,
+                new ArrayList<>(mFormChangedDetector.getCachedStringsList()));
+        outState.putStringArrayList(KEY_CURRENT_IMAGE_URIS_LIST,
+                new ArrayList<>(mImageUris));
+        outState.putInt(KEY_CURRENT_IMAGE_PAGER_POSITION, mCurrentImagePosition);
+        outState.putLong(KEY_CURRENT_EXPIRY_DATE_LONG, mExpiryDate);
+        outState.putLong(KEY_CURRENT_GOOD_THRU_DATE_LONG, mGoodThruDate);
+        outState.putSerializable(KEY_CURRENT_STORAGE_LOC_ENUM, mLoc);
+        super.onSaveInstanceState(outState);
+    }
 
     public EditFragment() {
         // Required empty public constructor
@@ -232,7 +288,7 @@ public class EditFragment extends Fragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
         View rootView =
                 inflater.inflate(R.layout.fragment_edit, container, false);
         ButterKnife.bind(this, rootView);
@@ -246,6 +302,7 @@ public class EditFragment extends Fragment implements
             public void onPageSelected(int position) {
                 // Keep the current selected position in sync between ViewPager and PageIndicator
                 mPageIndicatorView.setSelection(position);
+                mCurrentImagePosition = position;
             }
 
             @Override
@@ -276,18 +333,45 @@ public class EditFragment extends Fragment implements
 //            }
 //        });
 
+        if (savedInstanceState != null) {
+            mCachedEditTextInputs = savedInstanceState
+                    .getStringArrayList(KEY_FORM_CHANGED_EDIT_TEXT_STRINGS_CACHE);
+            mCachedImageUris = savedInstanceState
+                    .getStringArrayList(KEY_FORM_CHANGED_STRINGS_LIST_CACHE);
+
+            mCurrentImagePosition = savedInstanceState.getInt(KEY_CURRENT_IMAGE_PAGER_POSITION);
+
+            // Non edit text values that need to be preserved and restored
+            mImageUris = savedInstanceState.getStringArrayList(KEY_CURRENT_IMAGE_URIS_LIST);
+            mExpiryDate = savedInstanceState.getLong(KEY_CURRENT_EXPIRY_DATE_LONG);
+            mGoodThruDate = savedInstanceState.getLong(KEY_CURRENT_GOOD_THRU_DATE_LONG);
+            mLoc = (Storage) savedInstanceState.getSerializable(KEY_CURRENT_STORAGE_LOC_ENUM);
+
+            mRestoredInstance = true;
+        }
+
         final LiveData<Food> data = mViewModel.getSingleFoodById(mItemId, false);
         data.observe(this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
-                populateFields(food);
+                mFood = food;
+                populateFields(mFood); // handles picking and choosing fields to fill after rotation
+
                 // this needs to be done AFTER fields are populated, but also call it when adding
-                mFormChangedDetector = getFormChangedDetector();
+                if (mRestoredInstance) {
+                    // restore from cache after rotation
+                    mFormChangedDetector = restoreExistingFormChangedDetector(
+                            mCachedEditTextInputs, mCachedImageUris);
+                } else {
+                    mFormChangedDetector = getFormChangedDetector();
+                }
+
                 // do not make any changes to any fields once UI is loaded. this also solves issue
                 // where adding an image resets the image adapter position back to 0 (though it
                 // could probably be because we were saving new images to food before even saving
                 // the food itself
                 data.removeObserver(this);
+
 
             }
         });
@@ -321,66 +405,77 @@ public class EditFragment extends Fragment implements
     }
 
     /**
-     * Helper that pre-populates all fields
+     * Helper that pre-populates all fields, depending on if we're recreating the fragment
      */
     private void populateFields(@Nullable Food food) {
-        mFood = food;
         // Only load saved values if NOT adding
         if (!mAddMode && food != null) {
             // Image adapter
-            mImageUris = food.getImages();
+            if (!mRestoredInstance) {
+                mImageUris = food.getImages();
+            }
             mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
                     Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
 
-            // Dates
-            mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
-            mGoodThruDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateGoodThru());
-
-            // Main layout
-            mEtFoodName.setText(food.getFoodName());
-            mEtCount.setText(String.valueOf(food.getCount()));
-
-            mLoc = food.getStorageLocation();
-
+            // Get all values first before populating fields (except dates and storage location,
+            // which are restored via saveInstanceState
             String description = food.getDescription();
-            mEtDescription.setText(description);
-            hideViewIfEmptyString(description, mIvDescriptionClear);
 
-            // Other info layout
             String brand = food.getBrandName();
-            mEtBrand.setText(brand);
-            hideViewIfEmptyString(brand, mIvBrandClear);
-
             String size = food.getSize();
-            mEtSize.setText(size);
-            hideViewIfEmptyString(size, mIvSizeClear);
-
             String weight = food.getWeight();
-            mEtWeight.setText(weight);
-            hideViewIfEmptyString(weight, mIvWeightClear);
-
             String notes = food.getNotes();
-            mEtNotes.setText(notes);
-            hideViewIfEmptyString(notes, mIvNotesClear);
 
             mBarcode = food.getBarcode();
             mInputType = food.getInputType();
+
+            if (!mRestoredInstance) {
+                // Get dates since we don't have them yet
+                mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
+                mGoodThruDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateGoodThru());
+
+                mLoc = food.getStorageLocation();
+
+                // Only fill in fields if we haven't restored fragment instance
+                mEtFoodName.setText(food.getFoodName());
+                mEtCount.setText(String.valueOf(food.getCount()));
+
+                mEtDescription.setText(description);
+                hideViewIfEmptyString(description, mIvDescriptionClear);
+
+                mEtBrand.setText(brand);
+                hideViewIfEmptyString(brand, mIvBrandClear);
+
+                mEtSize.setText(size);
+                hideViewIfEmptyString(size, mIvSizeClear);
+
+                mEtWeight.setText(weight);
+                hideViewIfEmptyString(weight, mIvWeightClear);
+
+                mEtNotes.setText(notes);
+                hideViewIfEmptyString(notes, mIvNotesClear);
+            }
         } else {
             // Set ADD_MODE defaults
-            mImageUris = new ArrayList<>();
+            if (!mRestoredInstance) {
+                mImageUris = new ArrayList<>();
+                mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
+                mLoc = DEFAULT_STARTING_STORAGE;
+            }
             mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
                     Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
-            showFieldError(true, FieldError.REQUIRED_NAME);
-            mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
-            mLoc = DEFAULT_STARTING_STORAGE;
+            showFieldError(mEtFoodName.getText().toString().isEmpty(), FieldError.REQUIRED_NAME);
         }
 
         // Common fields
         mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setCurrentItem(mImageUris != null && !Toolbox.isLeftToRightLayout() ?
+        mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
+                mCurrentImagePosition : mImageUris != null && !Toolbox.isLeftToRightLayout() ?
                 mImageUris.size() : 0, false); // set for RTL layouts
+        // TODO: This doesn't seem to set the indicator properly
+        mPageIndicatorView.onPageSelected(mViewPager.getCurrentItem());
         mViewPager.setContentDescription(
                 mFood != null ? mFood.getFoodName() : getString(R.string.food_image_list));
         mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
@@ -885,12 +980,30 @@ public class EditFragment extends Fragment implements
     // region Checking for form changes
 
     /**
-     * Generates a {@link FormChangedDetector} with this fragment's list of edit texts
+     * Generates a {@link FormChangedDetector} with this fragment's list of edit texts and a
+     * preservable strings list
      *
      * @return
      */
     private FormChangedDetector<TextInputEditText> getFormChangedDetector() {
-        List<TextInputEditText> editTexts = new ArrayList<>(
+        return new FormChangedDetector<>(getTextInputEditTexts(), mImageUris);
+    }
+
+    /**
+     * Restores previously cached values into a new instance of a {@link FormChangedDetector}
+     *
+     * @param cachedEditTextInputs
+     * @param cachedStringsList
+     * @return
+     */
+    private FormChangedDetector<TextInputEditText> restoreExistingFormChangedDetector(
+            List<String> cachedEditTextInputs, List<String> cachedStringsList) {
+        return new FormChangedDetector<>(getTextInputEditTexts(), mImageUris,
+                cachedEditTextInputs, cachedStringsList);
+    }
+
+    private List<TextInputEditText> getTextInputEditTexts() {
+        return new ArrayList<>(
                 Arrays.asList(
                         mEtFoodName,
                         mEtDateExpiry,
@@ -903,7 +1016,6 @@ public class EditFragment extends Fragment implements
                         mEtWeight,
                         mEtNotes)
         );
-        return new FormChangedDetector<>(editTexts, mImageUris);
     }
 
     /**

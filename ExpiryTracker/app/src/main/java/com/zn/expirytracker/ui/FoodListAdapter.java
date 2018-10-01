@@ -43,6 +43,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
     private long mCurrentTime;
     @NonNull
     private FoodListAdapterClickListener mClickListener;
+    private boolean mCompactable;
 
     interface FoodListAdapterClickListener {
         void onItemClicked(long itemId);
@@ -61,7 +62,11 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         }
     };
 
-    FoodListAdapter(@NonNull Context context) {
+    /**
+     * @param context
+     * @param compactable Enables narrowing of list item layout, based on display configuration
+     */
+    FoodListAdapter(@NonNull Context context, boolean compactable) {
         super(DIFF_CALLBACK);
         mContext = context;
         mCurrentTime = System.currentTimeMillis();
@@ -74,6 +79,8 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                 mContext.startActivity(intent);
             }
         };
+
+        mCompactable = compactable;
     }
 
     public Food getFoodAtPosition(int position) {
@@ -89,7 +96,9 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
     @NonNull
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_food, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(
+                mCompactable ? R.layout.item_food_compactable : R.layout.item_food,
+                parent, false);
         return new FoodViewHolder(view);
     }
 

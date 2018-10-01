@@ -31,6 +31,11 @@ public class DetailActivity extends AppCompatActivity {
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "detail_activity.item_id_long");
 
+    private static final String KEY_CURRENT_POSITION_INT = Toolbox.createStaticKeyString(
+            DetailActivity.class, "current_position_int");
+    private static final String KEY_INITIALIZED_BOOL = Toolbox.createStaticKeyString(
+            DetailActivity.class, "initialized_bool");
+
     @BindView(R.id.container_detail_activity)
     View mRootView;
     @BindView(R.id.viewPager_detail)
@@ -39,14 +44,28 @@ public class DetailActivity extends AppCompatActivity {
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
     private List<Food> mFoodsList; // sync'd with pager adapter in onChanged()
+
     /**
      * For setting up the first page the user sees
      */
     private long mLaunchedItemId = 0;
+
+    /**
+     * Keep track of the current item position for when the activity is reloaded
+     */
     private int mCurrentPosition;
 
-    // TODO: Save in savedInstanceState
-    private boolean mInitialized; // only set the current position when loaded for the first time
+    /**
+     * Only set the position by launchedItemId when loaded for the first time
+     */
+    private boolean mInitialized;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_CURRENT_POSITION_INT, mCurrentPosition);
+        outState.putBoolean(KEY_INITIALIZED_BOOL, mInitialized);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +85,11 @@ public class DetailActivity extends AppCompatActivity {
             mLaunchedItemId = intent.getLongExtra(ARG_ITEM_ID_LONG, 0);
         }
 
+        if (savedInstanceState != null) {
+            mCurrentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION_INT);
+            mInitialized = savedInstanceState.getBoolean(KEY_INITIALIZED_BOOL);
+        }
+
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
         mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
             @Override
@@ -79,6 +103,8 @@ public class DetailActivity extends AppCompatActivity {
                     }
                     if (!mInitialized) {
                         mPagerAdapter.setFoodsList(foodsList);
+                        // needs to be called here, and not in adapter, to invalidate views
+                        mPagerAdapter.notifyDataSetChanged();
                         mViewPager.setCurrentItem(
                                 DataToolbox.getFoodPositionFromId(foodsList, mLaunchedItemId),
                                 false);
@@ -89,6 +115,9 @@ public class DetailActivity extends AppCompatActivity {
                             finish();
                         }
                         mPagerAdapter.setFoodsList(foodsList);
+                        // needs to be called here, and not in adapter, to invalidate views
+                        mPagerAdapter.notifyDataSetChanged();
+                        mViewPager.setCurrentItem(mCurrentPosition, false);
                     }
                     // There is a jitter bug in scrolling if there is only one page. This should fix
                     mViewPager.setPagingEnabled(foodsList.size() > 1);
@@ -97,7 +126,7 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        mPagerAdapter = new DetailPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new DetailPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setClipToPadding(false);
         mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_page_margin));
         mViewPager.setAdapter(mPagerAdapter);

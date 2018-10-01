@@ -33,7 +33,4 @@ public class Constants {
     public static final int GREETING_EVENING_BOUNDS = 17; // 24 hours
     public static final int GREETING_MORNING_BOUNDS = 5;
     public static final int GREETING_AFTERNOON_BOUNDS = 12;
-
-    public static final float DEFAULT_DETAIL_PAGE_WIDTH = 0.98f;
-
 }

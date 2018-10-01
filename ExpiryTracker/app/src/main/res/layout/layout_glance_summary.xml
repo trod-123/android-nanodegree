@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:textColor="@color/colorPrimary"
-        android:textSize="28sp"
+        android:textSize="@dimen/at_a_glance_greeting_size"
         tools:text="Hello, Teddy!" />
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="24sp"
+        android:textSize="@dimen/at_a_glance_summary_size"
         tools:text="You have 13 foods expiring this week, and 3 expiring today!" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:textColor="@color/textColorPrimary"
-        android:textSize="24sp"
+        android:textSize="@dimen/at_a_glance_list_header_size"
         tools:text="Foods expiring in the next 7 days:" />
 
 </LinearLayout>

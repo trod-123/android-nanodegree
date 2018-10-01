@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Guideline;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
@@ -81,6 +82,9 @@ public class AtAGlanceFragment extends Fragment
     View mFabChartDateRange;
     @BindView(R.id.tv_fab_chart_date_range)
     TextView mTvChartDateRange;
+    @Nullable
+    @BindView(R.id.guideline_at_a_glance_center)
+    Guideline mGuidelineCenter;
 
     private List<BarEntry> mFullList_barChartEntries;
 
@@ -344,7 +348,7 @@ public class AtAGlanceFragment extends Fragment
         mRvFoodList.setLayoutManager(new LinearLayoutManager(mHostActivity,
                 LinearLayoutManager.VERTICAL, false));
         mRvFoodList.setHasFixedSize(false); // since size dynamically changes, this should be false
-        mListAdapter = new FoodListAdapter(mHostActivity);
+        mListAdapter = new FoodListAdapter(mHostActivity, false);
         mRvFoodList.setAdapter(mListAdapter);
         mRvFoodList.addItemDecoration(new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL));
         ViewCompat.setNestedScrollingEnabled(mRvFoodList, false);
@@ -507,8 +511,21 @@ public class AtAGlanceFragment extends Fragment
     private void updateListHeader(List<Food> filteredFoodList, WeeklyDateFilter filter) {
         if (filteredFoodList.size() > 0) {
             mTvListHeader.setText(DataToolbox.getAtAGlanceListHeader(mHostActivity, filter));
+            showCenterGuideline(true);
         } else {
             mTvListHeader.setText("");
+            showCenterGuideline(false);
+        }
+    }
+
+    /**
+     * Helper for showing the center guideline for applicable layouts that have it
+     *
+     * @param show
+     */
+    private void showCenterGuideline(boolean show) {
+        if (mGuidelineCenter != null) {
+            mGuidelineCenter.setGuidelinePercent(show ? 0.5f : 1.0f);
         }
     }
 

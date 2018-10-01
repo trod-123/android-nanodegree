@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +18,10 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Pair;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,13 +75,13 @@ public class CaptureOverlayFragment extends Fragment
     private static final boolean DEBUG_MODE_NO_API_CALL = false;
 
     public static final String ARG_INPUT_TYPE = Toolbox.createStaticKeyString(
-            "capture_overlay_fragment.input_type");
+            CaptureOverlayFragment.class, "input_type");
     public static final String ARG_BARCODE = Toolbox.createStaticKeyString(
-            "capture_overlay_fragment.barcode");
+            CaptureOverlayFragment.class, "barcode");
     public static final String ARG_BARCODE_BITMAP = Toolbox.createStaticKeyString(
-            "capture_overlay_fragment.barcode_bitmap");
+            CaptureOverlayFragment.class, "barcode_bitmap");
     public static final String ARG_IMAGE_BITMAP = Toolbox.createStaticKeyString(
-            "capture_overlay_fragment.image_bitmap");
+            CaptureOverlayFragment.class, "image_bitmap");
 
     private static final int REQ_CODE_SPEECH_INPUT_NAME = 1024;
     private static final int REQ_CODE_SPEECH_INPUT_EXPIRY_DATE = 1026;
@@ -129,7 +133,51 @@ public class CaptureOverlayFragment extends Fragment
     private String mBrand = "";
     private String mSize = "";
     private String mWeight = "";
-    private List<String> mImageUris = new ArrayList<>();
+    private List<String> mImageUris = new ArrayList<>(); // stores image uris from barcode data
+
+    private boolean mRestoredInstance = false; // do not repeat certain steps upon restore
+    private boolean mDateSet = false; // if the date has been set, don't prompt again
+
+    // Only store values that weren't generated from CaptureActivity (those values are retained
+    // in Fragment arguments
+
+    private static final String KEY_FOOD_NAME_STRING = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "food_name");
+
+    private static final String KEY_EXPIRY_DATE_LONG = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "expiry_date");
+
+    private static final String KEY_DESCRIPTION_STRING = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "description");
+
+    private static final String KEY_BRAND_STRING = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "brand");
+
+    private static final String KEY_SIZE_STRING = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "size");
+
+    private static final String KEY_WEIGHT_STRING = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "weight");
+
+    private static final String KEY_IMAGE_URIS = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "image_uris");
+
+    private static final String KEY_EXPIRY_DATE_SET_BOOLEAN = Toolbox.createStaticKeyString(
+            CaptureOverlayFragment.class, "date_set");
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        // Store current food object values
+        outState.putString(KEY_FOOD_NAME_STRING, mName);
+        outState.putLong(KEY_EXPIRY_DATE_LONG, mDateExpiry);
+        outState.putString(KEY_DESCRIPTION_STRING, mDescription);
+        outState.putString(KEY_BRAND_STRING, mBrand);
+        outState.putString(KEY_SIZE_STRING, mSize);
+        outState.putString(KEY_WEIGHT_STRING, mWeight);
+        outState.putStringArrayList(KEY_IMAGE_URIS, new ArrayList<>(mImageUris));
+        outState.putBoolean(KEY_EXPIRY_DATE_SET_BOOLEAN, mDateSet);
+        super.onSaveInstanceState(outState);
+    }
 
     public CaptureOverlayFragment() {
         // Required empty public constructor
@@ -210,19 +258,49 @@ public class CaptureOverlayFragment extends Fragment
             }
         });
 
-        // Fetch data
-        switch (mInputType) {
-            case BARCODE:
-                fetchBarcodeData(mBarcode);
-                break;
-            case IMG_REC:
-                fetchImageData(null);
-                break;
-            case IMG_ONLY:
-                // For image only, there is no data to fetch, so just populate views
-                populateFieldsFromImageOnly(mImageBitmap);
-                break;
+        if (savedInstanceState != null) {
+            mName = savedInstanceState.getString(KEY_FOOD_NAME_STRING, "");
+            mDateExpiry = savedInstanceState.getLong(KEY_EXPIRY_DATE_LONG, mCurrentDateStartOfDay);
+            mDescription = savedInstanceState.getString(KEY_DESCRIPTION_STRING, "");
+            mBrand = savedInstanceState.getString(KEY_BRAND_STRING, "");
+            mSize = savedInstanceState.getString(KEY_SIZE_STRING, "");
+            mWeight = savedInstanceState.getString(KEY_WEIGHT_STRING, "");
+            mImageUris = savedInstanceState.getStringArrayList(KEY_IMAGE_URIS);
+            mDateSet = savedInstanceState.getBoolean(KEY_EXPIRY_DATE_SET_BOOLEAN, false);
+
+            populateFields(mName, mDateExpiry, mDescription, mImageUris);
+
+            mRestoredInstance = true;
         }
+
+        // Fetch data, only if this is our first time
+        if (!mRestoredInstance) {
+            switch (mInputType) {
+                case BARCODE:
+                    fetchBarcodeData(mBarcode);
+                    break;
+                case IMG_REC:
+                    fetchImageData(null);
+                    break;
+                case IMG_ONLY:
+                    // For image only, there is no data to fetch, so just populate views
+                    populateFieldsFromImageOnly(mImageBitmap);
+                    break;
+            }
+        }
+
+        // Dynamically set the overlay size as a proportion of the screen width
+        // https://github.com/codepath/android_guides/wiki/Using-DialogFragment
+        Display display = mHostActivity.getWindow().getWindowManager().getDefaultDisplay();
+        Point point = new Point();
+        display.getSize(point);
+        float multiplier = Toolbox.getFloatFromResources(
+                getResources(), R.dimen.capture_overlay_width_multiplier);
+
+        CardView.LayoutParams params = new CardView.LayoutParams((int) (point.x * multiplier),
+                CardView.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER;
+        rootView.setLayoutParams(params);
         return rootView;
     }
 
@@ -291,83 +369,99 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     /**
-     * Populates overlay with {@code upcItem} data gathered.
-     * <p>
-     * If {@code upcItem == null}, then prompt user for name and date
+     * Exclusively for saving down barcode data into fields
      *
      * @param upcItem
      */
-    private void populateFieldsFromBarcode(@Nullable UpcItem upcItem) {
-        mTvBarcode.setText(mBarcode);
+    private void setFieldsFromBarcode(@Nullable UpcItem upcItem) {
         if (upcItem != null && upcItem.getItems().size() > 0) {
             Item item = upcItem.getItems().get(0);
             mName = item.getTitle();
-            mTvName.setText(mName);
             mDescription = item.getDescription();
-            if (mDescription.trim().isEmpty()) {
-                mTvDescription.setVisibility(View.GONE);
-            } else {
-                mTvDescription.setText(mDescription);
-            }
             mImageUris = item.getImages();
-            String imageUri = "";
-            if (mImageUris != null && mImageUris.size() > 0) {
-                imageUri = mImageUris.get(0);
-            }
-            Toolbox.showView(mPbImage, true, false);
-            Toolbox.loadImageFromUrl(mHostActivity, imageUri, mIvImage, new RequestListener<Bitmap>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                            Target<Bitmap> target, boolean isFirstResource) {
-                    // If there is no image, hide the view
-                    mIvImage.setVisibility(View.GONE);
-                    Toolbox.showView(mPbImage, false, false);
-                    return false;
-                }
-
-                @Override
-                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
-                                               DataSource dataSource, boolean isFirstResource) {
-                    Toolbox.showView(mPbImage, false, false);
-                    mIvImage.setContentDescription(mName);
-                    return false;
-                }
-            });
-            GlideApp.with(mHostActivity)
-                    .load(mBarcodeBitmap)
-                    .into(mIvBarcode);
-            mTvAttr.setText(R.string.data_attribution_upcitemdb);
-
             mBrand = item.getBrand();
             mSize = item.getSize();
             mWeight = item.getWeight();
-        } else {
-            // upcItem is null or has no results
-            mTvDescription.setVisibility(View.GONE);
-            // Load the barcode in the main image instead and hide the other
-            Toolbox.showView(mPbImage, true, false);
-            GlideApp.with(mHostActivity)
-                    .load(mBarcodeBitmap)
-                    .addListener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                    Target<Drawable> target, boolean isFirstResource) {
-                            Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
-                            Toolbox.showView(mPbImage, false, false);
-                            return false;
-                        }
+        }
+    }
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model,
-                                                       Target<Drawable> target, DataSource dataSource,
-                                                       boolean isFirstResource) {
-                            Toolbox.showView(mPbImage, false, false);
-                            return false;
-                        }
-                    })
-                    .into(mIvImage);
-            mIvBarcode.setVisibility(View.GONE);
-            mTvAttr.setVisibility(View.GONE);
+    /**
+     * Populates overlay with {@code upcItem} data gathered.
+     * <p>
+     * Prompt user for name and date if missing
+     *
+     * @param name
+     * @param dateExpiry
+     * @param description
+     * @param imageUris
+     */
+    private void populateFields(String name, long dateExpiry, String description,
+                                List<String> imageUris) {
+        mTvBarcode.setText(mBarcode);
+        mTvName.setText(name);
+        if (mDescription.trim().isEmpty()) {
+            mTvDescription.setVisibility(View.GONE);
+        } else {
+            mTvDescription.setText(description);
+        }
+        mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
+                DataToolbox.getFormattedFullDateString(dateExpiry)));
+        if (mBarcodeBitmap != null) {
+            if (mImageUris != null && mImageUris.size() > 0) {
+                // Set the main image to the first image from the list
+                String imageUri = imageUris.get(0);
+
+                Toolbox.showView(mPbImage, true, false);
+                Toolbox.loadImageFromUrl(mHostActivity, imageUri, mIvImage, new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Bitmap> target, boolean isFirstResource) {
+                        // If there is no image, hide the view
+                        mIvImage.setVisibility(View.GONE);
+                        Toolbox.showView(mPbImage, false, false);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        Toolbox.showView(mPbImage, false, false);
+                        mIvImage.setContentDescription(mName);
+                        return false;
+                    }
+                });
+                GlideApp.with(mHostActivity)
+                        .load(mBarcodeBitmap)
+                        .into(mIvBarcode);
+                mTvAttr.setText(R.string.data_attribution_upcitemdb);
+            } else {
+                // upcItem is null, so load the barcode in the main image instead and hide the other
+                GlideApp.with(mHostActivity)
+                        .load(mBarcodeBitmap)
+                        .addListener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                        Target<Drawable> target, boolean isFirstResource) {
+                                Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
+                                Toolbox.showView(mPbImage, false, false);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model,
+                                                           Target<Drawable> target, DataSource dataSource,
+                                                           boolean isFirstResource) {
+                                Toolbox.showView(mPbImage, false, false);
+                                return false;
+                            }
+                        })
+                        .into(mIvImage);
+                mIvBarcode.setVisibility(View.GONE);
+                mTvAttr.setVisibility(View.GONE);
+            }
+        } else {
+            // Barcode bitmap is null, so we only have the image bitmap
+            populateFieldsFromImageOnly(mImageBitmap);
         }
         promptForMissingInfo();
     }
@@ -409,15 +503,19 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     /**
-     * Prompt the user for additional required info. Use voice input if enabled in Settings
+     * Prompt the user for additional required info. Use voice input if enabled in Settings.
+     * If no additional info is needed, then just show the view
      */
     private void promptForMissingInfo() {
         if (mName != null && mName.isEmpty()) {
             // If prompting name, name should be first. Will prompt for Expiry date after name is
             // provided
             promptItemName(mVoicePrompt, false);
-        } else {
+        } else if (!mDateSet) {
             promptExpiryDate(mVoicePrompt, false, false);
+        } else {
+            // All fields are already set, so show the view
+            showOverlayData(true);
         }
     }
 
@@ -478,7 +576,8 @@ public class CaptureOverlayFragment extends Fragment
 
         @Override
         protected void onPostExecute(@Nullable Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
-            populateFieldsFromBarcode(upcItem.first);
+            setFieldsFromBarcode(upcItem.first);
+            populateFields(mName, mDateExpiry, mDescription, mImageUris);
             handleResponseCode(upcItem);
         }
 
@@ -690,6 +789,7 @@ public class CaptureOverlayFragment extends Fragment
         mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
                 DataToolbox.getFormattedFullDateString(date)));
         mDateExpiry = date;
+        mDateSet = true;
     }
 
     // endregion

@@ -28,7 +28,9 @@
                     android:layout_marginBottom="16dp"
                     android:orientation="vertical">
 
-                    <include layout="@layout/fragment_detail_image_pager" />
+                    <include layout="@layout/fragment_detail_image_pager"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/detail_image_height"/>
 
                     <include
                         layout="@layout/layout_edit_main"

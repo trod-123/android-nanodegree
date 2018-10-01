@@ -10,6 +10,7 @@
         android:id="@+id/sr_food_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbarStyle="outsideOverlay"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.RecyclerView
@@ -28,8 +29,8 @@
         android:layout_gravity="center"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        android:orientation="vertical"
         android:alpha="0"
+        android:orientation="vertical"
         tools:ignore="useCompoundDrawables">
 
         <TextView
@@ -50,7 +51,7 @@
             android:layout_height="@dimen/empty_list_icon_size"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_dog_black_24dp"
-            tools:ignore="contentDescription"/>
+            tools:ignore="contentDescription" />
 
     </LinearLayout>
 
@@ -61,9 +62,9 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
+        android:contentDescription="@string/action_add_item"
         android:focusable="true"
         android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_add_black_24dp"
-        android:contentDescription="@string/action_add_item"/>
+        app:srcCompat="@drawable/ic_add_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
