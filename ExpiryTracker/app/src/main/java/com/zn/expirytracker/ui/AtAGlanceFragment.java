@@ -62,6 +62,9 @@ import timber.log.Timber;
 public class AtAGlanceFragment extends Fragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String KEY_CURRENT_DATE_FILTER =
+            Toolbox.createStaticKeyString(AtAGlanceFragment.class, "current_date_filter");
+
     @BindView(R.id.layout_at_a_glance_root)
     View mRootLayout;
     @BindView(R.id.chart_at_a_glance)
@@ -94,13 +97,19 @@ public class AtAGlanceFragment extends Fragment
     private Activity mHostActivity;
     private DateTime mCurrentDateTimeStartOfDay; // for dates calculations
     private long mCurrentDateTime; // for when the exact time is needed
-    private WeeklyDateFilter mCurrentFilter;
+    private WeeklyDateFilter mCurrentFilter = WeeklyDateFilter.NEXT_7;
 
     /**
      * Reversed x-values for the bar chart, ordered in descending order for RTL layouts. This
      * value is {@code null} if device is not in RTL layout
      */
     private int[] mRtlBarchartLabels;
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(KEY_CURRENT_DATE_FILTER, mCurrentFilter);
+        super.onSaveInstanceState(outState);
+    }
 
     public AtAGlanceFragment() {
         // Required empty public constructor
@@ -118,8 +127,12 @@ public class AtAGlanceFragment extends Fragment
         mHostActivity = getActivity();
         mCurrentDateTime = System.currentTimeMillis();
         mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(mCurrentDateTime);
-        mCurrentFilter = WeeklyDateFilter.NEXT_7;
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+
+        if (savedInstanceState != null) {
+            mCurrentFilter = (WeeklyDateFilter) savedInstanceState.getSerializable(
+                    KEY_CURRENT_DATE_FILTER);
+        }
     }
 
     @Override
