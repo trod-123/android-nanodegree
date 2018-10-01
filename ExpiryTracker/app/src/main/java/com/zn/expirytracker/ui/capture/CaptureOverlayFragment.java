@@ -137,7 +137,6 @@ public class CaptureOverlayFragment extends Fragment
     private String mWeight = "";
     private List<String> mImageUris = new ArrayList<>(); // stores image uris from barcode data
 
-    private boolean mRestoredInstance = false; // do not repeat certain steps upon restore
     private boolean mDateSet = false; // if the date has been set, don't prompt again
 
     // Only store values that weren't generated from CaptureActivity (those values are retained
@@ -314,11 +313,8 @@ public class CaptureOverlayFragment extends Fragment
 
             populateFields(mName, mDateExpiry, mDescription, mImageUris);
 
-            mRestoredInstance = true;
-        }
-
-        // Fetch data, only if this is our first time
-        if (!mRestoredInstance) {
+        } else {
+            // Fetch data, only if this is our first time
             switch (mInputType) {
                 case BARCODE:
                     fetchBarcodeData(mBarcode);
@@ -780,7 +776,6 @@ public class CaptureOverlayFragment extends Fragment
         switch (position) {
             case Dialog.BUTTON_POSITIVE:
                 setItemName(textInput, true);
-                showOverlayData(true);
                 break;
             default:
                 mHostActivity.onBackPressed();
