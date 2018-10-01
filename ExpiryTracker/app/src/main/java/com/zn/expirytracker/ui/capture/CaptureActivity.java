@@ -120,11 +120,10 @@ public class CaptureActivity extends AppCompatActivity implements
         if (allPermissionsGranted()) {
             startCameraSource();
             setupFrameProcessing(mCurrentInputType);
+            activateRoot(mRootEnabled);
         } else {
             getRuntimePermissions();
         }
-
-        activateRoot(mRootEnabled);
     }
 
     @Override
