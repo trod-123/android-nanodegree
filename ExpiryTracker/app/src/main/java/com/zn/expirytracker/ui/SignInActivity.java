@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.OnEditClearErrorsTextWatcher;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -89,7 +89,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         // Only show the test sign in during demoing
         mBtnContainerSignInTest.setVisibility(
-                Constants.DEMO_TEST_ACCOUNT_ACTIVATED ? View.VISIBLE : View.GONE);
+                DebugFields.DEMO_TEST_ACCOUNT_ACTIVATED ? View.VISIBLE : View.GONE);
 
         mBtnSignIn.setOnClickListener(this);
         mBtnGoogle.setOnClickListener(this);
@@ -209,7 +209,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
      */
     private void signInToTestAccount() {
         AuthToolbox.showLoadingOverlay(true, mNoClickOverlay, mPbSignInTest);
-        mAuth.signInWithEmailAndPassword(Constants.DEMO_TEST_EMAIL, Constants.DEMO_TEST_PASSWORD)
+        mAuth.signInWithEmailAndPassword(DebugFields.DEMO_TEST_EMAIL, DebugFields.DEMO_TEST_PASSWORD)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

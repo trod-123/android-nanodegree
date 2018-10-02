@@ -32,7 +32,7 @@ import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.ArrayList;
@@ -217,7 +217,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * @param userId
      */
     private void disableDemoAccountSettings(String userId) {
-        if (userId.equals(Constants.DEMO_TEST_ACCOUNT_ID)) {
+        if (userId.equals(DebugFields.DEMO_TEST_ACCOUNT_ID)) {
             mPreferenceDisplayName.setEnabled(false);
             mPreferenceAccountDelete.setEnabled(false);
         }

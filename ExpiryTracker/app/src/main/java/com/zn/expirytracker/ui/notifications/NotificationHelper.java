@@ -26,6 +26,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DebugFields;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -35,11 +36,6 @@ import java.util.List;
 import timber.log.Timber;
 
 public class NotificationHelper {
-
-    /**
-     * For debugging. {@code true} allows notifications to show up immediately after enabling them
-     */
-    private static final boolean DEBUG_ENABLE_QUICK_REMINDERS = false;
 
     private static final int ID_REMINDER_NOTIFICATIONS = 10;
 
@@ -172,7 +168,7 @@ public class NotificationHelper {
             // If we're running for first time, et the trigger to meet the user-specified
             // notification time
             Pair<Integer, Integer> triggerRange = getNotificationTriggerRange(tod);
-            if (!DEBUG_ENABLE_QUICK_REMINDERS) {
+            if (!DebugFields.DEBUG_ENABLE_QUICK_REMINDERS) {
                 Timber.d("Notification non-recurring triggerRange in seconds: %s %s",
                         triggerRange.first * 60, triggerRange.second * 60);
                 builder.setTrigger(Trigger.executionWindow(
@@ -266,7 +262,9 @@ public class NotificationHelper {
 
             // Get the readable date food is expiring, and set in message
             String formattedDate = DataToolbox.getFormattedExpiryDateString(context, currentTimeStartOfDay,
-                    food.getDateExpiry()).toLowerCase();
+                    food.getDateExpiry());
+            // Make the "e" in the "Expires" message lowercase
+            formattedDate = formattedDate.substring(0, 1).toLowerCase() + formattedDate.substring(1);
             contentText = String.format("%s %s", food.getFoodName(), formattedDate);
 
             // TODO: Get the first food image, if available, and set in message
@@ -280,6 +278,7 @@ public class NotificationHelper {
             // Set pending intent to the food detail
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra(DetailActivity.ARG_ITEM_ID_LONG, food.get_id());
+            intent.putExtra(DetailActivity.EXTRA_LAUNCHED_EXTERNALLY, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             contentIntent = PendingIntent.getActivity(
                     context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -29,7 +29,13 @@ import butterknife.ButterKnife;
 public class DetailActivity extends AppCompatActivity {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
-            "detail_activity.item_id_long");
+            DetailActivity.class, "item_id_long");
+    /**
+     * Override onBackPressed() to simulate going back to MainActivity if user got here via
+     * widget or notification
+     */
+    public static final String EXTRA_LAUNCHED_EXTERNALLY = Toolbox.createStaticKeyString(
+            DetailActivity.class, "launched_externally");
 
     private static final String KEY_CURRENT_POSITION_INT = Toolbox.createStaticKeyString(
             DetailActivity.class, "current_position_int");
@@ -60,6 +66,12 @@ public class DetailActivity extends AppCompatActivity {
      */
     private boolean mInitialized;
 
+    /**
+     * If the user got here by widget or notification, override onBackPressed() to take the user
+     * to MainActivity, mimicking a "fake" backstack to simulate a unified app experience
+     */
+    private boolean mLaunchedExternally;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_CURRENT_POSITION_INT, mCurrentPosition);
@@ -83,6 +95,10 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             mLaunchedItemId = intent.getLongExtra(ARG_ITEM_ID_LONG, 0);
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                mLaunchedExternally = extras.containsKey(EXTRA_LAUNCHED_EXTERNALLY);
+            }
         }
 
         if (savedInstanceState != null) {
@@ -174,6 +190,18 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mLaunchedExternally) {
+            Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**

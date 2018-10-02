@@ -227,6 +227,7 @@ public class FoodWidget extends AppWidgetProvider {
 
                 // set the pending intent template for individual item clicks
                 Intent detailIntent = new Intent(context, DetailActivity.class);
+                detailIntent.putExtra(DetailActivity.EXTRA_LAUNCHED_EXTERNALLY, true);
                 PendingIntent detailPendingIntent = PendingIntent.getActivity(
                         context, 0, detailIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 views.setPendingIntentTemplate(R.id.lv_widget, detailPendingIntent);

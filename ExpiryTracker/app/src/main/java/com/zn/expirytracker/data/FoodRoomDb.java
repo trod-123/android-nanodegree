@@ -14,14 +14,13 @@ import com.zn.expirytracker.data.contracts.DatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.data.model.Temp;
+import com.zn.expirytracker.utils.DebugFields;
 
 import java.util.List;
 
 @Database(entities = {Food.class, Temp.class, Cache.class},
         version = DatabaseContract.CURRENT_VERSION)
 public abstract class FoodRoomDb extends RoomDatabase {
-
-    private static final boolean POPULATE_DUMMY_DATA = false;
 
     public abstract FoodDao foodDao();
 
@@ -55,7 +54,7 @@ public abstract class FoodRoomDb extends RoomDatabase {
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase db) {
             super.onOpen(db);
-            if (BuildConfig.DEBUG && POPULATE_DUMMY_DATA) {
+            if (BuildConfig.DEBUG && DebugFields.POPULATE_DUMMY_DATA) {
                 // Only populate in debug mode, if dummy enabled. Otherwise listener does nothing
                 new PopulateDbAsync(INSTANCE).execute();
             }
