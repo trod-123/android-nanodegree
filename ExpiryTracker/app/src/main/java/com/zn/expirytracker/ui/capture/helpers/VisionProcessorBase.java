@@ -30,6 +30,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Abstract base class for ML Kit frame processors. Subclasses need to implement {@link
  * #onSuccess(T, FrameMetadata, GraphicOverlay)} to define what they want to with the detection
  * results and {@link #detectInImage(FirebaseVisionImage)} to specify the detector object.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * This code is untouched, original from source
  *
  * @param <T> The type of the detected feature.
  */

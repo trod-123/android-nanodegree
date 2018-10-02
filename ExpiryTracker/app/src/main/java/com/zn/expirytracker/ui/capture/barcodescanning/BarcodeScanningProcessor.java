@@ -31,6 +31,9 @@ import java.util.List;
 
 /**
  * Barcode Detector Demo.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * Tweaked just a bit for this app
  */
 public class BarcodeScanningProcessor extends VisionProcessorBase<List<FirebaseVisionBarcode>> {
 

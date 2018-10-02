@@ -29,6 +29,9 @@ import java.io.IOException;
 
 /**
  * Preview the camera image in the screen.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * This code is untouched, original from source
  */
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "MIDemoApp:Preview";

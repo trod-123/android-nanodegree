@@ -22,6 +22,9 @@ import java.nio.ByteBuffer;
 
 /**
  * An inferface to process the images with different ML Kit detectors and custom image models.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * This code is untouched, original from source
  */
 public interface VisionImageProcessor {
 

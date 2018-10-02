@@ -22,10 +22,10 @@
     <string name="pref_notifications_tod_key" translatable="false">Notification time of day</string>
     <string name="pref_notifications_tod_label">Time of day to get notified</string>
     <string name="pref_notifications_tod_summary">When during the day do you want to be reminded?</string>
-    <string name="pref_notifications_tod_entries_0">Morning (default)</string>
-    <string name="pref_notifications_tod_entries_1">Afternoon</string>
-    <string name="pref_notifications_tod_entries_2">Evening</string>
-    <string name="pref_notifications_tod_entries_3">Overnight</string>
+    <string name="pref_notifications_tod_entries_0">Morning, ~9 am (default)</string>
+    <string name="pref_notifications_tod_entries_1">Afternoon, ~3 pm</string>
+    <string name="pref_notifications_tod_entries_2">Evening, ~9 pm</string>
+    <string name="pref_notifications_tod_entries_3">Overnight, ~3 am</string>
     <string-array name="pref_notifications_tod_entries">
         <item>@string/pref_notifications_tod_entries_0</item>
         <item>@string/pref_notifications_tod_entries_1</item>
@@ -97,8 +97,8 @@
 
     <!-- Voice input -->
     <string name="pref_capture_voice_input_key" translatable="false">Voice input default</string>
-    <string name="pref_capture_voice_input_label">Enable voice input for item details</string>
-    <string name="pref_capture_voice_input_summary">Save time from typing by speaking directly to your Food Assistant (on by default)</string>
+    <string name="pref_capture_voice_input_label">Enable voice input for item details (experimental feature)</string>
+    <string name="pref_capture_voice_input_summary">Save time from typing by speaking directly to your Food Assistant (off by default)</string>
 
     <!-- endregion -->
 

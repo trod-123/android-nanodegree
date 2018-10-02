@@ -41,6 +41,9 @@ import java.util.Set;
  * <li>{@link Graphic#translateX(float)} and {@link Graphic#translateY(float)} adjust the
  * coordinate from the preview's coordinate system to the view coordinate system.
  * </ol>
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * This code is untouched, original from source
  */
 public class GraphicOverlay extends View {
     private final Object lock = new Object();

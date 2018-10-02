@@ -15,6 +15,9 @@ package com.zn.expirytracker.ui.capture.helpers;
 
 /**
  * Describing a frame info.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * This code is untouched, original from source
  */
 public class FrameMetadata {
 

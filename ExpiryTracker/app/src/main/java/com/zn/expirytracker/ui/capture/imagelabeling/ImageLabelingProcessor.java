@@ -33,6 +33,9 @@ import timber.log.Timber;
 
 /**
  * Custom Image Classifier Demo.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * Twaked just a bit for this app
  */
 public class ImageLabelingProcessor extends VisionProcessorBase<List<FirebaseVisionLabel>> {
 

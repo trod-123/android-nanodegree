@@ -48,6 +48,9 @@ import timber.log.Timber;
  * Manages the camera and allows UI updates on top of it (e.g. overlaying extra Graphics or
  * displaying extra information). This receives preview frames from the camera at a specified rate,
  * sending those frames to child classes' detectors / classifiers as fast as it is able to process.
+ * <p>
+ * Original code from: https://github.com/firebase/quickstart-android/tree/master/mlkit
+ * Tweaked a bit for this app
  */
 @SuppressLint("MissingPermission")
 public class CameraSource {
