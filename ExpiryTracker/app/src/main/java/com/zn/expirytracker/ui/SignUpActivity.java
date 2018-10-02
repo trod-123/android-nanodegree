@@ -146,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                 Timber.w(e, "Sign up with email: failed");
                             }
                             Toolbox.showSnackbarMessage(mRootView,
-                                    "There was a problem creating your account.");
+                                    getString(R.string.message_error_sign_up));
                         }
                         AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbSignup);
                     }

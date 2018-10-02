@@ -269,7 +269,8 @@ public class CaptureOverlayFragment extends Fragment
         mCurrentDateStartOfDay = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
-        mVoicePrompt = sp.getBoolean(getString(R.string.pref_capture_voice_input_key), true);
+        mVoicePrompt = sp.getBoolean(getString(R.string.pref_capture_voice_input_key),
+                mHostActivity.getResources().getBoolean(R.bool.pref_capture_voice_input_default));
     }
 
     @Override
@@ -359,7 +360,7 @@ public class CaptureOverlayFragment extends Fragment
         Food food = createFood(mName, mDescription, mDateExpiry, mBrand, mSize, mWeight,
                 mImageUris, mBarcode, mInputType, Storage.NOT_SET);
         mViewModel.insert(true, food);
-        Toolbox.showToast(mHostActivity, String.format("Saved %s!", mName));
+        Toolbox.showToast(mHostActivity, getString(R.string.message_item_saved, mName));
         mHostActivity.onBackPressed();
     }
 
@@ -707,25 +708,25 @@ public class CaptureOverlayFragment extends Fragment
             case OK:
                 // Even with a good response, the items may be empty
                 if (upcItem.first.getItems().size() == 0) {
-                    errorToast = "Item not found in database";
+                    errorToast = getString(R.string.upcitemdb_error_item_not_found);
                 }
                 break;
             case NO_INTERNET:
-                errorToast = "Internet connection lost while getting data. Please try again later";
+                errorToast = getString(R.string.upcitemdb_error_no_internet);
                 break;
             case NOT_FOUND:
             case INVALID_QUERY:
-                errorToast = "Item not found in database";
+                errorToast = getString(R.string.upcitemdb_error_item_not_found);
                 break;
             case EXCEED_LIMIT:
-                errorToast = "API calls limit has been reached. Please contact the developer";
+                errorToast = getString(R.string.upcitemdb_error_api_limit);
                 break;
             case SERVER_ERR:
-                errorToast = "Server error. Please try again later";
+                errorToast = getString(R.string.upcitemdb_error_server);
                 break;
             case OTHER:
             default:
-                errorToast = "Unknown error";
+                errorToast = getString(R.string.upcitemdb_error_unknown);
                 break;
         }
         if (errorToast != null) {
@@ -862,7 +863,7 @@ public class CaptureOverlayFragment extends Fragment
             }
         }
         // Return current date if error
-        Toolbox.showToast(mHostActivity, "There was an error parsing the date");
+        Toolbox.showToast(mHostActivity, getString(R.string.message_error_parse_date));
         return new DateTime(mCurrentDateStartOfDay);
     }
 

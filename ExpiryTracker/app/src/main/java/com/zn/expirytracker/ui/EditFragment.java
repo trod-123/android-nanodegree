@@ -1205,10 +1205,13 @@ public class EditFragment extends Fragment implements
                 // note this will set result intent data to null, but we don't need to check anyway
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(cameraIntent, RC_CAMERA);
+            } else {
+                Timber.e("EditFragment: Attempted to start Capture, but the outputFilePath was null");
+                Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_error_save_image_cache));
             }
         } else {
             Timber.d("EditFragment: Attempted to start Capture, but device does not have a camera");
-            Toolbox.showSnackbarMessage(mRootLayout, "Your device needs a camera to do this");
+            Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_camera_required));
         }
     }
 
@@ -1239,7 +1242,7 @@ public class EditFragment extends Fragment implements
                     captureImageFromCamera();
                 } else {
                     Toolbox.showSnackbarMessage(mRootLayout,
-                            "Please enable camera permissions to take photos");
+                            getString(R.string.message_permissions_camera_shoot));
                 }
                 break;
             case RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE:
@@ -1247,7 +1250,7 @@ public class EditFragment extends Fragment implements
                     getImageFromStorage();
                 } else {
                     Toolbox.showSnackbarMessage(mRootLayout,
-                            "Please enable storage permissions to pick photos");
+                            getString(R.string.message_permissions_storage));
                 }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1289,9 +1292,10 @@ public class EditFragment extends Fragment implements
             String path = outputFilePath.getAbsolutePath();
             Timber.d("EditFragment: Saved image path: %s", path);
             addImageToUrisList(path);
-            Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
+            Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_image_added));
         } catch (IOException e) {
             Timber.e(e, "There was a problem saving the image to internal storage");
+            Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_error_save_image));
         }
     }
 
@@ -1300,7 +1304,7 @@ public class EditFragment extends Fragment implements
      */
     private void addImageFromCamera(@NonNull String imagePath) {
         addImageToUrisList(imagePath);
-        Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
+        Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_image_added));
     }
 
     /**

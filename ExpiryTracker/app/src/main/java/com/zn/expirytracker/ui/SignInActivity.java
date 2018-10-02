@@ -187,7 +187,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             String error = ((FirebaseAuthException) task.getException()).getErrorCode();
                             handleSignInWithEmailFailure(error);
                             Toolbox.showSnackbarMessage(mRootView,
-                                    "There was a problem signing in.");
+                                    getString(R.string.message_error_sign_in));
                         }
                         AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbSignIn);
                     }
@@ -224,7 +224,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             String error = ((FirebaseAuthException) task.getException()).getErrorCode();
                             handleSignInWithEmailFailure(error);
                             Toolbox.showSnackbarMessage(mRootView,
-                                    "There was a problem signing in to the demo account.");
+                                    getString(R.string.message_error_sign_in_demo));
                         }
                         AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbSignInTest);
                     }
@@ -269,7 +269,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                                 // Sign in failed
                                 Timber.w(task.getException(), "Firebase auth sign in with" +
                                         " Google credential failed");
-                                Toolbox.showSnackbarMessage(mRootView, "Authentication failed.");
+                                Toolbox.showSnackbarMessage(mRootView, getString(R.string.message_error_auth));
                             }
                             AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbGoogle);
                         }

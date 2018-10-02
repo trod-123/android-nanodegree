@@ -479,7 +479,7 @@ public class CaptureActivity extends AppCompatActivity implements
                     mCameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor(this));
                 } else {
                     Toolbox.showSnackbarMessage(mRootView,
-                            "Fetching barcode data online requires internet connection");
+                            getString(R.string.message_error_barcode_internet_required));
                     mCameraSource.setMachineLearningFrameProcessor(null);
                 }
                 break;
@@ -565,8 +565,8 @@ public class CaptureActivity extends AppCompatActivity implements
             int requestCode, String[] permissions, int[] grantResults) {
         // Show user message if permissions are denied, and allow users to request permissions again
         Snackbar snackPermissions = Snackbar.make(mRootView,
-                "Please enable permissions to use the camera", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Enable", new View.OnClickListener() {
+                R.string.message_permissions_camera, Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.action_enable, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         getRuntimePermissions();

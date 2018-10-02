@@ -423,7 +423,6 @@ public class Toolbox {
         // filepath: Android/data/com.zn.expirytracker.free.debug/files/Pictures
         // (also defined in file_paths.xml)
         File directory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        Timber.d("Image directory: %s", directory.getAbsolutePath());
         return File.createTempFile(filename, ".jpg", directory);
     }
 

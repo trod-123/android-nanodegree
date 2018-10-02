@@ -130,7 +130,7 @@ public class ExpiryDatePickerDialogFragment extends DialogFragment
         int year = dateToDisplay.getYear();
 
         TitledDatePickerDialog dialog = new TitledDatePickerDialog(getActivity(), this, year, month, day);
-        dialog.setPermanentTitle("Set expiry date");
+        dialog.setPermanentTitle(getString(R.string.action_set_expiry_date));
 
         if (!mReprompt) {
             Toolbox.showToast(getContext(), prompt);

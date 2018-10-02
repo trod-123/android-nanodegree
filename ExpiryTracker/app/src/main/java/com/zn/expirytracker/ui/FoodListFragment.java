@@ -335,7 +335,7 @@ public class FoodListFragment extends Fragment
             startActivity(intent);
         } else {
             Timber.d("Attempted to start Capture, but device does not have a camera");
-            Toolbox.showSnackbarMessage(mRootView, "Your device needs a camera to do this");
+            Toolbox.showSnackbarMessage(mRootView, getString(R.string.message_camera_required));
         }
     }
 

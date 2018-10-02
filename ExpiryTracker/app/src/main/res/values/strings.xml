@@ -329,4 +329,25 @@
     <string name="empty_image_list">Empty image list</string>
     <string name="food_image_list">Food image list</string>
     <string name="image_scanned_barcode">Scanned barcode image</string>
+    <string name="message_permissions_camera_shoot">Please enable camera permissions to take photos</string>
+    <string name="message_permissions_storage">Please enable storage permissions to pick photos</string>
+    <string name="message_image_added">Image added!</string>
+    <string name="message_error_save_image">There was a problem caching the image.</string>
+    <string name="message_camera_required">Your device needs a camera to do this</string>
+    <string name="message_error_sign_in">There was a problem signing in.</string>
+    <string name="message_error_sign_in_demo">There was a problem signing in to the demo account.</string>
+    <string name="message_error_auth">Authentication failed.</string>
+    <string name="message_error_sign_up">There was a problem creating your account.</string>
+    <string name="message_error_barcode_internet_required">Fetching barcode data online requires internet connection</string>
+    <string name="message_permissions_camera">Please enable permissions to use the camera</string>
+    <string name="action_enable">Enable</string>
+    <string name="message_item_saved">Saved %1$s!</string>
+    <string name="upcitemdb_error_item_not_found">Item not found in database</string>
+    <string name="upcitemdb_error_no_internet">Internet connection lost while getting data. Please try again later</string>
+    <string name="upcitemdb_error_api_limit">API calls limit has been reached. Please contact the developer</string>
+    <string name="upcitemdb_error_server">Server error. Please try again later</string>
+    <string name="upcitemdb_error_unknown">Unknown error</string>
+    <string name="message_error_parse_date">There was an error parsing the date</string>
+    <string name="action_set_expiry_date">Set expiry date</string>
+    <string name="message_error_save_image_cache">There was a problem setting the image cache</string>
 </resources>
