@@ -123,7 +123,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
 
     // Moshi
-    implementation "com.squareup.moshi:moshi:$moshiVersion"
+//    implementation "com.squareup.moshi:moshi:$moshiVersion"
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$glideVersion"
@@ -148,10 +148,10 @@ dependencies {
     implementation "com.romandanylyk:pageindicatorview:$pageIndicatorViewVersion"
 
     // Rapid Floating Action Button
-    implementation "com.github.wangjiegulu:rfab:$rapidFabVersion"
+//    implementation "com.github.wangjiegulu:rfab:$rapidFabVersion"
 
     // Discrete ScrollView
-    implementation "com.yarolegovich:discrete-scrollview:$discreteScrollViewVersion"
+//    implementation "com.yarolegovich:discrete-scrollview:$discreteScrollViewVersion"
 
     // Joda time
     implementation "joda-time:joda-time:$jodatimeVersion"

@@ -25,6 +25,13 @@ public class Constants {
     public static final int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
     public static final int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
 
+    /**
+     * Delay in milliseconds that allows consecutive speech requests without blocking the mic.
+     * Needs to be at least 200-300 or higher depending on the device. We'll set to below just to be
+     * safe
+     */
+    public static final int DELAY_CONSECUTIVE_SPEECH_REQEUSTS = 300;
+
     public static final String BITMAP_SAVING_DIRECTORY = "scannedImagesDir";
     public static final int BITMAP_SAVING_QUALITY = 30; // out of 100
     public static final String DEFAULT_FILENAME = "food";

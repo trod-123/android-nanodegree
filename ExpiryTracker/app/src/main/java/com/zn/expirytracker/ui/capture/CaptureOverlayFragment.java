@@ -86,11 +86,6 @@ public class CaptureOverlayFragment extends Fragment
     private static final int REQ_CODE_SPEECH_INPUT_NAME = 1024;
     private static final int REQ_CODE_SPEECH_INPUT_EXPIRY_DATE = 1026;
 
-    /**
-     * Allows consecutive speech requests without blocking the mic. Needs to be at least 200
-     */
-    private static final int DELAY_CONSECUTIVE_SPEECH_REQEUSTS = 250;
-
     private static final int DEFAULT_MAX_IMAGES = 5;
 
     @BindView(R.id.layout_overlay_capture_root)
@@ -753,7 +748,7 @@ public class CaptureOverlayFragment extends Fragment
                     public void run() {
                         startVoiceInput(REQ_CODE_SPEECH_INPUT_NAME, false);
                     }
-                }, DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
+                }, Constants.DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
             } else {
                 startVoiceInput(REQ_CODE_SPEECH_INPUT_NAME, false);
             }
@@ -819,7 +814,7 @@ public class CaptureOverlayFragment extends Fragment
                     public void run() {
                         startVoiceInput(REQ_CODE_SPEECH_INPUT_EXPIRY_DATE, reprompt);
                     }
-                }, DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
+                }, Constants.DELAY_CONSECUTIVE_SPEECH_REQEUSTS);
             } else {
                 startVoiceInput(REQ_CODE_SPEECH_INPUT_EXPIRY_DATE, reprompt);
             }
