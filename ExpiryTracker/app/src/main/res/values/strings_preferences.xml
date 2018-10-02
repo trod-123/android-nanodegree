@@ -97,8 +97,8 @@
 
     <!-- Voice input -->
     <string name="pref_capture_voice_input_key" translatable="false">Voice input default</string>
-    <string name="pref_capture_voice_input_label">Enable voice input for item details (experimental feature)</string>
-    <string name="pref_capture_voice_input_summary">Save time from typing by speaking directly to your Food Assistant (off by default)</string>
+    <string name="pref_capture_voice_input_label">Enable voice input for item details</string>
+    <string name="pref_capture_voice_input_summary">Save time from typing by speaking directly to your Food Assistant (note: this is an experimental feature. it is off by default)</string>
 
     <!-- endregion -->
 

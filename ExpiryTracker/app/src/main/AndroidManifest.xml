@@ -107,7 +107,8 @@
         </service>
 
         <!-- authorities must be full name, not just ".fileprovider" -->
-        <!-- For multi build configs, useful to set the applicationId field: https://stackoverflow.com/questions/16267785/install-shows-error-in-console-install-failed-conflicting-provider/37757255 -->
+        <!-- For multi build configs, useful to set the applicationId field: https://stackoverflow.com/questions/16267785/install-shows-error-in-console-install-failed-conflicting-provider/37757255
+            Make sure this is set also in Java using BuildConfig.APPLICATION_ID -->
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

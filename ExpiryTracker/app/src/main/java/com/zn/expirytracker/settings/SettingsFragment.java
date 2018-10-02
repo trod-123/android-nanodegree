@@ -28,11 +28,12 @@ import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
-import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Toolbox;
+import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
+import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,7 +59,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //    static Preference mPreferenceAccountSync;
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
-    static Preference mPreferenceWipeDeviceData;
+    // TODO: Hide for now
+//    static Preference mPreferenceWipeDeviceData;
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
@@ -115,7 +117,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //        mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
-        mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
+//        mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
@@ -129,6 +131,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
+        disableDemoAccountSettings(AuthToolbox.getUserId());
     }
 
     @Override
@@ -209,6 +212,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
+     * Disable particular account settings if demo account is signed in, to prevent tampering
+     *
+     * @param userId
+     */
+    private void disableDemoAccountSettings(String userId) {
+        if (userId.equals(Constants.DEMO_TEST_ACCOUNT_ID)) {
+            mPreferenceDisplayName.setEnabled(false);
+            mPreferenceAccountDelete.setEnabled(false);
+        }
+    }
+
+    /**
      * Set actions of custom preferences
      * <p>
      * https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen
@@ -236,6 +251,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //                return false;
 //            }
 //        });
+        // Only show the wipe feature if current account is not the demo one
         mPreferenceAccountDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -244,14 +260,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return true;
             }
         });
-        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
-                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
-                return true;
-            }
-        });
+
+        // TODO: Hide for now
+//        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//            @Override
+//            public boolean onPreferenceClick(Preference preference) {
+//                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
+//                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+//                return true;
+//            }
+//        });
     }
 
     /**

@@ -261,6 +261,8 @@ public class DetailFragment extends Fragment {
             mIvStorageIcon.setContentDescription(mHostActivity.getString(
                     R.string.storage_location_description,
                     DataToolbox.getStorageIconString(storage, mHostActivity)));
+            mTvStorage.setVisibility(View.VISIBLE);
+            mIvStorageIcon.setVisibility(View.VISIBLE);
         } else {
             // Don't show text-icon if storage not set
             mTvStorage.setVisibility(View.GONE);

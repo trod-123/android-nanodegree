@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.OnEditClearErrorsTextWatcher;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -59,6 +60,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     Button mBtnSignIn;
     @BindView(R.id.pb_sign_in_login)
     ProgressBar mPbSignIn;
+    @BindView(R.id.btn_container_sign_in_test)
+    View mBtnContainerSignInTest;
+    @BindView(R.id.btn_sign_in_test)
+    Button mBtnSignInTest;
+    @BindView(R.id.pb_sign_in_test)
+    ProgressBar mPbSignInTest;
     @BindView(R.id.btn_sign_in_google)
     SignInButton mBtnGoogle;
     @BindView(R.id.pb_sign_in_google)
@@ -80,10 +87,15 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_sign_in);
         ButterKnife.bind(this);
 
+        // Only show the test sign in during demoing
+        mBtnContainerSignInTest.setVisibility(
+                Constants.DEMO_TEST_ACCOUNT_ACTIVATED ? View.VISIBLE : View.GONE);
+
         mBtnSignIn.setOnClickListener(this);
         mBtnGoogle.setOnClickListener(this);
         mBtnCreateAccount.setOnClickListener(this);
         mNoClickOverlay.setOnClickListener(this);
+        mBtnSignInTest.setOnClickListener(this);
 
         mEtEmail.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilEmail));
         mEtPassword.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilPassword));
@@ -119,6 +131,9 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.btn_sign_in_create_account:
                 startActivity(new Intent(SignInActivity.this, SignUpActivity.class));
+                break;
+            case R.id.btn_sign_in_test:
+                signInToTestAccount();
                 break;
             case R.id.overlay_sign_in_no_click:
                 // Prevent click-handling for root view
@@ -187,6 +202,33 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         startActivityForResult(signInIntent, RC_SIGN_IN_GOOGLE);
         AuthToolbox.showLoadingOverlay(true, mNoClickOverlay, mPbGoogle);
 
+    }
+
+    /**
+     * Logs in to the app with a dummy test account
+     */
+    private void signInToTestAccount() {
+        AuthToolbox.showLoadingOverlay(true, mNoClickOverlay, mPbSignInTest);
+        mAuth.signInWithEmailAndPassword(Constants.DEMO_TEST_EMAIL, Constants.DEMO_TEST_PASSWORD)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success
+                            Timber.d("Sign in to demo account: success!");
+                            AuthToolbox.syncSignInWithDevice_FederatedProvidersAuth(getApplicationContext(),
+                                    mAuth.getCurrentUser());
+                            AuthToolbox.startMainActivity(getApplicationContext());
+                        } else {
+                            // Sign in failed
+                            String error = ((FirebaseAuthException) task.getException()).getErrorCode();
+                            handleSignInWithEmailFailure(error);
+                            Toolbox.showSnackbarMessage(mRootView,
+                                    "There was a problem signing in to the demo account.");
+                        }
+                        AuthToolbox.showLoadingOverlay(false, mNoClickOverlay, mPbSignInTest);
+                    }
+                });
     }
 
     @Override

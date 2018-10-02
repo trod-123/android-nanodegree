@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.rd.PageIndicatorView;
+import com.zn.expirytracker.BuildConfig;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
@@ -114,6 +115,12 @@ public class EditFragment extends Fragment implements
             Toolbox.createStaticKeyString(EditFragment.class, "current_good_thru_date");
     private static final String KEY_CURRENT_STORAGE_LOC_ENUM =
             Toolbox.createStaticKeyString(EditFragment.class, "current_storage_loc");
+
+    /**
+     * Prevent the saved camera image uri from getting lost when user rotates camera activity
+     */
+    private static final String KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING =
+            Toolbox.createStaticKeyString(EditFragment.class, "current_camera_capture_loc");
 
     /**
      * Default code to use for {@link EditFragment#ARG_ITEM_ID_LONG} if adding a new item, not
@@ -224,6 +231,7 @@ public class EditFragment extends Fragment implements
         outState.putLong(KEY_CURRENT_EXPIRY_DATE_LONG, mExpiryDate);
         outState.putLong(KEY_CURRENT_GOOD_THRU_DATE_LONG, mGoodThruDate);
         outState.putSerializable(KEY_CURRENT_STORAGE_LOC_ENUM, mLoc);
+        outState.putString(KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING, mCurrentCameraCapturePath);
         super.onSaveInstanceState(outState);
     }
 
@@ -293,6 +301,9 @@ public class EditFragment extends Fragment implements
                 inflater.inflate(R.layout.fragment_edit, container, false);
         ButterKnife.bind(this, rootView);
 
+        mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
+                Toolbox.isLeftToRightLayout());
+        mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -347,6 +358,9 @@ public class EditFragment extends Fragment implements
             mGoodThruDate = savedInstanceState.getLong(KEY_CURRENT_GOOD_THRU_DATE_LONG);
             mLoc = (Storage) savedInstanceState.getSerializable(KEY_CURRENT_STORAGE_LOC_ENUM);
 
+            mCurrentCameraCapturePath =
+                    savedInstanceState.getString(KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING);
+
             mRestoredInstance = true;
         }
 
@@ -371,8 +385,6 @@ public class EditFragment extends Fragment implements
                 // could probably be because we were saving new images to food before even saving
                 // the food itself
                 data.removeObserver(this);
-
-
             }
         });
 
@@ -414,8 +426,6 @@ public class EditFragment extends Fragment implements
             if (!mRestoredInstance) {
                 mImageUris = food.getImages();
             }
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
-                    Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
 
             // Get all values first before populating fields (except dates and storage location,
@@ -463,19 +473,20 @@ public class EditFragment extends Fragment implements
                 mEtCount.setText(String.valueOf(DEFAULT_STARTING_COUNT));
                 mLoc = DEFAULT_STARTING_STORAGE;
             }
-            mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), true,
-                    Toolbox.isLeftToRightLayout());
             mPagerAdapter.setImageUris(mImageUris);
             showFieldError(mEtFoodName.getText().toString().isEmpty(), FieldError.REQUIRED_NAME);
         }
 
         // Common fields
-        mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
                 mCurrentImagePosition : mImageUris != null && !Toolbox.isLeftToRightLayout() ?
                 mImageUris.size() : 0, false); // set for RTL layouts
-        // TODO: This doesn't seem to set the indicator properly
-        mPageIndicatorView.onPageSelected(mViewPager.getCurrentItem());
+        // call again out here to invalidate views
+        // Call after setting the current item on the viewPager, in case we are adding an image
+        // from camera where device had been rotated. If we call this before setting current item,
+        // then the Android still thinks we're at the first item in the view pager, thereby not
+        // refreshing the actual current item with the image instead of the add button
+        mPagerAdapter.notifyDataSetChanged();
         mViewPager.setContentDescription(
                 mFood != null ? mFood.getFoodName() : getString(R.string.food_image_list));
         mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
@@ -1189,13 +1200,14 @@ public class EditFragment extends Fragment implements
             if (outputFilePath != null) {
                 // Generate the uri from the path. Fileprovider details in Manifest
                 Uri photoUri = FileProvider.getUriForFile(
-                        mHostActivity, "com.zn.expirytracker.fileprovider", outputFilePath);
-                // Indicate where photo output should be saved
+                        mHostActivity, BuildConfig.APPLICATION_ID + ".fileprovider", outputFilePath);
+                // Indicate where photo output should be saved.
+                // note this will set result intent data to null, but we don't need to check anyway
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(cameraIntent, RC_CAMERA);
             }
         } else {
-            Timber.d("Attempted to start Capture, but device does not have a camera");
+            Timber.d("EditFragment: Attempted to start Capture, but device does not have a camera");
             Toolbox.showSnackbarMessage(mRootLayout, "Your device needs a camera to do this");
         }
     }
@@ -1249,12 +1261,13 @@ public class EditFragment extends Fragment implements
                 addImageFromUri(imageUri);
             }
         } else if (requestCode == RC_CAMERA && resultCode == RESULT_OK) {
-            if (data != null) {
-                // data.getData() returns a THUMBNAIL of the image, and no orientation preservation
-                // At this point we had already saved the image into app storage, so all we need
-                // to do is to add the path to the Food image list
-                addImageFromCamera(mCurrentCameraCapturePath);
-            }
+            Timber.d("EditFragment: Returning from camera with OK result. Adding the image to list...");
+            // data.getData() returns a THUMBNAIL of the image, and no orientation preservation.
+            // So instead we set an Extra in the camera intent containing the image storage uri
+            // At this point we had already saved the image into app storage, so we don't need to
+            // check for the intent data. all we need to do is to add the path to the Food image list
+            // https://stackoverflow.com/questions/9890757/android-camera-data-intent-returns-null
+            addImageFromCamera(mCurrentCameraCapturePath);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -1274,7 +1287,7 @@ public class EditFragment extends Fragment implements
             String inputFilePath = Toolbox.getGalleryUriPath(mHostActivity, uri);
             Toolbox.copyFile(new File(inputFilePath), outputFilePath);
             String path = outputFilePath.getAbsolutePath();
-            Timber.d("Saved image path: %s", path);
+            Timber.d("EditFragment: Saved image path: %s", path);
             addImageToUrisList(path);
             Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
         } catch (IOException e) {
@@ -1285,7 +1298,7 @@ public class EditFragment extends Fragment implements
     /**
      * Updates the image uri list with the newly captured photo, with the path
      */
-    private void addImageFromCamera(String imagePath) {
+    private void addImageFromCamera(@NonNull String imagePath) {
         addImageToUrisList(imagePath);
         Toolbox.showSnackbarMessage(mRootLayout, "Image added!");
     }
@@ -1296,7 +1309,7 @@ public class EditFragment extends Fragment implements
      *
      * @param path
      */
-    private void addImageToUrisList(String path) {
+    private void addImageToUrisList(@NonNull String path) {
         mImageUris.add(path);
         if (!Toolbox.isLeftToRightLayout()) {
             mPagerAdapter.setImageUris(mImageUris);

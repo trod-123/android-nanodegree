@@ -297,6 +297,9 @@
     <string name="sign_in_login_button">Log-in</string>
     <string name="sign_in_create_account">No account yet? Create one</string>
     <string name="sign_in_existing_account">Already a member? Log-in</string>
+    <!-- For debugging and testing only -->
+    <string name="sign_in_test_button">Log-in to test</string>
+
 
     <!-- endregion -->
 
