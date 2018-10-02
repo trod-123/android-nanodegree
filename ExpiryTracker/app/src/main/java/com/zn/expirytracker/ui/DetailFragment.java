@@ -189,7 +189,8 @@ public class DetailFragment extends Fragment {
                 if (food != null) {
                     populateViewElements(food);
                 } else {
-                    // Called when a fragment is removed. Leaves fragment with an unpopulated shell
+                    // Called when a fragment is removed if we don't call Adapter.notifyDataSetChanged().
+                    // Leaves fragment with an unpopulated shell
                 }
                 liveData.removeObserver(this);
             }
@@ -236,10 +237,11 @@ public class DetailFragment extends Fragment {
         // ViewPager
         @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
-        mPagerAdapter.notifyDataSetChanged(); // call again out here to invalidate views
         mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
                 mCurrentImagePosition : images != null && !Toolbox.isLeftToRightLayout() ?
                 images.size() - 1 : 0, false);
+        // call again out here to invalidate views (see note in EditFragment
+        mPagerAdapter.notifyDataSetChanged();
         Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
         mViewPager.setContentDescription(food.getFoodName());
 

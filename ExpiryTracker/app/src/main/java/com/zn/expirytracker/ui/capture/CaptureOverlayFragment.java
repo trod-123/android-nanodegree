@@ -367,6 +367,8 @@ public class CaptureOverlayFragment extends Fragment
     /**
      * Saves the user-taken shots to internal storage, and appends their uri strings to food.
      * Note only either {@code mBarcodeBitmap} or {@code mImageBitmap} is not null.
+     * <p>
+     * If we're restored from savedInstanceState, then save the bitmap paths instead of the images
      */
     private void saveBitmapsToFood() {
         if (mBarcodeBitmap != null) {
@@ -378,6 +380,8 @@ public class CaptureOverlayFragment extends Fragment
             } catch (IOException e) {
                 Timber.e(e, "There was a problem saving the barcode bitmap to internal storage");
             }
+        } else if (mBarcodeBitmapPath != null) {
+            mImageUris.add(mBarcodeBitmapPath);
         }
         if (mImageBitmap != null) {
             try {
@@ -388,6 +392,8 @@ public class CaptureOverlayFragment extends Fragment
             } catch (IOException e) {
                 Timber.e(e, "There was a problem saving the image bitmap to internal storage");
             }
+        } else if (mImageBitmapPath != null) {
+            mImageUris.add(mImageBitmapPath);
         }
     }
 
