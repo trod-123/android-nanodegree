@@ -107,9 +107,10 @@
         </service>
 
         <!-- authorities must be full name, not just ".fileprovider" -->
+        <!-- For multi build configs, useful to set the applicationId field: https://stackoverflow.com/questions/16267785/install-shows-error-in-console-install-failed-conflicting-provider/37757255 -->
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.zn.expirytracker.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

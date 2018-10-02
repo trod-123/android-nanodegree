@@ -3,4 +3,13 @@
     <external-path
         name="images.free.debug"
         path="Android/data/com.zn.expirytracker.free.debug/files/Pictures" />
+    <external-path
+        name="images.free"
+        path="Android/data/com.zn.expirytracker.free/files/Pictures" />
+    <external-path
+        name="images.paid.debug"
+        path="Android/data/com.zn.expirytracker.paid.debug/files/Pictures" />
+    <external-path
+        name="images.paid"
+        path="Android/data/com.zn.expirytracker.paid/files/Pictures" />
 </paths>

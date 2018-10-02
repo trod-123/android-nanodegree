@@ -1,6 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            // for hiding passwords when pushing to VCS. these are defined in gradle.properties,
+            // which is ignored by git
+            try {
+                keyAlias KEY_ALIAS
+                keyPassword KEY_PASSWORD
+                storeFile file("$rootDir/keystore.jks")
+                storePassword KEYSTORE_PASSWORD
+            } catch (ex) {
+                throw new InvalidUserDataException("You should define KEY_ALIAS, KEY_PASSWORD, and KEYSTORE_PASSWORD in gradle.properties.", ex)
+            }
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.zn.expirytracker"
@@ -18,9 +32,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
             debuggable true
         }
     }
@@ -40,7 +56,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // Multidex (for API less than 21)
     implementation "com.android.support:multidex:$multidexVersion"
