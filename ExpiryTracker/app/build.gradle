@@ -155,6 +155,9 @@ dependencies {
 
     // Joda time
     implementation "joda-time:joda-time:$jodatimeVersion"
+
+    // EasyPermissions
+    implementation "pub.devrel:easypermissions:$easyPermissionsVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

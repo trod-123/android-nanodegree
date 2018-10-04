@@ -60,6 +60,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -74,7 +77,7 @@ public class EditFragment extends Fragment implements
         ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener,
         DetailImageFragment.AddImageButtonClickListener,
         AddImageMethodPickerBottomSheet.OnAddImageMethodSelectedListener,
-        View.OnClickListener {
+        View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             "edit_fragment.item_id_long");
@@ -1175,11 +1178,13 @@ public class EditFragment extends Fragment implements
      * <p>
      * https://developer.android.com/training/camera/photobasics
      */
+    @AfterPermissionGranted(RC_PERMISSIONS_CAMERA)
     public void captureImageFromCamera() {
-        if (ContextCompat.checkSelfPermission(mHostActivity, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Always ask (unless user ticked "don't ask again")
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, RC_PERMISSIONS_CAMERA);
+        String[] perms = new String[]{Manifest.permission.CAMERA};
+        if (!EasyPermissions.hasPermissions(mHostActivity, perms)) {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.message_permissions_camera_shoot),
+                    RC_PERMISSIONS_CAMERA, perms);
             return;
         }
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1218,15 +1223,15 @@ public class EditFragment extends Fragment implements
     /**
      * Prompts the user to pick an image from storage
      */
+    @AfterPermissionGranted(RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE)
     public void getImageFromStorage() {
-        if (ContextCompat.checkSelfPermission(mHostActivity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // Always ask (unless user ticked "don't ask again")
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+        String[] perms = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (!EasyPermissions.hasPermissions(mHostActivity, perms)) {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.message_permissions_storage),
+                    RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE, perms);
             return;
         }
-
         // Get image from user storage
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
@@ -1236,24 +1241,20 @@ public class EditFragment extends Fragment implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case RC_PERMISSIONS_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    captureImageFromCamera();
-                } else {
-                    Toolbox.showSnackbarMessage(mRootLayout,
-                            getString(R.string.message_permissions_camera_shoot));
-                }
-                break;
-            case RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getImageFromStorage();
-                } else {
-                    Toolbox.showSnackbarMessage(mRootLayout,
-                            getString(R.string.message_permissions_storage));
-                }
-        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 
     @Override
@@ -1271,6 +1272,9 @@ public class EditFragment extends Fragment implements
             // check for the intent data. all we need to do is to add the path to the Food image list
             // https://stackoverflow.com/questions/9890757/android-camera-data-intent-returns-null
             addImageFromCamera(mCurrentCameraCapturePath);
+        } else if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            // Called after the user returns from the AppSettingsDialog that takes the user to the
+            // app settings to change permissions
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
