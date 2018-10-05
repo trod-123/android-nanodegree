@@ -71,4 +71,11 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="detail_vertical_margin">16dp</dimen>
     <dimen name="auth_fields_horizontal_margin">32dp</dimen>
     <dimen name="edit_fields_horizontal_margin">0dp</dimen>
+
+    <item name="food_list_margin_start_constraint" format="float" type="dimen">0.0</item>
+    <item name="food_list_margin_end_constraint" format="float" type="dimen">1.0</item>
+
+    <item name="detail_page_width" format="float" type="dimen">0.98</item>
+
+    <item name="capture_overlay_width_multiplier" format="float" type="dimen">0.85</item>
 </resources>
