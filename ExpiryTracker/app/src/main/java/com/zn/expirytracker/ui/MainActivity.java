@@ -1,8 +1,12 @@
 package com.zn.expirytracker.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -87,24 +91,41 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabs() {
         TabLayout.Tab tabAtAGlance = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_AT_A_GLANCE);
         if (tabAtAGlance != null) {
-            tabAtAGlance.setText(R.string.fragment_at_a_glance_name);
-            tabAtAGlance.setIcon(R.drawable.ic_chart_bar_white_24dp);
-            tabAtAGlance.setContentDescription(R.string.fragment_at_a_glance_name);
+            tabAtAGlance.setText(R.string.fragment_at_a_glance_name)
+                    .setIcon(R.drawable.ic_chart_bar_white_24dp)
+                    .setContentDescription(R.string.fragment_at_a_glance_name);
+            tabAtAGlance.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         } else {
             Timber.e("At a glance tab was null! Not setting tab elements...");
         }
         TabLayout.Tab tabList = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_LIST);
         if (tabList != null) {
-            tabList.setText(R.string.fragment_food_list_name);
-            tabList.setIcon(R.drawable.ic_format_list_bulleted_white_24dp);
-            tabList.setContentDescription(R.string.fragment_food_list_name);
+            tabList.setText(R.string.fragment_food_list_name)
+                    .setIcon(R.drawable.ic_format_list_bulleted_white_24dp)
+                    .setContentDescription(R.string.fragment_food_list_name);
+            tabList.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+            tabList.getIcon().setAlpha(128);
         } else {
             Timber.e("List tab was null! Not setting tab elements...");
         }
 
+        // Change color of icons by selection
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.getIcon().setAlpha(255);
+            }
 
-        // For changing selected icon color in TabLayout
-        // https://stackoverflow.com/questions/34562117/how-do-i-change-the-color-of-icon-of-the-selected-tab-of-tablayout
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.getIcon().setAlpha(128);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void launchSettings() {
