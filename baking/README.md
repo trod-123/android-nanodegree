@@ -3,7 +3,7 @@ _(Last updated: July 29, 2018)_
 
 A small app that displays simple recipes and step-by-step videos
 
-![List](/website/images/screenshot_baking_list-phone-portrait.png)
+![List](/website/images/screenshot_baking_list-phone-portrait.png) ![Detail](/website/images/screenshot_baking_detail-phone-portrait.png)
 ![Step](/website/images/screenshot_baking_step-tablet-landscape.png)
 ![Widget](/website/images/screenshot_baking_widget-tablet-landscape.png)
 
