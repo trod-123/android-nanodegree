@@ -1,19 +1,40 @@
 # Popular Movies
-<em>(Last updated: November 9, 2015)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_movies_collection.png"/><br>
-The first app for Android with functionality that I've made, demonstrating many firsts, but most prominently my first interaction with open database API's and handling JSON data. This app provides users with current and up-to-date movie information as provided by The Movie Database (TMDB). This also includes links to trailers and reviews posted on the TMDB website. Users can display and sort movies according to popularity, ratings, recency, and upcoming. The app also enables users to favorite a movie and add it to their own favorites list for later display. Users can also share movies with their friends via text-message or e-mail. There is also offline functionality, leveraged through use of content providers, letting users access movie information already downloaded onto their device, even when their device has no network connection. <em>Popular Movies</em> also takes advantage of Android's concept of <em>Responsive Design</em> by providing different user interface layouts for different device sizes such as phones and tablets. For example, for tablets, a well-known 2 column master-detail layout is used, displaying the list of movies on the left column, and movie details on the right.
-<ul>
-	<li>Intents</li>
-	<li>Activities and Fragments and their lifecycles</li>
-	<li>Networking</li>
-	<li>Interacting with APIs</li>
-	<li>Handling and parsing JSON data</li>
-	<li>Content providers and offline data persistence</li>
-	<li>SQLite databases</li>
-	<li>Adapters and cursors</li>
-	<li>Libraries</li>
-	<li>Image handling</li>
-	<li>Responsive design</li>
-	<li>Tablet UI layouts: Master-Detail</li>
-</ul>
-<p/>
+_(Last updated: November 9, 2015)_
+
+An informational app that pulls movie details, reviews, and trailers from a public, community-driven database
+
+![Collection](/website/images/screenshot_movies_collection.png)
+
+## Features
+
+- Provides users with current and up-to-date movie information 
+- Offers links to trailers and reviews posted on the TMDB website
+- Sort movies according to popularity, ratings, recency, and upcoming
+- Add your favorite movies to an offline list
+- Share your favorite movies with your friends
+- Works across a variety of device sizes, and supports both phone and tablet layouts
+
+## Skills developed
+
+- Intents
+- Activity and Fragment Lifecycles
+- Networking
+- Consuming REST Apis
+- Handling and parsing JSON data
+- Storing and accessing data from Content Providers
+- SQLite databases
+- Loading and displaying data through Adapters and Cursors
+- Integrating 3rd party libraries
+- Loading and caching images downloaded online
+- Supporting different screen sizes
+- Incorporating master-detail layout
+
+## API Keys
+
+For security reasons, API keys used in these projects are not public. To build these projects and test them for yourself, you must first obtain an API key and store the key in a string resource file in `/res/values/`.
+
+Click [here](https://www.themoviedb.org/documentation/api) to obtain an API key. In the project, name the string `movie_api_key`.
+
+## Credits
+
+All movie details, reviews, trailers, and images are provided by [TMDB Database](https://www.themoviedb.org/?language=en). 
