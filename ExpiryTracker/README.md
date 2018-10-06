@@ -28,7 +28,7 @@ Tracks when your food and groceries will expire, and stores all data remotely on
 
 This Capstone project provided me the experience of owning the full development of an app, from ideation to creation. It was a 2-stage project, where I first had to communicate my app idea through a proposal which had to be reviewed by Udacity staff. The proposal involved a lot of planning the kinks for the app (see specifics below). The second stage involved actually coding the app, based off the specs provided in my proposal.
 
-[Here is my proposal](./Capstone/Proposal.pdf). 
+[Here is my proposal](../Capstone/Proposal.pdf). 
 
 I had given myself a month to write the app. Within this short time-frame, I realized the proposal had promised a bit too much, so halfway in, I had decided to put some features aside to be implemented after submission. The features selected for removal were chosen on the basis of how much relative value they provide to the app.
 
