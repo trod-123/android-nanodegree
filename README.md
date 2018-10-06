@@ -5,10 +5,8 @@ This is my collection of projects I completed under Udacity's Android Developer 
 
 Click on the project name to see more details for that project.
 
-## Projects
-
-### [Capstone: Expiry Tracker](/ExpiryTracker)
-<em>(Submitted: October 2, 2018)</em><br>
+## [Capstone: Expiry Tracker](/ExpiryTracker)
+_(Submitted: October 2, 2018)_
 
 Tracks when your food and groceries will expire, and stores all data remotely on Firebase Realtime Database and Storage. Barcode scanning pulls data from an online upc item database.
 
@@ -16,40 +14,40 @@ Tracks when your food and groceries will expire, and stores all data remotely on
 ![Barcode scan result](/website/images/screenshot_capstone_capture_barcode_overlay-phone-portrait.png)
 ![Details](/website/images/screenshot_capstone_details-phone-portrait.png)
 
-### [Popular Movies](/PopularMovies)
-<em>(Last updated: November 9, 2015)</em><br>
+## [Popular Movies](/PopularMovies)
+_(Last updated: November 9, 2015)_
 
-An informational app that pulls movie information from an open database API
+An informational app that pulls movie details, reviews, and trailers from a public, community-driven database
 
 ![List](/website/images/screenshot_movies_list-phone-portrait.png)
 ![Detail](/website/images/screenshot_movies_detail-phone-portrait.png)
 
-### [Baking (Food recipes)](/baking)
-<em>(Last updated: July 29, 2018)</em><br>
+## [Baking (Food recipes)](/baking)
+_(Last updated: July 29, 2018)_
 
-A small app that displays simple recipes and step-by-step videos. Recipes are hosted and pulled from a Udactiy repository.
+A small app that displays simple recipes and step-by-step videos
 
 ![List](/website/images/screenshot_baking_list-phone-portrait.png)
 ![Widget](/website/images/screenshot_baking_widget-tablet-landscape.png)
 
-### [XYZ Reader](/xyzReader)
-<em>(Last updated: August 17, 2018)</em><br>
+## [XYZ Reader](/xyzReader)
+_(Last updated: August 17, 2018)_
 
 An RSS feed app that I transformed to utilize Google's Material Design specification
 
 ![List](/website/images/screenshot_xyz_list-phone-portrait.png)
 ![Detail](/website/images/screenshot_xyz_detail-phone-portrait.png)
 
-### [Alexandria (Books)](/SuperDuo)
-<em>(Last updated: January 12, 2016)</em><br>
+## [Alexandria (Books)](/SuperDuo)
+_(Last updated: January 12, 2016)_
 
-Allows users to look up their favorite books, as well as scan barcodes, to get more information about them
+Look up details for your favorite books through search and barcode scanning
 
 ![Main](/website/images/screenshot_books-tablet-landscape.png)
 
-### [Football Scores](/SuperDuo)
-<em>(Last updated: January 12, 2016)</em><br>
+## [Football Scores](/SuperDuo)
+_(Last updated: January 12, 2016)_
 
-An app that shows current scores for your favorite football teams
+An app that shows current scores for your favorite European soccer teams
 
 ![Main](/website/images/screenshot_footballscores-phone-portrait.png)
