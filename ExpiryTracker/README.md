@@ -1,11 +1,20 @@
-# Nanodegree Capstone Project: ExpiryTracker
+# Nanodegree Capstone: ExpiryTracker
 _(Submitted: October 2, 2018)_
 
 Tracks when your food and groceries will expire, and stores all data remotely on the cloud for access across all your Android devices
 
+![Sign-in](/website/images/screenshot_capstone_signin-phone-portrait.png)
 ![At a Glance](/website/images/screenshot_capstone_aag-phone-portrait.png)
-![Barcode scan result](/website/images/screenshot_capstone_capture_barcode_overlay-phone-portrait.png)
+![List](/website/images/screenshot_capstone_list-phone-portrait.png)
 ![Details](/website/images/screenshot_capstone_details-phone-portrait.png)
+![Edit](/website/images/screenshot_capstone_edit-phone-portrait.png)
+![Capture](/website/images/screenshot_capstone_capture-phone-portrait.png)
+![Capture Voice](/website/images/screenshot_capstone_capture_voice-phone-portrait.png)
+![Capture Text](/website/images/screenshot_capstone_capture_text-phone-portrait.png)
+![Capture Date](/website/images/screenshot_capstone_date-phone-portrait.png)
+![Barcode scan result](/website/images/screenshot_capstone_capture_barcode_overlay-phone-portrait.png)
+![Image result](/website/images/screenshot_capstone_capture_image_overlay-phone-portrait.png)
+![Widget](/website/images/screenshot_capstone_widget-phone-portrait.png)
 
 ## Features
 
@@ -17,7 +26,9 @@ Tracks when your food and groceries will expire, and stores all data remotely on
 
 ## Skills developed
 
-This Capstone project provided me the experience of owning the full development of an app, from ideation to creation. It was a 2-stage project, where I first had to communicate my app idea through a proposal which had to be reviewed by Udacity staff. The proposal involved a lot of planning the kinks for the app (see specifics below). You can view my original proposal [here](./Capstone/Proposal.pdf). The second stage involved actually coding the app, based off the specs provided in my proposal.
+This Capstone project provided me the experience of owning the full development of an app, from ideation to creation. It was a 2-stage project, where I first had to communicate my app idea through a proposal which had to be reviewed by Udacity staff. The proposal involved a lot of planning the kinks for the app (see specifics below). The second stage involved actually coding the app, based off the specs provided in my proposal.
+
+[Here is my proposal](./Capstone/Proposal.pdf). 
 
 I had given myself a month to write the app. Within this short time-frame, I realized the proposal had promised a bit too much, so halfway in, I had decided to put some features aside to be implemented after submission. The features selected for removal were chosen on the basis of how much relative value they provide to the app.
 
