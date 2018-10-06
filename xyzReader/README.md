@@ -1,19 +1,38 @@
 # XYZ Reader
-<em>(Last updated: August 17, 2018)</em><br>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-prepost-collection.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-tablet-landscape-prepost-collection.png"/>
-<img src="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/screenshot_xyz-phone-portrait-collection.png"/>
-<br>
-<a href="https://github.com/TROD-123/android-nanodegree/blob/master/website/images/video_xyz_animations-phone_compressed.mp4">Video showing animations, transitions, and features</a>
-</p>
-<em>XYZ Reader</em>, as what Udacity called it, is a mock RSS feed reader featuring banner photos, headlines, and articles. It was originally an app that garnered many negative feedback about its interface. Reviewers described it as "odd", with "wonky" and "unreadable" text and a "sad" color scheme. My task was to bring the app to life by applying Material Design principles to address this feedback, while also fixing bugs that caused the app to crash for some users. Most of the app was already fully functional, so I while did not have to worry about building its implementation so much per se, but I did have to build upon the code that was provided to me. So this was also an exercise in itself - navigating through someone else's code.
-<ul>
-	<li>Creating a custom theme</li>
-	<li>Using CoordinatorToolbarLayout and AppBarLayout to create collapsible toolbars</li>
-	<li>More experience with CardView and FABs</li>
-	<li>Parallax effects with image scrolling</li>
-	<li>Continuous shared elements transitions with RecyclerView and ViewPager</li>
-	<li>Using the Android Transitions and Animations framework for traversing fragments</li>
-	<li>Parsing large amounts of text to make it readable without the additional spacing and line breaks provided in the source data</li>
-</ul>
-</p>
+_(Last updated: August 17, 2018)_
+
+An RSS feed app that I transformed to utilize Google's Material Design specification
+
+![Phone-After](/website/images/screenshot_xyz-phone-portrait-collection.png)
+
+The following screenshots illustrate how the app looked before and after my transformations.
+
+![Phone](/website/images/screenshot_xyz-phone-portrait-prepost-collection.png)
+![Tablet](/website/images/screenshot_xyz-tablet-landscape-prepost-collection.png)
+
+[Here is a video showing animations, transitions, and features](/website/images/video_xyz_animations-phone_compressed.mp4)
+
+## Features
+
+- Provides a few short stories which are already pre-loaded on the app so you can read offline
+- Saves your reading position when you exit the app so you can continue from where you left off
+- Offers a fluid design and animations that make this app come to life
+- Dynamic layout that changes across different screen sizes and devices
+- Share your favorite stories with your friends
+
+## Skills developed
+
+- Building off of an already functional app
+- Addressing user reviews to improve the app
+- Resolving existing crashes
+- Converting the UI design into a custom theme following Material Design specifications
+- Implementing collapsible toolbars using CoordinatorToolbarLayout and AppBarLayout 
+- Integrating motion parallax effects with image scrolling
+- Adding continuous shared elements transitions between RecyclerView and ViewPager that also persist across configuration changes
+- Adding fragment animations using the Android Transitions and Animations framework
+- Parsing source text into a readable format
+- Supporting different screen sizes
+
+## Credits
+
+Starter code and articles are provided by Udacity as base material for this project. Articles themselves and images are copyrighted by their respective owners.
