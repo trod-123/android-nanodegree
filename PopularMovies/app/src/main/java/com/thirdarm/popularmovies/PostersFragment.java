@@ -72,7 +72,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     private static final String DATA_CATEGORY = "category";
     private static final String DATA_POSITION = "position";
 
-    private Context mContext;
+    private Activity mHostActivity;
 
     // data
     private Callback mCallback;
@@ -94,15 +94,15 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     public PostersFragment() {
     }
 
-    @Override public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // For attaching the activity to the Callback
-        mCallback = (Callback) activity;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mHostActivity = getActivity();
+        mCallback = (Callback) mHostActivity;
     }
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getActivity();
         setHasOptionsMenu(true);
     }
 
@@ -144,7 +144,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
             case R.id.action_get_favorites:
                 fetchMovies(mCategory = PARAMS.CATEGORY.FAVORITES);
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -164,7 +163,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
         // Create PostersAdapter. Loaders will swap the currently null cursor once the cursor has
         //  been loaded.
-        mPostersAdapter = new PostersAdapter(mContext, mPosterSize, null);
+        mPostersAdapter = new PostersAdapter(mHostActivity, mPosterSize, null);
         mGridView.setAdapter(mPostersAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView adapterView, View view, int position, long l) {
@@ -183,7 +182,6 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
                 savedInstanceState.containsKey(DATA_CATEGORY) &&
                 savedInstanceState.containsKey(DATA_POSITION)) {
             setTitle(mCategory = savedInstanceState.getString(DATA_CATEGORY));
-            mGridView.smoothScrollToPosition(savedInstanceState.getInt(DATA_POSITION));
         }
 
         // TODO: Create a preferences activity and load movies according to preferences. Include:
@@ -204,12 +202,13 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
      * Refreshes/resyncs the movies online
      */
     private void refreshMovies() {
-        if (Network.isNetworkAvailable(mContext)) {
+        if (Network.isNetworkAvailable(mHostActivity)) {
             mGridView.smoothScrollToPosition(0);
-            MoviesSyncAdapter.syncImmediately(mContext, null, -1, -1);
+            MoviesSyncAdapter.syncImmediately(mHostActivity, null, -1, -1);
             getLoaderManager().restartLoader(MOVIE_LOADER_ID, null, this);
         } else {
-            Toast.makeText(mContext, getString(R.string.status_no_internet), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mHostActivity, getString(R.string.status_no_internet),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -233,27 +232,27 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
     private void setTitle(String category) {
         switch (category) {
             case PARAMS.CATEGORY.DISCOVER:
-                getActivity().setTitle(getString(R.string.title_discover));
+                mHostActivity.setTitle(getString(R.string.title_discover));
                 break;
 
             case PARAMS.CATEGORY.PLAYING:
-                getActivity().setTitle(getString(R.string.title_playing));
+                mHostActivity.setTitle(getString(R.string.title_playing));
                 break;
 
             case PARAMS.CATEGORY.POPULAR:
-                getActivity().setTitle(getString(R.string.title_popular));
+                mHostActivity.setTitle(getString(R.string.title_popular));
                 break;
 
             case PARAMS.CATEGORY.TOP:
-                getActivity().setTitle(getString(R.string.title_top_rated));
+                mHostActivity.setTitle(getString(R.string.title_top_rated));
                 break;
 
             case PARAMS.CATEGORY.UPCOMING:
-                getActivity().setTitle(getString(R.string.title_upcoming));
+                mHostActivity.setTitle(getString(R.string.title_upcoming));
                 break;
 
             case PARAMS.CATEGORY.FAVORITES:
-                getActivity().setTitle(getString(R.string.title_favorites));
+                mHostActivity.setTitle(getString(R.string.title_favorites));
                 break;
         }
     }
@@ -360,7 +359,7 @@ public class PostersFragment extends Fragment implements LoaderManager.LoaderCal
 
         // Create a cursor pointing to the table containing the columns as specified in the
         //  PROJECTION
-        return new CursorLoader(mContext, Movies.CONTENT_URI, Results.PROJECTION,
+        return new CursorLoader(mHostActivity, Movies.CONTENT_URI, Results.PROJECTION,
                 selection, selectionArgs, sortOrder);
     }
 
