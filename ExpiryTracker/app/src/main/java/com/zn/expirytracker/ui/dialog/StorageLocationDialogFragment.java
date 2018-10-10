@@ -36,8 +36,8 @@ public class StorageLocationDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.storage_location_dialog)
-                .setItems(R.array.storage_location_labels, new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.food_storage_location_dialog)
+                .setItems(R.array.food_storage_location_labels, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         callback.onStorageLocationSelected(i);

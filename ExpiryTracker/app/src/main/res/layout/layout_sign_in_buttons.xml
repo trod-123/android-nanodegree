@@ -25,7 +25,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_in_login_button"
+            android:text="@string/auth_login_button"
             android:textColor="@android:color/white" />
 
         <ProgressBar
@@ -55,7 +55,7 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_in_test_button"
+            android:text="@string/auth_test_button"
             android:textColor="@android:color/white" />
 
         <ProgressBar
@@ -74,7 +74,7 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/sign_in_create_account"
+        android:text="@string/auth_create_account"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

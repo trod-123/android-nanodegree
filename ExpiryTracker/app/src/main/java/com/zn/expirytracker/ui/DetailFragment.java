@@ -257,11 +257,11 @@ public class DetailFragment extends Fragment {
 
         @Nullable Storage storage = food.getStorageLocation();
         if (storage != null && storage != Storage.NOT_SET) {
-            mTvStorage.setText(getString(R.string.storage_location_description,
+            mTvStorage.setText(getString(R.string.food_storage_location_description,
                     DataToolbox.getStorageIconString(storage, mHostActivity).toLowerCase()));
             mIvStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storage));
             mIvStorageIcon.setContentDescription(mHostActivity.getString(
-                    R.string.storage_location_description,
+                    R.string.food_storage_location_description,
                     DataToolbox.getStorageIconString(storage, mHostActivity)));
             mTvStorage.setVisibility(View.VISIBLE);
             mIvStorageIcon.setVisibility(View.VISIBLE);

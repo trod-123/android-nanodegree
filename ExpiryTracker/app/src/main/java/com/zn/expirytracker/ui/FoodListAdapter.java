@@ -154,7 +154,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                 mStorageIcon.setVisibility(View.VISIBLE);
                 mStorageIcon.setImageResource(DataToolbox.getStorageIconResource(storageLocation));
                 mStorageIcon.setContentDescription(mContext.getString(
-                        R.string.storage_location_description,
+                        R.string.food_storage_location_description,
                         DataToolbox.getStorageIconString(storageLocation, mContext)));
             } else {
                 mStorageIcon.setVisibility(View.GONE);

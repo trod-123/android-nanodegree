@@ -18,8 +18,6 @@
     <string name="activity_capture_name">Capture</string>
     <string name="activity_sign_up_name">Create account</string>
 
-    <string name="undefined_generic">Undefined</string>
-
     <!-- endregion -->
 
     <!-- region Actions -->
@@ -39,6 +37,10 @@
     <string name="action_add_count">Add count by 1</string>
     <string name="action_subtract_count">Subtract count by 1</string>
     <string name="action_add_photo">Add image</string>
+    <string name="action_enable">Enable</string>
+    <string name="action_set_expiry_date">Set expiry date</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
 
     <!-- endregion -->
 
@@ -56,7 +58,7 @@
         <item quantity="other">@string/at_a_glance_bar_chart_header_count_many</item>
     </plurals>
 
-    <!-- Greeting and Summary -->
+    <!-- Greetings -->
     <string name="greeting_generic_1a">Hello</string>
     <string name="greeting_generic_1b">Hello there</string>
     <string name="greeting_generic_2a">Hi</string>
@@ -79,41 +81,57 @@
         <item>@string/greeting_afternoon</item>
         <item>@string/greeting_day</item>
     </string-array>
+    <!-- 1: GREETING, 2: NAME -->
     <string name="complete_greeting" translatable="false">%1$s, %2$s!</string>
+    <!-- 1: GREETING -->
     <string name="greeting_no_name" translatable="false">%1$s!</string>
 
+    <!-- Summary -->
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_none">You have no foods expiring within %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_one">You have only %1$d food expiring within %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_many">You have %1$d foods expiring within %2$s</string>
     <plurals name="at_a_glance_summary">
         <item quantity="zero">@string/at_a_glance_summary_none</item>
         <item quantity="one">@string/at_a_glance_summary_one</item>
         <item quantity="other">@string/at_a_glance_summary_many</item>
     </plurals>
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_none_no_within">You have no foods expiring %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_one_no_within">You have only %1$d food expiring %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_many_no_within">You have %1$d foods expiring %2$s</string>
     <plurals name="at_a_glance_summary_no_within">
         <item quantity="zero">@string/at_a_glance_summary_none_no_within</item>
         <item quantity="one">@string/at_a_glance_summary_one_no_within</item>
         <item quantity="other">@string/at_a_glance_summary_many_no_within</item>
     </plurals>
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_postfix_none">, with no foods expiring %2$s</string>
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_postfix_one">, with only 1 food expiring %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_postfix_many">, with %1$d foods expiring %2$s</string>
     <plurals name="at_a_glance_summary_postfix">
         <item quantity="zero">@string/at_a_glance_summary_postfix_none</item>
         <item quantity="one">@string/at_a_glance_summary_postfix_one</item>
         <item quantity="other">@string/at_a_glance_summary_postfix_many</item>
     </plurals>
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_super_postfix_none">\u0020and no foods expiring %2$s</string>
+    <!-- 2: DATE -->
     <string name="at_a_glance_summary_super_postfix_one">\u0020and only 1 food expiring %2$s</string>
+    <!-- 1: COUNT, 2: DATE -->
     <string name="at_a_glance_summary_super_postfix_many">\u0020and %1$d foods expiring %2$s</string>
     <plurals name="at_a_glance_summary_super_postfix">
         <item quantity="zero">@string/at_a_glance_summary_super_postfix_none</item>
         <item quantity="one">@string/at_a_glance_summary_super_postfix_one</item>
         <item quantity="other">@string/at_a_glance_summary_super_postfix_many</item>
     </plurals>
+    <!-- 1: DATE -->
     <string name="at_a_glance_list_header">Foods expiring within %1$s:</string>
 
     <!-- Date range. To be used with WeeklyDateFilter.class  -->
@@ -127,19 +145,25 @@
 
     <!-- endregion -->
 
-    <string name="button_ok_label">OK</string>
-    <string name="button_cancel_label">Cancel</string>
-
     <!-- region Date messages -->
+
     <string name="expiry_msg_today">Expires today!</string>
     <string name="expiry_msg_tomorrow">Expires tomorrow!</string>
+    <!-- 1: DATE -->
     <string name="expiry_msg_soon">Expires soon on %1$s</string>
+    <!-- 1: DATE -->
     <string name="expiry_msg_next_dow">Expires next %1$s</string>
+    <!-- 1: DATE -->
     <string name="expiry_msg_ordinal">Expires on the %1$s</string>
+    <!-- 1: MONTH, 2: DAY -->
     <string name="expiry_msg_month_day">Expires on %1$s %2$d</string>
+    <!-- 1: MONTH, 2: DAY, 3: YEAR -->
     <string name="expiry_msg_month_day_year">Expires on %1$s %2$d, %3$d</string>
+    <!-- 1: DATE -->
     <string name="expiry_msg_generic">Expires %1$s</string>
+    <!-- 1: DATE -->
     <string name="expiry_msg_generic_pp">Expiring %1$s</string>
+    <!-- 1: NUM DAYS, 2: DAYS LABEL -->
     <string name="expiry_msg_num_days">Expires in %1$s %2$s</string>
 
     <string name="date_today">Today</string>
@@ -148,18 +172,32 @@
     <string name="date_soon">Soon</string>
     <string name="date_next_week">Next week</string>
     <string name="date_this_week">This week</string>
+    <!-- 1: DAY OF WEEK -->
     <string name="date_next">next %1$s</string>
     <string name="date_generic">On this day</string>
-    <string name="date_formatted_full">%1$s %2$d, %3$d</string>
+    <!-- 1: MONTH, 2: DAY, 3: YEAR -->
+    <string name="date_formatted_full" translatable="false">%1$s %2$d, %3$d</string>
 
     <!-- endregion -->
 
+    <!-- region List -->
+
     <string name="list_empty">You have no foods expiring soon!\n\nAdd one by pressing the + icon below</string>
+    <!-- 1: NUM FOODS -->
     <string name="list_registered_header">%1$s foods registered</string>
+
+    <string name="expiring_food_none">No expiring foods during this time</string>
+    <string name="empty_image_list">Empty image list</string>
+    <string name="food_image_list">Food image list</string>
+
+    <!-- endregion -->
+
+    <!-- region Food and Detail fields -->
+
+    <!-- Labels -->
+
     <string name="food_name_label" translatable="false">Food name</string>
-    <string name="food_name_none">Undefined food name</string>
     <string name="food_expiry_date_label" translatable="false">Expiry date</string>
-    <string name="food_expiry_date_none">Undefined expiry date</string>
     <string name="food_good_thru_date_label" translatable="false">Good thru date</string>
     <string name="food_days_label_singular">day</string>
     <string name="food_days_label_plural">days</string>
@@ -169,8 +207,6 @@
     </plurals>
     <string name="food_storage_location_label">Stored in</string>
     <string name="food_count_label">Count</string>
-    <string name="food_count">Count: %1$d</string>
-    <string name="food_msg_count">%1$s %2$s of this item</string>
     <string name="food_description_label">Description</string>
     <string name="food_other_info_label">Other info</string>
     <string name="food_brand_label">Brand</string>
@@ -182,35 +218,49 @@
     <string name="food_tags_label">Tags</string>
     <string name="food_input_type_label">Input type</string>
     <string name="food_input_type_capture_barcode_label">Barcode</string>
-    <string name="food_input_type_barcode">Scanned by barcode</string>
     <string name="food_input_type_imgrec_label">Image rec</string>
-    <string name="food_input_type_imgrec">Extracted by image</string>
     <string name="food_input_type_imgonly_label">Image only</string>
-    <string name="food_input_type_imgonly">Photo input</string>
     <string name="food_input_type_textonly_label">Text only</string>
+    <string name="food_storage_location_none_label">Not set</string>
+    <string name="food_storage_location_fridge_label">Fridge</string>
+    <string name="food_storage_location_freezer_label">Freezer</string>
+    <string name="food_storage_location_pantry_label">Pantry</string>
+    <string name="food_storage_location_counter_label">Counter</string>
+    <string name="food_storage_location_other_label">Other</string>
+    <string-array name="food_storage_location_labels">
+        <item>@string/food_storage_location_none_label</item>
+        <item>@string/food_storage_location_fridge_label</item>
+        <item>@string/food_storage_location_freezer_label</item>
+        <item>@string/food_storage_location_pantry_label</item>
+        <item>@string/food_storage_location_counter_label</item>
+        <item>@string/food_storage_location_other_label</item>
+    </string-array>
+
+    <!-- Values -->
+
+    <string name="food_name_none">Undefined food name</string>
+    <string name="food_expiry_date_none">Undefined expiry date</string>
+    <!-- 1: COUNT -->
+    <string name="food_count">Count: %1$d</string>
+    <!-- 1: COUNT, 2: COUNT LABEL  -->
+    <string name="food_msg_count">%1$s %2$s of this item</string>
+    <string name="food_input_type_barcode">Scanned by barcode</string>
+    <string name="food_input_type_imgrec">Extracted by image</string>
+    <string name="food_input_type_imgonly">Photo input</string>
     <string name="food_input_type_textonly">Input by text only</string>
     <string name="data_attribution_upcitemdb">Barcode data provided by upcitemdb</string>
     <string name="data_attribution_google_imgrec">Image data provided by Google Image Labeling</string>
+    <!-- 1: STORAGE LABEL -->
+    <string name="food_storage_location_description">Stored in the %1$s</string>
+    <string name="food_storage_location_dialog">Where is this item stored?</string>
 
-    <string name="storage_location_none_label">Not set</string>
-    <string name="storage_location_fridge_label">Fridge</string>
-    <string name="storage_location_freezer_label">Freezer</string>
-    <string name="storage_location_pantry_label">Pantry</string>
-    <string name="storage_location_counter_label">Counter</string>
-    <string name="storage_location_other_label">Other</string>
-    <string-array name="storage_location_labels">
-        <item>@string/storage_location_none_label</item>
-        <item>@string/storage_location_fridge_label</item>
-        <item>@string/storage_location_freezer_label</item>
-        <item>@string/storage_location_pantry_label</item>
-        <item>@string/storage_location_counter_label</item>
-        <item>@string/storage_location_other_label</item>
-    </string-array>
-    <string name="storage_location_description">Stored in the %1$s</string>
-    <string name="storage_location_dialog">Where is this item stored?</string>
+    <!-- endregion -->
+
+    <!-- region Edit-specific fields -->
 
     <string name="edit_food_name_label_required">Food name (required)</string>
     <string name="edit_food_count_label_required">Count (required)</string>
+    <!-- 1: DATE -->
     <string name="edit_good_thru_date_default">%1$s (same as Expiry date)</string>
     <string name="edit_error_saving">Please fix the errors first before saving</string>
     <string name="edit_error_required_generic">This field is required</string>
@@ -220,6 +270,7 @@
     <string name="edit_error_date_expiry">The Expiry date must be today or later</string>
     <string name="edit_error_date_good_thru">Good thru date must be the same as the Expiry date or later</string>
 
+    <!-- Edit content descriptions -->
     <string name="edit_clear_date_good_thru">Clear the good thru date</string>
     <string name="edit_clear_description">Clear the description</string>
     <string name="edit_clear_brand">Clear the brand name</string>
@@ -227,18 +278,22 @@
     <string name="edit_clear_weight">Clear the food weight</string>
     <string name="edit_clear_notes">Clear the notes</string>
 
+    <!-- endregion -->
 
-    <!-- region Delete dialog -->
+    <!-- region Dialogs -->
 
     <string name="edit_dialog_changes_not_saved">Your changes have not been saved</string>
     <string name="edit_dialog_changes_not_saved_discard">Discard</string>
     <string name="edit_dialog_changes_not_saved_save">Save</string>
     <string name="edit_dialog_delete_confirm_title">Delete this food item?</string>
     <string name="edit_dialog_delete_confirm_generic_food_name">This food item</string>
+    <!-- 1: FOOD NAME -->
     <string name="edit_dialog_delete_confirm_message_has_account">%1$s will be removed from your device and all your synced devices</string>
+    <!-- 1: FOOD NAME -->
     <string name="edit_dialog_delete_confirm_message_no_account">%1$s will be removed from your device</string>
     <string name="edit_dialog_delete_confirm_cancel">Cancel</string>
     <string name="edit_dialog_delete_confirm_delete">Delete</string>
+    <!-- 1: FOOD NAME -->
     <string name="edit_dialog_delete_done">%1$s has been deleted</string>
     <string name="edit_dialog_delete_device_data_title">Delete all &appname; data on device</string>
     <string name="edit_dialog_delete_account_title">Delete &appname; account</string>
@@ -247,12 +302,37 @@
 
     <!-- endregion -->
 
+    <!-- region Messages -->
+
+    <!-- 1: FOOD NAME -->
     <string name="message_item_added">Added %1$s</string>
+    <!-- 1: FOOD NAME -->
     <string name="message_item_updated">Updated %1$s</string>
+    <!-- 1: FOOD NAME -->
     <string name="message_item_removed">Removed %1$s</string>
     <string name="message_item_added_generic">Food added</string>
     <string name="message_item_updated_generic">Food updated</string>
     <string name="message_item_removed_generic">Food removed</string>
+    <string name="message_permissions_camera_shoot">Please enable camera permissions to take photos</string>
+    <string name="message_permissions_storage">Please enable storage permissions to pick photos</string>
+    <string name="message_image_added">Image added!</string>
+    <string name="message_error_save_image">There was a problem caching the image.</string>
+    <string name="message_camera_required">Your device needs a camera to do this</string>
+    <string name="message_error_sign_in">There was a problem signing in.</string>
+    <string name="message_error_sign_in_demo">There was a problem signing in to the demo account.</string>
+    <string name="message_error_auth">Authentication failed.</string>
+    <string name="message_error_sign_up">There was a problem creating your account.</string>
+    <string name="message_error_barcode_internet_required">Fetching barcode data online requires internet connection</string>
+    <string name="message_permissions_camera">Please enable permissions to use the camera</string>
+    <!-- 1: FOOD NAME -->
+    <string name="message_item_saved">Saved %1$s!</string>
+    <string name="message_error_parse_date">There was an error parsing the date</string>
+    <string name="message_error_save_image_cache">There was a problem setting the image cache</string>
+    <string name="message_broken_image">Failed to load image</string>
+
+    <!-- endregion -->
+
+    <!-- region Capture -->
 
     <string name="capture_mode_barcode">Scan barcode</string>
     <string name="capture_mode_imgrec">Recognize image</string>
@@ -263,12 +343,20 @@
 
     <string name="error_requires_camera">This feature requires a camera on device</string>
 
+    <string name="image_scanned_barcode">Scanned barcode image</string>
+
+    <!-- endregion -->
+
+    <!-- region Voice -->
+
+    <!-- Prompts -->
     <string name="voice_prompt_expiry">When does this item expire?</string>
     <string name="voice_prompt_good_thru">Beyond the expiry date, when does this food go bad?</string>
     <string name="voice_prompt_name">What is this item called?</string>
     <string name="voice_prompt_description">How would you describe this item?</string>
     <string name="voice_prompt_storage_loc">Where is this item stored?</string>
 
+    <!-- Inputs -->
     <string name="voice_input_cancelled_0">cancel</string>
     <string name="voice_input_cancelled_1">never mind</string>
     <string name="voice_input_cancelled_2">stop</string>
@@ -282,28 +370,23 @@
         <item>@string/voice_input_cancelled_4</item>
     </string-array>
 
-    <string name="internal_storage_uri_path" translatable="false">file://%1$s</string>
-    <string name="add_widget">Add widget</string>
-    <string name="widget_header">Expiring soon!</string>
-    <string name="widget_signed_out">You need to be signed in to use this widget.\nClick here to sign in!</string>
-    <string name="expiring_food_none">No expiring foods during this time</string>
-    <string name="add_photo_instruction">How do you want to add an image?</string>
-    <string name="add_item_instruction">How do you want to add an item?</string>
-
-    <!-- region Sign-in -->
-
-    <string name="sign_in_email_label">Email</string>
-    <string name="sign_in_password_label">Password</string>
-    <string name="sign_in_login_button">Log-in</string>
-    <string name="sign_in_create_account">No account yet? Create one</string>
-    <string name="sign_in_existing_account">Already a member? Log-in</string>
-    <!-- For debugging and testing only -->
-    <string name="sign_in_test_button">Log-in to test</string>
-
-
     <!-- endregion -->
 
-    <!-- region Auth errors -->
+    <!-- region Auth -->
+
+    <!-- Sign in and sign up -->
+
+    <string name="auth_email_label">Email</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_login_button">Log-in</string>
+    <string name="auth_create_account">No account yet? Create one</string>
+    <string name="auth_existing_account">Already a member? Log-in</string>
+    <!-- For debugging and testing only -->
+    <string name="auth_test_button">Log-in to test</string>
+    <string name="auth_name_label">Your name</string>
+    <string name="auth_signup_button">Sign up!</string>
+
+    <!-- Auth errors -->
 
     <string name="auth_error_no_name">Please enter a name</string>
     <string name="auth_error_weak_password">Password must be at least 8 characters long with no spaces</string>
@@ -317,37 +400,47 @@
     <string name="auth_error_interrupted">Sign-in was interrupted</string>
     <string name="auth_error_network">Couldn\'t sign-in due to network error</string>
     <string name="auth_error_invalid_account">This account is invalid</string>
-    <string name="sign_in_signup_button">Sign up!</string>
-    <string name="sign_up_name_label">Your name</string>
 
     <!-- endregion -->
+
+    <!-- region Notifications -->
 
     <string name="notification_channel_id" translatable="false">ch_reminders</string>
     <string name="notification_channel_name">Food expiry reminders</string>
     <string name="notification_content_title">Reminder: You have foods expiring soon!</string>
-    <string name="image_broken_content_description">Failed to load image</string>
-    <string name="empty_image_list">Empty image list</string>
-    <string name="food_image_list">Food image list</string>
-    <string name="image_scanned_barcode">Scanned barcode image</string>
-    <string name="message_permissions_camera_shoot">Please enable camera permissions to take photos</string>
-    <string name="message_permissions_storage">Please enable storage permissions to pick photos</string>
-    <string name="message_image_added">Image added!</string>
-    <string name="message_error_save_image">There was a problem caching the image.</string>
-    <string name="message_camera_required">Your device needs a camera to do this</string>
-    <string name="message_error_sign_in">There was a problem signing in.</string>
-    <string name="message_error_sign_in_demo">There was a problem signing in to the demo account.</string>
-    <string name="message_error_auth">Authentication failed.</string>
-    <string name="message_error_sign_up">There was a problem creating your account.</string>
-    <string name="message_error_barcode_internet_required">Fetching barcode data online requires internet connection</string>
-    <string name="message_permissions_camera">Please enable permissions to use the camera</string>
-    <string name="action_enable">Enable</string>
-    <string name="message_item_saved">Saved %1$s!</string>
+
+    <!-- endregion -->
+
+    <!-- region Widget -->
+
+    <string name="add_widget">Add widget</string>
+    <string name="widget_header">Expiring soon!</string>
+    <string name="widget_signed_out">You need to be signed in to use this widget.\nClick here to sign in!</string>
+
+    <!-- endregion -->
+
+    <!-- region Add -->
+
+    <string name="add_photo_instruction">How do you want to add an image?</string>
+    <string name="add_item_instruction">How do you want to add an item?</string>
+
+    <!-- endregion -->
+
+    <!-- region UpcItemDb -->
+
     <string name="upcitemdb_error_item_not_found">Item not found in database</string>
     <string name="upcitemdb_error_no_internet">Internet connection lost while getting data. Please try again later</string>
     <string name="upcitemdb_error_api_limit">API calls limit has been reached. Please contact the developer</string>
     <string name="upcitemdb_error_server">Server error. Please try again later</string>
     <string name="upcitemdb_error_unknown">Unknown error</string>
-    <string name="message_error_parse_date">There was an error parsing the date</string>
-    <string name="action_set_expiry_date">Set expiry date</string>
-    <string name="message_error_save_image_cache">There was a problem setting the image cache</string>
+
+    <!-- endregion -->
+
+    <!-- region Internal -->
+
+    <string name="undefined_generic">Undefined</string>
+    <string name="internal_storage_uri_path" translatable="false">file://%1$s</string>
+
+    <!-- endregion -->
+
 </resources>

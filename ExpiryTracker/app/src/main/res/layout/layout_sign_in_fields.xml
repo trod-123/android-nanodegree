@@ -23,7 +23,7 @@
             style="@style/AppTheme.TextInputEditText.DarkBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/sign_in_email_label"
+            android:hint="@string/auth_email_label"
             android:inputType="textEmailAddress" />
 
     </android.support.design.widget.TextInputLayout>
@@ -45,7 +45,7 @@
             style="@style/AppTheme.TextInputEditText.DarkBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/sign_in_password_label"
+            android:hint="@string/auth_password_label"
             android:inputType="textPassword" />
 
     </android.support.design.widget.TextInputLayout>

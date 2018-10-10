@@ -78,7 +78,7 @@ public class TextInputDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(mTitle)
                 .setView(mView)
-                .setPositiveButton(R.string.button_ok_label,
+                .setPositiveButton(R.string.action_ok,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -92,7 +92,7 @@ public class TextInputDialogFragment extends DialogFragment {
                                 }
                             }
                         })
-                .setNegativeButton(R.string.button_cancel_label, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         callback.onTextConfirmed(i, null);

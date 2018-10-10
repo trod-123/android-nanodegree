@@ -643,17 +643,17 @@ public class DataToolbox {
     public static String getStorageIconString(Storage storage, Context context) {
         switch (storage) {
             case FRIDGE:
-                return context.getString(R.string.storage_location_fridge_label);
+                return context.getString(R.string.food_storage_location_fridge_label);
             case FREEZER:
-                return context.getString(R.string.storage_location_freezer_label);
+                return context.getString(R.string.food_storage_location_freezer_label);
             case PANTRY:
-                return context.getString(R.string.storage_location_pantry_label);
+                return context.getString(R.string.food_storage_location_pantry_label);
             case COUNTER:
-                return context.getString(R.string.storage_location_counter_label);
+                return context.getString(R.string.food_storage_location_counter_label);
             case CUSTOM:
-                return context.getString(R.string.storage_location_other_label);
+                return context.getString(R.string.food_storage_location_other_label);
             default:
-                return context.getString(R.string.storage_location_none_label);
+                return context.getString(R.string.food_storage_location_none_label);
         }
     }
 
