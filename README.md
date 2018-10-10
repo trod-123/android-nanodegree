@@ -17,7 +17,7 @@ Tracks when your food and groceries will expire, and stores all data remotely on
 ![Details](/website/images/screenshot_capstone_details-phone-portrait.png)
 
 ## [Popular Movies](/PopularMovies)
-_(Last updated: November 9, 2015)_
+_(Last updated: September 9, 2018)_
 
 An informational app that pulls movie details, reviews, and trailers from a public, community-driven database
 
