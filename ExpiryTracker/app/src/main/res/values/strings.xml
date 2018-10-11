@@ -432,6 +432,7 @@
     <string name="upcitemdb_error_no_internet">Internet connection lost while getting data. Please try again later</string>
     <string name="upcitemdb_error_api_limit">API calls limit has been reached. Please contact the developer</string>
     <string name="upcitemdb_error_server">Server error. Please try again later</string>
+    <string name="upcitemdb_error_host_resolution">Error resolving server host. Please try again later</string>
     <string name="upcitemdb_error_unknown">Unknown error</string>
 
     <!-- endregion -->

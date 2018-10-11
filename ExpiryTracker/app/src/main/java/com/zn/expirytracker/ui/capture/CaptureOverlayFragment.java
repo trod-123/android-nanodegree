@@ -685,7 +685,9 @@ public class CaptureOverlayFragment extends Fragment
 
         @Override
         protected void onPostExecute(@Nullable Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
-            setFieldsFromBarcode(upcItem.first);
+            if (upcItem != null) {
+                setFieldsFromBarcode(upcItem.first);
+            }
             populateFields(mName, mDateExpiry, mDescription, mImageUris);
             handleResponseCode(upcItem);
         }
@@ -717,32 +719,37 @@ public class CaptureOverlayFragment extends Fragment
      *
      * @param upcItem
      */
-    private void handleResponseCode(Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
+    private void handleResponseCode(@Nullable Pair<UpcItem, UpcItemDbService.ResponseCode> upcItem) {
         String errorToast = null;
-        switch (upcItem.second) {
-            case OK:
-                // Even with a good response, the items may be empty
-                if (upcItem.first.getItems().size() == 0) {
+        if (upcItem != null) {
+            switch (upcItem.second) {
+                case OK:
+                    // Even with a good response, the items may be empty
+                    if (upcItem.first.getItems().size() == 0) {
+                        errorToast = getString(R.string.upcitemdb_error_item_not_found);
+                    }
+                    break;
+                case NO_INTERNET:
+                    errorToast = getString(R.string.upcitemdb_error_no_internet);
+                    break;
+                case NOT_FOUND:
+                case INVALID_QUERY:
                     errorToast = getString(R.string.upcitemdb_error_item_not_found);
-                }
-                break;
-            case NO_INTERNET:
-                errorToast = getString(R.string.upcitemdb_error_no_internet);
-                break;
-            case NOT_FOUND:
-            case INVALID_QUERY:
-                errorToast = getString(R.string.upcitemdb_error_item_not_found);
-                break;
-            case EXCEED_LIMIT:
-                errorToast = getString(R.string.upcitemdb_error_api_limit);
-                break;
-            case SERVER_ERR:
-                errorToast = getString(R.string.upcitemdb_error_server);
-                break;
-            case OTHER:
-            default:
-                errorToast = getString(R.string.upcitemdb_error_unknown);
-                break;
+                    break;
+                case EXCEED_LIMIT:
+                    errorToast = getString(R.string.upcitemdb_error_api_limit);
+                    break;
+                case SERVER_ERR:
+                    errorToast = getString(R.string.upcitemdb_error_server);
+                    break;
+                case OTHER:
+                default:
+                    errorToast = getString(R.string.upcitemdb_error_unknown);
+                    break;
+            }
+        } else {
+            // A null item likely means error accessing api server
+            errorToast = getString(R.string.upcitemdb_error_host_resolution);
         }
         if (errorToast != null) {
             Toolbox.showToast(mHostActivity, errorToast);
