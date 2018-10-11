@@ -79,6 +79,12 @@ public class FirebaseDatabaseHelper {
         mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).addValueEventListener(listener);
     }
 
+    public static void addValueEventListener_PrefsTimestamp(@NonNull ValueEventListener listener) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+        mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP).addValueEventListener(listener);
+    }
+
     public static void removeChildEventListener(@NonNull ChildEventListener listener) {
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
@@ -97,13 +103,35 @@ public class FirebaseDatabaseHelper {
         mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).removeEventListener(listener);
     }
 
+    public static void removeValueEventListener_PrefsTimestamp(@NonNull ValueEventListener listener) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+        mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP).removeEventListener(listener);
+    }
+
     /**
-     * Adds a timestamp in Firebase RTD for the provided child
+     * Adds a timestamp in Firebase RTD
      *
      * @param uid
      */
-    private static void setTimestamp(String uid) {
-        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).setValue(ServerValue.TIMESTAMP);
+    private static void setTimestamp(String uid, TimestampType type) {
+        String key;
+        switch (type) {
+            case FOOD:
+                key = Constants.FOOD_TIMESTAMP;
+                break;
+            case PREFS:
+                key = Constants.PREFS_TIMESTAMP;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "Invalid TimestampType passed: %s", type));
+        }
+        mDatabase_UserData.child(uid).child(key).setValue(ServerValue.TIMESTAMP);
+    }
+
+    public enum TimestampType {
+        FOOD, PREFS
     }
 
     /**
@@ -127,7 +155,7 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).child(foodId).setValue(food)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write"));
 
-        setTimestamp(uid);
+        setTimestamp(uid, TimestampType.FOOD);
     }
 
     /**
@@ -151,6 +179,8 @@ public class FirebaseDatabaseHelper {
         Timber.d("firebase/rtd/push_preference...");
         mDatabase_Preferences.child(uid).child(key).setValue(newValue)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write_preference"));
+
+        setTimestamp(uid, TimestampType.PREFS);
     }
 
     /**
@@ -206,7 +236,7 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).child(String.valueOf(id)).removeValue()
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/delete"));
 
-        setTimestamp(uid);
+        setTimestamp(uid, TimestampType.FOOD);
     }
 
     /**
@@ -225,7 +255,7 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).removeValue().addOnCompleteListener(
                 new FirebaseRTD_OnCompleteListener("firebase/rtd/deleteAll"));
 
-        setTimestamp(uid);
+        setTimestamp(uid, TimestampType.FOOD);
     }
 
     /**

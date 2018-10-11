@@ -11,6 +11,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -145,9 +146,19 @@ public class FoodListFragment extends Fragment
             Timber.d("FOOD_TIMESTAMP: Listening...");
             FirebaseDatabaseHelper.addValueEventListener_FoodTimestamp(mFoodTimestampValueEventListener);
         }
+        if (mPrefsTimestampValueEventListener != null) {
+            Timber.d("PREFS_TIMESTAMP: Listening...");
+            FirebaseDatabaseHelper.addValueEventListener_PrefsTimestamp(
+                    mPrefsTimestampValueEventListener);
+        }
+
         if (mFoodChildEventListener != null) {
             Timber.d("FOOD_TIMESTAMP: Listening for foods..");
             FirebaseDatabaseHelper.addChildEventListener(mFoodChildEventListener);
+        }
+        if (mPrefsChildEventListener != null) {
+            Timber.d("PREFS_TIMESTAMP: Listening for prefs...");
+            FirebaseDatabaseHelper.addChildEventListener_Preferences(mPrefsChildEventListener);
         }
     }
 
@@ -155,12 +166,22 @@ public class FoodListFragment extends Fragment
     public void onPause() {
         super.onPause();
         if (mFoodTimestampValueEventListener != null) {
-            FirebaseDatabaseHelper.removeValueEventListener_FoodTimestamp(mFoodTimestampValueEventListener);
+            FirebaseDatabaseHelper.removeValueEventListener_FoodTimestamp(
+                    mFoodTimestampValueEventListener);
         }
+        if (mPrefsTimestampValueEventListener != null) {
+            FirebaseDatabaseHelper.removeValueEventListener_PrefsTimestamp(
+                    mPrefsTimestampValueEventListener);
+        }
+
         // Remove the ChildEventListener until we need it again (i.e. when timestamp changes)
         if (mFoodChildEventListener != null) {
             FirebaseDatabaseHelper.removeChildEventListener(mFoodChildEventListener);
             mFoodChildEventListener = null;
+        }
+        if (mPrefsChildEventListener != null) {
+            FirebaseDatabaseHelper.removeChildEventListener_Preferences(mPrefsChildEventListener);
+            mPrefsChildEventListener = null;
         }
     }
 
@@ -170,6 +191,14 @@ public class FoodListFragment extends Fragment
             mFoodChildEventListener = new FoodChildEventListener();
             // Only listen to changes to food_database/food_table/uid/{child}
             FirebaseDatabaseHelper.addChildEventListener(mFoodChildEventListener);
+        }
+    }
+
+    private void startListeningForPrefsChanges() {
+        if (mPrefsChildEventListener == null) {
+            Timber.d("PREFS_TIMESTAMP: Listening for prefs changes");
+            mPrefsChildEventListener = new PrefsChildEventListener();
+            FirebaseDatabaseHelper.addChildEventListener_Preferences(mPrefsChildEventListener);
         }
     }
 
@@ -350,14 +379,94 @@ public class FoodListFragment extends Fragment
         }
     }
 
-    private FoodTimestampValueEventListener mFoodTimestampValueEventListener =
-            new FoodTimestampValueEventListener();
+    private PrefsChildEventListener mPrefsChildEventListener;
+
+    /**
+     * One-way reading from Firebase RTD to get the freshest Preference values stored. Only takes
+     * action from {@link ChildEventListener#onChildAdded(DataSnapshot, String)}. All Preference
+     * changes are managed in {@link com.zn.expirytracker.settings.SettingsFragment}
+     */
+    private class PrefsChildEventListener implements ChildEventListener {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
+            updateSharedPreferencesFromFirebase(dataSnapshot);
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            Timber.d("Preference changed from RTD: %s", dataSnapshot.getKey());
+            updateSharedPreferencesFromFirebase(dataSnapshot);
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            // Not used here
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            // Not used here
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Timber.e("Error pulling Preference from RTD: %s", databaseError.getMessage());
+        }
+    }
+
+    /**
+     * Writes the updated Preference value from Firebase to SharedPreferences
+     *
+     * @param snapshot
+     */
+    private void updateSharedPreferencesFromFirebase(DataSnapshot snapshot) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+        String key = snapshot.getKey();
+        Object value = snapshot.getValue();
+
+        if (key != null) {
+            if (key.equals(getString(R.string.pref_notifications_receive_key)) ||
+                    key.equals(getString(R.string.pref_capture_beep_key)) ||
+                    key.equals(getString(R.string.pref_capture_vibrate_key)) ||
+                    key.equals(getString(R.string.pref_capture_voice_input_key))) {
+                // Handle booleans
+                try {
+                    sp.edit().putBoolean(key, (boolean) value).apply();
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
+                }
+            } else if (key.equals(getString(R.string.pref_notifications_days_key)) ||
+                    key.equals(getString(R.string.pref_notifications_tod_key)) ||
+                    key.equals(getString(R.string.pref_widget_num_days_key)) ||
+                    key.equals(getString(R.string.pref_account_display_name_key))) {
+                try {
+                    sp.edit().putString(key, (String) value).apply();
+                } catch (ClassCastException e) {
+                    Timber.e(e,
+                            "RTD had preference value in wrong format. Preference: %s", key);
+                }
+            }
+        }
+    }
+
+    private TimestampValueEventListener mFoodTimestampValueEventListener =
+            new TimestampValueEventListener(FirebaseDatabaseHelper.TimestampType.FOOD);
+
+    private TimestampValueEventListener mPrefsTimestampValueEventListener =
+            new TimestampValueEventListener(FirebaseDatabaseHelper.TimestampType.PREFS);
 
     /**
      * Listens to RTD food timestamp change events
      */
-    private class FoodTimestampValueEventListener implements ValueEventListener {
-        private final String TAG = "FoodTimestampValueEventListener";
+    private class TimestampValueEventListener implements ValueEventListener {
+        private final String TAG = "TimestampValueEventListener";
+        private FirebaseDatabaseHelper.TimestampType mType;
+
+        TimestampValueEventListener(FirebaseDatabaseHelper.TimestampType type) {
+            mType = type;
+        }
 
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -377,31 +486,53 @@ public class FoodListFragment extends Fragment
          * @param dataSnapshot
          */
         private void checkTimestamp(DataSnapshot dataSnapshot) {
-            Timber.d("FOOD_TIMESTAMP: checking timestamp...");
+            String type;
+            String tag;
+            switch (mType) {
+                case FOOD:
+                    type = Constants.FOOD_TIMESTAMP;
+                    tag = "FOOD_TIMESTAMP";
+                    break;
+                case PREFS:
+                    type = Constants.PREFS_TIMESTAMP;
+                    tag = "PREFS_TIMESTAMP";
+                    break;
+                default:
+                    throw new IllegalArgumentException(String.format(
+                            "Invalid TimestampType passed: %s", mType));
+            }
+            Timber.d("%s: checking timestamp...", tag);
             try {
                 Long timestamp_rtd = dataSnapshot.getValue(Long.class);
                 if (timestamp_rtd != null) {
                     SharedPreferences sp = mHostActivity.getSharedPreferences(
                             Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-                    long timestamp_sp = sp.getLong(Constants.FOOD_TIMESTAMP, -1);
+                    long timestamp_sp = sp.getLong(type, -1);
                     // Set the timestamp if the first time setting timestamp
                     if (timestamp_sp == -1) {
-                        sp.edit().putLong(Constants.FOOD_TIMESTAMP, timestamp_rtd).apply();
+                        sp.edit().putLong(type, timestamp_rtd).apply();
                     }
                     if (timestamp_rtd != timestamp_sp) {
                         // RTD has been updated, so sync and update the internal timestamp
-                        Timber.d("FOOD_TIMESTAMP: Didn't match, so started listening");
-                        startListeningForFoodChanges();
-                        sp.edit().putLong(Constants.FOOD_TIMESTAMP, timestamp_rtd).apply();
+                        Timber.d("%s: Didn't match, so started listening", tag);
+                        switch (mType) {
+                            case FOOD:
+                                startListeningForFoodChanges();
+                                break;
+                            case PREFS:
+                                startListeningForPrefsChanges();
+                                break;
+                        }
+                        sp.edit().putLong(type, timestamp_rtd).apply();
                     } else {
                         // Don't sync if the timestamp is the same
-                        Timber.d("FOOD_TIMESTAMP: Matched, so not listening");
+                        Timber.d("%s: Matched, so not listening", tag);
                     }
                 } else {
-                    Timber.d("FOOD_TIMESTAMP: Was null, so not listening");
+                    Timber.d("%s: Was null, so not listening", tag);
                 }
             } catch (DatabaseException e) {
-                Timber.e(e, "Timestamp in RTD was of wrong type. Not setting FoodChildEventListener");
+                Timber.e(e, "Timestamp in RTD was of wrong type. Not setting TimestampValueEventListener");
             }
         }
     }
