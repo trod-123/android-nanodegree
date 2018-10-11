@@ -296,6 +296,8 @@ public class CaptureOverlayFragment extends Fragment
             }
         });
 
+        showOverlayData(false);
+
         if (savedInstanceState != null) {
             mBarcodeBitmapPath = savedInstanceState.getString(KEY_BARCODE_BITMAP_URI);
             mImageBitmapPath = savedInstanceState.getString(KEY_IMAGE_BITMAP_URI);
@@ -342,13 +344,16 @@ public class CaptureOverlayFragment extends Fragment
     }
 
     /**
-     * Shows or hides the overlay data with a progress bar
+     * Shows or hides the overlay data with a progress bar. Also disables screen rotations while
+     * overlay is hidden. Screen rotations are restored when overlay regains visibility
      *
      * @param show
      */
     private void showOverlayData(boolean show) {
         if (show) {
             mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        } else {
+            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         }
         Toolbox.showView(mRootView, show, false);
         Toolbox.showView(mPb, !show, false);
@@ -609,13 +614,8 @@ public class CaptureOverlayFragment extends Fragment
     /**
      * Prompt the user for additional required info. Use voice input if enabled in Settings.
      * If no additional info is needed, then just show the view
-     * <p>
-     * Prevent the screen from rotating while prompts are being shown. Screen orientation is
-     * restored in {@link CaptureOverlayFragment#showOverlayData(boolean)} and via
-     * {@link CaptureActivity#onBackPressed()}
      */
     private void promptForMissingInfo() {
-        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         if (mName != null && mName.isEmpty()) {
             // If prompting name, name should be first. Will prompt for Expiry date after name is
             // provided
