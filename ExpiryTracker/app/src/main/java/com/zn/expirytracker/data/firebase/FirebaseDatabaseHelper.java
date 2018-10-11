@@ -12,13 +12,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.zn.expirytracker.data.contracts.DatabaseContract;
+import com.zn.expirytracker.data.contracts.SettingsDatabaseContract;
 import com.zn.expirytracker.data.contracts.UserDatabaseContract;
 import com.zn.expirytracker.data.model.Food;
-import com.zn.expirytracker.data.contracts.SettingsDatabaseContract;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
 
 import timber.log.Timber;
 
@@ -71,18 +73,37 @@ public class FirebaseDatabaseHelper {
         mDatabase_Preferences.child(uid).addChildEventListener(listener);
     }
 
+    public static void addValueEventListener_FoodTimestamp(@NonNull ValueEventListener listener) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).addValueEventListener(listener);
+    }
+
     public static void removeChildEventListener(@NonNull ChildEventListener listener) {
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
         mDatabase.child(uid).removeEventListener(listener);
-
     }
 
     public static void removeChildEventListener_Preferences(@NonNull ChildEventListener listener) {
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
         mDatabase_Preferences.child(uid).removeEventListener(listener);
+    }
 
+    public static void removeValueEventListener_FoodTimestamp(@NonNull ValueEventListener listener) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).removeEventListener(listener);
+    }
+
+    /**
+     * Adds a timestamp in Firebase RTD for the provided child
+     *
+     * @param uid
+     */
+    private static void setTimestamp(String uid) {
+        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).setValue(ServerValue.TIMESTAMP);
     }
 
     /**
@@ -105,6 +126,8 @@ public class FirebaseDatabaseHelper {
         Timber.d("firebase/rtd/push...");
         mDatabase.child(uid).child(foodId).setValue(food)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write"));
+
+        setTimestamp(uid);
     }
 
     /**
@@ -182,6 +205,8 @@ public class FirebaseDatabaseHelper {
         Timber.d("firebase/rtd/delete...");
         mDatabase.child(uid).child(String.valueOf(id)).removeValue()
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/delete"));
+
+        setTimestamp(uid);
     }
 
     /**
@@ -199,6 +224,8 @@ public class FirebaseDatabaseHelper {
         Timber.d("firebase/rtd/deleteAll...");
         mDatabase.child(uid).removeValue().addOnCompleteListener(
                 new FirebaseRTD_OnCompleteListener("firebase/rtd/deleteAll"));
+
+        setTimestamp(uid);
     }
 
     /**

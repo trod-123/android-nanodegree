@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -27,6 +29,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.ValueEventListener;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.firebase.UserMetrics;
@@ -34,6 +37,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
 import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -42,8 +46,7 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class FoodListFragment extends Fragment
-        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener,
-        ChildEventListener {
+        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
 
     private static final String KEY_DRAWABLE_ID_INT = Toolbox.createStaticKeyString(
             FoodListFragment.class, "drawable_id_int");
@@ -136,15 +139,38 @@ public class FoodListFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-
-        // Only listen to changes to food_database/food_table/uid/{child}
-        FirebaseDatabaseHelper.addChildEventListener(this);
+        // Check if Firebase timestamp is different from that stored in device. If different,
+        // then start listening for changes, and sync local and cloud databases
+        if (mFoodTimestampValueEventListener != null) {
+            Timber.d("FOOD_TIMESTAMP: Listening...");
+            FirebaseDatabaseHelper.addValueEventListener_FoodTimestamp(mFoodTimestampValueEventListener);
+        }
+        if (mFoodChildEventListener != null) {
+            Timber.d("FOOD_TIMESTAMP: Listening for foods..");
+            FirebaseDatabaseHelper.addChildEventListener(mFoodChildEventListener);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        FirebaseDatabaseHelper.removeChildEventListener(this);
+        if (mFoodTimestampValueEventListener != null) {
+            FirebaseDatabaseHelper.removeValueEventListener_FoodTimestamp(mFoodTimestampValueEventListener);
+        }
+        // Remove the ChildEventListener until we need it again (i.e. when timestamp changes)
+        if (mFoodChildEventListener != null) {
+            FirebaseDatabaseHelper.removeChildEventListener(mFoodChildEventListener);
+            mFoodChildEventListener = null;
+        }
+    }
+
+    private void startListeningForFoodChanges() {
+        if (mFoodChildEventListener == null) {
+            Timber.d("FOOD_TIMESTAMP: Listening for food changes");
+            mFoodChildEventListener = new FoodChildEventListener();
+            // Only listen to changes to food_database/food_table/uid/{child}
+            FirebaseDatabaseHelper.addChildEventListener(mFoodChildEventListener);
+        }
     }
 
     // region RecyclerView setup
@@ -258,61 +284,126 @@ public class FoodListFragment extends Fragment
 
     // endregion
 
-    // region Firebase RTD ChildEventListener
+    // region Firebase RTD ChildEventListeners
 
-    @Override
-    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        try {
-            Food food = dataSnapshot.getValue(Food.class);
-            if (food != null) {
-                Timber.d("Food added from RTD: id_%s", food.get_id());
-                mViewModel.insert(false, food); // don't save to cloud to avoid infinite loop
-            } else {
-                Timber.e("Food added from RTD was null. Not updating DB...");
+    private FoodChildEventListener mFoodChildEventListener;
+
+    /**
+     * Listens to RTD food list change events
+     */
+    private class FoodChildEventListener implements ChildEventListener {
+        private final String TAG = "FoodChildEventListener";
+
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food added from RTD: id_%s", food.get_id());
+                    mViewModel.insert(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food added from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
             }
-        } catch (DatabaseException e) {
-            Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food changed from RTD: id_%s", food.get_id());
+                    mViewModel.update(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food changed from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
+            }
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food removed from RTD: id_%s", food.get_id());
+                    mViewModel.delete(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food removed from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
+            }
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            // Not used here
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Timber.e("%s/Cancelled error pulling from RTD: %s", TAG, databaseError.getMessage());
         }
     }
 
-    @Override
-    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        try {
-            Food food = dataSnapshot.getValue(Food.class);
-            if (food != null) {
-                Timber.d("Food changed from RTD: id_%s", food.get_id());
-                mViewModel.update(false, food); // don't save to cloud to avoid infinite loop
-            } else {
-                Timber.e("Food changed from RTD was null. Not updating DB...");
-            }
-        } catch (DatabaseException e) {
-            Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
+    private FoodTimestampValueEventListener mFoodTimestampValueEventListener =
+            new FoodTimestampValueEventListener();
+
+    /**
+     * Listens to RTD food timestamp change events
+     */
+    private class FoodTimestampValueEventListener implements ValueEventListener {
+        private final String TAG = "FoodTimestampValueEventListener";
+
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            checkTimestamp(dataSnapshot);
         }
-    }
 
-    @Override
-    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-        try {
-            Food food = dataSnapshot.getValue(Food.class);
-            if (food != null) {
-                Timber.d("Food removed from RTD: id_%s", food.get_id());
-                mViewModel.delete(false, food); // don't save to cloud to avoid infinite loop
-            } else {
-                Timber.e("Food removed from RTD was null. Not updating DB...");
-            }
-        } catch (DatabaseException e) {
-            Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Timber.e("%s/Cancelled error pulling from RTD: %s", TAG, databaseError.getMessage());
         }
-    }
 
-    @Override
-    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-        // Not used here
-    }
-
-    @Override
-    public void onCancelled(@NonNull DatabaseError databaseError) {
-        Timber.e("Cancelled error pulling from RTD: %s", databaseError.getMessage());
+        /**
+         * Compares the timestamp on RTD vs the SP, and starts {@link FoodChildEventListener} if
+         * they're different, and then updating the SP timestamp with RTD's. Otherwise, does
+         * nothing
+         *
+         * @param dataSnapshot
+         */
+        private void checkTimestamp(DataSnapshot dataSnapshot) {
+            Timber.d("FOOD_TIMESTAMP: checking timestamp...");
+            try {
+                Long timestamp_rtd = dataSnapshot.getValue(Long.class);
+                if (timestamp_rtd != null) {
+                    SharedPreferences sp = mHostActivity.getSharedPreferences(
+                            Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+                    long timestamp_sp = sp.getLong(Constants.FOOD_TIMESTAMP, -1);
+                    // Set the timestamp if the first time setting timestamp
+                    if (timestamp_sp == -1) {
+                        sp.edit().putLong(Constants.FOOD_TIMESTAMP, timestamp_rtd).apply();
+                    }
+                    if (timestamp_rtd != timestamp_sp) {
+                        // RTD has been updated, so sync and update the internal timestamp
+                        Timber.d("FOOD_TIMESTAMP: Didn't match, so started listening");
+                        startListeningForFoodChanges();
+                        sp.edit().putLong(Constants.FOOD_TIMESTAMP, timestamp_rtd).apply();
+                    } else {
+                        // Don't sync if the timestamp is the same
+                        Timber.d("FOOD_TIMESTAMP: Matched, so not listening");
+                    }
+                } else {
+                    Timber.d("FOOD_TIMESTAMP: Was null, so not listening");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Timestamp in RTD was of wrong type. Not setting FoodChildEventListener");
+            }
+        }
     }
 
     // endregion
