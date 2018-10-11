@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -346,6 +347,9 @@ public class CaptureOverlayFragment extends Fragment
      * @param show
      */
     private void showOverlayData(boolean show) {
+        if (show) {
+            mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
         Toolbox.showView(mRootView, show, false);
         Toolbox.showView(mPb, !show, false);
     }
@@ -605,8 +609,13 @@ public class CaptureOverlayFragment extends Fragment
     /**
      * Prompt the user for additional required info. Use voice input if enabled in Settings.
      * If no additional info is needed, then just show the view
+     * <p>
+     * Prevent the screen from rotating while prompts are being shown. Screen orientation is
+     * restored in {@link CaptureOverlayFragment#showOverlayData(boolean)} and via
+     * {@link CaptureActivity#onBackPressed()}
      */
     private void promptForMissingInfo() {
+        mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         if (mName != null && mName.isEmpty()) {
             // If prompting name, name should be first. Will prompt for Expiry date after name is
             // provided

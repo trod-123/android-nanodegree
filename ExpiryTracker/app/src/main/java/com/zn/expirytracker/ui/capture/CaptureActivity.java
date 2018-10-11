@@ -3,6 +3,7 @@ package com.zn.expirytracker.ui.capture;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -180,6 +181,9 @@ public class CaptureActivity extends AppCompatActivity implements
                 String tag = fragment.getTag();
                 if (tag != null && tag.equals(CaptureOverlayFragment.class.getSimpleName())) {
                     activateRoot(true);
+                    // Reset orientation, it is probable orientation had been fixed in
+                    // CaptureOverlayFragment via name and date prompts
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     break;
                 }
             }
