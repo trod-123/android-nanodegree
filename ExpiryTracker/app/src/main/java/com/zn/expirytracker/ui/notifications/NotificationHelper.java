@@ -168,7 +168,7 @@ public class NotificationHelper {
             // If we're running for first time, et the trigger to meet the user-specified
             // notification time
             Pair<Integer, Integer> triggerRange = getNotificationTriggerRange(tod);
-            if (!DebugFields.DEBUG_ENABLE_QUICK_REMINDERS) {
+            if (!DebugFields.ENABLE_QUICK_REMINDERS) {
                 Timber.d("Notification non-recurring triggerRange in seconds: %s %s",
                         triggerRange.first * 60, triggerRange.second * 60);
                 builder.setTrigger(Trigger.executionWindow(

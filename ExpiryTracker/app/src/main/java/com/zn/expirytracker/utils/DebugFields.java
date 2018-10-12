@@ -1,5 +1,7 @@
 package com.zn.expirytracker.utils;
 
+import com.google.firebase.database.Logger;
+
 /**
  * Convenience class hosting fields for enabling and disabling debug features at will
  */
@@ -16,10 +18,21 @@ public class DebugFields {
     /**
      * For debugging. {@code true} allows notifications to show up immediately after enabling them
      */
-    public static final boolean DEBUG_ENABLE_QUICK_REMINDERS = false;
+    public static final boolean ENABLE_QUICK_REMINDERS = false;
 
     /**
      * Pre-Firebase RTD data population. Keep {@code false}. Do not touch!
      */
     public static final boolean POPULATE_DUMMY_DATA = false;
+
+    /**
+     * See {@link com.google.firebase.database.FirebaseDatabase#setLogLevel(Logger.Level)} and
+     * {@link com.google.firebase.database.Logger.Level#DEBUG}
+     */
+    public static final boolean ENABLE_FIREBASE_DATABASE_DEEP_LOGGING = false;
+
+    /**
+     * See {@link android.os.StrictMode}
+     */
+    public static final boolean ENABLE_STRICT_MODE = false;
 }

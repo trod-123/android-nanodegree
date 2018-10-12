@@ -1,9 +1,11 @@
 package com.zn.expirytracker;
 
+import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
+import com.zn.expirytracker.utils.DebugFields;
 
 import timber.log.Timber;
 
@@ -16,9 +18,6 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
 //        MultiDex.install(this);
 //    }
 
-    boolean DEBUG_ENABLE_FIREBASE_DATABASE_DEEP_LOGGING = false;
-
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,8 +29,24 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
-            if (DEBUG_ENABLE_FIREBASE_DATABASE_DEEP_LOGGING) {
+            if (DebugFields.ENABLE_FIREBASE_DATABASE_DEEP_LOGGING) {
                 database.setLogLevel(Logger.Level.DEBUG);
+            }
+            if (DebugFields.ENABLE_STRICT_MODE) {
+                // https://developer.android.com/docs/quality-guidelines/core-app-quality#strictmode
+                StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                        .detectDiskReads()
+                        .detectDiskWrites()
+                        .detectNetwork()   // or .detectAll() for all detectable problems
+                        .penaltyLog()
+                        .penaltyFlashScreen()
+                        .build());
+                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                        .detectLeakedSqlLiteObjects()
+                        .detectLeakedClosableObjects()
+                        .penaltyLog()
+                        .penaltyDeath()
+                        .build());
             }
         } else {
             // TODO: Initialize a crash reporting tree
