@@ -411,6 +411,8 @@ public class AuthToolbox {
         FoodWidget.cancelNextUpdate(context);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit().clear().apply();
+        sp = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        sp.edit().clear().apply();
     }
 
     /**

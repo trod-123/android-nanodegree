@@ -508,10 +508,7 @@ public class FoodListFragment extends Fragment
                     SharedPreferences sp = mHostActivity.getSharedPreferences(
                             Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
                     long timestamp_sp = sp.getLong(type, -1);
-                    // Set the timestamp if the first time setting timestamp
-                    if (timestamp_sp == -1) {
-                        sp.edit().putLong(type, timestamp_rtd).apply();
-                    }
+                    Timber.d("SP: %s, RTD: %s", timestamp_sp, timestamp_rtd);
                     if (timestamp_rtd != timestamp_sp) {
                         // RTD has been updated, so sync and update the internal timestamp
                         Timber.d("%s: Didn't match, so started listening", tag);
