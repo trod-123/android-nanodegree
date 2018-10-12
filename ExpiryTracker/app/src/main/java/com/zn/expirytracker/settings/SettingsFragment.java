@@ -244,6 +244,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return true;
             }
         });
+        mPreferenceAccountSignOut.setSummary(AuthToolbox.getUserEmail());
 //        mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 //            @Override
 //            public boolean onPreferenceClick(Preference preference) {
@@ -455,12 +456,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
         if (preference.equals(mPreferenceDisplayName)) {
             // Sync the display name with the database. This is a logged-in only feature
             if (AuthToolbox.isSignedIn()) {
-                String displayName = (String) value;
+                String displayName = ((String) value).trim();
                 AuthToolbox.updateDisplayName(context, displayName);
 
                 // If there is no name, set the summary to the default
                 if (displayName.trim().isEmpty())
                     preference.setSummary(R.string.pref_account_display_name_summary);
+                else
+                    // Show the trimmed display name
+                    preference.setSummary(displayName);
             }
         } else if (preference.equals(mPreferenceWidget)) {
             // Request update

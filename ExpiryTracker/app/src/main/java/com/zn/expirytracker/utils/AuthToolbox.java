@@ -184,6 +184,21 @@ public class AuthToolbox {
     }
 
     /**
+     * Gets the email address of the currently logged in user. For security, we do not store
+     * e-mail addresses in Firebase RTD, or in Shared Preferences
+     *
+     * @return
+     * @throws FirebaseAuthNotLoggedInException
+     */
+    public static String getUserEmail() throws FirebaseAuthNotLoggedInException {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            throw new FirebaseAuthNotLoggedInException("get user email");
+        }
+        return user.getEmail();
+    }
+
+    /**
      * Link the recently signed-in user with the app, including the user's information and their
      * data.
      * <p>

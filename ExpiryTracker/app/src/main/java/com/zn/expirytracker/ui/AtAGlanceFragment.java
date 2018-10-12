@@ -462,6 +462,7 @@ public class AtAGlanceFragment extends Fragment
             // Only show the display name if user is signed in. User is signed in if the "sign out"
             // preference is visible (true)
             name = sp.getString(getString(R.string.pref_account_display_name_key), null);
+            if (name != null) name = name.trim();
         } else {
             name = null;
         }
