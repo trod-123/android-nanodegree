@@ -3,7 +3,7 @@
 
     <!-- region Activities and Fragments -->
 
-    <dimen name="bar_chart_height">80dp</dimen>
+    <dimen name="bar_chart_height">112dp</dimen>
 
     <!-- endregion -->
 

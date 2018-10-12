@@ -47,8 +47,8 @@
         <ImageView
             android:id="@+id/iv_food_list_empty_animal"
             style="@style/AppTheme.Icon"
-            android:layout_width="@dimen/empty_list_icon_size"
-            android:layout_height="@dimen/empty_list_icon_size"
+            android:layout_width="@dimen/list_empty_icon_size"
+            android:layout_height="@dimen/list_empty_icon_size"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_dog_black_24dp"
             tools:ignore="contentDescription" />

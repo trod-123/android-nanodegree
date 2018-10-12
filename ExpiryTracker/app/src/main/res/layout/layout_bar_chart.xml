@@ -9,8 +9,6 @@
         android:id="@+id/chart_at_a_glance"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bar_chart_height"
-        android:layout_marginBottom="@dimen/bar_chart_margin"
-        android:layout_marginTop="@dimen/bar_chart_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- region Activities and Fragments -->
+
     <dimen name="auth_fields_horizontal_margin">320dp</dimen>
 
-    <dimen name="detail_image_height">256dp</dimen>
-    <item name="detail_page_width" format="float" type="dimen">0.45</item>
+    <item name="list_margin_start_constraint" format="float" type="dimen">0.25</item>
+    <item name="list_margin_end_constraint" format="float" type="dimen">0.75</item>
+
     <dimen name="detail_horizontal_margin">32dp</dimen>
+    <item name="detail_page_width" format="float" type="dimen">0.45</item>
+    <dimen name="detail_image_height">256dp</dimen>
+
+    <dimen name="edit_fields_horizontal_margin">80dp</dimen>
+
+    <!-- endregion -->
+
 </resources>

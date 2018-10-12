@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="bar_chart_height">144dp</dimen>
+
+    <!-- region Activities and Fragments -->
+
+    <dimen name="bar_chart_height">96dp</dimen>
+
+    <!-- endregion -->
+
 </resources>

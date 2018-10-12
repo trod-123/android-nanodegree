@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/iv_detail_pager_empty"
-        android:layout_width="@dimen/empty_list_icon_size"
-        android:layout_height="@dimen/empty_list_icon_size"
+        android:layout_width="@dimen/list_empty_icon_size"
+        android:layout_height="@dimen/list_item_icon_size"
         android:src="@drawable/ic_image_off_black_24dp"
         android:tint="@android:color/white"
         android:layout_gravity="center"

@@ -49,8 +49,8 @@
         <!-- Content description set in Java -->
         <ImageView
             android:id="@+id/iv_widget"
-            android:layout_width="@dimen/list_item_image_size_widget"
-            android:layout_height="@dimen/list_item_image_size_widget"
+            android:layout_width="@dimen/widget_list_item_image_size"
+            android:layout_height="@dimen/widget_list_item_image_size"
             android:scaleType="centerCrop"
             tools:ignore="contentDescription"
             tools:src="@color/colorPrimary" />

@@ -279,24 +279,32 @@ public class FoodListFragment extends Fragment
      *
      * @param withCutOffs {@code true} to adjust divider margins to match item parent margins
      */
-    private void setRecyclerViewDividers(boolean withCutOffs) {
-        RecyclerView.ViewHolder vh = mRvFoodList.findViewHolderForAdapterPosition(0);
-        DividerItemDecoration decor = new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL);
-        if (withCutOffs && vh != null) {
-            int marginSize =
-                    vh.itemView.findViewById(R.id.guideline_list_start).getLeft(); // should be the same for marginEnd
-            int[] attrs = new int[]{android.R.attr.listDivider};
-            TypedArray a = mHostActivity.obtainStyledAttributes(attrs);
-            Drawable divider = a.getDrawable(0);
-            InsetDrawable insetDivider = new InsetDrawable(divider, marginSize, 0, marginSize, 0);
-            a.recycle();
-            decor.setDrawable(insetDivider);
+    private void setRecyclerViewDividers(final boolean withCutOffs) {
+        // Set a delay to give adapter time to fill the views. vh will be null right after adapter
+        // data is updated
+        // https://stackoverflow.com/questions/32836844/android-recyclerview-findviewholderforadapterposition-returns-null
+        mRvFoodList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                RecyclerView.ViewHolder vh = mRvFoodList.findViewHolderForAdapterPosition(0);
+                DividerItemDecoration decor = new DividerItemDecoration(mHostActivity, DividerItemDecoration.VERTICAL);
+                if (withCutOffs && vh != null) {
+                    int marginSize =
+                            vh.itemView.findViewById(R.id.guideline_list_start).getLeft(); // should be the same for marginEnd
+                    int[] attrs = new int[]{android.R.attr.listDivider};
+                    TypedArray a = mHostActivity.obtainStyledAttributes(attrs);
+                    Drawable divider = a.getDrawable(0);
+                    InsetDrawable insetDivider = new InsetDrawable(divider, marginSize, 0, marginSize, 0);
+                    a.recycle();
+                    decor.setDrawable(insetDivider);
 
-            // mark if successful only to prevent adding decor again when list updates
-            mDividersAdjusted = true;
-        }
-        mRvFoodList.removeItemDecoration(mLastDecor); // ensure only one item decoration is added
-        mRvFoodList.addItemDecoration(mLastDecor = decor);
+                    // mark if successful only to prevent adding decor again when list updates
+                    mDividersAdjusted = true;
+                }
+                mRvFoodList.removeItemDecoration(mLastDecor); // ensure only one item decoration is added
+                mRvFoodList.addItemDecoration(mLastDecor = decor);
+            }
+        }, 100); // some arbitrary length
     }
 
     private void showEmptyView(boolean show) {

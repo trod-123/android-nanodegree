@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="food_list_margin_start_constraint" format="float" type="dimen">0.1</item>
-    <item name="food_list_margin_end_constraint" format="float" type="dimen">0.9</item>
 
-    <dimen name="detail_image_height">128dp</dimen>
-    <item name="detail_page_width" format="float" type="dimen">0.9</item>
+    <!-- region Activities and Fragments -->
+
+    <dimen name="bar_chart_height">80dp</dimen>
+
+    <item name="list_margin_start_constraint" format="float" type="dimen">0.1</item>
+    <item name="list_margin_end_constraint" format="float" type="dimen">0.9</item>
+
     <dimen name="detail_horizontal_margin">96dp</dimen>
+    <item name="detail_page_width" format="float" type="dimen">0.9</item>
+    <dimen name="detail_image_height">128dp</dimen>
 
     <item name="capture_overlay_width_multiplier" format="float" type="dimen">0.55</item>
+
+    <!-- endregion -->
+
 </resources>

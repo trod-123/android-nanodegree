@@ -1,81 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- region Activities and Fragments -->
+
+    <dimen name="auth_fields_horizontal_margin">32dp</dimen>
+    <dimen name="auth_fields_vertical_margin">4dp</dimen>
+    <dimen name="auth_app_logo_size">80dp</dimen>
+
+    <dimen name="at_a_glance_greeting_size">22sp</dimen>
+    <dimen name="at_a_glance_summary_size">16sp</dimen>
+    <dimen name="at_a_glance_list_header_size">16sp</dimen>
+
+    <dimen name="bar_chart_horizontal_margin">16dp</dimen>
+    <dimen name="bar_chart_height">144dp</dimen>
+    <dimen name="bar_chart_header_foods_size">20sp</dimen>
+    <dimen name="bar_chart_header_date_size">14sp</dimen>
+    <dimen name="bar_chart_fab_date_range_size">12sp</dimen>
+
+    <item name="list_margin_start_constraint" format="float" type="dimen">0.0</item>
+    <item name="list_margin_end_constraint" format="float" type="dimen">1.0</item>
+    <dimen name="list_item_padding_horizontal">16dp</dimen>
+    <dimen name="list_item_padding_vertical">8dp</dimen>
+    <dimen name="list_item_height">80dp</dimen>
+    <dimen name="list_item_image_size">80dp</dimen>
+    <dimen name="list_item_name_padding">16dp</dimen>
+    <dimen name="list_item_divider_height">1dp</dimen>
+    <dimen name="list_item_image_broken_size">48dp</dimen>
+    <dimen name="list_item_name_size">18sp</dimen>
+    <dimen name="list_item_icon_size">96dp</dimen>
+    <dimen name="list_item_date_size">14sp</dimen>
+    <dimen name="list_empty_icon_size">96dp</dimen>
+
+    <dimen name="detail_horizontal_margin">16dp</dimen>
+    <dimen name="detail_vertical_margin">16dp</dimen>
+    <dimen name="detail_pager_page_margin">8dp</dimen>
+    <item name="detail_page_width" format="float" type="dimen">0.98</item>
+    <dimen name="detail_image_height">200dp</dimen>
+    <dimen name="detail_add_image_icon_size">192dp</dimen>
+    <dimen name="detail_add_image_icon_padding">48dp</dimen>
+    <dimen name="detail_food_name_size">24sp</dimen>
+    <dimen name="detail_calendar_size">48dp</dimen>
+
+    <dimen name="edit_fields_horizontal_margin">0dp</dimen>
+
+    <item name="capture_overlay_width_multiplier" format="float" type="dimen">0.85</item>
+
+    <!-- endregion -->
+
+    <!-- region UI widgets -->
+
+    <dimen name="space_margin">8dp</dimen>
+    <dimen name="border_width">1dp</dimen>
+    <dimen name="default_app_bar_elevation">4dp</dimen>
+
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="fab_size">56dp</dimen>
     <dimen name="fab_elevation_rest">6dp</dimen>
     <dimen name="fab_elevation_pressed">12dp</dimen>
     <dimen name="fab_extended_corner_radius">24dp</dimen>
-    <dimen name="number_circle_outline_width">4dp</dimen>
-    <dimen name="number_circle_size">60dp</dimen>
-    <dimen name="number_circle_label_padding">6dp</dimen>
-    <dimen name="list_item_padding_horizontal">16dp</dimen>
-    <dimen name="list_item_height">80dp</dimen>
-    <dimen name="list_item_image_size">80dp</dimen>
-    <dimen name="list_item_name_padding">16dp</dimen>
-    <dimen name="space_margin">8dp</dimen>
-    <dimen name="bar_chart_height">200dp</dimen>
-    <dimen name="bar_chart_margin">16dp</dimen>
-    <dimen name="detail_image_height">200dp</dimen>
-    <dimen name="number_circle_size_detail">60dp</dimen>
 
-    <dimen name="pager_page_margin">8dp</dimen>
-    <dimen name="detail_add_image_icon_size">192dp</dimen>
-    <dimen name="detail_add_image_icon_padding">48dp</dimen>
-    <dimen name="list_item_padding_vertical">8dp</dimen>
+    <dimen name="btn_margin_small">4dp</dimen>
+    <dimen name="btn_margin_medium">8dp</dimen>
+    <dimen name="btn_margin_large">12dp</dimen>
+
+    <dimen name="number_circle_outline_width">4dp</dimen>
+    <dimen name="number_circle_size">48dp</dimen>
+    <dimen name="number_circle_label_padding">6dp</dimen>
+    <dimen name="number_circle_size_detail">48dp</dimen>
+
     <dimen name="icon_padding">8dp</dimen>
     <dimen name="icon_padding_narrow">4dp</dimen>
-    <dimen name="border_width">1dp</dimen>
-
     <dimen name="icon_clickable_size">40dp</dimen>
     <dimen name="icon_clickable_padding">8dp</dimen>
+
+    <dimen name="text_input_edit_text_size">18sp</dimen>
+    <dimen name="text_input_edit_text_numeric_size">24sp</dimen>
+
+    <!-- endregion -->
+
+    <!-- region Dialogs and home screen widgets -->
+
     <dimen name="dialog_horizontal_margin">24dp</dimen>
     <dimen name="dialog_mid_margin">8dp</dimen>
     <dimen name="dialog_top_margin">24dp</dimen>
     <dimen name="dialog_button_margin">8dp</dimen>
 
-    <!--
-Refer to App Widget Documentation for margin information
-http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
-    -->
     <dimen name="widget_margin">8dp</dimen>
-    <dimen name="default_app_bar_elevation">4dp</dimen>
-    <dimen name="list_item_image_size_widget">48dp</dimen>
+    <dimen name="widget_list_item_image_size">48dp</dimen>
     <dimen name="widget_min_height">180dp</dimen>
     <dimen name="widget_min_width">250dp</dimen>
-    <dimen name="divider_list_item_height">1dp</dimen>
     <dimen name="widget_actionBarSize">56dp</dimen>
-    <dimen name="empty_list_icon_size">96dp</dimen>
-    <dimen name="list_image_broken_size">48dp</dimen>
-    <dimen name="bottom_root_padding">112dp</dimen>
+
+    <dimen name="bottom_root_padding">48dp</dimen>
     <dimen name="bottom_sheet_item_height">56dp</dimen>
     <dimen name="bottom_sheet_item_margins">16dp</dimen>
-    <dimen name="sign_up_app_logo_size">96dp</dimen>
-    <dimen name="detail_calendar_size">48dp</dimen>
-    <dimen name="btn_margin_small">4dp</dimen>
-    <dimen name="btn_margin_medium">8dp</dimen>
-    <dimen name="btn_margin_large">12dp</dimen>
-    <dimen name="sign_in_app_logo_size">80dp</dimen>
-    <dimen name="detail_food_name_size">24sp</dimen>
-    <dimen name="list_item_name_size">18sp</dimen>
-    <dimen name="at_a_glance_greeting_size">28sp</dimen>
-    <dimen name="at_a_glance_summary_size">24sp</dimen>
-    <dimen name="at_a_glance_list_header_size">24sp</dimen>
-    <dimen name="chart_header_foods_size">24sp</dimen>
-    <dimen name="chart_header_date_size">14sp</dimen>
-    <dimen name="list_item_date_size">14sp</dimen>
-    <dimen name="text_input_edit_text_size">18sp</dimen>
-    <dimen name="text_input_edit_text_numeric_size">24sp</dimen>
-    <dimen name="fab_chart_date_range_size">14sp</dimen>
 
-    <dimen name="detail_horizontal_margin">16dp</dimen>
-    <dimen name="detail_vertical_margin">16dp</dimen>
-    <dimen name="auth_fields_horizontal_margin">32dp</dimen>
-    <dimen name="edit_fields_horizontal_margin">0dp</dimen>
+    <!-- endregion -->
 
-    <item name="food_list_margin_start_constraint" format="float" type="dimen">0.0</item>
-    <item name="food_list_margin_end_constraint" format="float" type="dimen">1.0</item>
-
-    <item name="detail_page_width" format="float" type="dimen">0.98</item>
-
-    <item name="capture_overlay_width_multiplier" format="float" type="dimen">0.85</item>
 </resources>

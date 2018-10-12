@@ -83,8 +83,8 @@
         <ImageView
             android:id="@+id/iv_list_item_image_broken"
             style="@style/AppTheme.Icon"
-            android:layout_width="@dimen/list_image_broken_size"
-            android:layout_height="@dimen/list_image_broken_size"
+            android:layout_width="@dimen/list_item_image_broken_size"
+            android:layout_height="@dimen/list_item_image_broken_size"
             android:layout_gravity="center"
             android:alpha="0"
             android:background="@color/imageBackground_none"

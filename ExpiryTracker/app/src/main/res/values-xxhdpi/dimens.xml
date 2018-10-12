@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- region Activities and Fragments -->
+
+    <dimen name="auth_app_logo_size">128dp</dimen>
+    <dimen name="auth_app_name_size">32sp</dimen>
+
+    <dimen name="at_a_glance_greeting_size">26sp</dimen>
+    <dimen name="at_a_glance_summary_size">20sp</dimen>
+    <dimen name="at_a_glance_list_header_size">20sp</dimen>
+
+    <dimen name="bar_chart_header_foods_size">20sp</dimen>
+    <dimen name="bar_chart_fab_date_range_size">12sp</dimen>
+
+    <dimen name="list_item_image_size">48dp</dimen>
+    <dimen name="list_item_name_size">14sp</dimen>
+    <dimen name="list_item_date_size">12sp</dimen>
+
+    <dimen name="detail_food_name_size">20sp</dimen>
+
+    <!-- endregion -->
+
+    <!-- region UI widgets -->
+
     <dimen name="btn_margin_small">8dp</dimen>
     <dimen name="btn_margin_medium">16dp</dimen>
     <dimen name="btn_margin_large">24dp</dimen>
-    <dimen name="sign_in_app_logo_size">96dp</dimen>
-    <dimen name="sign_in_app_name_size">28sp</dimen>
+
+    <!-- endregion -->
+
 </resources>

@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- region Activities and Fragments -->
+
     <dimen name="auth_fields_horizontal_margin">160dp</dimen>
+    <dimen name="auth_app_logo_size">128dp</dimen> <!-- same as xxhdpi -->
+    <dimen name="auth_app_name_size">32sp</dimen> <!-- same as xxhdpi -->
+
+    <dimen name="bar_chart_height">256dp</dimen>
+
+    <item name="list_margin_start_constraint" format="float" type="dimen">0.1</item> <!-- same as land -->
+    <item name="list_margin_end_constraint" format="float" type="dimen">0.9</item> <!-- same as land -->
+
+    <dimen name="detail_horizontal_margin">48dp</dimen>
+    <item name="detail_page_width" format="float" type="dimen">0.9</item>
+
     <dimen name="edit_fields_horizontal_margin">80dp</dimen>
 
-    <item name="detail_page_width" format="float" type="dimen">0.9</item>
-    <dimen name="detail_horizontal_margin">48dp</dimen>
+    <!-- endregion -->
 
 </resources>

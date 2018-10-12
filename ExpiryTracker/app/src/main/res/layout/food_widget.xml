@@ -79,8 +79,8 @@
             <ImageView
                 android:id="@+id/iv_widget_empty_animal"
                 style="@style/AppTheme.Icon"
-                android:layout_width="@dimen/empty_list_icon_size"
-                android:layout_height="@dimen/empty_list_icon_size"
+                android:layout_width="@dimen/list_empty_icon_size"
+                android:layout_height="@dimen/list_empty_icon_size"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ic_dog_black_24dp"
                 tools:ignore="contentDescription"/>
@@ -92,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/divider_list_item"
-            android:dividerHeight="@dimen/divider_list_item_height"
+            android:dividerHeight="@dimen/list_item_divider_height"
             tools:listitem="@layout/item_widget" />
 
         <ProgressBar

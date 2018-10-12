@@ -144,7 +144,7 @@ public class DetailActivity extends AppCompatActivity {
 
         mPagerAdapter = new DetailPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setClipToPadding(false);
-        mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.pager_page_margin));
+        mViewPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.detail_pager_page_margin));
         mViewPager.setAdapter(mPagerAdapter);
 
         // Keep track of the user's current page
