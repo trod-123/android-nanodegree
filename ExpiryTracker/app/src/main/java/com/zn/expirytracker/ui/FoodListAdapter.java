@@ -165,7 +165,8 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));
             mNcvCountDays.mTvLabel.setText(mContext.getResources().getQuantityString(
                     R.plurals.food_days_label, daysUntilExpiry));
-            mNcvCountDays.updateContentDescription(R.string.expiry_msg_num_days);
+            mNcvCountDays.updateContentDescription(daysUntilExpiry >= 0 ?
+                    R.string.expiry_msg_num_days : R.string.expiry_msg_past_num_days);
 
             // Load image only if there is any
             @Nullable List<String> images = food.getImages();

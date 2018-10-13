@@ -99,8 +99,9 @@ public class NumberCircleView extends FrameLayout {
      */
     public void updateContentDescription(int stringResource) {
         try {
+            int value = Integer.parseInt(mTvValue.getText().toString()); // neutralize the negative
             setContentDescription(mContext.getString(stringResource,
-                    mTvValue.getText(), mTvLabel.getText()));
+                    Math.abs(value), mTvLabel.getText()));
         } catch (Exception e) {
             setContentDescription(null);
         }

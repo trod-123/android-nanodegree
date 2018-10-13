@@ -166,10 +166,28 @@
     <!-- 1: NUM DAYS, 2: DAYS LABEL -->
     <string name="expiry_msg_num_days">Expires in %1$s %2$s</string>
 
+    <string name="expiry_msg_past_yesterday">Expired yesterday</string>
+    <!-- 1: DATE -->
+    <string name="expiry_msg_past_ordinal">Expired on the %1$s</string>
+    <!-- 1: MONTH, 2: DAY -->
+    <string name="expiry_msg_past_month_day">Expired on %1$s %2$d</string>
+    <!-- 1: MONTH, 2: DAY, 3: YEAR -->
+    <string name="expiry_msg_past_month_day_year">Expired on %1$s %2$d, %3$d</string>
+    <!-- 1: DATE -->
+    <string name="expiry_msg_past_this">Expired this past %1$s</string>
+    <!-- 1: DATE -->
+    <string name="expiry_msg_past_last">Expired last %1$s</string>
+    <!-- 1: DATE -->
+    <string name="expiry_msg_past_generic">Expired %1$s</string>
+    <!-- 1: NUM DAYS, 2: DAYS LABEL -->
+    <string name="expiry_msg_past_num_days">Expired %1$s %2$s ago</string>
+
+    <string name="date_yesterday">Yesterday</string>
     <string name="date_today">Today</string>
     <string name="date_tomorrow">Tomorrow</string>
     <string name="date_today_or_tomorrow">Today or tomorrow</string>
     <string name="date_soon">Soon</string>
+    <string name="date_last_week">Last week</string>
     <string name="date_next_week">Next week</string>
     <string name="date_this_week">This week</string>
     <!-- 1: DAY OF WEEK -->

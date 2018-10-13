@@ -49,6 +49,7 @@ import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
 import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DateToolbox;
+import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -866,8 +867,9 @@ public class CaptureOverlayFragment extends Fragment
      * @param date
      */
     private void setExpiryDate(long date) {
-        mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
-                DateToolbox.getFormattedFullDateString(date)));
+        int res = date >= new DateTime().withTimeAtStartOfDay().getMillis() ?
+                R.string.expiry_msg_generic : R.string.expiry_msg_past_generic;
+        mTvExpiryDate.setText(getString(res, DateToolbox.getFormattedFullDateString(date)));
         mDateExpiry = date;
         mDateSet = true;
     }
@@ -889,7 +891,8 @@ public class CaptureOverlayFragment extends Fragment
                     }
                     DateTime date = DateToolbox.parseDateFromString(
                             spokenDateString, mHostActivity, mCurrentDateStartOfDay);
-                    if (DateToolbox.compareTwoDates(date.getMillis(), mCurrentDateStartOfDay)) {
+                    if (DebugFields.OVERRIDE_EXPIRY_DATE_RULES ||
+                            DateToolbox.compareTwoDates(date.getMillis(), mCurrentDateStartOfDay)) {
                         setExpiryDate(date.getMillis());
                     } else {
                         // reprompt

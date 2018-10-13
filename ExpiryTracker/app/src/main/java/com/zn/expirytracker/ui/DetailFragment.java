@@ -281,7 +281,8 @@ public class DetailFragment extends Fragment {
         mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));
         mNcvCountDays.mTvLabel.setText(mHostActivity.getResources().getQuantityString(
                 R.plurals.food_days_label, daysUntilExpiry));
-        mNcvCountDays.updateContentDescription(R.string.expiry_msg_num_days);
+        mNcvCountDays.updateContentDescription(daysUntilExpiry >= 0 ?
+                R.string.expiry_msg_num_days : R.string.expiry_msg_past_num_days);
         mNcvCountDays.setOutlineWidthAndColor(mHostActivity.getResources()
                         .getDimensionPixelSize(R.dimen.number_circle_outline_width),
                 ContextCompat.getColor(mHostActivity, DataToolbox.getAlertColorResource(

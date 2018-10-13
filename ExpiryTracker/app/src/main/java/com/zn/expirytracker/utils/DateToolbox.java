@@ -8,8 +8,6 @@ import com.zn.expirytracker.R;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Days;
-import org.joda.time.Months;
-import org.joda.time.Years;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -131,48 +129,85 @@ public class DateToolbox {
      * Example result: Expires soon on Tuesday
      *
      * @param context
-     * @param date1
-     * @param date2
+     * @param start
+     * @param end
      * @return
      */
     public static String getFormattedExpiryDateString(Context context,
-                                                      DateTime date1, DateTime date2) {
+                                                      DateTime start, DateTime end) {
 
-        int diffDays = getNumDaysBetweenDates(date1, date2);
-        int diffMonths = getNumMonthsBetweenDates(date1, date2);
-        int diffYears = getNumYearsBetweenDates(date1, date2);
+        int diffDays = getNumDaysBetweenDates(start, end);
+        int diffMonths = getNumMonthsBetweenDates(start, end);
+        int diffYears = getNumYearsBetweenDates(start, end);
 
         Resources res = context.getResources();
 
         if (diffDays == 0) {
-            // Today (expect Today!)
+            // Today (expect Expires today!)
             return res.getString(R.string.expiry_msg_today);
-        } else if (diffDays == 1) {
-            // Tomorrow (expect Expires tomorrow!)
-            return res.getString(R.string.expiry_msg_tomorrow);
-        } else if (diffDays >= 2 && diffDays < 7) {
-            // 2-6 days after today Expires soon on DOW)
-            return res.getString(R.string.expiry_msg_soon, date2.dayOfWeek().getAsText());
-        } else if (diffDays >= 7 && diffDays < 14 && diffMonths == 0 && diffYears == 0) {
-            // 7-13 days after today, and within the current month and year
-            // (expect Expires next DOW)
-            return res.getString(R.string.expiry_msg_next_dow, date2.dayOfWeek().getAsText());
-        } else if (diffDays >= 14 && diffMonths == 0 && diffYears == 0) {
-            // At least 14 days after today, and within the current month and year
-            // (expect Expires on the ORDINAL)
-            return res.getString(R.string.expiry_msg_ordinal,
-                    convertIntToOrdinal(date2.dayOfMonth().get()));
-        } else if (diffDays >= 14 && diffMonths > 0 && diffYears == 0) {
-            // 14 days after today, but in the next month, but current year
-            // (expect Expires on MONTH DAY)
-            return res.getString(R.string.expiry_msg_month_day,
-                    date2.monthOfYear().getAsShortText(), date2.dayOfMonth().get());
-        } else {
-            // 14 days after today, but in the next month and next year
-            // (expect Expires on MONTH DAY YEAR)
-            return res.getString(R.string.expiry_msg_month_day_year,
-                    date2.monthOfYear().getAsShortText(), date2.dayOfMonth().get(),
-                    date2.year().get());
+        }
+
+        // expires in the future
+        if (diffDays > 0) {
+            if (diffDays == 1) {
+                // Tomorrow (expect Expires tomorrow!)
+                return res.getString(R.string.expiry_msg_tomorrow);
+            } else if (diffDays < 7) {
+                // 2-6 days after today
+                // (Expect Expires soon on DOW)
+                return res.getString(R.string.expiry_msg_soon, end.dayOfWeek().getAsText());
+            } else if (diffDays < 14 && diffMonths == 0 && diffYears == 0) {
+                // 7-13 days after today, and within the current month and year
+                // (expect Expires next DOW)
+                return res.getString(R.string.expiry_msg_next_dow, end.dayOfWeek().getAsText());
+            } else if (diffMonths == 0 && diffYears == 0) {
+                // At least 14 days after today, and within the current month and year
+                // (expect Expires on the ORDINAL)
+                return res.getString(R.string.expiry_msg_ordinal,
+                        convertIntToOrdinal(end.dayOfMonth().get()));
+            } else if (diffMonths > 0 && diffYears == 0) {
+                // 14 days after today, but in the next month, but current year
+                // (expect Expires on MONTH DAY)
+                return res.getString(R.string.expiry_msg_month_day,
+                        end.monthOfYear().getAsShortText(), end.dayOfMonth().get());
+            } else {
+                // 14 days after today, but in the next month and next year
+                // (expect Expires on MONTH DAY YEAR)
+                return res.getString(R.string.expiry_msg_month_day_year,
+                        end.monthOfYear().getAsShortText(), end.dayOfMonth().get(),
+                        end.year().get());
+            }
+        }
+
+        // already expired
+        else {
+            if (diffDays == -1) {
+                // Yesterday (expect Expired yesterday)
+                return res.getString(R.string.expiry_msg_past_yesterday);
+            } else if (diffDays > -7) {
+                // 2-6 days before today (Expired on DOW)
+                return res.getString(R.string.expiry_msg_past_this, end.dayOfWeek().getAsText());
+            } else if (diffDays > -14 && diffMonths == 0 && diffYears == 0) {
+                // 7-13 days before today, and within the current month and year
+                // (expect Expired last DOW)
+                return res.getString(R.string.expiry_msg_past_last, end.dayOfWeek().getAsText());
+            } else if (diffMonths == 0 && diffYears == 0) {
+                // At least 14 days before today, and within the current month and year
+                // (expect Expired on the ORDINAL)
+                return res.getString(R.string.expiry_msg_past_ordinal,
+                        convertIntToOrdinal(end.dayOfMonth().get()));
+            } else if (diffMonths < 0 && diffYears == 0) {
+                // 14 days before today, but in the previous month, but current year
+                // (expect Expired on MONTH DAY)
+                return res.getString(R.string.expiry_msg_past_month_day,
+                        end.monthOfYear().getAsShortText(), end.dayOfMonth().get());
+            } else {
+                // 14 days before today, but in the next month and next year
+                // (expect Expired on MONTH DAY YEAR)
+                return res.getString(R.string.expiry_msg_past_month_day_year,
+                        end.monthOfYear().getAsShortText(), end.dayOfMonth().get(),
+                        end.year().get());
+            }
         }
     }
 
@@ -249,39 +284,36 @@ public class DateToolbox {
     }
 
     /**
-     * Helper for getting the number of days between two dates, after neutralizing the time
-     * component
+     * Helper for getting the number of days between two dates
      *
-     * @param date1
-     * @param date2
+     * @param start
+     * @param end
      * @return
      */
-    private static int getNumDaysBetweenDates(DateTime date1, DateTime date2) {
-        return Days.daysBetween(date1, date2).getDays();
+    private static int getNumDaysBetweenDates(DateTime start, DateTime end) {
+        return Days.daysBetween(start, end).getDays();
     }
 
     /**
-     * Helper for getting the number of months between two dates, after neutralizing the time
-     * component
+     * Helper for getting the number of months between two dates
      *
-     * @param date1
-     * @param date2
+     * @param start
+     * @param end
      * @return
      */
-    private static int getNumMonthsBetweenDates(DateTime date1, DateTime date2) {
-        return Months.monthsBetween(date1, date2).getMonths();
+    private static int getNumMonthsBetweenDates(DateTime start, DateTime end) {
+        return end.getMonthOfYear() - start.getMonthOfYear();
     }
 
     /**
-     * Helper for getting the number of years between two dates, after neutralizing the time
-     * component
+     * Helper for getting the number of years between two dates
      *
-     * @param date1
-     * @param date2
+     * @param start
+     * @param end
      * @return
      */
-    private static int getNumYearsBetweenDates(DateTime date1, DateTime date2) {
-        return Years.yearsBetween(date1, date2).getYears();
+    private static int getNumYearsBetweenDates(DateTime start, DateTime end) {
+        return end.getYear() - start.getYear();
     }
 
     /**
@@ -331,6 +363,8 @@ public class DateToolbox {
 
     /**
      * Gets the date in millis after the number of {@code plusDays} provided
+     * <p>
+     * TODO: Currently supports only English.
      *
      * @param baseDateStartOfDay
      * @param plusDays
@@ -421,7 +455,6 @@ public class DateToolbox {
         // (2) Try converting date from date format
 
         // https://stackoverflow.com/questions/9945072/convert-string-to-date-in-java
-        // TODO: Get more formats...
         SimpleDateFormat[] dateFormats = new SimpleDateFormat[4];
         dateFormats[0] = new SimpleDateFormat("MMMM dd yyyy");
         dateFormats[1] = new SimpleDateFormat("MMMM dd");

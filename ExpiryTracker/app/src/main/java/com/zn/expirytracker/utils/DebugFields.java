@@ -35,4 +35,13 @@ public class DebugFields {
      * See {@link android.os.StrictMode}
      */
     public static final boolean ENABLE_STRICT_MODE = false;
+
+    /**
+     * For debugging. {@code true} allows
+     * <ul>
+     * <li>Setting expiry date before current date</li>
+     * <li>Setting good thru date before expiry date</li>
+     * </ul>
+     */
+    public static final boolean OVERRIDE_EXPIRY_DATE_RULES = false;
 }

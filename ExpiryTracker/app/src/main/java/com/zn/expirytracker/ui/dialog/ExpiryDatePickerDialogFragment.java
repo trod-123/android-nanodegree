@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.DateToolbox;
+import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -161,16 +162,20 @@ public class ExpiryDatePickerDialogFragment extends DialogFragment
                 0, 0);
         long selectedDateInMillis = selectedDate.getMillis();
         long currentTimeInMillis = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
-        if (mDateType == DateType.GOOD_THRU && selectedDateInMillis < mExpiryDate) {
-            // Test condition 2 first
-            Toolbox.showToast(getContext(), getString(R.string.edit_error_date_good_thru));
-            reshowDatePickerDialog();
-        } else if (selectedDateInMillis < currentTimeInMillis) {
-            // Condition 1
-            Toolbox.showToast(getContext(), getString(R.string.edit_error_date_expiry));
-            reshowDatePickerDialog();
+        if (!DebugFields.OVERRIDE_EXPIRY_DATE_RULES) {
+            if (mDateType == DateType.GOOD_THRU && selectedDateInMillis < mExpiryDate) {
+                // Test condition 2 first
+                Toolbox.showToast(getContext(), getString(R.string.edit_error_date_good_thru));
+                reshowDatePickerDialog();
+            } else if (selectedDateInMillis < currentTimeInMillis) {
+                // Condition 1
+                Toolbox.showToast(getContext(), getString(R.string.edit_error_date_expiry));
+                reshowDatePickerDialog();
+            } else {
+                // Both conditions passed
+                mCallback.onDateSelected(mDateType, selectedDate);
+            }
         } else {
-            // Both conditions passed
             mCallback.onDateSelected(mDateType, selectedDate);
         }
     }
