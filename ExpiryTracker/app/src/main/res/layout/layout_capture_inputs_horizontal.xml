@@ -9,17 +9,28 @@
         android:id="@+id/tv_capture_instruction"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center_horizontal"
         android:text="@string/capture_mode_barcode_instruction"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout_capture_type"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/pb_capture_jitter"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_capture_instruction"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/linearLayout_capture_type"
@@ -35,10 +46,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:clickable="true"
+            android:contentDescription="@string/capture_mode_barcode"
             android:focusable="true"
             android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables"
-            android:contentDescription="@string/capture_mode_barcode">
+            tools:ignore="UseCompoundDrawables">
 
             <!-- Content description set by parent -->
             <ImageView
@@ -46,9 +57,9 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
+                android:importantForAccessibility="no"
                 android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_barcode_scan_black_24dp"
-                android:importantForAccessibility="no"/>
+                app:srcCompat="@drawable/ic_barcode_scan_black_24dp" />
 
             <!-- Content description set by parent -->
             <TextView
@@ -56,9 +67,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:importantForAccessibility="no"
                 android:text="@string/capture_mode_barcode"
-                android:textColor="@android:color/white"
-                android:importantForAccessibility="no"/>
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 
@@ -96,10 +107,10 @@
             android:layout_weight="1"
             android:alpha="0.3"
             android:clickable="true"
+            android:contentDescription="@string/capture_mode_imgonly"
             android:focusable="true"
             android:orientation="vertical"
-            tools:ignore="useCompoundDrawables"
-            android:contentDescription="@string/capture_mode_imgonly">
+            tools:ignore="useCompoundDrawables">
 
             <!-- Content description set by parent -->
             <ImageView
@@ -107,9 +118,9 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_photo_camera_black_24dp"
+                android:importantForAccessibility="no"
                 android:tint="@android:color/white"
-                android:importantForAccessibility="no"/>
+                app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
 
             <!-- Content description set by parent -->
             <TextView
@@ -117,9 +128,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:importantForAccessibility="no"
                 android:text="@string/capture_mode_imgonly"
-                android:textColor="@android:color/white"
-                android:importantForAccessibility="no"/>
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 

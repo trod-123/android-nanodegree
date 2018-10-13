@@ -7,6 +7,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -17,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
@@ -67,6 +70,8 @@ public class CaptureActivity extends AppCompatActivity implements
     View mBtnCaptureImgonly;
     @BindView(R.id.tv_capture_instruction)
     TextView mTvInstruction;
+    @BindView(R.id.pb_capture_jitter)
+    ProgressBar mPbJitter;
     @BindView(R.id.container_overlay_fragment)
     View mFragmentRoot;
     @BindView(R.id.firePreview)
@@ -84,7 +89,7 @@ public class CaptureActivity extends AppCompatActivity implements
     private InputType mCurrentInputType = DEFAULT_INPUT_TYPE;
     private boolean mCameraActivated;
 
-    private Thread mJitterThread;
+    private Handler mJitterHandler = new Handler(Looper.getMainLooper());
 
     private boolean mScanJitter = false; // prevent consecutive scans from happening too close with each other
     private boolean mRootEnabled = true;
@@ -237,8 +242,15 @@ public class CaptureActivity extends AppCompatActivity implements
                 Toolbox.vibrate(this);
             }
             loadResultOverlay(barcode.getDisplayValue(), barcodeBitmap);
-            mScanJitter = true;
+            setJitter(true);
         }
+    }
+
+    private void setJitter(boolean activate) {
+        mScanJitter = activate;
+        mTvInstruction.animate().alpha(activate ?
+                Constants.ALPHA_DEACTIVATED : Constants.ALPHA_ACTIVATED);
+        Toolbox.showView(mPbJitter, activate, true);
     }
 
     /**
@@ -265,15 +277,15 @@ public class CaptureActivity extends AppCompatActivity implements
                 sb.append(", ");
             }
             Toolbox.showToast(this, sb.toString().substring(0, sb.length() - 2));
-            mScanJitter = true;
-        } else if (mCurrentInputType == InputType.IMG_ONLY) {
+            setJitter(true);
+        } else if (!mScanJitter && mCurrentInputType == InputType.IMG_ONLY) {
             UserMetrics.incrementImgOnlyInputCount();
             if (mVibrate) {
                 Toolbox.vibrate(this);
             }
             // TODO: Get IMG_ONLY its own method, it will not be called from here
             loadResultOverlay(bitmap);
-            mScanJitter = true;
+            setJitter(true);
         }
     }
 
@@ -355,25 +367,14 @@ public class CaptureActivity extends AppCompatActivity implements
      * {@code false}, image scans can begin again
      */
     private void startJitterCountdown() {
-        // Make sure the thread is killed before running it again
-        // https://stackoverflow.com/questions/6186537/how-do-i-kill-an-android-thread-completely
-        if (mJitterThread != null) {
-            mJitterThread.interrupt();
-            mJitterThread = null;
-        }
-        mJitterThread = new Thread(new Runnable() {
+        Runnable delay = new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(SCAN_JITTER_SECS);
-                } catch (InterruptedException e) {
-                    Timber.e(e);
-                    return;
-                }
-                mScanJitter = false;
+                setJitter(false);
             }
-        });
-        mJitterThread.start();
+        };
+        mJitterHandler.removeCallbacks(delay);
+        mJitterHandler.postDelayed(delay, SCAN_JITTER_SECS);
     }
 
     /**

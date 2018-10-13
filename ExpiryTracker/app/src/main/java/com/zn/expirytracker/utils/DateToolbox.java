@@ -476,7 +476,7 @@ public class DateToolbox {
                 return new DateTime(date.getTime());
             } catch (ParseException e) {
                 if (++count == dateFormats.length) {
-                    Timber.e(e, "DateToolbox/The date string did not fall in any of the date formats provided");
+                    Timber.d(e, "DateToolbox/The date string did not fall in any of the date formats provided");
                     break;
                 }
             }

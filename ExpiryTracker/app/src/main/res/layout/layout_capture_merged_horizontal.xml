@@ -17,9 +17,9 @@
             android:id="@+id/fireFaceOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true" />
 
     </com.zn.expirytracker.ui.capture.CameraSourcePreview>
 
@@ -47,18 +47,37 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Split from landscape capture buttons layout -->
-        <TextView
-            android:id="@+id/tv_capture_instruction"
+        <FrameLayout
+            android:id="@+id/layout_capture_instruction"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:background="@drawable/scrim_gradient_upwards_dark"
-            android:gravity="center_horizontal|bottom"
-            android:paddingBottom="8dp"
-            android:paddingTop="32dp"
-            android:text="@string/capture_mode_barcode_instruction"
-            android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/layout_capture_root"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tv_capture_instruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|bottom"
+                android:paddingBottom="16dp"
+                android:text="@string/capture_mode_barcode_instruction"
+                android:textColor="@android:color/white" />
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/pb_capture_jitter"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/layout_capture_instruction"
+            app:layout_constraintEnd_toEndOf="@+id/layout_capture_instruction"
             app:layout_constraintStart_toStartOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
