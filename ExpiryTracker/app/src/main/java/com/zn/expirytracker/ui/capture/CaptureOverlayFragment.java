@@ -48,17 +48,14 @@ import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
 import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
 import com.zn.expirytracker.utils.Constants;
-import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -267,7 +264,7 @@ public class CaptureOverlayFragment extends Fragment
 
         mHostActivity = getActivity();
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
-        mCurrentDateStartOfDay = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+        mCurrentDateStartOfDay = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
         mVoicePrompt = sp.getBoolean(getString(R.string.pref_capture_voice_input_key),
@@ -456,7 +453,7 @@ public class CaptureOverlayFragment extends Fragment
             mTvDescription.setText(description);
         }
         mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
-                DataToolbox.getFormattedFullDateString(dateExpiry)));
+                DateToolbox.getFormattedFullDateString(dateExpiry)));
         if (mBarcodeBitmap != null || mBarcodeBitmapPath != null) {
             // TODO: Clean up code here
             if (mImageUris != null && mImageUris.size() > 0) {
@@ -857,38 +854,6 @@ public class CaptureOverlayFragment extends Fragment
         dialog.show(getFragmentManager(), ExpiryDatePickerDialogFragment.class.getSimpleName());
     }
 
-    private DateTime parseDateFromVoiceInput(String dateString) {
-        // https://stackoverflow.com/questions/9945072/convert-string-to-date-in-java
-        // TODO: Get more formats...
-        SimpleDateFormat[] dateFormats = new SimpleDateFormat[4];
-        dateFormats[0] = new SimpleDateFormat("MMMM dd yyyy");
-        dateFormats[1] = new SimpleDateFormat("MMMM dd");
-        dateFormats[2] = new SimpleDateFormat("MMM dd");
-        dateFormats[3] = new SimpleDateFormat("MMMM dd");
-
-        Date date;
-        // https://stackoverflow.com/questions/13239972/how-do-you-implement-a-re-try-catch
-        int count = 0;
-        while (true) {
-            try {
-                // https://stackoverflow.com/questions/28514346/parsing-a-date-s-ordinal-indicator-st-nd-rd-th-in-a-date-time-string/28514476
-                date = dateFormats[count].parse(dateString
-                        .replaceAll("(?<=\\d)(st|nd|rd|th)", ""));
-                if (count != 0)
-                    date.setYear((new Date()).getYear()); // set current year if not provided
-                return new DateTime(date.getTime());
-            } catch (ParseException e) {
-                if (++count == dateFormats.length) {
-                    Timber.e(e, "There was an error parsing the date");
-                    break;
-                }
-            }
-        }
-        // Return current date if error
-        Toolbox.showToast(mHostActivity, getString(R.string.message_error_parse_date));
-        return new DateTime(mCurrentDateStartOfDay);
-    }
-
     @Override
     public void onDateSelected(ExpiryDatePickerDialogFragment.DateType dateType, DateTime selectedDate) {
         setExpiryDate(selectedDate.getMillis());
@@ -902,7 +867,7 @@ public class CaptureOverlayFragment extends Fragment
      */
     private void setExpiryDate(long date) {
         mTvExpiryDate.setText(getString(R.string.expiry_msg_generic,
-                DataToolbox.getFormattedFullDateString(date)));
+                DateToolbox.getFormattedFullDateString(date)));
         mDateExpiry = date;
         mDateSet = true;
     }
@@ -917,13 +882,14 @@ public class CaptureOverlayFragment extends Fragment
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result =
                             data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String dateString = result.get(0);
-                    if (isCancelled(dateString)) {
+                    String spokenDateString = result.get(0);
+                    if (isCancelled(spokenDateString)) {
                         mHostActivity.onBackPressed();
                         return;
                     }
-                    DateTime date = parseDateFromVoiceInput(dateString);
-                    if (DataToolbox.compareTwoDates(date.getMillis(), mCurrentDateStartOfDay)) {
+                    DateTime date = DateToolbox.parseDateFromString(
+                            spokenDateString, mHostActivity, mCurrentDateStartOfDay);
+                    if (DateToolbox.compareTwoDates(date.getMillis(), mCurrentDateStartOfDay)) {
                         setExpiryDate(date.getMillis());
                     } else {
                         // reprompt

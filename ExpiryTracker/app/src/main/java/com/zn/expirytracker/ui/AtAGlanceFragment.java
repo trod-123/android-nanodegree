@@ -41,6 +41,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -122,7 +123,7 @@ public class AtAGlanceFragment extends Fragment
 
         mHostActivity = getActivity();
         mCurrentDateTime = System.currentTimeMillis();
-        mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(mCurrentDateTime);
+        mCurrentDateTimeStartOfDay = DateToolbox.getDateTimeStartOfDay(mCurrentDateTime);
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
 
         if (savedInstanceState != null) {
@@ -332,9 +333,9 @@ public class AtAGlanceFragment extends Fragment
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 if (mRtlBarchartLabels != null) {
-                    return DataToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, mRtlBarchartLabels[(int) value]);
+                    return DateToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, mRtlBarchartLabels[(int) value]);
                 } else {
-                    return DataToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, (int) value);
+                    return DateToolbox.getFormattedShortDateString(mCurrentDateTimeStartOfDay, (int) value);
                 }
             }
         });
@@ -429,16 +430,16 @@ public class AtAGlanceFragment extends Fragment
 
     private void updateChartHeader(int daysFromCurrent, int foodsCount) {
         mTvChartHeaderDate.setText(
-                DataToolbox.getFormattedLessShortDateString(mCurrentDateTimeStartOfDay, daysFromCurrent));
+                DateToolbox.getFormattedLessShortDateString(mCurrentDateTimeStartOfDay, daysFromCurrent));
         if (foodsCount != 0) {
             mTvChartHeaderNumFoods.setText(mHostActivity.getResources().getQuantityString(
                     R.plurals.at_a_glance_bar_chart_header_count, foodsCount, foodsCount,
-                    DataToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
+                    DateToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
                             daysFromCurrent)));
         } else {
             mTvChartHeaderNumFoods.setText(getString(
                     R.string.at_a_glance_bar_chart_header_count_none, null,
-                    DataToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
+                    DateToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
                             daysFromCurrent)));
         }
     }

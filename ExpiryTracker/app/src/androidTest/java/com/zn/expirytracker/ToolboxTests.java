@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.zn.expirytracker.utils.StringsToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class StringsToolboxTests {
+public class ToolboxTests {
 
     private Context mInstContext;
 
@@ -67,13 +67,13 @@ public class StringsToolboxTests {
                 "Expires on Feb 3"
         };
 
-        String today = StringsToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
-        Assert.assertTrue(today.equals("Expires today!"));
+        String today = DateToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
+        Assert.assertEquals(today, "Expires today!");
 
         for (String expected : expectedStrings) {
             tested = tested.plusDays(1);
-            String actual = StringsToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
-            Assert.assertTrue(actual.equals(expected));
+            String actual = DateToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
+            Assert.assertEquals(actual, expected);
         }
 
         String[] expectedStringsYearJump = new String[]{
@@ -89,8 +89,8 @@ public class StringsToolboxTests {
                 0, 0, 0);
         for (String expected : expectedStringsYearJump) {
             tested = tested.plusDays(1);
-            String actual = StringsToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
-            Assert.assertTrue(actual.equals(expected));
+            String actual = DateToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
+            Assert.assertEquals(actual, expected);
         }
     }
 }

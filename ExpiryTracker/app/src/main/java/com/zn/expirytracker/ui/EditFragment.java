@@ -7,7 +7,6 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -46,6 +44,7 @@ import com.zn.expirytracker.ui.dialog.StorageLocationDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.EditToolbox;
 import com.zn.expirytracker.utils.FormChangedDetector;
 import com.zn.expirytracker.utils.Toolbox;
@@ -291,7 +290,7 @@ public class EditFragment extends Fragment implements
         // Set the dates
         if (mAddMode) {
             // By default, load up the current day as the initial expiry date
-            mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+            mExpiryDate = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
             // For all new items, goodThruDate is the same as expiryDate by default
             mGoodThruDate = mExpiryDate;
         }
@@ -445,8 +444,8 @@ public class EditFragment extends Fragment implements
 
             if (!mRestoredInstance) {
                 // Get dates since we don't have them yet
-                mExpiryDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
-                mGoodThruDate = DataToolbox.getTimeInMillisStartOfDay(food.getDateGoodThru());
+                mExpiryDate = DateToolbox.getTimeInMillisStartOfDay(food.getDateExpiry());
+                mGoodThruDate = DateToolbox.getTimeInMillisStartOfDay(food.getDateGoodThru());
 
                 mLoc = food.getStorageLocation();
 
@@ -492,8 +491,8 @@ public class EditFragment extends Fragment implements
         mPagerAdapter.notifyDataSetChanged();
         mViewPager.setContentDescription(
                 mFood != null ? mFood.getFoodName() : getString(R.string.food_image_list));
-        mEtDateExpiry.setText(DataToolbox.getFieldFormattedDate(mExpiryDate));
-        mEtDateGood.setText(DataToolbox.getFieldFormattedDate(mGoodThruDate));
+        mEtDateExpiry.setText(DateToolbox.getFieldFormattedDate(mExpiryDate));
+        mEtDateGood.setText(DateToolbox.getFieldFormattedDate(mGoodThruDate));
         if (mLoc != Storage.NOT_SET) {
             mIvLoc.setImageResource(DataToolbox.getStorageIconResource(mLoc));
         } else {
@@ -589,7 +588,7 @@ public class EditFragment extends Fragment implements
                 break;
             case R.id.iv_edit_date_good_clear:
                 mGoodThruDate = mExpiryDate;
-                String fieldFormattedDate = DataToolbox.getFieldFormattedDate(mGoodThruDate);
+                String fieldFormattedDate = DateToolbox.getFieldFormattedDate(mGoodThruDate);
                 mEtDateGood.setText(fieldFormattedDate);
                 setGoodThruDateViewAttributes();
                 break;
@@ -799,7 +798,7 @@ public class EditFragment extends Fragment implements
      */
     @Override
     public void onDateSelected(ExpiryDatePickerDialogFragment.DateType dateType, DateTime selectedDate) {
-        String fieldFormattedDate = DataToolbox.getFieldFormattedDate(selectedDate);
+        String fieldFormattedDate = DateToolbox.getFieldFormattedDate(selectedDate);
         switch (dateType) {
             case GOOD_THRU:
                 mGoodThruDate = selectedDate.getMillis();

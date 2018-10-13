@@ -26,6 +26,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.DebugFields;
 
 import org.joda.time.DateTime;
@@ -245,7 +246,7 @@ public class NotificationHelper {
             return;
         }
 
-        long currentTimeStartOfDay = DataToolbox.getTimeInMillisStartOfDay(
+        long currentTimeStartOfDay = DateToolbox.getTimeInMillisStartOfDay(
                 System.currentTimeMillis());
         String contentText;
         Bitmap largeIcon = null;
@@ -261,7 +262,7 @@ public class NotificationHelper {
             }
 
             // Get the readable date food is expiring, and set in message
-            String formattedDate = DataToolbox.getFormattedExpiryDateString(context, currentTimeStartOfDay,
+            String formattedDate = DateToolbox.getFormattedExpiryDateString(context, currentTimeStartOfDay,
                     food.getDateExpiry());
             // Make the "e" in the "Expires" message lowercase
             formattedDate = formattedDate.substring(0, 1).toLowerCase() + formattedDate.substring(1);
@@ -362,8 +363,8 @@ public class NotificationHelper {
      * Helper that fetches latest data. This needs to be called on a background thread
      */
     public static List<Food> fetchLatestData(Context context, int daysFilter) {
-        long expiryDateFilter = DataToolbox.getDateBounds(
-                DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis()), daysFilter);
+        long expiryDateFilter = DateToolbox.getDateBounds(
+                DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis()), daysFilter);
 
         FoodRoomDb db = FoodRoomDb.getDatabase(context);
         return db.foodDao().getAllFoodExpiringBeforeDate_List(expiryDateFilter);

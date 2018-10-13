@@ -1,7 +1,6 @@
 package com.zn.expirytracker.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.util.SparseIntArray;
 
@@ -12,9 +11,6 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.Storage;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Months;
-import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -280,29 +276,7 @@ public class DataToolbox {
             default:
                 plusDays = 0;
         }
-        return getDateBounds(currentDateTimeStartOfDay, plusDays);
-    }
-
-    /**
-     * Gets the date in millis after the number of {@code plusDays} provided
-     *
-     * @param currentDateTimeStartOfDay
-     * @param plusDays
-     * @return
-     */
-    public static long getDateBounds(DateTime currentDateTimeStartOfDay, int plusDays) {
-        return currentDateTimeStartOfDay.plusDays(plusDays).getMillis();
-    }
-
-    /**
-     * Gets the date in millis after the number of {@code plusDays} provided
-     *
-     * @param baseDateStartOfDay
-     * @param plusDays
-     * @return
-     */
-    public static long getDateBounds(long baseDateStartOfDay, int plusDays) {
-        return getDateBounds(new DateTime(baseDateStartOfDay), plusDays);
+        return DateToolbox.getDateBounds(currentDateTimeStartOfDay, plusDays);
     }
 
     /**
@@ -450,7 +424,7 @@ public class DataToolbox {
                 maxSize = NO_MAX_SIZE_INT_FREQUENCIES;
         }
         long[] dates = getAllExpiryDatesFromFood(foods);
-        int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
+        int[] numDaysUntilCurrent = DateToolbox.getNumDaysBetweenDatesArray(dates, baseDateInMillis);
         SparseIntArray data = getIntFrequencies(numDaysUntilCurrent, true, maxSize);
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
@@ -518,7 +492,7 @@ public class DataToolbox {
     public static SparseIntArray getIntFrequencies(List<Food> foods, long baseDateInMillis,
                                                    boolean fillInGaps, int maxSize) {
         long[] dates = getAllExpiryDatesFromFood(foods);
-        int[] numDaysUntilCurrent = getNumDaysBetweenDatesArray(dates, baseDateInMillis);
+        int[] numDaysUntilCurrent = DateToolbox.getNumDaysBetweenDatesArray(dates, baseDateInMillis);
         return getIntFrequencies(numDaysUntilCurrent, fillInGaps, maxSize);
     }
 
@@ -655,304 +629,6 @@ public class DataToolbox {
             default:
                 return context.getString(R.string.food_storage_location_none_label);
         }
-    }
-
-    /**
-     * Returns a readable date string formatted based on number of days between 2 dates, with
-     * dates provided in {@code MILLISECONDS}. Assumes the second date is equal to or greater
-     * than the first
-     * <p>
-     * Example result: Expires soon on Tuesday
-     *
-     * @param dateInMillis2
-     * @return
-     */
-    public static String getFormattedExpiryDateString(Context context,
-                                                      long dateInMillis1, long dateInMillis2) {
-        DateTime current = getDateTimeStartOfDay(dateInMillis1);
-        DateTime compared = getDateTimeStartOfDay(dateInMillis2);
-
-        return getFormattedExpiryDateString(context, current, compared);
-    }
-
-    /**
-     * Returns either the short form of DOW (Sun, Mon, Tue...) if the day is within the current
-     * week. Otherwise, returns the short form MONTH DAY (Jan 1)
-     *
-     * @param startDate
-     * @param numDaysFromStartDate
-     * @return
-     */
-    public static String getFormattedShortDateString(DateTime startDate, int numDaysFromStartDate) {
-        DateTime currentDate = startDate.plusDays(numDaysFromStartDate);
-        if (numDaysFromStartDate < 7) {
-            // Sun Mon Tues...
-            return currentDate.dayOfWeek().getAsShortText();
-        } else {
-            // Jan 1, Mar 12, Dec 13...
-            return String.format("%s %s", currentDate.monthOfYear().getAsShortText(),
-                    currentDate.dayOfMonth().get());
-        }
-    }
-
-    /**
-     * Returns a less short date string, in the form DOW, MON DAY (Wed, Aug 29)
-     *
-     * @param startDate
-     * @param numDaysFromStartDate
-     * @return
-     */
-    public static String getFormattedLessShortDateString(DateTime startDate,
-                                                         int numDaysFromStartDate) {
-        DateTime currentDate = startDate.plusDays(numDaysFromStartDate);
-        return String.format("%s, %s %s", currentDate.dayOfWeek().getAsShortText(),
-                currentDate.monthOfYear().getAsShortText(), currentDate.dayOfMonth().get());
-    }
-
-    /**
-     * Returns a full date string, in the form MON DAY, YEAR (Jan 4, 2018)
-     *
-     * @param dateInMillis
-     * @return
-     */
-    public static String getFormattedFullDateString(long dateInMillis) {
-        DateTime date = new DateTime(dateInMillis);
-        return getFormattedFullDateString(date);
-    }
-
-    /**
-     * Returns a full date string, in the form MON DAY, YEAR (Jan 4, 2018)
-     *
-     * @param date
-     * @return
-     */
-    public static String getFormattedFullDateString(DateTime date) {
-        return String.format("%s %s, %s", date.monthOfYear().getAsShortText(),
-                date.dayOfMonth().get(), date.year().get());
-    }
-
-    /**
-     * Returns a relative date string, that is either "Today", "Tomorrow", or the DOW (or next DOW)
-     *
-     * @param context
-     * @param startDate
-     * @param numDaysFromStartDate
-     * @return
-     */
-    public static String getFormattedRelativeDateString(Context context, DateTime startDate,
-                                                        int numDaysFromStartDate) {
-        DateTime currentDate = startDate.plusDays(numDaysFromStartDate);
-        if (numDaysFromStartDate == 0) {
-            // today
-            return context.getString(R.string.date_today).toLowerCase();
-        } else if (numDaysFromStartDate == 1) {
-            // tomorrow
-            return context.getString(R.string.date_tomorrow).toLowerCase();
-        } else if (numDaysFromStartDate >= 2 && numDaysFromStartDate < 7) {
-            // full DOW
-            return currentDate.dayOfWeek().getAsText();
-        } else if (numDaysFromStartDate >= 7 && numDaysFromStartDate < 14) {
-            // next DOW
-            return context.getString(R.string.date_next, currentDate.dayOfWeek().getAsText());
-        } else {
-            // on this day
-            return context.getString(R.string.date_generic).toLowerCase();
-        }
-    }
-
-    /**
-     * Returns a readable date string formatted based on number of days between 2 dates, with
-     * dates provided as {@code JodaTime.DateTime} objects. Assumes the second date is equal to or
-     * greater than the first.
-     * <p>
-     * Example result: Expires soon on Tuesday
-     *
-     * @param context
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static String getFormattedExpiryDateString(Context context,
-                                                      DateTime date1, DateTime date2) {
-
-        int diffDays = getNumDaysBetweenDates(date1, date2);
-        int diffMonths = getNumMonthsBetweenDates(date1, date2);
-        int diffYears = getNumYearsBetweenDates(date1, date2);
-
-        Resources res = context.getResources();
-
-        if (diffDays == 0) {
-            // Today (expect Today!)
-            return res.getString(R.string.expiry_msg_today);
-        } else if (diffDays == 1) {
-            // Tomorrow (expect Expires tomorrow!)
-            return res.getString(R.string.expiry_msg_tomorrow);
-        } else if (diffDays >= 2 && diffDays < 7) {
-            // 2-6 days after today Expires soon on DOW)
-            return res.getString(R.string.expiry_msg_soon, date2.dayOfWeek().getAsText());
-        } else if (diffDays >= 7 && diffDays < 14 && diffMonths == 0 && diffYears == 0) {
-            // 7-13 days after today, and within the current month and year
-            // (expect Expires next DOW)
-            return res.getString(R.string.expiry_msg_next_dow, date2.dayOfWeek().getAsText());
-        } else if (diffDays >= 14 && diffMonths == 0 && diffYears == 0) {
-            // At least 14 days after today, and within the current month and year
-            // (expect Expires on the ORDINAL)
-            return res.getString(R.string.expiry_msg_ordinal,
-                    convertIntToOrdinal(date2.dayOfMonth().get()));
-        } else if (diffDays >= 14 && diffMonths > 0 && diffYears == 0) {
-            // 14 days after today, but in the next month, but current year
-            // (expect Expires on MONTH DAY)
-            return res.getString(R.string.expiry_msg_month_day,
-                    date2.monthOfYear().getAsShortText(), date2.dayOfMonth().get());
-        } else {
-            // 14 days after today, but in the next month and next year
-            // (expect Expires on MONTH DAY YEAR)
-            return res.getString(R.string.expiry_msg_month_day_year,
-                    date2.monthOfYear().getAsShortText(), date2.dayOfMonth().get(),
-                    date2.year().get());
-        }
-    }
-
-    /**
-     * Helper that gets a field-friendly date string in the form "M/d/yyyy"
-     *
-     * @param dateTime
-     * @return
-     */
-    public static String getFieldFormattedDate(DateTime dateTime) {
-        return dateTime.toString("M/d/yyyy", null);
-    }
-
-    /**
-     * Helper that gets a field-friendly date string in the form "M/d/yyyy"
-     *
-     * @param dateInMillis
-     * @return
-     */
-    public static String getFieldFormattedDate(long dateInMillis) {
-        DateTime dateTime = new DateTime(dateInMillis);
-        return getFieldFormattedDate(dateTime);
-    }
-
-    /**
-     * General utility function that returns the passed integer into its ordinal representation
-     * From: https://stackoverflow.com/questions/6810336/is-there-a-way-in-java-to-convert-an-integer-to-its-ordinal
-     *
-     * @param i
-     * @return
-     */
-    private static String convertIntToOrdinal(int i) {
-        String[] sufixes = new String[]{"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"};
-        switch (i % 100) {
-            case 11:
-            case 12:
-            case 13:
-                return i + "th";
-            default:
-                return i + sufixes[i % 10];
-        }
-    }
-
-    /**
-     * Returns an array of the number of days between 2 dates, with the reference
-     * date provided as {@code baseDateInMillis}. All dates are provided in {@code MILLISECONDS}.
-     * Assumes all dates are equal to or greater than {@code baseDateInMillis}
-     *
-     * @param dates
-     * @param baseDateInMillis
-     * @return
-     */
-    private static int[] getNumDaysBetweenDatesArray(long[] dates, long baseDateInMillis) {
-        int[] numDaysFromCurrent = new int[dates.length];
-        for (int i = 0; i < dates.length; i++) {
-            numDaysFromCurrent[i] = DataToolbox.getNumDaysBetweenDates(baseDateInMillis, dates[i]);
-        }
-        return numDaysFromCurrent;
-    }
-
-    /**
-     * Returns the number of days between 2 dates, with dates provided in {@code MILLISECONDS}.
-     * Assumes the second date is equal to or greater than the first
-     *
-     * @param dateInMillis1
-     * @param dateInMillis2
-     * @return
-     */
-    public static int getNumDaysBetweenDates(long dateInMillis1, long dateInMillis2) {
-        DateTime current = getDateTimeStartOfDay(dateInMillis1);
-        DateTime compared = getDateTimeStartOfDay(dateInMillis2);
-
-        return getNumDaysBetweenDates(current, compared);
-    }
-
-    /**
-     * Helper for getting the number of days between two dates, after neutralizing the time
-     * component
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    private static int getNumDaysBetweenDates(DateTime date1, DateTime date2) {
-        return Days.daysBetween(date1, date2).getDays();
-    }
-
-    /**
-     * Helper for getting the number of months between two dates, after neutralizing the time
-     * component
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    private static int getNumMonthsBetweenDates(DateTime date1, DateTime date2) {
-        return Months.monthsBetween(date1, date2).getMonths();
-    }
-
-    /**
-     * Helper for getting the number of years between two dates, after neutralizing the time
-     * component
-     *
-     * @param date1
-     * @param date2
-     * @return
-     */
-    private static int getNumYearsBetweenDates(DateTime date1, DateTime date2) {
-        return Years.yearsBetween(date1, date2).getYears();
-    }
-
-    /**
-     * Helper for neutralizing hours, minutes, seconds, and milliseconds into a JodaTime.DateTime
-     * object. The time component otherwise confounds date comparisons and calculating the number
-     * of days between dates
-     *
-     * @param timeInMillis
-     * @return
-     */
-    public static DateTime getDateTimeStartOfDay(long timeInMillis) {
-        return new DateTime(timeInMillis).withTimeAtStartOfDay();
-    }
-
-    /**
-     * Helper for neutralizing hours, minutes, seconds, and milliseconds. The time component
-     * otherwise confounds date comparisons and calculating the number of days between dates
-     *
-     * @param timeInMillis
-     * @return
-     */
-    public static long getTimeInMillisStartOfDay(long timeInMillis) {
-        return getDateTimeStartOfDay(timeInMillis).getMillis();
-    }
-
-    /**
-     * Returns true if the selected date is equal to or greater than the current date
-     *
-     * @param selectedDateInMillis
-     * @param currentDateInMillis
-     * @return
-     */
-    public static boolean compareTwoDates(long selectedDateInMillis, long currentDateInMillis) {
-        return selectedDateInMillis >= currentDateInMillis;
     }
 
     /**

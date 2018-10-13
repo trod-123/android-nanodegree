@@ -24,6 +24,7 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
@@ -139,7 +140,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
 
         private void bind(final @NonNull Food food) {
             mName.setText(food.getFoodName());
-            mExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
+            mExpiryDate.setText(DateToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, food.getDateExpiry()));
             int count = food.getCount();
             if (count != 1) {
@@ -160,7 +161,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
                 mStorageIcon.setVisibility(View.GONE);
             }
             int daysUntilExpiry =
-                    DataToolbox.getNumDaysBetweenDates(mCurrentTime, food.getDateExpiry());
+                    DateToolbox.getNumDaysBetweenDates(mCurrentTime, food.getDateExpiry());
             mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));
             mNcvCountDays.mTvLabel.setText(mContext.getResources().getQuantityString(
                     R.plurals.food_days_label, daysUntilExpiry));

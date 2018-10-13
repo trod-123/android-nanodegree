@@ -23,6 +23,7 @@ import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -162,7 +163,7 @@ public class DetailFragment extends Fragment {
 
         mHostActivity = getActivity();
         mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
-        mCurrentDateTimeStartOfDay = DataToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
+        mCurrentDateTimeStartOfDay = DateToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
 
         Bundle args = getArguments();
         if (args != null) {
@@ -247,7 +248,7 @@ public class DetailFragment extends Fragment {
 
         // Main layout
         mTvFoodName.setText(food.getFoodName());
-        mTvExpiryDate.setText(DataToolbox.getFormattedExpiryDateString(
+        mTvExpiryDate.setText(DateToolbox.getFormattedExpiryDateString(
                 mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
         DateTime dateTime = new DateTime(food.getDateExpiry());
         mTvCalendarDay.setText(String.valueOf(dateTime.getDayOfMonth()));
@@ -274,7 +275,7 @@ public class DetailFragment extends Fragment {
         mNcvCount.mTvValue.setText(String.valueOf(food.getCount()));
         mNcvCount.mTvLabel.setText(getString(R.string.food_count_label));
         mNcvCount.updateContentDescription(R.string.food_msg_count);
-        int daysUntilExpiry = DataToolbox.getNumDaysBetweenDates(
+        int daysUntilExpiry = DateToolbox.getNumDaysBetweenDates(
                 mCurrentDateTimeStartOfDay.getMillis(),
                 food.getDateExpiry());
         mNcvCountDays.mTvValue.setText(String.valueOf(daysUntilExpiry));

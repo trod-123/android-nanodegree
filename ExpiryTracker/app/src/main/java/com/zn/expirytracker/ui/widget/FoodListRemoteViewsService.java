@@ -19,7 +19,7 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.FoodRoomDb;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
-import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
         public void onCreate() {
             Timber.tag(FoodListRemoteViewsFactory.class.getSimpleName());
             // get days filter directly from settings
-            mCurrentBaseDateTimeInMillis = DataToolbox.getTimeInMillisStartOfDay(
+            mCurrentBaseDateTimeInMillis = DateToolbox.getTimeInMillisStartOfDay(
                     System.currentTimeMillis());
             UpdateWidgetService.hideProgressBar(mContext);
         }
@@ -82,7 +82,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
         private void fetchLatestData() {
             int daysFilter = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(mContext)
                     .getString(getString(R.string.pref_widget_num_days_key), "3"));
-            long expiryDateFilter = DataToolbox.getDateBounds(
+            long expiryDateFilter = DateToolbox.getDateBounds(
                     mCurrentBaseDateTimeInMillis, daysFilter);
 
             FoodRoomDb db = FoodRoomDb.getDatabase(mContext);
@@ -123,7 +123,7 @@ public class FoodListRemoteViewsService extends RemoteViewsService {
             final Food food = mFoodsList.get(i);
 
             views.setTextViewText(R.id.tv_widget_name, food.getFoodName());
-            views.setTextViewText(R.id.tv_widget_date, DataToolbox.getFormattedExpiryDateString(
+            views.setTextViewText(R.id.tv_widget_date, DateToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentBaseDateTimeInMillis, food.getDateExpiry()));
 
             // populate the iv

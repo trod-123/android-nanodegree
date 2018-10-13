@@ -10,7 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -102,7 +102,7 @@ public class ExpiryDatePickerDialogFragment extends DialogFragment
             String dateTypeString = args.getString(ARG_DATE_TYPE, DateType.EXPIRY.toString());
             mDateType = DateType.valueOf(dateTypeString);
             mExpiryDate = args.getLong(ARG_CURRENT_DATE,
-                    DataToolbox.getDateTimeStartOfDay(System.currentTimeMillis()).getMillis());
+                    DateToolbox.getDateTimeStartOfDay(System.currentTimeMillis()).getMillis());
             // Set to expiry date by default
             mGoodThruDate = args.getLong(ARG_GOOD_THRU_DATE, mExpiryDate);
             mReprompt = args.getBoolean(ARG_REPROMPT_BOOLEAN, false);
@@ -160,7 +160,7 @@ public class ExpiryDatePickerDialogFragment extends DialogFragment
         DateTime selectedDate = new DateTime(year, month + 1, dayOfMonth,
                 0, 0);
         long selectedDateInMillis = selectedDate.getMillis();
-        long currentTimeInMillis = DataToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
+        long currentTimeInMillis = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
         if (mDateType == DateType.GOOD_THRU && selectedDateInMillis < mExpiryDate) {
             // Test condition 2 first
             Toolbox.showToast(getContext(), getString(R.string.edit_error_date_good_thru));
