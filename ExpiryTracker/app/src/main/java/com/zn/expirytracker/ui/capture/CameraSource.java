@@ -843,10 +843,14 @@ public class CameraSource {
                 } catch (Throwable t) {
                     Timber.e(t, "CameraSource: FrameProcessingRunnable exception thrown from receiver.");
                 } finally {
-                    if (data != null) {
-                        camera.addCallbackBuffer(data.array());
+                    if (camera != null) {
+                        if (data != null) {
+                            camera.addCallbackBuffer(data.array());
+                        } else {
+                            Timber.d("CameraSource: FrameProcessingRunnable/run/addCallbackBuffer data is null");
+                        }
                     } else {
-                        Timber.e("CameraSource: FrameProcessingRunnable/run/addCallbackBuffer data is null");
+                        Timber.d("CameraSource: FrameProcessingRunnable/run/addCallbackBuffer Camera was null");
                     }
                 }
             }
