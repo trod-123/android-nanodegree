@@ -216,18 +216,18 @@ public class DetailFragment extends Fragment {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                switch (state) {
-                    case ViewPager.SCROLL_STATE_DRAGGING:
-                        // Fade in the indicator view while dragging
-                        Toolbox.showPageIndicator(true, mImageScrim, mPageIndicatorView);
-                        break;
-                    case ViewPager.SCROLL_STATE_SETTLING:
-                        break;
-                    default:
-                        // Fade out when idle
-                        Toolbox.showPageIndicator(false, mImageScrim, mPageIndicatorView);
-                        break;
-                }
+//                switch (state) {
+//                    case ViewPager.SCROLL_STATE_DRAGGING:
+//                        // Fade in the indicator view while dragging
+//                        Toolbox.showPageIndicator(true, mImageScrim, mPageIndicatorView);
+//                        break;
+//                    case ViewPager.SCROLL_STATE_SETTLING:
+//                        break;
+//                    default:
+//                        // Fade out when idle
+//                        Toolbox.showPageIndicator(false, mImageScrim, mPageIndicatorView);
+//                        break;
+//                }
             }
         });
 

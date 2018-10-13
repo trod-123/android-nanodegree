@@ -21,7 +21,7 @@
     <color name="border">@color/md_grey_300</color>
 
     <color name="imageForeground_scrimStart">#00000000</color>
-    <color name="imageForeground_scrimEnd">#30000000</color>
+    <color name="imageForeground_scrimEnd">#90000000</color>
     <color name="imageBackground_none">@color/textColorPrimaryDark</color>
 
     <color name="number_circle_outline_default">@color/textColorPrimaryDark</color>
