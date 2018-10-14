@@ -33,6 +33,8 @@ public class FirebaseStorageHelper {
             .getReference(DatabaseContract.DATABASE_NAME + "/" +
                     DatabaseContract.COLUMN_IMAGES);
 
+    private static int imageUploadCounter = 0;
+
     /**
      * Replaces local uris with Firebase Storage uris by iterating for local uris in the
      * {@link Food}'s image list, uploading those images, and then replacing the original
@@ -49,8 +51,12 @@ public class FirebaseStorageHelper {
      * @param food
      */
     public static void uploadAllLocalUrisToFirebaseStorage(final Food food) {
+        imageUploadCounter = 0;
+
         final List<String> imagesUris = food.getImages();
         final String foodId = String.valueOf(food.get_id());
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
         boolean isThereLocal = false;
         for (int i = 0; i < imagesUris.size(); i++) {
             final String imageUriString = imagesUris.get(i);
@@ -63,8 +69,6 @@ public class FirebaseStorageHelper {
                 // https://firebase.google.com/docs/storage/android/upload-files
                 Uri file = Toolbox.getUriFromImagePath(imageUriString);
 
-                // Get the user id, to serve as first child
-                String uid = AuthToolbox.getUserId();
                 final StorageReference ref = mStorage.child(uid).child(foodId)
                         .child(file.getLastPathSegment());
                 final int index = i;
@@ -73,7 +77,9 @@ public class FirebaseStorageHelper {
                             @Override
                             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                 if (!task.isSuccessful()) {
-                                    Timber.e(task.getException(), "firebase/fs: upload failed");
+                                    Timber.e(task.getException(), "firebase/fs/uploadImage: failed. uri: %s", imageUriString);
+                                } else {
+                                    Timber.d("firebase/fs/uploadImage: success. uri: %s", imageUriString);
                                 }
                                 // Continue with the task to get the download URL
                                 return ref.getDownloadUrl();
@@ -82,22 +88,27 @@ public class FirebaseStorageHelper {
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
                             @Override
                             public void onComplete(@NonNull Task<Uri> task) {
+                                imageUploadCounter++; // increment only once complete
                                 if (task.isSuccessful()) {
                                     Uri downloadUri = task.getResult();
+                                    // replace the local uri with the cloud uri
                                     imagesUris.set(index, downloadUri.toString());
+                                    Timber.d("firebase/fs/uploadImage: set the download uri. uri: %s", downloadUri);
                                     // Delete the locally stored bitmap after successful upload
                                     Toolbox.deleteBitmapFromInternalStorage(
                                             Toolbox.getUriFromImagePath(imageUriString),
-                                            "firebase/fs");
+                                            "firebase/fs/uploadImage");
                                 } else {
-                                    Timber.e(task.getException(), "firebase/fs: upload failed");
+                                    Timber.e(task.getException(), "firebase/fs/uploadImage: failed onComplete");
                                 }
-                                if (index == imagesUris.size() - 1) {
+                                if (imageUploadCounter == imagesUris.size()) {
                                     // Once we reach the end, update the db, regardless if successful
                                     updateFoodImagesToFirebaseRTD(food, imagesUris);
                                 }
                             }
                         });
+            } else {
+                imageUploadCounter++; // keep incrementing the counter
             }
         }
         if (!isThereLocal) {
@@ -129,13 +140,13 @@ public class FirebaseStorageHelper {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Timber.d("firebase/fs: deleteImage successful. uri: %s", uriString);
+                        Timber.d("firebase/fs/deleteImage: successful. uri: %s", uriString);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Timber.e(e, "firebase/fs: deleteImage failed. uri: %s", uriString);
+                        Timber.e(e, "firebase/fs/deleteImage: failed. uri: %s", uriString);
                     }
                 });
     }
