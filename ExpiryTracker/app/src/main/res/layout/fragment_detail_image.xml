@@ -46,4 +46,17 @@
         android:layout_gravity="center"
         android:alpha="0" />
 
+    <ImageView
+        android:id="@+id/iv_detail_clear_image_icon"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="4dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/action_remove_photo"
+        android:tint="#A0FFFFFF"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
+
 </FrameLayout>

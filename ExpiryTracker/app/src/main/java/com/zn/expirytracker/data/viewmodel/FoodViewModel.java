@@ -58,6 +58,10 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository.deleteFoods(wipeCloudStorage, foods);
     }
 
+    public void deleteImages(boolean removeFromCloud, List<String> imageUris, long foodId) {
+        mRepository.deleteImages(removeFromCloud, imageUris, foodId);
+    }
+
 //    public void deleteAllFoods(boolean wipeCloudStorage) {
 //        mRepository.deleteAllFoods(wipeCloudStorage);
 //    }

@@ -74,7 +74,7 @@ public class EditFragment extends Fragment implements
         ExpiryDatePickerDialogFragment.OnDateSelectedListener,
         FormChangedDialogFragment.OnFormChangedButtonClickListener,
         ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener, OnDialogCancelListener,
-        DetailImageFragment.AddImageButtonClickListener,
+        DetailImageFragment.OnImageButtonClickListener,
         AddImageMethodPickerBottomSheet.OnAddImageMethodSelectedListener,
         View.OnClickListener, EasyPermissions.PermissionCallbacks {
 
@@ -104,6 +104,18 @@ public class EditFragment extends Fragment implements
      */
     private static final String KEY_CURRENT_IMAGE_URIS_LIST =
             Toolbox.createStaticKeyString(EditFragment.class, "current_image_uris_list");
+
+    /**
+     * For keeping track of the removed image uris list after screen rotation
+     */
+    private static final String KEY_REMOVED_IMAGE_URIS_LIST =
+            Toolbox.createStaticKeyString(EditFragment.class, "deleted_image_uris_list");
+
+    /**
+     * For keeping track of the added image uris list after screen rotation
+     */
+    private static final String KEY_ADDED_IMAGE_URIS_LIST =
+            Toolbox.createStaticKeyString(EditFragment.class, "added_image_uris_list");
 
     /**
      * For restoring current image pager position after screen rotation
@@ -209,6 +221,15 @@ public class EditFragment extends Fragment implements
 
     // Fields not directly translatable or accessible via EditText
     private List<String> mImageUris;
+    /**
+     * Track the removed image uris for a single bulk delete operation after user saves
+     */
+    private List<String> mRemovedImageUris = new ArrayList<>();
+    /**
+     * Track the added image uris saved to cache for a bulk delete operation after user abandons
+     * without saving
+     */
+    private List<String> mAddedImageUris = new ArrayList<>();
     private long mExpiryDate;
     private long mGoodThruDate;
     private Storage mLoc;
@@ -229,6 +250,10 @@ public class EditFragment extends Fragment implements
                 new ArrayList<>(mFormChangedDetector.getCachedStringsList()));
         outState.putStringArrayList(KEY_CURRENT_IMAGE_URIS_LIST,
                 new ArrayList<>(mImageUris));
+        outState.putStringArrayList(KEY_REMOVED_IMAGE_URIS_LIST,
+                new ArrayList<>(mRemovedImageUris));
+        outState.putStringArrayList(KEY_ADDED_IMAGE_URIS_LIST,
+                new ArrayList<>(mAddedImageUris));
         outState.putInt(KEY_CURRENT_IMAGE_PAGER_POSITION, mCurrentImagePosition);
         outState.putLong(KEY_CURRENT_EXPIRY_DATE_LONG, mExpiryDate);
         outState.putLong(KEY_CURRENT_GOOD_THRU_DATE_LONG, mGoodThruDate);
@@ -356,6 +381,8 @@ public class EditFragment extends Fragment implements
 
             // Non edit text values that need to be preserved and restored
             mImageUris = savedInstanceState.getStringArrayList(KEY_CURRENT_IMAGE_URIS_LIST);
+            mRemovedImageUris = savedInstanceState.getStringArrayList(KEY_REMOVED_IMAGE_URIS_LIST);
+            mAddedImageUris = savedInstanceState.getStringArrayList(KEY_ADDED_IMAGE_URIS_LIST);
             mExpiryDate = savedInstanceState.getLong(KEY_CURRENT_EXPIRY_DATE_LONG);
             mGoodThruDate = savedInstanceState.getLong(KEY_CURRENT_GOOD_THRU_DATE_LONG);
             mLoc = (Storage) savedInstanceState.getSerializable(KEY_CURRENT_STORAGE_LOC_ENUM);
@@ -690,6 +717,7 @@ public class EditFragment extends Fragment implements
                 Food food = updateFoodFromInputs(mItemId, mExpiryDate, mGoodThruDate, mLoc,
                         mBarcode, mInputType, mImageUris);
                 mViewModel.update(true, food);
+                mViewModel.deleteImages(true, mRemovedImageUris, food.get_id());
                 Toolbox.showToast(mHostActivity, getString(R.string.message_item_updated,
                         food.getFoodName()));
             }
@@ -697,14 +725,23 @@ public class EditFragment extends Fragment implements
         }
     }
 
+    /**
+     * Deletes the current food item and any unsaved images added. Finishes the hosting activity
+     * when done
+     */
     private void deleteItem() {
         mFormChangedDetector.updateCachedFields();
         mViewModel.delete(true, mFood);
+        removeCachedImagesFromStorage(mAddedImageUris);
         mHostActivity.finish();
     }
 
+    /**
+     * Removes any unsaved images added and finishes the hosting activity when done
+     */
     private void discardChanges() {
         mFormChangedDetector.updateCachedFields(); // but won't be saved
+        removeCachedImagesFromStorage(mAddedImageUris);
         mHostActivity.finish();
     }
 
@@ -1148,7 +1185,7 @@ public class EditFragment extends Fragment implements
      * clicked
      */
     @Override
-    public void onAddImageButtonSelected() {
+    public void onAddImageButtonClick() {
         // Show the bottom sheet
         AddImageMethodPickerBottomSheet bottomSheet = new AddImageMethodPickerBottomSheet();
         bottomSheet.setTargetFragment(this, 0);
@@ -1288,16 +1325,18 @@ public class EditFragment extends Fragment implements
     private void addImageFromUri(Uri uri) {
         // Save bitmap to internal storage and then update the image uri list
         try {
+            Timber.d("EditFragment/AddImageFromUri: Passed uri: %s", uri);
             File outputFilePath = Toolbox.getBitmapSavingFilePath(mHostActivity,
                     Constants.DEFAULT_FILENAME);
-            String inputFilePath = Toolbox.getGalleryUriPath(mHostActivity, uri);
+            String inputFilePath = Toolbox.getImagePathFromInputStreamUri(mHostActivity, uri);
+            Timber.d("EditFragment/AddImageFromUri: Input path: %s", inputFilePath);
             Toolbox.copyFile(new File(inputFilePath), outputFilePath);
             String path = outputFilePath.getAbsolutePath();
-            Timber.d("EditFragment: Saved image path: %s", path);
+            Timber.d("EditFragment/AddImageFromUri: Saved image path: %s", path);
             addImageToUrisList(path);
             Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_image_added));
         } catch (IOException e) {
-            Timber.e(e, "There was a problem saving the image to internal storage");
+            Timber.e(e, "EditFragment/AddImageFromUri: There was a problem saving the image to internal storage");
             Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.message_error_save_image));
         }
     }
@@ -1318,6 +1357,7 @@ public class EditFragment extends Fragment implements
      */
     private void addImageToUrisList(@NonNull String path) {
         mImageUris.add(path);
+        mAddedImageUris.add(path);
         if (!Toolbox.isLeftToRightLayout()) {
             mPagerAdapter.setImageUris(mImageUris);
             mViewPager.setCurrentItem(1);
@@ -1327,14 +1367,42 @@ public class EditFragment extends Fragment implements
         mPageIndicatorView.setCount(mPagerAdapter.getCount());
     }
 
+    @Override
+    public void onClearImageButtonClick(String uriString) {
+        removeImageFromUrisList(uriString);
+    }
+
     /**
-     * Deletes an image from the food item image list. Only delete from internal storage if it is
-     * in the app's bitmap capture folder
+     * Deletes an image from the food item image list, but does not delete the image from storage.
+     * Also adds the path to a list of pending deleted images, so deletion could be handled after
+     * user saves the food item
+     * <p>
+     * If the image was just recently added, then it will be removed from the cache
      *
-     * @param uri
+     * @param path Uri of the current image
      */
-    private void deleteImage(Uri uri) {
-        // TODO: Implement
+    private void removeImageFromUrisList(@NonNull String path) {
+        mImageUris.remove(path);
+        mRemovedImageUris.add(path);
+        if (mAddedImageUris.contains(path)) {
+            Toolbox.deleteBitmapFromInternalStorage(Toolbox.getUriFromImagePath(path),
+                    "EditFragment/RemoveImage");
+            mAddedImageUris.remove(path);
+        }
+        mPagerAdapter.notifyDataSetChanged();
+        mPageIndicatorView.setCount(mPagerAdapter.getCount());
+    }
+
+    /**
+     * Deletes a list of images from internal storage
+     *
+     * @param uriStrings
+     */
+    private void removeCachedImagesFromStorage(@NonNull List<String> uriStrings) {
+        for (String uriString : uriStrings) {
+            Toolbox.deleteBitmapFromInternalStorage(
+                    Toolbox.getUriFromImagePath(uriString), "EditFragment/RemoveCache");
+        }
     }
 
     // endregion

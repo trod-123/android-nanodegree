@@ -39,17 +39,33 @@ public class DetailImageFragment extends Fragment {
     ImageView mIvAddIcon;
     @BindView(R.id.iv_detail_image_broken)
     ImageView mIvBroken;
+    @BindView(R.id.iv_detail_clear_image_icon)
+    ImageView mIvClearIcon;
 
-    private AddImageButtonClickListener mListener;
-    @Nullable private String mImageUriString;
+    private OnImageButtonClickListener mListener;
+    @Nullable
+    private String mImageUriString;
     private boolean mEditMode;
 
     public DetailImageFragment() {
         // Required empty public constructor
     }
 
-    public interface AddImageButtonClickListener {
-        void onAddImageButtonSelected();
+    /**
+     * Allows the hosting Activity or Fragment to handle adding or removing images
+     */
+    public interface OnImageButtonClickListener {
+        /**
+         * Adds an image to the current food item
+         */
+        void onAddImageButtonClick();
+
+        /**
+         * Removes the current image from the current food item
+         *
+         * @param uriString Uri of the current image
+         */
+        void onClearImageButtonClick(String uriString);
     }
 
     public static DetailImageFragment newInstance(String imageUri, boolean editMode) {
@@ -74,10 +90,10 @@ public class DetailImageFragment extends Fragment {
 
         if (mEditMode) {
             try {
-                mListener = (AddImageButtonClickListener) getParentFragment();
+                mListener = (OnImageButtonClickListener) getParentFragment();
             } catch (ClassCastException e) {
                 throw new ClassCastException("Parent fragment must implement " +
-                        "AddImageButtonClickListener");
+                        "OnImageButtonClickListener");
             }
         }
     }
@@ -95,23 +111,32 @@ public class DetailImageFragment extends Fragment {
             Toolbox.showView(mPb, true, false);
             Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView,
                     new RequestListener<Bitmap>() {
-                @Override
-                public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                            Target<Bitmap> target, boolean isFirstResource) {
-                    Timber.e(e, "There was an error loading the image: %s", mImageUriString);
-                    Toolbox.showView(mPb, false, false);
-                    Toolbox.showView(mIvBroken, true, false);
-                    return false;
-                }
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                    Target<Bitmap> target, boolean isFirstResource) {
+                            Timber.e(e, "There was an error loading the image: %s", mImageUriString);
+                            Toolbox.showView(mPb, false, false);
+                            Toolbox.showView(mIvBroken, true, false);
+                            return false;
+                        }
 
-                @Override
-                public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
-                                               DataSource dataSource, boolean isFirstResource) {
-                    Toolbox.showView(mPb, false, false);
-                    Toolbox.showView(mIvBroken, false, false);
-                    return false;
-                }
-            });
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                       DataSource dataSource, boolean isFirstResource) {
+                            Toolbox.showView(mPb, false, false);
+                            Toolbox.showView(mIvBroken, false, false);
+                            return false;
+                        }
+                    });
+            if (mEditMode) {
+                mIvClearIcon.setVisibility(View.VISIBLE);
+                mIvClearIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mListener.onClearImageButtonClick(mImageUriString);
+                    }
+                });
+            }
         } else {
             // Set the add fragment
             mImageView.setBackgroundColor(getContext().getResources()
@@ -120,7 +145,7 @@ public class DetailImageFragment extends Fragment {
             mIvAddIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mListener.onAddImageButtonSelected();
+                    mListener.onAddImageButtonClick();
                 }
             });
         }

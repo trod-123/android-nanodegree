@@ -6,12 +6,14 @@ import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PagedList;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.firebase.FirebaseStorageHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
+import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import java.util.List;
  * <ul>
  * <li>Internal room database
  * <li>Firebase Realtime Database
+ * <li>Firebase Storage
  * </ul>
  */
 public class FoodRepository {
@@ -132,8 +135,6 @@ public class FoodRepository {
     public void updateFood(boolean saveToCloud, Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
         if (saveToCloud) {
-            // TODO: Once deleteImage() is implemented, need to see which images are deleted so
-            // they can be deleted from FBS too
             FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
         }
     }
@@ -147,8 +148,6 @@ public class FoodRepository {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
         if (saveToCloud) {
             for (Food food : foods) {
-                // TODO: Once deleteImage() is implemented, need to see which images are deleted so
-                // they can be deleted from FBS too
                 FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
             }
         }
@@ -164,7 +163,7 @@ public class FoodRepository {
         new DeleteAsyncTask(mFoodDao, food).execute(mContext);
         if (wipeCloudStorage) {
             FirebaseDatabaseHelper.delete(food.get_id());
-            FirebaseStorageHelper.delete(food);
+            deleteImages(true, food);
         }
     }
 
@@ -179,7 +178,59 @@ public class FoodRepository {
         if (wipeCloudStorage) {
             for (Food food : foods) {
                 FirebaseDatabaseHelper.delete(food.get_id());
-                FirebaseStorageHelper.delete(food);
+                deleteImages(true, food);
+            }
+        }
+    }
+
+    /**
+     * Deletes only the images that are in Firebase Storage for the provided Food item
+     * <p>
+     * Preferably this method should be called after completion of the Food's deletion in Firebase
+     * RTD so there are no dangling image references
+     * (Concept: https://stackoverflow.com/questions/48527169/firebase-when-deleting-from-storage-and-database-should-the-storage-deletion-b)
+     * <p>
+     * Note: There is currently no way to deleteImages a directory directly, so we will need to deleteImages
+     * each of the contents individually
+     *
+     * @param removeFromCloud
+     * @param food
+     */
+    public void deleteImages(boolean removeFromCloud, Food food) {
+        deleteImages(removeFromCloud, food.getImages(), food.get_id());
+    }
+
+    /**
+     * Deletes only the images that are in Firebase Storage for the provided Food id
+     * <p>
+     * Preferably this method should be called after completion of the Food's deletion in Firebase
+     * RTD so there are no dangling image references
+     * (Concept: https://stackoverflow.com/questions/48527169/firebase-when-deleting-from-storage-and-database-should-the-storage-deletion-b)
+     * <p>
+     * Note: There is currently no way to deleteImages a directory directly, so we will need to deleteImages
+     * each of the contents individually
+     *
+     * @param removeFromCloud
+     * @param imageUris
+     * @param foodId
+     */
+    public void deleteImages(boolean removeFromCloud, List<String> imageUris, long foodId) {
+        String id = String.valueOf(foodId);
+        for (int i = 0; i < imageUris.size(); i++) {
+            final String imageUriString = imageUris.get(i);
+            // Check form
+            UriType type = getImageUriType(imageUriString);
+            switch (type) {
+                case LOCAL:
+                    Toolbox.deleteBitmapFromInternalStorage(
+                            Toolbox.getUriFromImagePath(imageUriString),
+                            "FoodRepository/RemoveImage");
+                    // don't break here so we can delete from FBS if it's there
+                case FBS:
+                    if (removeFromCloud) {
+                        FirebaseStorageHelper.deleteImage(imageUriString, id);
+                    }
+                    break;
             }
         }
     }
@@ -343,6 +394,25 @@ public class FoodRepository {
             UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
+    }
+
+    // endregion
+
+    // region Uri Matching for Image Uri links
+
+    public enum UriType {
+        LOCAL, WEB, FBS
+    }
+
+    // We can be confident that Firebase Storage and Web uris will always start with the following
+    // There is a chance the Local directory may be different across devices
+    private static final String URI_FBS_PREFIX = "https://firebasestorage.googleapis.com/";
+    private static final String URI_WEB_PREFIX = "http";
+
+    public static UriType getImageUriType(@NonNull String imageUriString) {
+        if (imageUriString.startsWith(URI_FBS_PREFIX)) return UriType.FBS;
+        if (imageUriString.startsWith(URI_WEB_PREFIX)) return UriType.WEB;
+        return UriType.LOCAL;
     }
 
     // endregion

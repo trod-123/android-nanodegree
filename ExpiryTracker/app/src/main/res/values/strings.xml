@@ -37,6 +37,7 @@
     <string name="action_add_count">Add count by 1</string>
     <string name="action_subtract_count">Subtract count by 1</string>
     <string name="action_add_photo">Add image</string>
+    <string name="action_remove_photo">Remove this image</string>
     <string name="action_enable">Enable</string>
     <string name="action_set_expiry_date">Set expiry date</string>
     <string name="action_ok">OK</string>

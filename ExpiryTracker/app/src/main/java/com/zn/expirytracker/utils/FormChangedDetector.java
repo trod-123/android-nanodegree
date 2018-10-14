@@ -55,10 +55,6 @@ public class FormChangedDetector<T extends EditText> {
         for (String object : list) {
             newList.add(object);
         }
-
-        // TODO: Test if this works after having implemented delete functionality
-
-//        newList.addAll(list);
         return newList;
     }
 

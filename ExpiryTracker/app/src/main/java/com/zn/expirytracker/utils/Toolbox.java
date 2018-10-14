@@ -1,14 +1,12 @@
 package com.zn.expirytracker.utils;
 
 import android.animation.Animator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -16,7 +14,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.PopupMenu;
@@ -40,6 +37,7 @@ import com.zn.expirytracker.GlideRequest;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -463,9 +461,15 @@ public class Toolbox {
      * @param uriToDelete
      * @return {@code true} if the file is successfully deleted, false otherwise
      */
-    public static boolean deleteBitmapFromInternalStorage(Uri uriToDelete) {
+    public static boolean deleteBitmapFromInternalStorage(Uri uriToDelete, String tag) {
         File file = new File(uriToDelete.getPath());
-        return file.delete();
+        boolean success = file.delete();
+        if (success) {
+            Timber.d("%s: local image delete success. uri: %s", tag, uriToDelete);
+        } else {
+            Timber.d("%s: local image delete failed. uri: %s", tag, uriToDelete);
+        }
+        return success;
     }
 
     /**
@@ -491,25 +495,81 @@ public class Toolbox {
     }
 
     /**
-     * Returns the path for a Uri obtained through {@code Intent.ACTION_PICK} for the gallery so
-     * it can be fed into new File(path)
+     * Returns a cached path for a Uri obtained through {@code Intent.ACTION_PICK} so
+     * it can be fed into new File(path). To make this work, a copy of the file is saved into a
+     * cache, whose path is then returned
      * <p>
-     * The purpose of this method is to make a copy of an image from a user's library and save it
-     * to the app's internal photo directory
-     * <p>
-     * http://stackoverflow.com/q/6935497/42619
+     * Source: https://stackoverflow.com/questions/43500164/getting-path-from-uri-from-google-photos-app
      *
      * @param context
      * @param uri
      * @return
      */
-    public static String getGalleryUriPath(Activity context, Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = context.managedQuery(uri, projection, null, null, null);
-        context.startManagingCursor(cursor);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
+    public static String getImagePathFromInputStreamUri(Context context, Uri uri) {
+        InputStream inputStream = null;
+        String filePath = null;
+
+        if (uri.getAuthority() != null) {
+            try {
+                inputStream = context.getContentResolver().openInputStream(uri); // context needed
+                File photoFile = createTemporalFileFrom(context, inputStream);
+                filePath = photoFile.getPath();
+            } catch (FileNotFoundException e) {
+                Timber.e(e, "Error getting image path from input stream. uri: %s", uri);
+            } catch (IOException e) {
+                Timber.e(e, "Error getting image path from input stream. uri: %s", uri);
+            } finally {
+                try {
+                    if (inputStream != null)
+                        inputStream.close();
+                } catch (IOException e) {
+                    Timber.e(e);
+                }
+            }
+        }
+        return filePath;
+    }
+
+    /**
+     * Source: https://stackoverflow.com/questions/43500164/getting-path-from-uri-from-google-photos-app
+     *
+     * @param context
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    private static File createTemporalFileFrom(Context context, InputStream inputStream) throws IOException {
+        File targetFile = null;
+
+        if (inputStream != null) {
+            int read;
+            byte[] buffer = new byte[8 * 1024];
+
+            targetFile = createTemporalFile(context);
+            OutputStream outputStream = new FileOutputStream(targetFile);
+
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+            outputStream.flush();
+
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                Timber.e(e);
+            }
+        }
+        return targetFile;
+    }
+
+    /**
+     * Source: https://stackoverflow.com/questions/43500164/getting-path-from-uri-from-google-photos-app
+     *
+     * @param context
+     * @return
+     */
+    private static File createTemporalFile(Context context) {
+        return new File(context.getExternalCacheDir(), "tempFile.jpg"); // context needed
     }
 
     /**

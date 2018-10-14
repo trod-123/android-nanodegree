@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.zn.expirytracker.data.FoodRepository;
 import com.zn.expirytracker.data.contracts.DatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.utils.AuthToolbox;
@@ -20,6 +21,8 @@ import com.zn.expirytracker.utils.Toolbox;
 import java.util.List;
 
 import timber.log.Timber;
+
+import static com.zn.expirytracker.data.FoodRepository.getImageUriType;
 
 /**
  * Set of functions used to interface with Firebase Storage
@@ -50,10 +53,10 @@ public class FirebaseStorageHelper {
         final String foodId = String.valueOf(food.get_id());
         boolean isThereLocal = false;
         for (int i = 0; i < imagesUris.size(); i++) {
-            String imageUriString = imagesUris.get(i);
+            final String imageUriString = imagesUris.get(i);
             // Check form
-            UriType type = getImageUriType(imageUriString);
-            if (type == UriType.LOCAL) {
+            FoodRepository.UriType type = getImageUriType(imageUriString);
+            if (type == FoodRepository.UriType.LOCAL) {
                 isThereLocal = true;
                 // Only take action on uris referencing internal storage. Get the Uri form. This
                 // only works with local file paths
@@ -82,6 +85,10 @@ public class FirebaseStorageHelper {
                                 if (task.isSuccessful()) {
                                     Uri downloadUri = task.getResult();
                                     imagesUris.set(index, downloadUri.toString());
+                                    // Delete the locally stored bitmap after successful upload
+                                    Toolbox.deleteBitmapFromInternalStorage(
+                                            Toolbox.getUriFromImagePath(imageUriString),
+                                            "firebase/fs");
                                 } else {
                                     Timber.e(task.getException(), "firebase/fs: upload failed");
                                 }
@@ -101,51 +108,43 @@ public class FirebaseStorageHelper {
     }
 
     /**
-     * Deletes all of the images in Firebase Storage for the provided Food item
+     * Deletes a single image in Firebase Storage
      * <p>
      * Preferably this method should be called after completion of the Food's deletion in Firebase
      * RTD so there are no dangling image references
      * (Concept: https://stackoverflow.com/questions/48527169/firebase-when-deleting-from-storage-and-database-should-the-storage-deletion-b)
-     * <p>
-     * Note: There is currently no way to delete a directory directly, so we will need to delete
-     * each of the contents individually
      *
-     * @param food
+     * @param uriString
+     * @param foodId
      */
-    public static void delete(Food food) {
-        final List<String> imagesUris = food.getImages();
-        String foodId = String.valueOf(food.get_id());
-        for (int i = 0; i < imagesUris.size(); i++) {
-            final String imageUriString = imagesUris.get(i);
-            // Check form
-            UriType type = getImageUriType(imageUriString);
-            if (type == UriType.FBS) {
-                // Get the filename
-                // https://stackoverflow.com/questions/11575943/parse-file-name-from-url-before-downloading-the-file
-                String name = URLUtil.guessFileName(imageUriString, null, null);
-                // Get the user id, to serve as first child
-                String uid = AuthToolbox.getUserId();
-                final StorageReference ref = mStorage.child(uid).child(foodId)
-                        .child(name);
-                ref.delete()
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Timber.d("firebase/fs: delete successful");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Timber.e(e, "firebase/fs: delete failed");
-                            }
-                        });
-            }
-        }
+    public static void deleteImage(final String uriString, String foodId) {
+        // Get the filename
+        // https://stackoverflow.com/questions/11575943/parse-file-name-from-url-before-downloading-the-file
+        String name = URLUtil.guessFileName(uriString, null, null);
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+        final StorageReference ref = mStorage.child(uid).child(foodId)
+                .child(name);
+        ref.delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Timber.d("firebase/fs: deleteImage successful. uri: %s", uriString);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Timber.e(e, "firebase/fs: deleteImage failed. uri: %s", uriString);
+                    }
+                });
     }
 
     /**
      * Updates a food object with the provided list of image uris, and then sends the update to RTD
+     * <p>
+     * Note this does NOT update the local database with the Storage uris, keeping the Firebase
+     * downloading on List
      *
      * @param food
      * @param imageUris
@@ -154,24 +153,4 @@ public class FirebaseStorageHelper {
         food.setImages(imageUris);
         FirebaseDatabaseHelper.write(food);
     }
-
-    // region Uri Matching
-
-    public enum UriType {
-        LOCAL, WEB, FBS
-    }
-
-    // We can be confident that Firebase Storage and Web uris will always start with the following
-    // There is a chance the Local directory may be different across devices
-    private static final String URI_FBS_PREFIX = "https://firebasestorage.googleapis.com/";
-    private static final String URI_WEB_PREFIX = "http";
-
-    private static UriType getImageUriType(@NonNull String imageUriString) {
-        if (imageUriString.startsWith(URI_FBS_PREFIX)) return UriType.FBS;
-        if (imageUriString.startsWith(URI_WEB_PREFIX)) return UriType.WEB;
-        return UriType.LOCAL;
-    }
-
-    // endregion
-
 }
