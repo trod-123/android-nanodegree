@@ -27,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
+import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.ui.notifications.NotificationHelper;
@@ -81,6 +82,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     static boolean mInitializeGuard = false;
 
+    private FirebaseUpdaterHelper mUpdaterHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +98,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mGoogleSignInClient = GoogleSignIn.getClient(mHostActivity, gso);
 
         mSp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
+
+        mUpdaterHelper = new FirebaseUpdaterHelper();
+        mUpdaterHelper.setPrefsChildEventListener(createNewChildEventListener());
     }
 
     @Override
@@ -139,19 +145,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onResume();
         // Show account settings only if the user is signed in
         showAccountSettings(AuthToolbox.isSignedIn());
-
-        if (sChildEventListener == null) {
-            sChildEventListener = createNewChildEventListener();
-        }
-        // Only listen to changes to food_database/preferences_table/uid/{child}
-        FirebaseDatabaseHelper.addChildEventListener_Preferences(sChildEventListener);
+        mUpdaterHelper.listenForPrefsChanges(true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (sChildEventListener != null) {
-            FirebaseDatabaseHelper.removeChildEventListener_Preferences(sChildEventListener);
+        if (AuthToolbox.isSignedIn()) {
+            mUpdaterHelper.listenForPrefsChanges(false);
         }
     }
 
@@ -274,7 +275,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
-     * Helper to start the delete async task. Removes the Firebase RTD listener first before
+     * Helper to start the delete async task. Removes all Firebase RTD listeners first before
      * proceeding
      *
      * @param deleteType
@@ -282,8 +283,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     private void startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType,
                                           GoogleSignInClient signInClient) {
-        FirebaseDatabaseHelper.removeChildEventListener_Preferences(sChildEventListener);
-        sChildEventListener = null;
+        mUpdaterHelper.listenForPrefsTimestampChanges(false, mHostActivity);
+        mUpdaterHelper.listenForFoodTimestampChanges(false, mHostActivity);
+        mUpdaterHelper.listenForPrefsChanges(false);
+        mUpdaterHelper.listenForFoodChanges(false);
         new DeleteDataAsyncTask(deleteType, signInClient).execute();
     }
 
@@ -325,8 +328,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
             };
 
     // region Firebase RTD ChildEventListener
-
-    private static ChildEventListener sChildEventListener;
 
     private static ChildEventListener createNewChildEventListener() {
         return new ChildEventListener() {

@@ -6,6 +6,7 @@ import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -82,6 +84,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(DetailActivity.class.getSimpleName());
 
         // Start sign-in if user is not signed-in
         if (!AuthToolbox.isSignedIn()) {
@@ -106,33 +109,31 @@ public class DetailActivity extends AppCompatActivity {
             mInitialized = savedInstanceState.getBoolean(KEY_INITIALIZED_BOOL);
         }
 
-        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+        mViewModel = obtainViewModel(this);
         mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
-                    List<Food> foodsList = new ArrayList<>(foods); // required for reversing list
                     // Don't do anything if foods is null
+
+                    List<Food> foodsList = new ArrayList<>(foods); // required for reversing list
+                    if (foodsList.size() == 0) {
+                        // If there are no more foods, close Details
+                        finish();
+                    }
                     if (!Toolbox.isLeftToRightLayout()) {
                         // Reverse foods list for RTL layout
                         Collections.reverse(foodsList);
                     }
+                    mPagerAdapter.setFoodsList(foodsList);
+                    // needs to be called here, and not in adapter, to invalidate views
+                    mPagerAdapter.notifyDataSetChanged();
                     if (!mInitialized) {
-                        mPagerAdapter.setFoodsList(foodsList);
-                        // needs to be called here, and not in adapter, to invalidate views
-                        mPagerAdapter.notifyDataSetChanged();
                         mViewPager.setCurrentItem(
                                 DataToolbox.getFoodPositionFromId(foodsList, mLaunchedItemId),
                                 false);
                         mInitialized = true;
                     } else {
-                        if (foodsList.size() == 0) {
-                            // If there are no more foods, close Details
-                            finish();
-                        }
-                        mPagerAdapter.setFoodsList(foodsList);
-                        // needs to be called here, and not in adapter, to invalidate views
-                        mPagerAdapter.notifyDataSetChanged();
                         mViewPager.setCurrentItem(mCurrentPosition, false);
                     }
                     // There is a jitter bug in scrolling if there is only one page. This should fix
@@ -168,6 +169,17 @@ public class DetailActivity extends AppCompatActivity {
         Intent intent = new Intent(DetailActivity.this, EditActivity.class);
         intent.putExtra(EditFragment.ARG_ITEM_ID_LONG, mFoodsList.get(mViewPager.getCurrentItem()).get_id());
         startActivity(intent);
+    }
+
+    /**
+     * For sharing the ViewModel across child fragments. This prevents child fragments from having
+     * to create their own ViewModels, avoiding redundancy
+     *
+     * @param activity
+     * @return
+     */
+    public static FoodViewModel obtainViewModel(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(FoodViewModel.class);
     }
 
     @Override

@@ -7,15 +7,23 @@ import android.arch.paging.PagedList;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.firebase.FirebaseStorageHelper;
+import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Repositories abstract access to multiple data sources, if your app has any. It is a convenience
@@ -39,9 +47,19 @@ public class FoodRepository {
     private FoodDao mFoodDao;
     private Context mContext;
 
+    private FirebaseUpdaterHelper mUpdaterHelper;
+
     public FoodRepository(Application application) {
         getDao(application);
         mContext = application;
+
+        mUpdaterHelper = new FirebaseUpdaterHelper();
+        mUpdaterHelper.setFoodChildEventListener(new FoodChildEventListener());
+        mUpdaterHelper.listenForFoodTimestampChanges(true, mContext);
+    }
+
+    public void stopListeningForFoodChanges() {
+        mUpdaterHelper.listenForFoodChanges(false);
     }
 
     private void getDao(Application application) {
@@ -302,6 +320,7 @@ public class FoodRepository {
 
         @Override
         protected void onPostExecute(Long[] ids) {
+            Timber.d("FoodDao/foods inserted");
             if (mSaveToCloud) {
                 for (int i = 0; i < mFoods.length; i++) {
                     Food food = mFoods[i];
@@ -331,6 +350,12 @@ public class FoodRepository {
             // Update the widget
             UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Timber.d("FoodDao/foods updated");
         }
     }
 
@@ -375,6 +400,12 @@ public class FoodRepository {
             UpdateWidgetService.updateFoodWidget(contexts[0]);
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Timber.d("FoodDao/foods deleted");
+        }
     }
 
     /**
@@ -416,4 +447,69 @@ public class FoodRepository {
     }
 
     // endregion
+
+    /**
+     * Listens to RTD food list change events
+     */
+    private class FoodChildEventListener implements ChildEventListener {
+        private final String TAG = "FoodChildEventListener";
+
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food added from RTD: id_%s %s",
+                            food.get_id(), food.getFoodName());
+                    insertFood(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food added from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
+            }
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food changed from RTD: id_%s %s",
+                            food.get_id(), food.getFoodName());
+                    updateFood(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food changed from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
+            }
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            try {
+                Food food = dataSnapshot.getValue(Food.class);
+                if (food != null) {
+                    Timber.d("Food removed from RTD: id_%s %s",
+                            food.get_id(), food.getFoodName());
+                    deleteFood(false, food); // don't save to cloud to avoid infinite loop
+                } else {
+                    Timber.e("Food removed from RTD was null. Not updating DB...");
+                }
+            } catch (DatabaseException e) {
+                Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
+            }
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            // Not used here
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            Timber.e("%s/Cancelled error pulling from RTD: %s", TAG, databaseError.getMessage());
+        }
+    }
 }

@@ -3,7 +3,6 @@ package com.zn.expirytracker.ui;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -160,9 +159,10 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(DetailFragment.class.getSimpleName());
 
         mHostActivity = getActivity();
-        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+        mViewModel = DetailActivity.obtainViewModel(getActivity());
         mCurrentDateTimeStartOfDay = DateToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
 
         Bundle args = getArguments();
@@ -180,7 +180,6 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView =
                 inflater.inflate(R.layout.fragment_detail, container, false);
-        Timber.tag(DetailFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
         final LiveData<Food> liveData = mViewModel.getSingleFoodById(mItemId, false);
@@ -188,12 +187,14 @@ public class DetailFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Food food) {
                 if (food != null) {
+                    Timber.d("DetailFragment/populating views...");
                     populateViewElements(food);
                 } else {
                     // Called when a fragment is removed if we don't call Adapter.notifyDataSetChanged().
                     // Leaves fragment with an unpopulated shell
                 }
-                liveData.removeObserver(this);
+                // this is pointless if the fragment is recreated
+//                liveData.removeObserver(this);
             }
         });
 
@@ -248,6 +249,7 @@ public class DetailFragment extends Fragment {
 
         // Main layout
         mTvFoodName.setText(food.getFoodName());
+        Timber.d("DetailFragment/foodname: %s", food.getFoodName());
         mTvExpiryDate.setText(DateToolbox.getFormattedExpiryDateString(
                 mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
         DateTime dateTime = new DateTime(food.getDateExpiry());

@@ -61,58 +61,114 @@ public class FirebaseDatabaseHelper {
         }
     }
 
+    // for debugging, keep track of number of listener instances
+    private static int food = 0;
+    private static int prefs = 0;
+    private static int food_time = 0;
+    private static int prefs_time = 0;
+
+    private static ChildEventListener mFoodChildEventListener;
+    private static ChildEventListener mPrefsChildEventListener;
+    private static ValueEventListener mFoodTimestampValueEventListener;
+    private static ValueEventListener mPrefsTimestampValueEventListener;
+
     public static void addChildEventListener(@NonNull ChildEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase.child(uid).addChildEventListener(listener);
+        if (mFoodChildEventListener == null) {
+            Timber.d("firebase/rtd/FOOD: Adding the listener. %s", ++food);
+            mFoodChildEventListener = listener;
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase.child(uid).addChildEventListener(mFoodChildEventListener);
+        } else {
+            Timber.d("firebase/rtd/FOOD: Listener already active. Not adding");
+        }
     }
 
     public static void addChildEventListener_Preferences(@NonNull ChildEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_Preferences.child(uid).addChildEventListener(listener);
+        if (mPrefsChildEventListener == null) {
+            Timber.d("firebase/rtd/PREFS: Adding the listener. %s", ++prefs);
+            mPrefsChildEventListener = listener;
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_Preferences.child(uid).addChildEventListener(mPrefsChildEventListener);
+        } else {
+            Timber.d("firebase/rtd/PREFS: Listener already active. Not adding");
+        }
     }
 
     public static void addValueEventListener_FoodTimestamp(@NonNull ValueEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).addValueEventListener(listener);
+        if (mFoodTimestampValueEventListener == null) {
+            Timber.d("firebase/rtd/FOOD_TIMESTAMP: Adding the listener. %s", ++food_time);
+            mFoodTimestampValueEventListener = listener;
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP)
+                    .addValueEventListener(mFoodTimestampValueEventListener);
+        } else {
+            Timber.d("firebase/rtd/FOOD_TIMESTAMP: Listener already active. Not adding");
+        }
     }
 
     public static void addValueEventListener_PrefsTimestamp(@NonNull ValueEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP).addValueEventListener(listener);
+        if (mPrefsTimestampValueEventListener == null) {
+            Timber.d("firebase/rtd/PREFS_TIMESTAMP: Adding the listener. %s", ++prefs_time);
+            mPrefsTimestampValueEventListener = listener;
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP)
+                    .addValueEventListener(mPrefsTimestampValueEventListener);
+        } else {
+            Timber.d("firebase/rtd/PREFS_TIMESTAMP: Listener already active. Not adding");
+        }
     }
 
-    public static void removeChildEventListener(@NonNull ChildEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase.child(uid).removeEventListener(listener);
+    public static void removeChildEventListener() {
+        if (mFoodChildEventListener != null) {
+            Timber.d("firebase/rtd/FOOD: Removing the listener. %s", --food);
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase.child(uid).removeEventListener(mFoodChildEventListener);
+            mFoodChildEventListener = null;
+        }
     }
 
-    public static void removeChildEventListener_Preferences(@NonNull ChildEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_Preferences.child(uid).removeEventListener(listener);
+    public static void removeChildEventListener_Preferences() {
+        if (mPrefsChildEventListener != null) {
+            Timber.d("firebase/rtd/PREFS: Removing the listener. %s", --prefs);
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_Preferences.child(uid).removeEventListener(mPrefsChildEventListener);
+            mPrefsChildEventListener = null;
+        }
     }
 
-    public static void removeValueEventListener_FoodTimestamp(@NonNull ValueEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP).removeEventListener(listener);
+    public static void removeValueEventListener_FoodTimestamp() {
+        if (mFoodTimestampValueEventListener != null) {
+            Timber.d("firebase/rtd/FOOD_TIMESTAMP: Removing the listener. %s", --food_time);
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_UserData.child(uid).child(Constants.FOOD_TIMESTAMP)
+                    .removeEventListener(mFoodTimestampValueEventListener);
+            mFoodTimestampValueEventListener = null;
+        }
     }
 
-    public static void removeValueEventListener_PrefsTimestamp(@NonNull ValueEventListener listener) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
-        mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP).removeEventListener(listener);
+    public static void removeValueEventListener_PrefsTimestamp() {
+        if (mPrefsTimestampValueEventListener != null) {
+            Timber.d("firebase/rtd/PREFS_TIMESTAMP: Removing the listener. %s", --prefs_time);
+            // Get the user id, to serve as first child
+            String uid = AuthToolbox.getUserId();
+            mDatabase_UserData.child(uid).child(Constants.PREFS_TIMESTAMP)
+                    .removeEventListener(mPrefsTimestampValueEventListener);
+            mPrefsTimestampValueEventListener = null;
+        }
     }
 
     /**
      * Adds a timestamp in Firebase RTD
      *
      * @param uid
+     * @param type
      */
     private static void setTimestamp(String uid, TimestampType type) {
         String key;
@@ -127,7 +183,9 @@ public class FirebaseDatabaseHelper {
                 throw new IllegalArgumentException(String.format(
                         "Invalid TimestampType passed: %s", type));
         }
-        mDatabase_UserData.child(uid).child(key).setValue(ServerValue.TIMESTAMP);
+        mDatabase_UserData.child(uid).child(key).setValue(ServerValue.TIMESTAMP)
+                .addOnCompleteListener(new FirebaseRTD_OnCompleteListener(
+                        "firebase/rtd/timestamp"));
     }
 
     public enum TimestampType {

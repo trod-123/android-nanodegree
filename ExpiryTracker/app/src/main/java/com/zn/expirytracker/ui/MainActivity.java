@@ -1,18 +1,20 @@
 package com.zn.expirytracker.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     TabLayout mTabLayout;
 
     MainPagerAdapter mPagerAdapter;
+
+    private FirebaseUpdaterHelper mUpdaterHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,26 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         setupTabs();
+
+        mUpdaterHelper = new FirebaseUpdaterHelper();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mUpdaterHelper != null) {
+            mUpdaterHelper.setPrefsChildEventListener(this);
+            mUpdaterHelper.listenForPrefsTimestampChanges(true, this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mUpdaterHelper != null) {
+            mUpdaterHelper.listenForPrefsTimestampChanges(false, this);
+            mUpdaterHelper.listenForPrefsChanges(false);
+        }
     }
 
     @Override
@@ -96,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                     .setContentDescription(R.string.fragment_at_a_glance_name);
             tabAtAGlance.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         } else {
-            Timber.e("At a glance tab was null! Not setting tab elements...");
+            Timber.e("MainActivity/At a glance tab was null! Not setting tab elements...");
         }
         TabLayout.Tab tabList = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_LIST);
         if (tabList != null) {
@@ -106,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             tabList.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
             tabList.getIcon().setAlpha(128);
         } else {
-            Timber.e("List tab was null! Not setting tab elements...");
+            Timber.e("MainActivity/List tab was null! Not setting tab elements...");
         }
 
         // Change color of icons by selection
@@ -130,6 +154,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchSettings() {
         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+    }
+
+    /**
+     * Allows this ViewModel instance to be bound to MainActivity, and allow it to be shared
+     * across AAG and List Fragments
+     *
+     * @param activity
+     * @return
+     */
+    public static FoodViewModel obtainViewModel(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(FoodViewModel.class);
     }
 
     private void launchSearch() {

@@ -3,7 +3,6 @@ package com.zn.expirytracker.ui;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.arch.paging.PagedList;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -120,11 +119,12 @@ public class AtAGlanceFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(AtAGlanceFragment.class.getSimpleName());
 
         mHostActivity = getActivity();
         mCurrentDateTime = System.currentTimeMillis();
         mCurrentDateTimeStartOfDay = DateToolbox.getDateTimeStartOfDay(mCurrentDateTime);
-        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+        mViewModel = MainActivity.obtainViewModel(getActivity());
 
         if (savedInstanceState != null) {
             mCurrentFilter = (WeeklyDateFilter) savedInstanceState.getSerializable(
@@ -137,7 +137,6 @@ public class AtAGlanceFragment extends Fragment
                              Bundle savedInstanceState) {
         View rootView =
                 inflater.inflate(R.layout.fragment_at_a_glance, container, false);
-        Timber.tag(AtAGlanceFragment.class.getSimpleName());
         ButterKnife.bind(this, rootView);
 
         // Set up the listener for the extended fab. Only take action if the filter changes

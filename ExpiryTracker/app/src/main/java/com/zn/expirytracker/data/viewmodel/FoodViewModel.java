@@ -11,6 +11,8 @@ import com.zn.expirytracker.data.model.Food;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 /**
  * ViewModels live beyond the activity and fragment lifecycle, so it can serve as an effective
  * holder for your data that would be presented to the users. Interact with your repository
@@ -31,7 +33,16 @@ public class FoodViewModel extends AndroidViewModel {
 
     public FoodViewModel(@NonNull Application application) {
         super(application);
+        Timber.d("FoodViewModel/the listener - creating view model");
         mRepository = new FoodRepository(application);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        Timber.d("FoodViewModel/the listener - clearing view model");
+        // Keep network data transfer to a minimum by removing the listeners
+        mRepository.stopListeningForFoodChanges();
     }
 
     public void insert(boolean saveToCloud, Food food) {
