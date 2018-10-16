@@ -85,8 +85,6 @@ public class CaptureOverlayFragment extends Fragment
     private static final int REQ_CODE_SPEECH_INPUT_NAME = 1024;
     private static final int REQ_CODE_SPEECH_INPUT_EXPIRY_DATE = 1026;
 
-    private static final int DEFAULT_MAX_IMAGES = 5;
-
     @BindView(R.id.layout_overlay_capture_root)
     View mRootView;
     @BindView(R.id.pb_overlay_scanned)
@@ -427,7 +425,9 @@ public class CaptureOverlayFragment extends Fragment
             Item item = upcItem.getItems().get(0);
             mName = item.getTitle();
             mDescription = item.getDescription();
-            mImageUris = item.getImages();
+            List<String> images = item.getImages();
+            mImageUris = images.subList(0, images.size() > Constants.MAX_BARCODE_IMAGE_LIST_SIZE ?
+                    Constants.MAX_BARCODE_IMAGE_LIST_SIZE : images.size());
             mBrand = item.getBrand();
             mSize = item.getSize();
             mWeight = item.getWeight();

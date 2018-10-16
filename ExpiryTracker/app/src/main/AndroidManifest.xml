@@ -14,6 +14,8 @@
         android:name="android.hardware.camera2"
         android:required="false" />
 
+    <!-- Cleartext is disabled on 28 by default. This is only needed to load images from http://
+    https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted -->
     <application
         android:name=".ExpiryTrackerApplication"
         android:allowBackup="true"
@@ -22,7 +24,8 @@
         android:roundIcon="@mipmap/zn_logo_blackwhite"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"> <!-- Cleartext is disabled on 28 by default. https://stackoverflow.com/questions/45940861/android-8-cleartext-http-traffic-not-permitted -->
+        android:usesCleartextTraffic="true">
+
         <!-- Install Firebase components upon app's installation -->
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"

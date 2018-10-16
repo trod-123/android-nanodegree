@@ -36,7 +36,6 @@ public class Constants {
      */
     public static final int DELAY_CONSECUTIVE_SPEECH_REQEUSTS = 300;
 
-    public static final String BITMAP_SAVING_DIRECTORY = "scannedImagesDir";
     public static final int BITMAP_SAVING_QUALITY = 30; // out of 100
     public static final String DEFAULT_FILENAME = "food";
 
@@ -44,4 +43,6 @@ public class Constants {
     public static final int GREETING_EVENING_BOUNDS = 17; // 24 hours
     public static final int GREETING_MORNING_BOUNDS = 5;
     public static final int GREETING_AFTERNOON_BOUNDS = 12;
+
+    public static final int MAX_BARCODE_IMAGE_LIST_SIZE = 3;
 }
