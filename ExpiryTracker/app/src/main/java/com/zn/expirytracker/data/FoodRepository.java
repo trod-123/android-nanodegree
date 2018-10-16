@@ -47,19 +47,15 @@ public class FoodRepository {
     private FoodDao mFoodDao;
     private Context mContext;
 
-    private FirebaseUpdaterHelper mUpdaterHelper;
-
     public FoodRepository(Application application) {
         getDao(application);
         mContext = application;
 
-        mUpdaterHelper = new FirebaseUpdaterHelper();
-        mUpdaterHelper.setFoodChildEventListener(new FoodChildEventListener());
-        mUpdaterHelper.listenForFoodTimestampChanges(true, mContext);
+        FirebaseUpdaterHelper.setFoodChildEventListener(new FoodChildEventListener());
     }
 
     public void stopListeningForFoodChanges() {
-        mUpdaterHelper.listenForFoodChanges(false);
+        FirebaseUpdaterHelper.listenForFoodChanges(false);
     }
 
     private void getDao(Application application) {

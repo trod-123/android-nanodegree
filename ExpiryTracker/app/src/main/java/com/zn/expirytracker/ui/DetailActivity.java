@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.utils.AuthToolbox;
@@ -177,6 +178,20 @@ public class DetailActivity extends AppCompatActivity {
             public void onPageScrollStateChanged(int state) {
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (AuthToolbox.isSignedIn()) {
+            FirebaseUpdaterHelper.listenForFoodTimestampChanges(true, this);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
     }
 
     public void startEditActivity(View view) {

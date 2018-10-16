@@ -37,6 +37,13 @@ public class DebugFields {
     public static final boolean ENABLE_STRICT_MODE = false;
 
     /**
+     * Enable LeakCanary memory leak detections
+     * <p>
+     * https://github.com/square/leakcanary
+     */
+    public static final boolean ENABLE_MEMORY_LEAKS_DETECTION = false;
+
+    /**
      * For debugging. {@code true} allows
      * <ul>
      * <li>Setting expiry date before current date</li>

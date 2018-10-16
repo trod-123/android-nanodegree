@@ -21,18 +21,18 @@ import timber.log.Timber;
  */
 public class FirebaseUpdaterHelper {
 
-    private ChildEventListener mFoodChildEventListener;
-    private ChildEventListener mPrefsChildEventListener;
+    private static ChildEventListener mFoodChildEventListener;
+    private static ChildEventListener mPrefsChildEventListener;
 
-    public void setFoodChildEventListener(ChildEventListener foodChildEventListener) {
+    public static void setFoodChildEventListener(ChildEventListener foodChildEventListener) {
         mFoodChildEventListener = foodChildEventListener;
     }
 
-    public void setPrefsChildEventListener(Context context) {
+    public static void setPrefsChildEventListener(Context context) {
         mPrefsChildEventListener = new PrefsChildEventListener(context);
     }
 
-    public void setPrefsChildEventListener(ChildEventListener listener) {
+    public static void setPrefsChildEventListener(ChildEventListener listener) {
         mPrefsChildEventListener = listener;
     }
 
@@ -41,7 +41,7 @@ public class FirebaseUpdaterHelper {
      * action from {@link ChildEventListener#onChildAdded(DataSnapshot, String)}. All Preference
      * changes are managed in {@link com.zn.expirytracker.settings.SettingsFragment}
      */
-    private class PrefsChildEventListener implements ChildEventListener {
+    private static class PrefsChildEventListener implements ChildEventListener {
         private Context mContext;
 
         PrefsChildEventListener(Context context) {
@@ -81,7 +81,7 @@ public class FirebaseUpdaterHelper {
      *
      * @param snapshot
      */
-    private void updateSharedPreferencesFromFirebase(DataSnapshot snapshot, Context context) {
+    private static void updateSharedPreferencesFromFirebase(DataSnapshot snapshot, Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String key = snapshot.getKey();
         Object value = snapshot.getValue();
@@ -115,7 +115,7 @@ public class FirebaseUpdaterHelper {
     /**
      * Listens to RTD food timestamp change events
      */
-    private class TimestampValueEventListener implements ValueEventListener {
+    private static class TimestampValueEventListener implements ValueEventListener {
         private final String TAG = "TimestampValueEventListener";
         private FirebaseDatabaseHelper.TimestampType mType;
         private Context mContext;
@@ -199,7 +199,7 @@ public class FirebaseUpdaterHelper {
      * @param start
      * @param context
      */
-    public void listenForFoodTimestampChanges(boolean start, Context context) {
+    public static void listenForFoodTimestampChanges(boolean start, Context context) {
         if (start) {
             FirebaseDatabaseHelper.addValueEventListener_FoodTimestamp(
                     new TimestampValueEventListener(FirebaseDatabaseHelper.TimestampType.FOOD, context));
@@ -214,7 +214,7 @@ public class FirebaseUpdaterHelper {
      * @param start
      * @param context
      */
-    public void listenForPrefsTimestampChanges(boolean start, Context context) {
+    public static void listenForPrefsTimestampChanges(boolean start, Context context) {
         if (start) {
             FirebaseDatabaseHelper.addValueEventListener_PrefsTimestamp(
                     new TimestampValueEventListener(FirebaseDatabaseHelper.TimestampType.PREFS, context));
@@ -223,7 +223,7 @@ public class FirebaseUpdaterHelper {
         }
     }
 
-    public void listenForFoodChanges(boolean start) {
+    public static void listenForFoodChanges(boolean start) {
         if (start) {
             if (mFoodChildEventListener != null) {
                 // Only listen to changes to food_database/food_table/uid/{child}
@@ -236,7 +236,7 @@ public class FirebaseUpdaterHelper {
         }
     }
 
-    public void listenForPrefsChanges(boolean start) {
+    public static void listenForPrefsChanges(boolean start) {
         if (start) {
             if (mPrefsChildEventListener != null) {
                 FirebaseDatabaseHelper.addChildEventListener_Preferences(mPrefsChildEventListener);

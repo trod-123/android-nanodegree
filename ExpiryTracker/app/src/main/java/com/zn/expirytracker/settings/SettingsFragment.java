@@ -82,8 +82,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     static boolean mInitializeGuard = false;
 
-    private FirebaseUpdaterHelper mUpdaterHelper;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,8 +97,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         mSp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
 
-        mUpdaterHelper = new FirebaseUpdaterHelper();
-        mUpdaterHelper.setPrefsChildEventListener(createNewChildEventListener());
+        FirebaseUpdaterHelper.setPrefsChildEventListener(createNewChildEventListener());
     }
 
     @Override
@@ -145,14 +142,16 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onResume();
         // Show account settings only if the user is signed in
         showAccountSettings(AuthToolbox.isSignedIn());
-        mUpdaterHelper.listenForPrefsChanges(true);
+        FirebaseUpdaterHelper.listenForPrefsChanges(true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         if (AuthToolbox.isSignedIn()) {
-            mUpdaterHelper.listenForPrefsChanges(false);
+            // Ensure we only run this while user is signed in. User can potentially
+            // sign out before onPause() is called
+            FirebaseUpdaterHelper.listenForPrefsChanges(false);
         }
     }
 
@@ -283,10 +282,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     private void startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType,
                                           GoogleSignInClient signInClient) {
-        mUpdaterHelper.listenForPrefsTimestampChanges(false, mHostActivity);
-        mUpdaterHelper.listenForFoodTimestampChanges(false, mHostActivity);
-        mUpdaterHelper.listenForPrefsChanges(false);
-        mUpdaterHelper.listenForFoodChanges(false);
+        FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, mHostActivity);
+        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, mHostActivity);
+        FirebaseUpdaterHelper.listenForPrefsChanges(false);
+        FirebaseUpdaterHelper.listenForFoodChanges(false);
         new DeleteDataAsyncTask(deleteType, signInClient).execute();
     }
 

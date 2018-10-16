@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     MainPagerAdapter mPagerAdapter;
 
-    private FirebaseUpdaterHelper mUpdaterHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,26 +55,24 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.setupWithViewPager(mViewPager);
 
         setupTabs();
-
-        mUpdaterHelper = new FirebaseUpdaterHelper();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mUpdaterHelper != null) {
-            mUpdaterHelper.setPrefsChildEventListener(this);
-            mUpdaterHelper.listenForPrefsTimestampChanges(true, this);
+        if (AuthToolbox.isSignedIn()) {
+            FirebaseUpdaterHelper.setPrefsChildEventListener(this);
+            FirebaseUpdaterHelper.listenForPrefsTimestampChanges(true, this);
+            FirebaseUpdaterHelper.listenForFoodTimestampChanges(true, this);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mUpdaterHelper != null) {
-            mUpdaterHelper.listenForPrefsTimestampChanges(false, this);
-            mUpdaterHelper.listenForPrefsChanges(false);
-        }
+        FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, this);
+        FirebaseUpdaterHelper.listenForPrefsChanges(false);
+        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
     }
 
     @Override
