@@ -74,6 +74,17 @@ public class DetailActivity extends AppCompatActivity {
      */
     private boolean mLaunchedExternally;
 
+    /**
+     * Once pager views are set, don't allow recreating them unless, for instance, a food item is
+     * deleted. If a food item is updated, avoid its recreation from ViewModel observer to prevent
+     * the UI flashing from refreshing (individual fragments can still get updated because they
+     * have their own ViewModel observers)
+     * <p>
+     * New foods aren't supposed to be added here, so the only thing that changes the pager's
+     * data structure is via deleting food items. This should be fine enough for our purposes
+     */
+    private boolean mAllowRecreatingFragments = true;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(KEY_CURRENT_POSITION_INT, mCurrentPosition);
@@ -115,30 +126,33 @@ public class DetailActivity extends AppCompatActivity {
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
                     // Don't do anything if foods is null
+                    if (mAllowRecreatingFragments) {
+                        List<Food> foodsList = new ArrayList<>(foods); // required for reversing list
+                        if (foodsList.size() == 0) {
+                            // If there are no more foods, close Details
+                            finish();
+                        }
+                        if (!Toolbox.isLeftToRightLayout()) {
+                            // Reverse foods list for RTL layout
+                            Collections.reverse(foodsList);
+                        }
+                        mPagerAdapter.setFoodsList(foodsList);
+                        // needs to be called here, and not in adapter, to invalidate views
+                        mPagerAdapter.notifyDataSetChanged();
+                        if (!mInitialized) {
+                            mViewPager.setCurrentItem(
+                                    DataToolbox.getFoodPositionFromId(foodsList, mLaunchedItemId),
+                                    false);
+                            mInitialized = true;
+                        } else {
+                            mViewPager.setCurrentItem(mCurrentPosition, false);
+                        }
+                        // There is a jitter bug in scrolling if there is only one page. This should fix
+                        mViewPager.setPagingEnabled(foodsList.size() > 1);
+                        mFoodsList = foodsList;
 
-                    List<Food> foodsList = new ArrayList<>(foods); // required for reversing list
-                    if (foodsList.size() == 0) {
-                        // If there are no more foods, close Details
-                        finish();
+                        mAllowRecreatingFragments = false;
                     }
-                    if (!Toolbox.isLeftToRightLayout()) {
-                        // Reverse foods list for RTL layout
-                        Collections.reverse(foodsList);
-                    }
-                    mPagerAdapter.setFoodsList(foodsList);
-                    // needs to be called here, and not in adapter, to invalidate views
-                    mPagerAdapter.notifyDataSetChanged();
-                    if (!mInitialized) {
-                        mViewPager.setCurrentItem(
-                                DataToolbox.getFoodPositionFromId(foodsList, mLaunchedItemId),
-                                false);
-                        mInitialized = true;
-                    } else {
-                        mViewPager.setCurrentItem(mCurrentPosition, false);
-                    }
-                    // There is a jitter bug in scrolling if there is only one page. This should fix
-                    mViewPager.setPagingEnabled(foodsList.size() > 1);
-                    mFoodsList = foodsList;
                 }
             }
         });
@@ -222,6 +236,7 @@ public class DetailActivity extends AppCompatActivity {
     private void deleteItem() {
         Food food = mFoodsList.get(mCurrentPosition);
         mViewModel.delete(true, food);
+        mAllowRecreatingFragments = true;
         Toolbox.showToast(this, getString(R.string.message_item_removed,
                 food.getFoodName()));
     }

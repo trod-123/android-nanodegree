@@ -1,7 +1,6 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.rd.PageIndicatorView;
@@ -46,6 +46,10 @@ public class DetailFragment extends Fragment {
 
     private static final int IMAGE_PAGER_POSITION_NOT_SET = -1;
 
+    @BindView(R.id.container_detail_fragment)
+    View mRootView;
+    @BindView(R.id.pb_detail)
+    ProgressBar mPb;
     @BindView(R.id.viewPager_detail_image)
     ViewPager mViewPager;
     @BindView(R.id.iv_scrim_detail_image)
@@ -182,10 +186,17 @@ public class DetailFragment extends Fragment {
                 inflater.inflate(R.layout.fragment_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        final LiveData<Food> liveData = mViewModel.getSingleFoodById(mItemId, false);
-        liveData.observe(this, new Observer<Food>() {
+        mViewModel.getSingleFoodById(mItemId, false).observe(
+                this, new Observer<Food>() {
             @Override
             public void onChanged(@Nullable Food food) {
+                // TODO: This appears to be called 4 times after updating with a new image: and in
+                // one of these calls, the new image is NOT in the food item, causing current
+                // position to change to old max if it was on the new max
+                // (1) Updated from when change hits Room
+                // (2) Updated from when RTD onChildAdded
+                // (3) Updated from when RTD onChildChanged
+                // (4) Updated from when RTD onChildChanged (again)
                 if (food != null) {
                     Timber.d("DetailFragment/populating views...");
                     populateViewElements(food);
@@ -193,8 +204,6 @@ public class DetailFragment extends Fragment {
                     // Called when a fragment is removed if we don't call Adapter.notifyDataSetChanged().
                     // Leaves fragment with an unpopulated shell
                 }
-                // this is pointless if the fragment is recreated
-//                liveData.removeObserver(this);
             }
         });
 
@@ -213,6 +222,7 @@ public class DetailFragment extends Fragment {
                 // Keep the current selected position in sync between ViewPager and PageIndicator
                 mPageIndicatorView.setSelection(position);
                 mCurrentImagePosition = position;
+                Timber.d("DetailFragment/current position shifted: %s", mCurrentImagePosition);
             }
 
             @Override
@@ -236,20 +246,22 @@ public class DetailFragment extends Fragment {
     }
 
     private void populateViewElements(@NonNull Food food) {
+        mRootView.setVisibility(View.INVISIBLE);
+        Toolbox.showView(mPb, true, false);
+
         // ViewPager
         @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
+        // call again out here to invalidate views (see note in EditFragment
+        mPagerAdapter.notifyDataSetChanged();
         mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
                 mCurrentImagePosition : images != null && !Toolbox.isLeftToRightLayout() ?
                 images.size() - 1 : 0, false);
-        // call again out here to invalidate views (see note in EditFragment
-        mPagerAdapter.notifyDataSetChanged();
         Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
         mViewPager.setContentDescription(food.getFoodName());
 
         // Main layout
         mTvFoodName.setText(food.getFoodName());
-        Timber.d("DetailFragment/foodname: %s", food.getFoodName());
         mTvExpiryDate.setText(DateToolbox.getFormattedExpiryDateString(
                 mHostActivity, mCurrentDateTimeStartOfDay.getMillis(), food.getDateExpiry()));
         DateTime dateTime = new DateTime(food.getDateExpiry());
@@ -344,6 +356,9 @@ public class DetailFragment extends Fragment {
             }
         }
         setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, inputType != null);
+
+        mRootView.setVisibility(View.VISIBLE);
+        Toolbox.showView(mPb, false, false);
     }
 
     private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView,
