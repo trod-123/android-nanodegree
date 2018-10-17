@@ -9,6 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -141,6 +144,25 @@ public class DetailFragment extends Fragment {
     // for savedInstanceState
     private int mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
 
+    /**
+     * For handling events in the hosting {@link DetailActivity}
+     */
+    interface DetailFragmentListener {
+        /**
+         * Allows the host to handle food date changes
+         *
+         * @param foodId
+         */
+        void onDateChanged(long foodId);
+
+        /**
+         * Allows the host to handle food deletions
+         */
+        void onDeleteItem();
+    }
+
+    private DetailFragmentListener mDetailFragmentListener;
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(KEY_CURRENT_IMAGE_PAGER_POSITION, mCurrentImagePosition);
@@ -166,6 +188,11 @@ public class DetailFragment extends Fragment {
         Timber.tag(DetailFragment.class.getSimpleName());
 
         mHostActivity = getActivity();
+        try {
+            mDetailFragmentListener = (DetailFragmentListener) mHostActivity;
+        } catch (ClassCastException e) {
+            Timber.e(e, "Host activity must implement DetailFragmentListener");
+        }
         mViewModel = DetailActivity.obtainViewModel(getActivity());
         mCurrentDateTimeStartOfDay = DateToolbox.getDateTimeStartOfDay(System.currentTimeMillis());
 
@@ -175,9 +202,16 @@ public class DetailFragment extends Fragment {
         }
 
         if (savedInstanceState != null) {
+            // Note, this is also called when fragments are recreated, meaning after
+            // deletes, the next fragment that takes focus continues to hold onto the
+            // old image pager position
             mCurrentImagePosition = savedInstanceState.getInt(KEY_CURRENT_IMAGE_PAGER_POSITION);
         }
+
+        setHasOptionsMenu(true);
     }
+
+    private long mPreviousDate = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -188,29 +222,28 @@ public class DetailFragment extends Fragment {
 
         mViewModel.getSingleFoodById(mItemId, false).observe(
                 this, new Observer<Food>() {
-            @Override
-            public void onChanged(@Nullable Food food) {
-                // TODO: This appears to be called 4 times after updating with a new image: and in
-                // one of these calls, the new image is NOT in the food item, causing current
-                // position to change to old max if it was on the new max
-                // (1) Updated from when change hits Room
-                // (2) Updated from when RTD onChildAdded
-                // (3) Updated from when RTD onChildChanged
-                // (4) Updated from when RTD onChildChanged (again)
-                if (food != null) {
-                    Timber.d("DetailFragment/populating views...");
-                    populateViewElements(food);
-                } else {
-                    // Called when a fragment is removed if we don't call Adapter.notifyDataSetChanged().
-                    // Leaves fragment with an unpopulated shell
-                }
-            }
-        });
+                    @Override
+                    public void onChanged(@Nullable Food food) {
+                        // TODO: This appears to be called 4 times after updating with a new image: and in
+                        // one of these calls, the new image is NOT in the food item, causing current
+                        // position to change to old max if it was on the new max
+                        // (1) Updated from when change hits Room
+                        // (2) Updated from when RTD onChildAdded
+                        // (3) Updated from when RTD onChildChanged
+                        // (4) Updated from when RTD onChildChanged (again)
+                        if (food != null) {
+                            Timber.d("DetailFragment/populating views...");
+                            populateViewElements(food);
+                        } else {
+                            // Called when a fragment is removed if we don't call Adapter.notifyDataSetChanged().
+                            // Leaves fragment with an unpopulated shell
+                        }
+                    }
+                });
 
         // Image pager
         mPagerAdapter = new DetailImagePagerAdapter(getChildFragmentManager(), false,
                 Toolbox.isLeftToRightLayout());
-        mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -222,7 +255,6 @@ public class DetailFragment extends Fragment {
                 // Keep the current selected position in sync between ViewPager and PageIndicator
                 mPageIndicatorView.setSelection(position);
                 mCurrentImagePosition = position;
-                Timber.d("DetailFragment/current position shifted: %s", mCurrentImagePosition);
             }
 
             @Override
@@ -245,18 +277,45 @@ public class DetailFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detail, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                mDetailFragmentListener.onDeleteItem();
+                // Reset pager position
+                mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void populateViewElements(@NonNull Food food) {
         mRootView.setVisibility(View.INVISIBLE);
         Toolbox.showView(mPb, true, false);
 
+        // Check if date has changed
+        if (mPreviousDate != food.getDateExpiry()) {
+            if (mPreviousDate != 0) mDetailFragmentListener.onDateChanged(mItemId);
+            mPreviousDate = food.getDateExpiry();
+        }
+
         // ViewPager
+
+        // set this here to refresh the image fragments before setting the new image list
+        mViewPager.setAdapter(mPagerAdapter);
+        mPageIndicatorView.setViewPager(mViewPager);
         @Nullable List<String> images = food.getImages();
         mPagerAdapter.setImageUris(images);
-        // call again out here to invalidate views (see note in EditFragment
-        mPagerAdapter.notifyDataSetChanged();
         mViewPager.setCurrentItem(mCurrentImagePosition != IMAGE_PAGER_POSITION_NOT_SET ?
                 mCurrentImagePosition : images != null && !Toolbox.isLeftToRightLayout() ?
                 images.size() - 1 : 0, false);
+        // call again out here to invalidate views (see note in EditFragment
+        mPagerAdapter.notifyDataSetChanged();
         Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
         mViewPager.setContentDescription(food.getFoodName());
 

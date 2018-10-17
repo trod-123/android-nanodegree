@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -29,7 +28,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity
+        implements DetailFragment.DetailFragmentListener {
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             DetailActivity.class, "item_id_long");
@@ -212,12 +212,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // Emulate the back button when pressing the up button, to prevent parent activity from
@@ -225,9 +219,6 @@ public class DetailActivity extends AppCompatActivity {
             // https://stackoverflow.com/questions/22947713/make-the-up-button-behave-like-the-back-button-on-android
             case android.R.id.home:
                 onBackPressed();
-                return true;
-            case R.id.action_delete:
-                deleteItem();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -246,9 +237,22 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     /**
+     * Keep focus on the current food item whose date was modified
+     *
+     * @param foodId
+     */
+    @Override
+    public void onDateChanged(long foodId) {
+        mAllowRecreatingFragments = true;
+        mInitialized = false;
+        mLaunchedItemId = foodId;
+    }
+
+    /**
      * Deletes the food item at the current position of the adapter
      */
-    private void deleteItem() {
+    @Override
+    public void onDeleteItem() {
         Food food = mFoodsList.get(mCurrentPosition);
         mViewModel.delete(true, food);
         mAllowRecreatingFragments = true;
