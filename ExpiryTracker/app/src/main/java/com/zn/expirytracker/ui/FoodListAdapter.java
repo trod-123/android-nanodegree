@@ -139,6 +139,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         }
 
         private void bind(final @NonNull Food food) {
+            Timber.d("FoodListAdapter/Binding %s %s", food.get_id(), food.getFoodName());
             mName.setText(food.getFoodName());
             mExpiryDate.setText(DateToolbox.getFormattedExpiryDateString(
                     mContext, mCurrentTime, food.getDateExpiry()));
@@ -171,6 +172,7 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             // Load image only if there is any
             @Nullable List<String> images = food.getImages();
             if (images != null && !images.isEmpty()) {
+                mImage.setImageDrawable(null);
                 mImage.setVisibility(View.VISIBLE);
                 mPb.setVisibility(View.VISIBLE);
                 mIvBroken.setVisibility(View.GONE);
@@ -221,11 +223,14 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
         @Override
         @OnClick(R.id.item_food_layout)
         public void onClick(View view) {
-            @Nullable Food food = getItem(getAdapterPosition());
-            if (food != null) {
-                mClickListener.onItemClicked(food.get_id());
-            } else {
-                Timber.e("The food was null");
+            int pos = getAdapterPosition(); // this can be -1 while syncing with RTD
+            if (pos != -1) {
+                @Nullable Food food = getItem(pos);
+                if (food != null) {
+                    mClickListener.onItemClicked(food.get_id());
+                } else {
+                    Timber.e("The food was null");
+                }
             }
         }
     }

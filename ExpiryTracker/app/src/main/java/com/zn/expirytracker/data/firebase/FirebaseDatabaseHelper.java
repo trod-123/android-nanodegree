@@ -1,5 +1,7 @@
 package com.zn.expirytracker.data.firebase;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.Preference;
@@ -12,7 +14,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.zn.expirytracker.data.contracts.DatabaseContract;
@@ -21,6 +22,10 @@ import com.zn.expirytracker.data.contracts.UserDatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Constants;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import timber.log.Timber;
 
@@ -169,8 +174,12 @@ public class FirebaseDatabaseHelper {
      *
      * @param uid
      * @param type
+     * @param context
+     * @param setLocal {@code true} if the local timestamp should also be set, preventing an
+     *                 additional RTD refresh
      */
-    private static void setTimestamp(String uid, TimestampType type) {
+    private static void setTimestamp(String uid, TimestampType type, Context context,
+                                     boolean setLocal) {
         String key;
         switch (type) {
             case FOOD:
@@ -183,9 +192,16 @@ public class FirebaseDatabaseHelper {
                 throw new IllegalArgumentException(String.format(
                         "Invalid TimestampType passed: %s", type));
         }
-        mDatabase_UserData.child(uid).child(key).setValue(ServerValue.TIMESTAMP)
+        // create a fake timestamp for RTD that works across locales as well
+        String timestamp = mDatabase_UserData.push().getKey();
+        mDatabase_UserData.child(uid).child(key).setValue(timestamp)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener(
                         "firebase/rtd/timestamp"));
+        if (setLocal) {
+            SharedPreferences sp = context.getSharedPreferences(
+                    Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+            sp.edit().putString(key, timestamp).apply();
+        }
     }
 
     public enum TimestampType {
@@ -199,8 +215,11 @@ public class FirebaseDatabaseHelper {
      * Needs to be called on the main thread since we get user info here
      *
      * @param food
+     * @param context
+     * @param setLocalTimestamp {@code true} if the local timestamp should also be set, preventing
+     *                          an additional RTD refresh
      */
-    public static void write(Food food) {
+    public static void write(Food food, Context context, boolean setLocalTimestamp) {
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
 
@@ -213,7 +232,36 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).child(foodId).setValue(food)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write"));
 
-        setTimestamp(uid, TimestampType.FOOD);
+        setTimestamp(uid, TimestampType.FOOD, context, setLocalTimestamp);
+    }
+
+    /**
+     * Writes a list of images to the food item in Firebase RTD with the provided {@code foodId}.
+     * Should only be called while the user is logged in or else this throws an error
+     * <p>
+     * Needs to be called on the main thread since we get user info here
+     *
+     * @param foodId
+     * @param imageUris
+     * @param context
+     * @param setLocalTimestamp
+     */
+    public static void writeImagesOnly(String foodId, List<String> imageUris,
+                                       Context context, boolean setLocalTimestamp) {
+        // Get the user id, to serve as first child
+        String uid = AuthToolbox.getUserId();
+
+        Map<String, Object> updatedImageUris = new HashMap<>();
+        updatedImageUris.put(DatabaseContract.COLUMN_IMAGES, imageUris);
+
+        // Check connection for logging, then save the food. Use food id as RTD id
+        checkConnection();
+        Timber.d("firebase/rtd/pushImages...");
+        // updateChildren() allows us to keep all siblings unchanged
+        mDatabase.child(uid).child(foodId).updateChildren(updatedImageUris)
+                .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/writeImages"));
+
+        setTimestamp(uid, TimestampType.FOOD, context, setLocalTimestamp);
     }
 
     /**
@@ -224,8 +272,12 @@ public class FirebaseDatabaseHelper {
      *
      * @param preference
      * @param newValue
+     * @param context
+     * @param setLocalTimestamp {@code true} if the local timestamp should also be set, preventing
+     *                          an additional RTD refresh
      */
-    public static void write_Preference(Preference preference, Object newValue) {
+    public static void write_Preference(Preference preference, Object newValue, Context context,
+                                        boolean setLocalTimestamp) {
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
 
@@ -238,7 +290,7 @@ public class FirebaseDatabaseHelper {
         mDatabase_Preferences.child(uid).child(key).setValue(newValue)
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/write_preference"));
 
-        setTimestamp(uid, TimestampType.PREFS);
+        setTimestamp(uid, TimestampType.PREFS, context, setLocalTimestamp);
     }
 
     /**
@@ -284,8 +336,11 @@ public class FirebaseDatabaseHelper {
      * Needs to be called on the main thread since we get user info here
      *
      * @param id
+     * @param context
+     * @param setLocalTimestamp {@code true} if the local timestamp should also be set, preventing
+     *                          an additional RTD refresh
      */
-    public static void delete(long id) {
+    public static void delete(long id, Context context, boolean setLocalTimestamp) {
         // Get the user id, which is the child where current user's food is stored
         String uid = AuthToolbox.getUserId();
         // Check connection for logging, then remove the food. Use food id as RTD id
@@ -294,7 +349,7 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).child(String.valueOf(id)).removeValue()
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener("firebase/rtd/delete"));
 
-        setTimestamp(uid, TimestampType.FOOD);
+        setTimestamp(uid, TimestampType.FOOD, context, setLocalTimestamp);
     }
 
     /**
@@ -303,8 +358,12 @@ public class FirebaseDatabaseHelper {
      * this throws an error
      * <p>
      * Needs to be called on the main thread since we get user info here
+     *
+     * @param context
+     * @param setLocalTimestamp {@code true} if the local timestamp should also be set, preventing
+     *                          an additional RTD refresh
      */
-    public static void deleteAll() {
+    public static void deleteAll(Context context, boolean setLocalTimestamp) {
         // Get the user id, which is the child where current user's food is stored
         String uid = AuthToolbox.getUserId();
         // Check connection for logging, then remove all food in the child uid
@@ -313,7 +372,7 @@ public class FirebaseDatabaseHelper {
         mDatabase.child(uid).removeValue().addOnCompleteListener(
                 new FirebaseRTD_OnCompleteListener("firebase/rtd/deleteAll"));
 
-        setTimestamp(uid, TimestampType.FOOD);
+        setTimestamp(uid, TimestampType.FOOD, context, setLocalTimestamp);
     }
 
     /**

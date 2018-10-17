@@ -1,5 +1,6 @@
 package com.zn.expirytracker.data.firebase;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.webkit.URLUtil;
@@ -50,7 +51,7 @@ public class FirebaseStorageHelper {
      *
      * @param food
      */
-    public static void uploadAllLocalUrisToFirebaseStorage(final Food food) {
+    public static void uploadAllLocalUrisToFirebaseStorage(final Food food, final Context context) {
         imageUploadCounter = 0;
 
         final List<String> imagesUris = food.getImages();
@@ -103,7 +104,7 @@ public class FirebaseStorageHelper {
                                 }
                                 if (imageUploadCounter == imagesUris.size()) {
                                     // Once we reach the end, update the db, regardless if successful
-                                    updateFoodImagesToFirebaseRTD(food, imagesUris);
+                                    updateFoodImagesToFirebaseRTD(food, imagesUris, context);
                                 }
                             }
                         });
@@ -114,7 +115,7 @@ public class FirebaseStorageHelper {
         if (!isThereLocal) {
             // If there are no images that need to be uploaded to FS, just write to RTD. Since we've
             // only called RTD through the listeners, this line is needed to get to RTD
-            FirebaseDatabaseHelper.write(food);
+            FirebaseDatabaseHelper.write(food, context, true);
         }
     }
 
@@ -152,16 +153,21 @@ public class FirebaseStorageHelper {
     }
 
     /**
-     * Updates a food object with the provided list of image uris, and then sends the update to RTD
+     * Writes only the food image list to RTD.
      * <p>
-     * Note this does NOT update the local database with the Storage uris, keeping the Firebase
+     * Note 1: This does NOT write any other food field in the RTD.
+     * Use {@link FirebaseDatabaseHelper#write(Food, Context, boolean)} for that. Updating images
+     * only prevents listeners from thinking that this is a new food object
+     * <p>
+     * Note 2: This does NOT update the local database with the Storage uris, keeping the Firebase
      * downloading on List
      *
      * @param food
      * @param imageUris
      */
-    private static void updateFoodImagesToFirebaseRTD(Food food, List<String> imageUris) {
-        food.setImages(imageUris);
-        FirebaseDatabaseHelper.write(food);
+    private static void updateFoodImagesToFirebaseRTD(Food food, List<String> imageUris,
+                                                      Context context) {
+        FirebaseDatabaseHelper.writeImagesOnly(String.valueOf(food.get_id()), imageUris,
+                context, false);
     }
 }

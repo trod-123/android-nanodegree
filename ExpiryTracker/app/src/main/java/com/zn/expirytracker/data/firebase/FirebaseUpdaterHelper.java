@@ -162,13 +162,13 @@ public class FirebaseUpdaterHelper {
             }
             Timber.d("%s: checking timestamp...", tag);
             try {
-                Long timestamp_rtd = dataSnapshot.getValue(Long.class);
+                String timestamp_rtd = dataSnapshot.getValue(String.class);
                 if (timestamp_rtd != null) {
                     SharedPreferences sp = mContext.getSharedPreferences(
                             Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
-                    long timestamp_sp = sp.getLong(type, -1);
+                    String timestamp_sp = sp.getString(type, "");
                     Timber.d("SP: %s, RTD: %s", timestamp_sp, timestamp_rtd);
-                    if (timestamp_rtd != timestamp_sp) {
+                    if (!timestamp_rtd.equals(timestamp_sp)) {
                         // RTD has been updated, so sync and update the internal timestamp
                         Timber.d("%s: Didn't match, so started listening", tag);
                         switch (mType) {
@@ -179,7 +179,7 @@ public class FirebaseUpdaterHelper {
                                 listenForPrefsChanges(true);
                                 break;
                         }
-                        sp.edit().putLong(type, timestamp_rtd).apply();
+                        sp.edit().putString(type, timestamp_rtd).apply();
                     } else {
                         // Don't sync if the timestamp is the same
                         Timber.d("%s: Matched, so not listening", tag);

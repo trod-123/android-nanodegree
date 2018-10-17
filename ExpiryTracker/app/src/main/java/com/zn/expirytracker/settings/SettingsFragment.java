@@ -319,7 +319,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                         // Guard is needed to prevent
                         // (1) Initial SP defaults from overwriting user-set preferences in RTD
                         // (2) Infinite update loop between read and write between device and RTD
-                        updatePreferencesToFirebaseRTD(preference, value);
+                        updatePreferencesToFirebaseRTD(preference, value, context);
 
                     mInitializeGuard = false;
                     return true;
@@ -366,8 +366,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * @param preference
      * @param newValue
      */
-    private static void updatePreferencesToFirebaseRTD(Preference preference, Object newValue) {
-        FirebaseDatabaseHelper.write_Preference(preference, newValue);
+    private static void updatePreferencesToFirebaseRTD(Preference preference, Object newValue,
+                                                       Context context) {
+        FirebaseDatabaseHelper.write_Preference(preference, newValue, context, true);
     }
 
     /**

@@ -149,7 +149,8 @@ public class FoodRepository {
     public void updateFood(boolean saveToCloud, Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
         if (saveToCloud) {
-            FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
+            FirebaseDatabaseHelper.write(food, mContext, true);
+            FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
         }
     }
 
@@ -162,7 +163,8 @@ public class FoodRepository {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
         if (saveToCloud) {
             for (Food food : foods) {
-                FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
+                FirebaseDatabaseHelper.write(food, mContext, true);
+                FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
             }
         }
     }
@@ -176,7 +178,7 @@ public class FoodRepository {
     public void deleteFood(boolean wipeCloudStorage, Food food) {
         new DeleteAsyncTask(mFoodDao, food).execute(mContext);
         if (wipeCloudStorage) {
-            FirebaseDatabaseHelper.delete(food.get_id());
+            FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
             deleteImages(true, food);
         }
     }
@@ -191,7 +193,7 @@ public class FoodRepository {
         new DeleteAsyncTask(mFoodDao, foods).execute(mContext);
         if (wipeCloudStorage) {
             for (Food food : foods) {
-                FirebaseDatabaseHelper.delete(food.get_id());
+                FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
                 deleteImages(true, food);
             }
         }
@@ -295,7 +297,7 @@ public class FoodRepository {
      * Use an AsyncTask to properly insert a new {@link Food} into the database. Also sets the
      * id of the newly inserted food so we can push to Firebase RTD
      */
-    private static class InsertAsyncTask extends AsyncTask<Context, Void, Long[]> {
+    private class InsertAsyncTask extends AsyncTask<Context, Void, Long[]> {
         private FoodDao mAsyncTaskDao;
         private boolean mSaveToCloud;
         private Food[] mFoods;
@@ -321,8 +323,8 @@ public class FoodRepository {
                 for (int i = 0; i < mFoods.length; i++) {
                     Food food = mFoods[i];
                     food.set_id(ids[i]);
-                    // This uploads the images first before saving to RTD
-                    FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food);
+                    FirebaseDatabaseHelper.write(food, mContext, true);
+                    FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
                 }
             }
         }
