@@ -22,10 +22,10 @@
     <dimen name="list_item_padding_horizontal">16dp</dimen>
     <dimen name="list_item_padding_vertical">8dp</dimen>
     <dimen name="list_item_height">80dp</dimen>
-    <dimen name="list_item_image_size">80dp</dimen>
+    <dimen name="list_item_image_size">48dp</dimen>
     <dimen name="list_item_name_padding">16dp</dimen>
     <dimen name="list_item_divider_height">1dp</dimen>
-    <dimen name="list_item_image_broken_size">48dp</dimen>
+    <dimen name="list_item_image_broken_size">36dp</dimen>
     <dimen name="list_item_name_size">18sp</dimen>
     <dimen name="list_item_icon_size">96dp</dimen>
     <dimen name="list_item_date_size">14sp</dimen>

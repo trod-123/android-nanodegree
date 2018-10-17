@@ -13,7 +13,6 @@
     <dimen name="bar_chart_header_foods_size">20sp</dimen>
     <dimen name="bar_chart_fab_date_range_size">12sp</dimen>
 
-    <dimen name="list_item_image_size">48dp</dimen>
     <dimen name="list_item_name_size">14sp</dimen>
     <dimen name="list_item_date_size">12sp</dimen>
 
