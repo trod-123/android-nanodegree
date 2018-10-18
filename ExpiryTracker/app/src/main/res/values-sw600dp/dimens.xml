@@ -19,4 +19,12 @@
 
     <!-- endregion -->
 
+    <!-- region Dialogs and Home screen widgets -->
+
+    <dimen name="widget_min_height">250dp</dimen>
+    <dimen name="widget_min_width">180dp</dimen>
+
+    <!-- endregion -->
+
+
 </resources>
