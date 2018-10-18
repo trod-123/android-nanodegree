@@ -431,6 +431,8 @@ public class CaptureOverlayFragment extends Fragment
             mBrand = item.getBrand();
             mSize = item.getSize();
             mWeight = item.getWeight();
+        } else {
+            mBarcode = Constants.BARCODE_NO_DATA;
         }
     }
 
@@ -446,7 +448,11 @@ public class CaptureOverlayFragment extends Fragment
      */
     private void populateFields(String name, long dateExpiry, String description,
                                 List<String> imageUris) {
-        mTvBarcode.setText(mBarcode);
+        if (!mBarcode.equals(Constants.BARCODE_NO_DATA)) {
+            mTvBarcode.setText(mBarcode);
+        } else {
+            mTvBarcode.setText(getString(R.string.data_barcode_not_in_database));
+        }
         mTvName.setText(name);
         if (mDescription.trim().isEmpty()) {
             mTvDescription.setVisibility(View.GONE);
@@ -502,7 +508,9 @@ public class CaptureOverlayFragment extends Fragment
                         }
                     });
                 }
-                mTvAttr.setText(R.string.data_attribution_upcitemdb);
+                if (!mBarcode.equals(Constants.BARCODE_NO_DATA)) {
+                    mTvAttr.setText(R.string.data_attribution_upcitemdb);
+                }
             } else {
                 // upcItem is null, so load the barcode in the main image instead and hide the other
                 if (mBarcodeBitmapPath == null) {

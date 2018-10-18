@@ -24,6 +24,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -392,7 +393,9 @@ public class DetailFragment extends Fragment {
 
         // Meta data layout
         @Nullable String barcode = food.getBarcode();
-        mTvBarcode.setText(barcode);
+        boolean containsBarcodeData = barcode != null && !barcode.equals(Constants.BARCODE_NO_DATA);
+        mTvBarcode.setText(containsBarcodeData ? barcode :
+                getString(R.string.data_barcode_not_in_database));
         setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode,
                 barcode != null && !barcode.isEmpty());
         @Nullable InputType inputType = food.getInputType();
@@ -400,7 +403,7 @@ public class DetailFragment extends Fragment {
             switch (inputType) {
                 case BARCODE:
                     mTvInput.setText(R.string.food_input_type_barcode);
-                    mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
+                    if (containsBarcodeData) mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
                     break;
                 case IMG_REC:
                     mTvInput.setText(R.string.food_input_type_imgrec);

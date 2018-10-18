@@ -30,6 +30,11 @@ public class Constants {
     public static final int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
 
     /**
+     * To be used for barcodes that did not have a valid response from UpcItemDb
+     */
+    public static final String BARCODE_NO_DATA = "0000000";
+
+    /**
      * Delay in milliseconds that allows consecutive speech requests without blocking the mic.
      * Needs to be at least 200-300 or higher depending on the device. We'll set to below just to be
      * safe
