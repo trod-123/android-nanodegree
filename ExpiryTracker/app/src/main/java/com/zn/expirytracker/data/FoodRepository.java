@@ -19,6 +19,7 @@ import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
+import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
@@ -47,15 +48,21 @@ public class FoodRepository {
     private FoodDao mFoodDao;
     private Context mContext;
 
+    /**
+     * Only perform cloud operations if user is currently signed in
+     */
+    private boolean mIsSignedIn;
+
     public FoodRepository(Application application) {
         getDao(application);
         mContext = application;
 
-        FirebaseUpdaterHelper.setFoodChildEventListener(new FoodChildEventListener());
+        if (mIsSignedIn = AuthToolbox.isSignedIn())
+            FirebaseUpdaterHelper.setFoodChildEventListener(new FoodChildEventListener());
     }
 
     public void stopListeningForFoodChanges() {
-        FirebaseUpdaterHelper.listenForFoodChanges(false);
+        if (mIsSignedIn) FirebaseUpdaterHelper.listenForFoodChanges(false);
     }
 
     private void getDao(Application application) {
@@ -148,7 +155,7 @@ public class FoodRepository {
      */
     public void updateFood(boolean saveToCloud, Food food) {
         new UpdateAsyncTask(mFoodDao, food).execute(mContext);
-        if (saveToCloud) {
+        if (saveToCloud && mIsSignedIn) {
             FirebaseDatabaseHelper.write(food, mContext, true);
             FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
         }
@@ -161,7 +168,7 @@ public class FoodRepository {
      */
     public void updateFoods(boolean saveToCloud, Food... foods) {
         new UpdateAsyncTask(mFoodDao, foods).execute(mContext);
-        if (saveToCloud) {
+        if (saveToCloud && mIsSignedIn) {
             for (Food food : foods) {
                 FirebaseDatabaseHelper.write(food, mContext, true);
                 FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
@@ -177,7 +184,7 @@ public class FoodRepository {
      */
     public void deleteFood(boolean wipeCloudStorage, Food food) {
         new DeleteAsyncTask(mFoodDao, food).execute(mContext);
-        if (wipeCloudStorage) {
+        if (wipeCloudStorage && mIsSignedIn) {
             FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
             deleteImages(true, food);
         }
@@ -191,7 +198,7 @@ public class FoodRepository {
      */
     public void deleteFoods(boolean wipeCloudStorage, Food... foods) {
         new DeleteAsyncTask(mFoodDao, foods).execute(mContext);
-        if (wipeCloudStorage) {
+        if (wipeCloudStorage && mIsSignedIn) {
             for (Food food : foods) {
                 FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
                 deleteImages(true, food);
@@ -231,22 +238,24 @@ public class FoodRepository {
      * @param foodId
      */
     public void deleteImages(boolean removeFromCloud, List<String> imageUris, long foodId) {
-        String id = String.valueOf(foodId);
-        for (int i = 0; i < imageUris.size(); i++) {
-            final String imageUriString = imageUris.get(i);
-            // Check form
-            UriType type = getImageUriType(imageUriString);
-            switch (type) {
-                case LOCAL:
-                    Toolbox.deleteBitmapFromInternalStorage(
-                            Toolbox.getUriFromImagePath(imageUriString),
-                            "FoodRepository/RemoveImage");
-                    // don't break here so we can delete from FBS if it's there
-                case FBS:
-                    if (removeFromCloud) {
-                        FirebaseStorageHelper.deleteImage(imageUriString, id);
-                    }
-                    break;
+        if (mIsSignedIn) {
+            String id = String.valueOf(foodId);
+            for (int i = 0; i < imageUris.size(); i++) {
+                final String imageUriString = imageUris.get(i);
+                // Check form
+                UriType type = getImageUriType(imageUriString);
+                switch (type) {
+                    case LOCAL:
+                        Toolbox.deleteBitmapFromInternalStorage(
+                                Toolbox.getUriFromImagePath(imageUriString),
+                                "FoodRepository/RemoveImage");
+                        // don't break here so we can delete from FBS if it's there
+                    case FBS:
+                        if (removeFromCloud) {
+                            FirebaseStorageHelper.deleteImage(imageUriString, id);
+                        }
+                        break;
+                }
             }
         }
     }
@@ -319,7 +328,7 @@ public class FoodRepository {
         @Override
         protected void onPostExecute(Long[] ids) {
             Timber.d("FoodDao/foods inserted");
-            if (mSaveToCloud) {
+            if (mSaveToCloud && mIsSignedIn) {
                 for (int i = 0; i < mFoods.length; i++) {
                     Food food = mFoods[i];
                     food.set_id(ids[i]);
@@ -454,49 +463,61 @@ public class FoodRepository {
 
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            try {
-                Food food = dataSnapshot.getValue(Food.class);
-                if (food != null) {
-                    Timber.d("Food added from RTD: id_%s %s",
-                            food.get_id(), food.getFoodName());
-                    insertFood(false, food); // don't save to cloud to avoid infinite loop
-                } else {
-                    Timber.e("Food added from RTD was null. Not updating DB...");
+            if (mIsSignedIn) {
+                try {
+                    Food food = dataSnapshot.getValue(Food.class);
+                    if (food != null) {
+                        Timber.d("Food added from RTD: id_%s %s",
+                                food.get_id(), food.getFoodName());
+                        insertFood(false, food); // don't save to cloud to avoid infinite loop
+                    } else {
+                        Timber.e("Food added from RTD was null. Not updating DB...");
+                    }
+                } catch (DatabaseException e) {
+                    Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
                 }
-            } catch (DatabaseException e) {
-                Timber.e(e, "Food added from RTD contained child of wrong type. Not updating DB..");
+            } else {
+                Timber.d("FoodChildEventListener/onChildAdded Called while not signed in. Not doing anything...");
             }
         }
 
         @Override
         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            try {
-                Food food = dataSnapshot.getValue(Food.class);
-                if (food != null) {
-                    Timber.d("Food changed from RTD: id_%s %s",
-                            food.get_id(), food.getFoodName());
-                    updateFood(false, food); // don't save to cloud to avoid infinite loop
-                } else {
-                    Timber.e("Food changed from RTD was null. Not updating DB...");
+            if (mIsSignedIn) {
+                try {
+                    Food food = dataSnapshot.getValue(Food.class);
+                    if (food != null) {
+                        Timber.d("Food changed from RTD: id_%s %s",
+                                food.get_id(), food.getFoodName());
+                        updateFood(false, food); // don't save to cloud to avoid infinite loop
+                    } else {
+                        Timber.e("Food changed from RTD was null. Not updating DB...");
+                    }
+                } catch (DatabaseException e) {
+                    Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
                 }
-            } catch (DatabaseException e) {
-                Timber.e(e, "Food changed from RTD contained child of wrong type. Not updating DB..");
+            } else {
+                Timber.d("FoodChildEventListener/onChildChanged Called while not signed in. Not doing anything...");
             }
         }
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-            try {
-                Food food = dataSnapshot.getValue(Food.class);
-                if (food != null) {
-                    Timber.d("Food removed from RTD: id_%s %s",
-                            food.get_id(), food.getFoodName());
-                    deleteFood(false, food); // don't save to cloud to avoid infinite loop
-                } else {
-                    Timber.e("Food removed from RTD was null. Not updating DB...");
+            if (mIsSignedIn) {
+                try {
+                    Food food = dataSnapshot.getValue(Food.class);
+                    if (food != null) {
+                        Timber.d("Food removed from RTD: id_%s %s",
+                                food.get_id(), food.getFoodName());
+                        deleteFood(false, food); // don't save to cloud to avoid infinite loop
+                    } else {
+                        Timber.e("Food removed from RTD was null. Not updating DB...");
+                    }
+                } catch (DatabaseException e) {
+                    Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
                 }
-            } catch (DatabaseException e) {
-                Timber.e(e, "Food removed from RTD contained child of wrong type. Not updating DB..");
+            } else {
+                Timber.d("FoodChildEventListener/onChildRemoved Called while not signed in. Not doing anything...");
             }
         }
 

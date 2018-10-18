@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.zn.expirytracker.data.FoodRepository;
 import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.utils.AuthToolbox;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class FoodViewModel extends AndroidViewModel {
         super.onCleared();
         Timber.d("FoodViewModel/the listener - clearing view model");
         // Keep network data transfer to a minimum by removing the listeners
-        mRepository.stopListeningForFoodChanges();
+        if (AuthToolbox.isSignedIn()) mRepository.stopListeningForFoodChanges();
     }
 
     public void insert(boolean saveToCloud, Food food) {

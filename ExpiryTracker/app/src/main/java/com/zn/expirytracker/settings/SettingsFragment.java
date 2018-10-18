@@ -60,13 +60,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //    static Preference mPreferenceAccountSync;
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
-    // TODO: Hide for now
-//    static Preference mPreferenceWipeDeviceData;
+    static Preference mPreferenceWipeDeviceData;
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
     private GoogleSignInClient mGoogleSignInClient;
     private static SharedPreferences mSp;
+    private static boolean mIsSignedIn;
 
     /**
      * Guard for preventing OnPreferenceChange actions to run when we're just setting up the
@@ -97,7 +97,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         mSp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
 
-        FirebaseUpdaterHelper.setPrefsChildEventListener(createNewChildEventListener());
+        if (mIsSignedIn = AuthToolbox.isSignedIn()) {
+            FirebaseUpdaterHelper.setPrefsChildEventListener(createNewChildEventListener());
+        }
     }
 
     @Override
@@ -120,7 +122,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //        mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
-//        mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
+        mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
@@ -134,7 +136,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
-        disableDemoAccountSettings(AuthToolbox.getUserId());
+        if (AuthToolbox.isSignedIn()) disableDemoAccountSettings(AuthToolbox.getUserId());
     }
 
     @Override
@@ -142,7 +144,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         super.onResume();
         // Show account settings only if the user is signed in
         showAccountSettings(AuthToolbox.isSignedIn());
-        FirebaseUpdaterHelper.listenForPrefsChanges(true);
+        if (mIsSignedIn) {
+            FirebaseUpdaterHelper.listenForPrefsChanges(true);
+        }
     }
 
     @Override
@@ -202,13 +206,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * Helper to show account settings only if user is currently logged in
      */
     private void showAccountSettings(boolean show) {
-        mPreferenceDisplayName.setVisible(show);
+//        mPreferenceDisplayName.setVisible(show);
         mPreferenceAccountSignIn.setVisible(!show);
         mPreferenceAccountSignOut.setVisible(show);
         boolean hasAccount = mPreferenceAccountSignOut.isVisible();
 //        mPreferenceAccountSync.setVisible(hasAccount);
         mPreferenceAccountDelete.setVisible(hasAccount);
-        // TODO: Scroll automatically to the newly visible settings
+        mPreferenceWipeDeviceData.setVisible(!show);
     }
 
     /**
@@ -232,7 +236,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignIn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AuthToolbox.startSignInActivity(mHostActivity); // Closes settings and clears back stack
+                AuthToolbox.startSignInActivity(mHostActivity, false); // Closes settings and clears back stack
                 return true;
             }
         });
@@ -241,10 +245,12 @@ public class SettingsFragment extends PreferenceFragmentCompat
             public boolean onPreferenceClick(Preference preference) {
                 startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
                         mGoogleSignInClient);
+                // TODO: Do not exit the app when user just wants to sign out
                 return true;
             }
         });
-        mPreferenceAccountSignOut.setSummary(AuthToolbox.getUserEmail());
+        if (AuthToolbox.isSignedIn())
+            mPreferenceAccountSignOut.setSummary(AuthToolbox.getUserEmail());
 //        mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 //            @Override
 //            public boolean onPreferenceClick(Preference preference) {
@@ -261,16 +267,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return true;
             }
         });
-
-        // TODO: Hide for now
-//        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//            @Override
-//            public boolean onPreferenceClick(Preference preference) {
-//                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
-//                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
-//                return true;
-//            }
-//        });
+        // Only show wipe device data if user is not logged in
+        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
+                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+                return true;
+            }
+        });
     }
 
     /**
@@ -282,16 +287,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     private void startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType deleteType,
                                           GoogleSignInClient signInClient) {
-        FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, mHostActivity);
-        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, mHostActivity);
-        FirebaseUpdaterHelper.listenForPrefsChanges(false);
-        FirebaseUpdaterHelper.listenForFoodChanges(false);
+        if (mIsSignedIn) {
+            FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, mHostActivity);
+            FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, mHostActivity);
+            FirebaseUpdaterHelper.listenForPrefsChanges(false);
+            FirebaseUpdaterHelper.listenForFoodChanges(false);
+        }
         new DeleteDataAsyncTask(deleteType, signInClient).execute();
     }
 
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value. Also adds individual preference-specific actions
+     * <p>
+     * Note: This listener is created BEFORE onCreate() is called. So anu auth status checking
+     * needs to read from AuthToolbox directly and NOT from {@link SettingsFragment#mIsSignedIn}
      */
     private static Preference.OnPreferenceChangeListener sOnPreferenceChangeListener =
             new Preference.OnPreferenceChangeListener() {
@@ -315,7 +325,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     handleIndividualPreferenceChangeActions(preference, context, value);
 
                     // Update Firebase RTD
-                    if (!mInitializeGuard)
+                    if (!mInitializeGuard && AuthToolbox.isSignedIn())
                         // Guard is needed to prevent
                         // (1) Initial SP defaults from overwriting user-set preferences in RTD
                         // (2) Infinite update loop between read and write between device and RTD
@@ -333,14 +343,22 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
-                updatePreferencesFromFirebaseRTD(dataSnapshot);
+                if (mIsSignedIn) {
+                    Timber.d("Preference added from RTD: %s", dataSnapshot.getKey());
+                    updatePreferencesFromFirebaseRTD(dataSnapshot);
+                } else {
+                    Timber.d("PreferenceChildEventListener/onChildAdded Called while user is not signed in. Doing nothing...");
+                }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Timber.d("Preference changed from RTD: %s", dataSnapshot.getKey());
-                updatePreferencesFromFirebaseRTD(dataSnapshot);
+                if (mIsSignedIn) {
+                    Timber.d("Preference changed from RTD: %s", dataSnapshot.getKey());
+                    updatePreferencesFromFirebaseRTD(dataSnapshot);
+                } else {
+                    Timber.d("PreferenceChildEventListener/onChildChanged Called while user is not signed in. Doing nothing...");
+                }
             }
 
             @Override
@@ -368,7 +386,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
      */
     private static void updatePreferencesToFirebaseRTD(Preference preference, Object newValue,
                                                        Context context) {
-        FirebaseDatabaseHelper.write_Preference(preference, newValue, context, true);
+        if (AuthToolbox.isSignedIn()) {
+            FirebaseDatabaseHelper.write_Preference(preference, newValue, context, true);
+        }
     }
 
     /**
@@ -455,18 +475,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static void handleIndividualPreferenceChangeActions(Preference preference,
                                                                 Context context, Object value) {
         if (preference.equals(mPreferenceDisplayName)) {
-            // Sync the display name with the database. This is a logged-in only feature
+            String displayName = ((String) value).trim();
             if (AuthToolbox.isSignedIn()) {
-                String displayName = ((String) value).trim();
+                // Update to cloud only if signed in
                 AuthToolbox.updateDisplayName(context, displayName);
-
-                // If there is no name, set the summary to the default
-                if (displayName.trim().isEmpty())
-                    preference.setSummary(R.string.pref_account_display_name_summary);
-                else
-                    // Show the trimmed display name
-                    preference.setSummary(displayName);
+            } else {
+                AuthToolbox.updateDisplayName_SharedPreferences(context, displayName);
             }
+
+            // If there is no name, set the summary to the default
+            if (displayName.trim().isEmpty())
+                preference.setSummary(R.string.pref_account_display_name_summary);
+            else
+                // Show the trimmed display name
+                preference.setSummary(displayName);
         } else if (preference.equals(mPreferenceWidget)) {
             // Request update
             UpdateWidgetService.updateFoodWidget(preference.getContext());

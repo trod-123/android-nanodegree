@@ -98,12 +98,6 @@ public class DetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Timber.tag(DetailActivity.class.getSimpleName());
 
-        // Start sign-in if user is not signed-in
-        if (!AuthToolbox.isSignedIn()) {
-            AuthToolbox.startSignInActivity(this);
-            return;
-        }
-
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
@@ -191,7 +185,9 @@ public class DetailActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
+        if (AuthToolbox.isSignedIn()) {
+            FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
+        }
     }
 
     public void startEditActivity(View view) {

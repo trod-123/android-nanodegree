@@ -52,7 +52,8 @@
     <PreferenceCategory android:title="@string/pref_account_title">
         <Preference
             android:key="@string/pref_account_sign_in_key"
-            android:title="@string/pref_account_sign_in_label" />
+            android:title="@string/pref_account_sign_in_label"
+            android:summary="@string/pref_account_sign_in_summary"/>
         <Preference
             android:key="@string/pref_account_sign_out_key"
             android:title="@string/pref_account_sign_out_label" />
@@ -72,10 +73,10 @@
             android:summary="@string/pref_account_delete_summary"
             android:title="@string/pref_account_delete_label" />
         <!-- For adding buttons to preferences, need to handle in Java. See here: https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen -->
-        <!--<Preference-->
-            <!--android:key="@string/pref_account_wipe_data_key"-->
-            <!--android:summary="@string/pref_account_wipe_data_summary"-->
-            <!--android:title="@string/pref_account_wipe_data_label" />-->
+        <Preference
+            android:key="@string/pref_account_wipe_data_key"
+            android:summary="@string/pref_account_wipe_data_summary"
+            android:title="@string/pref_account_wipe_data_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>

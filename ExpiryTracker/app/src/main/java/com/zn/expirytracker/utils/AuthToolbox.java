@@ -108,13 +108,17 @@ public class AuthToolbox {
     }
 
     /**
-     * Starts the Sign-in activity and clears the existing backstack. Updates any widgets to show
-     * the signed-out view
+     * Starts the Sign-in activity. Updates any widgets to show the signed-out view if not
+     * already showing
      *
      * @param context
      */
-    public static void startSignInActivity(Context context) {
-        startActivityAndClearBackstack(context, SignInActivity.class);
+    public static void startSignInActivity(Context context, boolean clearBackStack) {
+        if (clearBackStack) {
+            startActivityAndClearBackstack(context, SignInActivity.class);
+        } else {
+            context.startActivity(new Intent(context, SignInActivity.class));
+        }
         UpdateWidgetService.updateFoodWidget(context);
     }
 
@@ -287,7 +291,7 @@ public class AuthToolbox {
      * @param context
      * @param name
      */
-    private static void updateDisplayName_SharedPreferences(Context context, String name) {
+    public static void updateDisplayName_SharedPreferences(Context context, String name) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         sp.edit()
                 .putString(context.getString(R.string.pref_account_display_name_key), name)
@@ -339,7 +343,7 @@ public class AuthToolbox {
     private static void signOutFromFirebase(Context context) {
         FirebaseAuth.getInstance().signOut();
         resetSharedPreferences(context);
-        startSignInActivity(context);
+        startMainActivity(context);
     }
 
     /**
@@ -390,7 +394,7 @@ public class AuthToolbox {
                         if (task.isSuccessful()) {
                             Timber.d("Deleted the user");
                             resetSharedPreferences(context);
-                            startSignInActivity(context);
+                            startMainActivity(context);
                         } else {
                             Timber.e(task.getException(), "Firebase delete account failure");
                             Toolbox.showToast(context,

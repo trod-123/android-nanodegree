@@ -38,7 +38,6 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.WeeklyDateFilter;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;
@@ -458,14 +457,8 @@ public class AtAGlanceFragment extends Fragment
     private void updateGreeting(long currentDateTime) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);
         String name;
-        if (AuthToolbox.isSignedIn()) {
-            // Only show the display name if user is signed in. User is signed in if the "sign out"
-            // preference is visible (true)
-            name = sp.getString(getString(R.string.pref_account_display_name_key), null);
-            if (name != null) name = name.trim();
-        } else {
-            name = null;
-        }
+        name = sp.getString(getString(R.string.pref_account_display_name_key), null);
+        if (name != null) name = name.trim();
         mTvGreeting.setText(DataToolbox.getGreeting(mHostActivity, name,
                 currentDateTime));
     }

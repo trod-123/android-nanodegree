@@ -294,16 +294,20 @@ public class FirebaseDatabaseHelper {
     }
 
     /**
-     * Increments a tracking metric by 1. Should only be called while the user is logged in or else
-     * this throws an error
+     * Increments a tracking metric by 1. Works for both registered users and guests
      * <p>
      * Needs to be called on the main thread since we get user info here
      *
      * @param key
      */
     public static void incrementUserMetricCount(String key) {
-        // Get the user id, to serve as first child
-        String uid = AuthToolbox.getUserId();
+        String uid;
+        if (AuthToolbox.isSignedIn()) {
+            // Get the user id, to serve as first child
+            uid = AuthToolbox.getUserId();
+        } else {
+            uid = Constants.AUTH_GUEST;
+        }
 
         // Check connection for logging, then save the food. Use food id as RTD id
         checkConnection();

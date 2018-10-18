@@ -36,12 +36,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Start sign-in if user is not signed-in
-        if (!AuthToolbox.isSignedIn()) {
-            AuthToolbox.startSignInActivity(this);
-            return;
-        }
-
         setContentView(R.layout.activity_main);
         Timber.tag(MainActivity.class.getSimpleName());
         ButterKnife.bind(this);
@@ -70,9 +64,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, this);
-        FirebaseUpdaterHelper.listenForPrefsChanges(false);
-        FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
+        if (AuthToolbox.isSignedIn()) {
+            FirebaseUpdaterHelper.listenForPrefsTimestampChanges(false, this);
+            FirebaseUpdaterHelper.listenForPrefsChanges(false);
+            FirebaseUpdaterHelper.listenForFoodTimestampChanges(false, this);
+        }
     }
 
     @Override

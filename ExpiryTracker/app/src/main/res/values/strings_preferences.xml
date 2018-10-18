@@ -109,11 +109,12 @@
     <!-- Display name -->
     <string name="pref_account_display_name_key" translatable="false">Display name</string>
     <string name="pref_account_display_name_label">Display name</string>
-    <string name="pref_account_display_name_summary">Set a name so your Food Assistant can address you properly! Only available after making an account</string>
+    <string name="pref_account_display_name_summary">Set a name so your Food Assistant can address you properly!</string>
 
     <!-- Sign-in/out button -->
     <string name="pref_account_sign_in_key" translatable="false">Sign in button</string>
     <string name="pref_account_sign_in_label">Sign in</string>
+    <string name="pref_account_sign_in_summary">Create an account or log-in to access and save your food data online so it can be shared across your devices</string>
 
     <string name="pref_account_sign_out_key" translatable="false">Sign out button</string>
     <string name="pref_account_sign_out_label">Sign out</string>

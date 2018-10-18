@@ -12,6 +12,9 @@ public class Constants {
     public static final String FOOD_TIMESTAMP = "food_updated";
     public static final String PREFS_TIMESTAMP = "prefs_updated";
 
+    public static final String AUTH_GUEST = "unregistered";
+    public static final boolean ENABLE_GUEST_WIDGET = true;
+
     public static final float ALPHA_ACTIVATED = 1f;
     public static final float ALPHA_DEACTIVATED = 0.3f;
 
