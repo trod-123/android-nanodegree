@@ -2,6 +2,7 @@ package com.zn.expirytracker.utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 import android.util.SparseIntArray;
 
 import com.github.mikephil.charting.data.BarEntry;
@@ -682,5 +683,31 @@ public class DataToolbox {
             default:
                 return "null";
         }
+    }
+
+    /**
+     * Does what it says
+     *
+     * @return
+     */
+    public static Pair<String, String> getRandomAnimalEmojiNamePair() {
+        String[] names = new String[]{
+                "cat",
+                "dog",
+                "duck",
+                "egg",
+                "fish",
+                "poop"
+        };
+        String[] emojis = new String[]{
+                "\uD83D\uDE38",
+                "\uD83D\uDC15",
+                "\uD83E\uDD86",
+                "\uD83E\uDD5A",
+                "\uD83D\uDC1F",
+                "\uD83D\uDCA9"
+        };
+        int i = mRandomizer.nextInt(names.length);
+        return new Pair<>(names[i], emojis[i]);
     }
 }

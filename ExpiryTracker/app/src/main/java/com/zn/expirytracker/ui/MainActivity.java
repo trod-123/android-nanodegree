@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,6 +18,7 @@ import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
 import butterknife.BindView;
@@ -83,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 launchSettings();
                 return true;
+            case R.id.action_share:
+                shareApp();
+                return true;
             // TODO: Hide for now
 //            case R.id.action_search:
 //                launchSearch();
@@ -146,6 +151,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchSettings() {
         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+    }
+
+    private void shareApp() {
+        Pair<String, String> emoji = DataToolbox.getRandomAnimalEmojiNamePair();
+        Intent shareIntent = new Intent()
+                .setAction(Intent.ACTION_SEND)
+                .putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text,
+                        emoji.first, emoji.second))
+                .setType("text/plain");
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
     }
 
     /**

@@ -24,6 +24,7 @@
 
     <string name="action_search">Search</string>
     <string name="action_settings" translatable="false">@string/activity_settings_name</string>
+    <string name="action_share">Tell your friends</string>
     <string name="action_add_item">Add food item</string>
     <string name="action_add_item_camera">Scan a barcode or take a picture</string>
     <string name="action_add_item_text">Input text details</string>
@@ -454,6 +455,13 @@
     <string name="upcitemdb_error_server">Server error. Please try again later</string>
     <string name="upcitemdb_error_host_resolution">Error resolving server host. Please try again later</string>
     <string name="upcitemdb_error_unknown">Unknown error</string>
+
+    <!-- endregion -->
+
+    <!-- region About -->
+
+    <!-- 1: ANIMAL, 2: ANIMAL EMOJI -->
+    <string name="share_text">&appname; has been a lifesaver in reminding me when my foods expire, and it\'s saved me some money too! Seriously, this is an awesome app. It even has cute %1$s icons %2$s. Check it out!</string>
 
     <!-- endregion -->
 
