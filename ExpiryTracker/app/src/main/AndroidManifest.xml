@@ -81,6 +81,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity android:name=".settings.WebViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
 
         <receiver
             android:name=".ui.widget.FoodWidget"

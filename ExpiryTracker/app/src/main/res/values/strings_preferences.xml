@@ -138,4 +138,15 @@
 
     <!-- endregion -->
 
+    <!-- region About -->
+
+    <string name="pref_about_title">About</string>
+
+    <!-- Privacy Policy -->
+    <string name="pref_about_privacy_policy_key" translatable="false">Privacy Policy</string>
+    <string name="pref_about_privacy_policy_label">Privacy policy</string>
+    <string name="pref_about_privacy_policy_summary">View the app\'s privacy policy</string>
+
+    <!-- endregion -->
+
 </resources>

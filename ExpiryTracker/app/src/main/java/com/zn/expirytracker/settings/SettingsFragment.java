@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
+import com.zn.expirytracker.utils.Urls;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,6 +63,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
+    static Preference mPreferencePrivacyPolicy;
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
@@ -123,6 +126,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
+        mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
@@ -273,6 +277,17 @@ public class SettingsFragment extends PreferenceFragmentCompat
             public boolean onPreferenceClick(Preference preference) {
                 showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
                 // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+                return true;
+            }
+        });
+        // Privacy policy
+        mPreferencePrivacyPolicy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(preference.getContext(), WebViewActivity.class);
+                intent.putExtra(WebViewActivity.KEY_WEBVIEW_TITLE_STRING, preference.getTitle());
+                intent.putExtra(WebViewActivity.KEY_WEBVIEW_URL, Urls.URL_PRIVACY_POLICY);
+                preference.getContext().startActivity(intent);
                 return true;
             }
         });
