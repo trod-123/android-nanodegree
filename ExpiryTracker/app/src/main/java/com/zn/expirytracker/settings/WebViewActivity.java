@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -11,6 +12,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -104,7 +108,19 @@ public class WebViewActivity extends AppCompatActivity {
             }
         };
         mWebView.setWebViewClient(wvClient);
-        mWebView.loadUrl(mUrl);
+        // Get the download url from the Firebase uri
+        FirebaseStorage.getInstance().getReferenceFromUrl(mUrl).getDownloadUrl()
+                .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+                            mWebView.loadUrl(downloadUri.toString());
+                        } else {
+                            Timber.e(task.getException(), "WebViewActivity/Error getting HTTP link");
+                        }
+                    }
+                });
     }
 
     @Override
