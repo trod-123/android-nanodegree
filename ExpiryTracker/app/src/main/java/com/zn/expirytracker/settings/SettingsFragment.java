@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -66,6 +67,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceWipeDeviceData;
     static Preference mPreferencePrivacyPolicy;
     static Preference mPreferenceOpenSourceLicenses;
+    static Preference mPreferenceVersion;
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
@@ -130,6 +132,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
         mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
+        mPreferenceVersion = findPreference(getString(R.string.pref_about_version_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
@@ -144,6 +147,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
         if (AuthToolbox.isSignedIn()) disableDemoAccountSettings(AuthToolbox.getUserId());
+
+        setVersionInfo();
     }
 
     @Override
@@ -299,6 +304,19 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 return true;
             }
         });
+    }
+
+    /**
+     * Sets the version name for {@link SettingsFragment#mPreferenceVersion}
+     */
+    private void setVersionInfo() {
+        Context context = mPreferenceVersion.getContext();
+        try {
+            String version = Toolbox.getAppVersionName(context);
+            mPreferenceVersion.setSummary(getString(R.string.version_num, version));
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e(e, "Error thrown while setting version in SettingsFragment");
+        }
     }
 
     /**

@@ -84,6 +84,9 @@
             android:title="@string/pref_about_privacy_policy_label"/>
         <Preference android:key="@string/pref_about_licenses_key"
             android:title="@string/pref_about_licenses_label"/>
+        <Preference android:key="@string/pref_about_version_key"
+            android:summary="@string/pref_about_version_label"
+            android:enabled="false"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

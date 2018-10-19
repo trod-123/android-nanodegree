@@ -107,7 +107,7 @@ dependencies {
     implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
 
     // Firebase x Google AdMob
-    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
+//    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
 
     // Firebase ML Kit
     implementation "com.google.firebase:firebase-ml-vision:$firebaseMlKitVersion"

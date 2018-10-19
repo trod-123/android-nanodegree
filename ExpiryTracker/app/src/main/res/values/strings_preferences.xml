@@ -129,7 +129,7 @@
     <!-- Wipe device data -->
     <string name="pref_account_wipe_data_key" translatable="false">Delete device data button</string>
     <string name="pref_account_wipe_data_label">Wipe all &appname; data on device</string>
-    <string name="pref_account_wipe_data_summary">Delete all your food items stored on this device. This will not delete your data stored in the cloud</string>
+    <string name="pref_account_wipe_data_summary">Give yourself a fresh start by deleting all your food items stored on this device</string>
 
     <!-- Delete account -->
     <string name="pref_account_delete_key" translatable="false">Delete account button</string>
@@ -149,6 +149,10 @@
     <!-- Open source licenses -->
     <string name="pref_about_licenses_key" translatable="false">Open-source licenses</string>
     <string name="pref_about_licenses_label">Open-source licenses</string>
+
+    <!-- Version -->
+    <string name="pref_about_version_key" translatable="false">Version</string>
+    <string name="pref_about_version_label">@string/version_num</string>
 
     <!-- endregion -->
 
