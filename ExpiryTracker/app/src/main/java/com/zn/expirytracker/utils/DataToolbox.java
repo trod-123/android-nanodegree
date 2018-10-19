@@ -436,9 +436,11 @@ public class DataToolbox {
     /**
      * General utility function that returns the frequencies of each element of a dataset as a
      * {@link SparseIntArray}, where the {@code key} is the element, and the {@code value} is that
-     * element's frequency in the dataset
+     * element's frequency in the dataset. If {@code data} is empty and {@code fillInGaps}
+     * is true, then this returns a {@link SparseIntArray} with 0 values. Otherwise, this returns
+     * an empty result
      * <p>
-     * If {@code fillInGaps} is true, then all gaps in the dataset will be filled in and set to 0
+     * If {@code fillInGaps} is true, then all gaps in the dataset will be filled in and set to 0.
      * More on SparseArray: https://stackoverflow.com/questions/25560629/sparsearray-vs-hashmap
      *
      * @param data
@@ -472,7 +474,15 @@ public class DataToolbox {
             }
             return array;
         } else {
-            return new SparseIntArray();
+            SparseIntArray array = new SparseIntArray();
+            if (fillInGaps) {
+                for (int i = 0; i < limit; i++) {
+                    // create a key for every element in data, including for those elements that
+                    // don't exist. initialize each value to 0
+                    array.put(i, 0);
+                }
+            }
+            return array;
         }
     }
 
