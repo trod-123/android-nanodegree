@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -64,6 +65,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
     static Preference mPreferencePrivacyPolicy;
+    static Preference mPreferenceOpenSourceLicenses;
 
     private static FoodViewModel mViewModel;
     private Activity mHostActivity;
@@ -127,6 +129,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
+        mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
 
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
@@ -284,10 +287,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferencePrivacyPolicy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(preference.getContext(), WebViewActivity.class);
-                intent.putExtra(WebViewActivity.KEY_WEBVIEW_TITLE_STRING, preference.getTitle());
-                intent.putExtra(WebViewActivity.KEY_WEBVIEW_URL, Urls.URL_PRIVACY_POLICY);
-                preference.getContext().startActivity(intent);
+                startWebViewActivity(preference, preference.getTitle().toString(), Urls.URL_PRIVACY_POLICY);
+                return true;
+            }
+        });
+        // Open source licenses
+        mPreferenceOpenSourceLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                viewOpenSourceLicenses(preference);
                 return true;
             }
         });
@@ -614,6 +622,32 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .newInstance(null, false, deleteType);
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
+    }
+
+    /**
+     * Helper for starting the {@link WebViewActivity}
+     *
+     * @param preference
+     * @param title
+     * @param url
+     */
+    private static void startWebViewActivity(Preference preference, String title, String url) {
+        Context context = preference.getContext();
+        Intent intent = new Intent(context, WebViewActivity.class);
+        intent.putExtra(WebViewActivity.KEY_WEBVIEW_TITLE_STRING, title);
+        intent.putExtra(WebViewActivity.KEY_WEBVIEW_URL, url);
+        context.startActivity(intent);
+    }
+
+    /**
+     * Helper for starting the {@link OssLicensesMenuActivity}
+     *
+     * @param preference
+     */
+    private static void viewOpenSourceLicenses(Preference preference) {
+        Context context = preference.getContext();
+        OssLicensesMenuActivity.setActivityTitle(preference.getTitle().toString());
+        context.startActivity(new Intent(context, OssLicensesMenuActivity.class));
     }
 
     @Override

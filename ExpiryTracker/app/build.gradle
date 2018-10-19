@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 android {
     signingConfigs {
@@ -158,6 +159,9 @@ dependencies {
 
     // EasyPermissions
     implementation "pub.devrel:easypermissions:$easyPermissionsVersion"
+
+    // OSS licensing
+    implementation "com.google.android.gms:play-services-oss-licenses:$ossLicensesVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

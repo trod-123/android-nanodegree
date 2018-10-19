@@ -81,8 +81,9 @@
 
     <PreferenceCategory android:title="@string/pref_about_title">
         <Preference android:key="@string/pref_about_privacy_policy_key"
-            android:title="@string/pref_about_privacy_policy_label"
-            android:summary="@string/pref_about_privacy_policy_summary"/>
+            android:title="@string/pref_about_privacy_policy_label"/>
+        <Preference android:key="@string/pref_about_licenses_key"
+            android:title="@string/pref_about_licenses_label"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
