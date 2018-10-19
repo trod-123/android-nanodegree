@@ -66,6 +66,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
     static Preference mPreferencePrivacyPolicy;
+    static Preference mPreferenceEula;
     static Preference mPreferenceOpenSourceLicenses;
     static Preference mPreferenceVersion;
 
@@ -131,6 +132,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
+        mPreferenceEula = findPreference(getString(R.string.pref_about_eula_key));
         mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
         mPreferenceVersion = findPreference(getString(R.string.pref_about_version_key));
 
@@ -293,6 +295,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startWebViewActivity(preference, preference.getTitle().toString(), Urls.URL_PRIVACY_POLICY);
+                return true;
+            }
+        });
+        // EULA
+        mPreferenceEula.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startWebViewActivity(preference, preference.getTitle().toString(), Urls.URL_EULA);
                 return true;
             }
         });

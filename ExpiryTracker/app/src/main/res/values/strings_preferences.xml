@@ -146,6 +146,10 @@
     <string name="pref_about_privacy_policy_key" translatable="false">Privacy Policy</string>
     <string name="pref_about_privacy_policy_label">Privacy policy</string>
 
+    <!-- EULA -->
+    <string name="pref_about_eula_key" translatable="false">EULA</string>
+    <string name="pref_about_eula_label">User Agreement</string>
+
     <!-- Open source licenses -->
     <string name="pref_about_licenses_key" translatable="false">Open-source licenses</string>
     <string name="pref_about_licenses_label">Open-source licenses</string>

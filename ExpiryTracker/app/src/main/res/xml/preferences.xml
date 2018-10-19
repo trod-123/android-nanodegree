@@ -82,6 +82,8 @@
     <PreferenceCategory android:title="@string/pref_about_title">
         <Preference android:key="@string/pref_about_privacy_policy_key"
             android:title="@string/pref_about_privacy_policy_label"/>
+        <Preference android:key="@string/pref_about_eula_key"
+            android:title="@string/pref_about_eula_label"/>
         <Preference android:key="@string/pref_about_licenses_key"
             android:title="@string/pref_about_licenses_label"/>
         <Preference android:key="@string/pref_about_version_key"
