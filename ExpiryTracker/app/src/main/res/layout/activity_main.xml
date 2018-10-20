@@ -14,7 +14,7 @@
 
         <!-- Even for RTL layouts, use layoutDirection="ltr" to properly neutralize instantiating
         fragments in reversed order -->
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout_main"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
@@ -28,7 +28,7 @@
 
     <!-- This is for enabling Snackbars to show above the TabLayout
     https://stackoverflow.com/questions/31492351/how-can-you-adjust-android-snackbar-to-a-specific-position-on-screen-->
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/root_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

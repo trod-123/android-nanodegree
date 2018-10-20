@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <!-- Hide view upon load, through 0 alpha, while Pb is shown. Remember to adjust when needed -->
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_overlay_capture_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -144,7 +144,7 @@
                 tools:text="@string/data_attribution_upcitemdb" />
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/btn_overlay_scanned_positive"
@@ -167,7 +167,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btn_overlay_scanned_positive"
             app:layout_constraintTop_toTopOf="@+id/btn_overlay_scanned_positive" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/pb_overlay_scanned"
@@ -175,4 +175,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

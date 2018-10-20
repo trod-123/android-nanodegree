@@ -14,7 +14,7 @@
 package com.zn.expirytracker.ui.capture.barcodescanning;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;

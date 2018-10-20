@@ -14,7 +14,7 @@
 package com.zn.expirytracker.ui.capture.imagelabeling;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import com.google.android.gms.tasks.Task;

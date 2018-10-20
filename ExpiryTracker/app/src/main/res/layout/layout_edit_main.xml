@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_food_name"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
         app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiEt_edit_food_name"
             style="@style/AppTheme.TextInputEditText"
             android:layout_width="match_parent"
@@ -23,9 +23,9 @@
             android:hint="@string/edit_food_name_label_required"
             android:inputType="textCapSentences" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputEditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tiEt_edit_food_name_error"
         style="@style/AppTheme.TextInputEditText.Error"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_food_name"
@@ -44,7 +44,7 @@
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_expiry"
         app:srcCompat="@drawable/ic_date_range_black_24dp" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_date_expiry"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
@@ -54,14 +54,14 @@
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
         app:layout_constraintTop_toBottomOf="@+id/til_edit_food_name">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiEt_edit_date_expiry"
             style="@style/AppTheme.TextInputEditText.NonClickable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/food_expiry_date_label" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
         android:id="@+id/iv_edit_date_good"
@@ -72,7 +72,7 @@
         app:srcCompat="@drawable/ic_calendar_black_24dp"
         android:contentDescription="@string/food_good_thru_date_label"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_date_good"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
@@ -82,14 +82,14 @@
         app:layout_constraintStart_toStartOf="@+id/til_edit_date_expiry"
         app:layout_constraintTop_toBottomOf="@+id/til_edit_date_expiry">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiEt_edit_date_good"
             style="@style/AppTheme.TextInputEditText.NonClickable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/food_good_thru_date_label" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
         android:id="@+id/iv_edit_date_good_clear"
@@ -133,7 +133,7 @@
         app:srcCompat="@drawable/ic_minus_black_24dp"
         android:contentDescription="@string/action_subtract_count"/>
 
-    <android.support.design.widget.TextInputEditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tiEt_edit_count"
         style="@style/AppTheme.TextInputEditText.Numeric"
         android:layout_width="0dp"
@@ -147,7 +147,7 @@
         tools:text="12" />
 
     <!-- Hide the underbar: https://stackoverflow.com/questions/13975528/how-to-hide-underbar-in-edittext -->
-    <android.support.design.widget.TextInputEditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tiEt_edit_count_error"
         style="@style/AppTheme.TextInputEditText.Error"
         app:layout_constraintBottom_toBottomOf="@+id/tiEt_edit_count"
@@ -175,7 +175,7 @@
         app:srcCompat="@drawable/ic_map_marker_black_24dp"
         android:contentDescription="@string/food_storage_location_label"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_storage_location"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
@@ -187,16 +187,16 @@
 
         <!-- Disable entering text in edit text
         https://stackoverflow.com/questions/35741043/how-i-can-use-edittext-instead-of-textview-and-open-the-datepicker-in-a-single-c -->
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiEt_edit_storage_location"
             style="@style/AppTheme.TextInputEditText.NonClickable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/food_storage_location_label" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_description"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
@@ -206,7 +206,7 @@
         app:layout_constraintStart_toStartOf="@+id/til_edit_storage_location"
         app:layout_constraintTop_toBottomOf="@+id/til_edit_storage_location">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiEt_edit_description"
             style="@style/AppTheme.TextInputEditText"
             android:layout_width="match_parent"
@@ -214,7 +214,7 @@
             android:hint="@string/food_description_label"
             android:inputType="textCapSentences" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageView
         android:id="@+id/iv_edit_description_clear"
@@ -227,25 +227,25 @@
         app:srcCompat="@drawable/ic_clear_black_24dp"
         android:contentDescription="@string/edit_clear_description"/>
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/edit_guideline_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".15" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/edit_guideline_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".5" />
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/edit_guideline_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".85" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

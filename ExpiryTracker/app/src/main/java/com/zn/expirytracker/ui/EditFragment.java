@@ -2,21 +2,23 @@ package com.zn.expirytracker.ui;
 
 import android.Manifest;
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputEditText;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.FileProvider;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -67,7 +69,7 @@ import timber.log.Timber;
 import static android.app.Activity.RESULT_OK;
 
 /**
- * Callbacks for {@link android.support.v4.app.DialogFragment} idea from: https://gist.github.com/Joev-/5695813
+ * Callbacks for {@link DialogFragment} idea from: https://gist.github.com/Joev-/5695813
  */
 public class EditFragment extends Fragment implements
         StorageLocationDialogFragment.OnStorageLocationSelectedListener,

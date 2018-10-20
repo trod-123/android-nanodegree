@@ -1,7 +1,8 @@
 package com.zn.expirytracker.utils;
 
-import android.support.design.widget.Snackbar;
 import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * Constants used throughout the app

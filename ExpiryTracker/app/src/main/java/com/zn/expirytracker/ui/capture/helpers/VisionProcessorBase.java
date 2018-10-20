@@ -15,7 +15,7 @@ package com.zn.expirytracker.ui.capture.helpers;
 
 import android.graphics.Bitmap;
 import android.media.Image;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;

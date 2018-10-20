@@ -1,7 +1,7 @@
 package com.zn.expirytracker.utils;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Pair;
 import android.util.SparseIntArray;
 

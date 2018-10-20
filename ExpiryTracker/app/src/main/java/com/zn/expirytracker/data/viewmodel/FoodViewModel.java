@@ -1,10 +1,10 @@
 package com.zn.expirytracker.data.viewmodel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.paging.PagedList;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
+import androidx.annotation.NonNull;
 
 import com.zn.expirytracker.data.FoodRepository;
 import com.zn.expirytracker.data.model.Food;

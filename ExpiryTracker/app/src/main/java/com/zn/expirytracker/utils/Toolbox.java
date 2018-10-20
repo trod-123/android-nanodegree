@@ -14,9 +14,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuInflater;
@@ -31,6 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
@@ -47,6 +45,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import timber.log.Timber;
 
 /**

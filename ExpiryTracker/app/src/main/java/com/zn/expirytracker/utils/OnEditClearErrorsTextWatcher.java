@@ -1,6 +1,6 @@
 package com.zn.expirytracker.utils;
 
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 

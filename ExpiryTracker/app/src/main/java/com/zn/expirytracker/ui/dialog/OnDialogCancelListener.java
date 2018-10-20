@@ -1,7 +1,7 @@
 package com.zn.expirytracker.ui.dialog;
 
 import android.content.DialogInterface;
-import android.support.v4.app.DialogFragment;
+import androidx.fragment.app.DialogFragment;
 
 /**
  * Allows hosting activity or fragment to listen for users dismissing dialogs through pressing the

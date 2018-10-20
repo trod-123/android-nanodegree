@@ -1,7 +1,7 @@
 package com.zn.expirytracker;
 
 import android.os.StrictMode;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;

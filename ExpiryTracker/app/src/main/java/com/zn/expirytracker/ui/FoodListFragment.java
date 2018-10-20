@@ -1,27 +1,17 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
-import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.model.Food;
@@ -31,6 +21,16 @@ import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -130,7 +130,7 @@ public class FoodListFragment extends Fragment
 
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mHostActivity,
-                LinearLayoutManager.VERTICAL, false);
+                RecyclerView.VERTICAL, false);
         mRvFoodList.setLayoutManager(layoutManager);
         mRvFoodList.setHasFixedSize(true);
         mListAdapter = new FoodListAdapter(mHostActivity, true);

@@ -2,7 +2,7 @@ package com.zn.expirytracker.data.firebase;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.webkit.URLUtil;
 
 import com.google.android.gms.tasks.Continuation;

@@ -1,6 +1,6 @@
 package com.zn.expirytracker.data.typeconv;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
