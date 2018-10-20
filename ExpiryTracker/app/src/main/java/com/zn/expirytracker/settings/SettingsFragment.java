@@ -52,6 +52,17 @@ import timber.log.Timber;
 
 import static com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN;
 
+/**
+ * App settings interface
+ * <p>
+ * <p>
+ * Note: {@link SettingsActivity} manifest declares
+ * {@code configChanges="orientation|keyboardHidden|screenSize"}
+ * to ensure Activity does not recreate itself after rotations. This is to ensure that any
+ * Account or Data delete operations do not occur multiple times when user manages to rotate device
+ * during delete operations. It is OK to do this here since we do not have alternate resource
+ * layouts for a Preference fragment
+ */
 public class SettingsFragment extends PreferenceFragmentCompat
         implements ConfirmDeleteDialogFragment.OnConfirmDeleteButtonClickListener {
 
@@ -238,6 +249,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
     /**
+     * Helper to activate all account settings
+     *
+     * @param activate
+     */
+    private static void activateAccountSettings(boolean activate) {
+        mPreferenceDisplayName.setEnabled(activate);
+        mPreferenceAccountSignIn.setEnabled(activate);
+        mPreferenceAccountSignOut.setEnabled(activate);
+//        mPreferenceAccountSync.setEnabled(activate);
+        mPreferenceAccountDelete.setEnabled(activate);
+        mPreferenceWipeDeviceData.setEnabled(activate);
+        mPreferenceClearCache.setEnabled(activate);
+    }
+
+    /**
      * Disable particular account settings if demo account is signed in, to prevent tampering
      *
      * @param userId
@@ -255,22 +281,59 @@ public class SettingsFragment extends PreferenceFragmentCompat
      * https://stackoverflow.com/questions/5298370/how-to-add-a-button-to-a-preferencescreen
      */
     private void setAccountPreferencesActions() {
-        mPreferenceAccountSignIn.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        Preference.OnPreferenceClickListener listener = new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AuthToolbox.startSignInActivity(mHostActivity, false); // Closes settings and clears back stack
-                return true;
+                if (preference.equals(mPreferenceAccountSignIn)) {
+                    AuthToolbox.startSignInActivity(mHostActivity, false);
+                    // Closes settings and clears back stack
+                    return true;
+                } else if (preference.equals(mPreferenceAccountSignOut)) {
+                    mPreferenceAccountSignOut.setEnabled(false);
+                    startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
+                            mGoogleSignInClient);
+                    return true;
+                } else if (preference.equals(mPreferenceClearCache)) {
+                    clearImageCache();
+                    return true;
+                } else if (preference.equals(mPreferenceAccountDelete)) {
+                    // Only show the wipe feature if current account is not the demo one
+                    showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT);
+                    // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+                    return true;
+                } else if (preference.equals(mPreferenceWipeDeviceData)) {
+                    // Only show wipe device data if user is not logged in
+                    showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
+                    // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
+                    return true;
+                } else if (preference.equals(mPreferencePrivacyPolicy)) {
+                    startWebViewActivity(preference, preference.getTitle().toString(),
+                            Urls.URL_PRIVACY_POLICY);
+                    return true;
+                } else if (preference.equals(mPreferenceEula)) {
+                    startWebViewActivity(preference, preference.getTitle().toString(),
+                            Urls.URL_EULA);
+                    return true;
+                } else if (preference.equals(mPreferenceOpenSourceLicenses)) {
+                    viewOpenSourceLicenses(preference);
+                    return true;
+                } else if (preference.equals(mPreferenceContact)) {
+                    contactDeveloper(preference);
+                    return true;
+                }
+                return false;
             }
-        });
-        mPreferenceAccountSignOut.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startDeleteDataAsyncTask(ConfirmDeleteDialogFragment.DeleteType.SIGN_OUT,
-                        mGoogleSignInClient);
-                // TODO: Do not exit the app when user just wants to sign out
-                return true;
-            }
-        });
+        };
+        mPreferenceAccountSignIn.setOnPreferenceClickListener(listener);
+        mPreferenceAccountSignOut.setOnPreferenceClickListener(listener);
+        mPreferenceClearCache.setOnPreferenceClickListener(listener);
+        mPreferenceAccountDelete.setOnPreferenceClickListener(listener);
+        mPreferenceWipeDeviceData.setOnPreferenceClickListener(listener);
+        mPreferencePrivacyPolicy.setOnPreferenceClickListener(listener);
+        mPreferenceEula.setOnPreferenceClickListener(listener);
+        mPreferenceOpenSourceLicenses.setOnPreferenceClickListener(listener);
+        mPreferenceContact.setOnPreferenceClickListener(listener);
+
         if (AuthToolbox.isSignedIn())
             mPreferenceAccountSignOut.setSummary(AuthToolbox.getUserEmail());
 //        mPreferenceAccountSync.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -280,64 +343,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //                return false;
 //            }
 //        });
-        // Clear Glide cache
-        mPreferenceClearCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                clearImageCache();
-                return true;
-            }
-        });
-        // Only show the wipe feature if current account is not the demo one
-        mPreferenceAccountDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.ACCOUNT);
-                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
-                return true;
-            }
-        });
-        // Only show wipe device data if user is not logged in
-        mPreferenceWipeDeviceData.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
-                // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
-                return true;
-            }
-        });
-        // Privacy policy
-        mPreferencePrivacyPolicy.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startWebViewActivity(preference, preference.getTitle().toString(), Urls.URL_PRIVACY_POLICY);
-                return true;
-            }
-        });
-        // EULA
-        mPreferenceEula.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startWebViewActivity(preference, preference.getTitle().toString(), Urls.URL_EULA);
-                return true;
-            }
-        });
-        // Open source licenses
-        mPreferenceOpenSourceLicenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                viewOpenSourceLicenses(preference);
-                return true;
-            }
-        });
-        // Contact
-        mPreferenceContact.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                contactDeveloper(preference);
-                return false;
-            }
-        });
     }
 
     /**
@@ -827,7 +832,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         @Override
         protected void onPreExecute() {
-            // TODO: Disable all view clicks and dim the activity while this is happening
+            activateAccountSettings(false);
             switch (mDeleteType) {
                 case ACCOUNT:
                     Toolbox.showToast(mClient.getApplicationContext(),
@@ -864,6 +869,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 case DEVICE:
                     Toolbox.showToast(mClient.getApplicationContext(),
                             "All app data deleted from device");
+                    activateAccountSettings(true);
                     break;
                 case SIGN_OUT:
                     // Closes settings and clears back stack

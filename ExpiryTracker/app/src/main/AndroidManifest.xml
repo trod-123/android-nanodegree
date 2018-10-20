@@ -46,6 +46,7 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/activity_settings_name" />
         <activity
             android:name=".ui.DetailActivity"
@@ -81,8 +82,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
-        <activity android:name=".settings.WebViewActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity
+            android:name=".settings.WebViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <receiver
             android:name=".ui.widget.FoodWidget"

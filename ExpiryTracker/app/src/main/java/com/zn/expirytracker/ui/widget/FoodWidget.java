@@ -211,6 +211,7 @@ public class FoodWidget extends AppWidgetProvider {
 
                 // set the settings button click listener
                 Intent settingsIntent = new Intent(context, SettingsActivity.class);
+                settingsIntent.putExtra(SettingsActivity.EXTRA_LAUNCHED_EXTERNALLY, true);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent settingsPendingIntent = PendingIntent.getActivity(
                         context, appWidgetId, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
