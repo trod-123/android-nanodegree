@@ -52,8 +52,8 @@
     <PreferenceCategory android:title="@string/pref_account_title">
         <Preference
             android:key="@string/pref_account_sign_in_key"
-            android:title="@string/pref_account_sign_in_label"
-            android:summary="@string/pref_account_sign_in_summary"/>
+            android:summary="@string/pref_account_sign_in_summary"
+            android:title="@string/pref_account_sign_in_label" />
         <Preference
             android:key="@string/pref_account_sign_out_key"
             android:title="@string/pref_account_sign_out_label" />
@@ -65,9 +65,9 @@
             android:summary="@string/pref_account_display_name_summary"
             android:title="@string/pref_account_display_name_label" />
         <!--<Preference-->
-            <!--android:key="@string/pref_account_sync_key"-->
-            <!--android:summary="@string/pref_account_sync_summary"-->
-            <!--android:title="@string/pref_account_sync_label" />-->
+        <!--android:key="@string/pref_account_sync_key"-->
+        <!--android:summary="@string/pref_account_sync_summary"-->
+        <!--android:title="@string/pref_account_sync_label" />-->
         <Preference
             android:key="@string/pref_account_delete_key"
             android:summary="@string/pref_account_delete_summary"
@@ -80,15 +80,34 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_about_title">
-        <Preference android:key="@string/pref_about_privacy_policy_key"
-            android:title="@string/pref_about_privacy_policy_label"/>
-        <Preference android:key="@string/pref_about_eula_key"
-            android:title="@string/pref_about_eula_label"/>
-        <Preference android:key="@string/pref_about_licenses_key"
-            android:title="@string/pref_about_licenses_label"/>
-        <Preference android:key="@string/pref_about_version_key"
-            android:summary="@string/pref_about_version_label"
-            android:enabled="false"/>
+        <Preference
+            android:key="@string/pref_about_privacy_policy_key"
+            android:title="@string/pref_about_privacy_policy_label" />
+        <Preference
+            android:key="@string/pref_about_eula_key"
+            android:title="@string/pref_about_eula_label" />
+        <Preference
+            android:key="@string/pref_about_licenses_key"
+            android:title="@string/pref_about_licenses_label" />
+        <Preference
+            android:key="@string/pref_about_developer_key"
+            android:summary="@string/pref_about_developer_summary"
+            android:title="@string/pref_about_developer_label"
+            android:selectable="false"/>
+        <Preference
+            android:key="@string/pref_about_contact_key"
+            android:summary="@string/pref_about_contact_summary"
+            android:title="@string/pref_about_contact_label" />
+        <Preference
+            android:key="@string/pref_about_version_key"
+            android:selectable="false"
+            android:summary="@string/pref_about_version_summary"
+            android:title="@string/pref_about_version_label" />
+        <Preference
+            android:key="@string/pref_about_copyright_key"
+            android:selectable="false"
+            android:summary="@string/pref_about_copyright_summary"
+            android:title="@string/pref_about_copyright_label" />
     </PreferenceCategory>
 
 </PreferenceScreen>

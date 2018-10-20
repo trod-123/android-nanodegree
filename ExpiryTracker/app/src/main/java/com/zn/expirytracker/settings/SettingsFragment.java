@@ -4,11 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +23,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -68,6 +72,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferencePrivacyPolicy;
     static Preference mPreferenceEula;
     static Preference mPreferenceOpenSourceLicenses;
+    static Preference mPreferenceContact;
     static Preference mPreferenceVersion;
 
     private static FoodViewModel mViewModel;
@@ -134,6 +139,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
         mPreferenceEula = findPreference(getString(R.string.pref_about_eula_key));
         mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
+        mPreferenceContact = findPreference(getString(R.string.pref_about_contact_key));
         mPreferenceVersion = findPreference(getString(R.string.pref_about_version_key));
 
         // Set summaries and enabled based on switches or checkboxes
@@ -312,6 +318,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
             public boolean onPreferenceClick(Preference preference) {
                 viewOpenSourceLicenses(preference);
                 return true;
+            }
+        });
+        // Contact
+        mPreferenceContact.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                contactDeveloper(preference);
+                return false;
             }
         });
     }
@@ -676,6 +690,74 @@ public class SettingsFragment extends PreferenceFragmentCompat
         Context context = preference.getContext();
         OssLicensesMenuActivity.setActivityTitle(preference.getTitle().toString());
         context.startActivity(new Intent(context, OssLicensesMenuActivity.class));
+    }
+
+    /**
+     * Helper for starting an e-mail activity for contacting the developer
+     *
+     * @param preference
+     */
+    private void contactDeveloper(Preference preference) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        String emailData = "mailto:" + preference.getSummary() +
+                "?subject=" + Uri.encode(getString(R.string.contact_email_subject)) +
+                "&body=" + Uri.encode(generateEmailBody());
+        intent.setData(Uri.parse(emailData));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toolbox.showToast(mHostActivity, getString(R.string.contact_email_no_app));
+        }
+    }
+
+    /**
+     * Generates the e-mail body for contact
+     *
+     * @return
+     */
+    private String generateEmailBody() {
+        // Get hardware metrics
+        DisplayMetrics dm = new DisplayMetrics();
+        mHostActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int densityDpi = (int) (dm.density * 160f);
+
+        String app_version;
+        try {
+            app_version = "App version: " + Toolbox.getAppVersionName(mHostActivity);
+        } catch (PackageManager.NameNotFoundException e) {
+            app_version = "App version: error";
+            Timber.e(e);
+        }
+        String manufacturer = "Manufacturer: " + Build.MANUFACTURER;
+        String brand = "Brand: " + Build.BRAND;
+        String model = "Model: " + Build.MODEL;
+        String board = "Board: " + Build.BOARD;
+        String hardware = "Hardware: " + Build.HARDWARE;
+        String screen_density = "Screen density: " + String.valueOf(densityDpi) + " dpi";
+        String version = "Version: " + Build.VERSION.RELEASE;
+        String api_level = "SDK: " + Build.VERSION.SDK_INT;
+
+        return new StringBuilder()
+                .append("\n\n\n")
+                .append(getString(R.string.contact_email_body))
+                .append("\n\n")
+                .append(app_version)
+                .append("\n")
+                .append(manufacturer)
+                .append("\n")
+                .append(brand)
+                .append("\n")
+                .append(model)
+                .append("\n")
+                .append(board)
+                .append("\n")
+                .append(hardware)
+                .append("\n")
+                .append(screen_density)
+                .append("\n")
+                .append(version)
+                .append("\n")
+                .append(api_level).toString();
     }
 
     @Override

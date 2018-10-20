@@ -5,10 +5,18 @@
     <!-- Note zero-quantity plurals don't work as intended. Need to handle separately
     https://stackoverflow.com/questions/5651902/android-plurals-treatment-of-zero -->
 
-    <!-- region App and screen names -->
+    <!-- region App -->
 
     <string name="app_name" translatable="false">&appname;</string>
-    <string name="version_num">Version %1$s</string>
+    <string name="developer_name" translatable="false">Teddy Rodriguez (TROD)</string>
+    <string name="developer_email" translatable="false">theodore9214x@gmail.com</string>
+    <string name="copyright" translatable="false">© 2018 Teddy Rodriguez</string>
+    <string name="version_num" translatable="false">%1$s</string>
+
+    <!-- endregion -->
+
+    <!-- region Screen names -->
+
     <string name="activity_settings_name">Settings</string>
     <string name="fragment_at_a_glance_name">At a glance</string>
     <string name="fragment_food_list_name">Foods</string>
@@ -462,6 +470,9 @@
 
     <!-- 1: ANIMAL, 2: ANIMAL EMOJI -->
     <string name="share_text">&appname; has been a lifesaver in reminding me when my foods expire, and it\'s saved me some money too! Seriously, this is an awesome app. It even has cute %1$s icons %2$s. Check it out!</string>
+    <string name="contact_email_subject" translatable="false">[&appname; ANDROID APP Support]</string>
+    <string name="contact_email_body">--- Please write your message above. Hardware details below are helpful for diagnosing issues, so please do not modify them ---</string>
+    <string name="contact_email_no_app">No e-mail app found on this device. You need to install an e-mail app to contact the developer.</string>
 
     <!-- endregion -->
 
