@@ -359,6 +359,7 @@
     <string name="message_error_save_image_cache">There was a problem setting the image cache</string>
     <string name="message_broken_image">Failed to load image</string>
     <string name="message_image_cache_deleted">Image cache deleted</string>
+    <string name="message_welcome_sync">Welcome! Syncing your foods online&#8230;</string>
 
     <!-- endregion -->
 

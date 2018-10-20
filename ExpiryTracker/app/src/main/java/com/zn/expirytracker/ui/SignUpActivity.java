@@ -1,6 +1,8 @@
 package com.zn.expirytracker.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -67,6 +69,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mEtName.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilName));
         mEtEmail.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilEmail));
         mEtPassword.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilPassword));
+
+        // Set the name to the currently stored username
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = sp.getString(getString(R.string.pref_account_display_name_key), "");
+        mEtName.setText(name);
 
         mAuth = FirebaseAuth.getInstance();
     }

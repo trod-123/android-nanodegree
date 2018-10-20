@@ -2,6 +2,7 @@ package com.zn.expirytracker.ui;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -12,12 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mViewPager;
     @BindView(R.id.tabLayout_main)
     TabLayout mTabLayout;
+    @BindView(R.id.root_main)
+    View mRootMain;
 
     MainPagerAdapter mPagerAdapter;
 
@@ -56,11 +61,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sp = getSharedPreferences(Constants.SHARED_PREFS_NAME, MODE_PRIVATE);
         if (AuthToolbox.isSignedIn()) {
             FirebaseUpdaterHelper.setPrefsChildEventListener(this);
             FirebaseUpdaterHelper.listenForPrefsTimestampChanges(true, this);
             FirebaseUpdaterHelper.listenForFoodTimestampChanges(true, this);
+            // If we're coming from "guest" state, then upload all currently stored foods into
+            // Firebase
+            if (sp.getBoolean(Constants.AUTH_GUEST, true)) {
+                obtainViewModel(this).upload();
+                Toolbox.showSnackbarMessage(mRootMain, getString(R.string.message_welcome_sync));
+            }
         }
+        // Since MainActivity is the gate into the app after SignInActivity, and after,
+        // a user signs out or deletes their account, store auth status here to determine
+        // a change in auth mode
+        sp.edit().putBoolean(Constants.AUTH_GUEST, !AuthToolbox.isSignedIn()).apply();
     }
 
     @Override

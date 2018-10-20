@@ -12,6 +12,12 @@ public class Constants {
     public static final String FOOD_TIMESTAMP = "food_updated";
     public static final String PREFS_TIMESTAMP = "prefs_updated";
 
+    /**
+     * A uid label for unregistered users, used to store
+     * {@link com.zn.expirytracker.data.firebase.UserMetrics} in Firebase RTD
+     * <p>
+     * This is also used in Shared Preferences to keep track of whether the user is logged in or not
+     */
     public static final String AUTH_GUEST = "unregistered";
     public static final boolean ENABLE_GUEST_WIDGET = true;
 

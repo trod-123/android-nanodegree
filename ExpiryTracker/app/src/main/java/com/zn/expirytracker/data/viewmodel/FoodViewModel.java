@@ -54,6 +54,10 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository.insertFoods(saveToCloud, foods);
     }
 
+    public void upload() {
+        mRepository.uploadAllFoods();
+    }
+
     public void update(boolean saveToCloud, Food food) {
         mRepository.updateFood(saveToCloud, food);
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,4 +26,12 @@
 
     </com.zn.expirytracker.ui.NonSwipeableViewPager>
 
-</android.support.design.widget.CoordinatorLayout>
+    <!-- This is for enabling Snackbars to show above the TabLayout
+    https://stackoverflow.com/questions/31492351/how-can-you-adjust-android-snackbar-to-a-specific-position-on-screen-->
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/root_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="?android:attr/actionBarSize" />
+
+</FrameLayout>

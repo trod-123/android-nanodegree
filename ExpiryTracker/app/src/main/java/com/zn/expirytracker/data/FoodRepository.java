@@ -149,6 +149,13 @@ public class FoodRepository {
     }
 
     /**
+     * Uploads all the food currently saved locally into the cloud
+     */
+    public void uploadAllFoods() {
+        new UploadAsyncTask(mFoodDao).execute();
+    }
+
+    /**
      * Updates a single {@link Food} item in the database
      *
      * @param food
@@ -335,6 +342,30 @@ public class FoodRepository {
                     FirebaseDatabaseHelper.write(food, mContext, true);
                     FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
                 }
+            }
+        }
+    }
+
+    /**
+     * Use an AsyncTask to fetch all locally stored foods and upload them to Firebase RTD
+     */
+    private class UploadAsyncTask extends AsyncTask<Void, Void, List<Food>> {
+        private FoodDao mAsyncTaskDao;
+
+        UploadAsyncTask(FoodDao foodDao) {
+            mAsyncTaskDao = foodDao;
+        }
+
+        @Override
+        protected List<Food> doInBackground(Void... voids) {
+            return mAsyncTaskDao.getAllFoods_List();
+        }
+
+        @Override
+        protected void onPostExecute(List<Food> foods) {
+            for (Food food : foods) {
+                FirebaseDatabaseHelper.write(food, mContext, false);
+                FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
             }
         }
     }
