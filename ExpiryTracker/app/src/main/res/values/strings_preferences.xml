@@ -126,6 +126,11 @@
     <string name="pref_account_sync_label">Sync data with the cloud</string>
     <string name="pref_account_sync_summary">&appname; keeps your data synced in the background. Click here to manually sync your data on your device with your data on the cloud</string>
 
+    <!-- Delete Glide cache -->
+    <string name="pref_delete_cache_key" translatable="false">Delete cache</string>
+    <string name="pref_delete_cache_label">Delete image cache</string>
+    <string name="pref_delete_cache_summary">App using too much storage? Tap here to free up some data</string>
+
     <!-- Wipe device data -->
     <string name="pref_account_wipe_data_key" translatable="false">Delete device data button</string>
     <string name="pref_account_wipe_data_label">Wipe all &appname; data on device</string>

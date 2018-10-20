@@ -4,8 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.util.Patterns;
 import android.view.View;
@@ -23,9 +26,9 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
+import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.FoodWidget;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 
@@ -461,15 +464,51 @@ public class AuthToolbox {
      * @param context
      * @param wipeCloudData
      */
-    private static void deleteData(FoodViewModel viewModel, final Context context, boolean wipeCloudData) {
+    private static void deleteData(FoodViewModel viewModel, Context context, boolean wipeCloudData) {
         viewModel.delete(wipeCloudData, viewModel.getAllFoods_List().toArray(new Food[]{}));
-        // Remove all images from app's images directory
+        deleteImageCacheAsync(context);
+    }
+
+    /**
+     * Remove all images from app's images directory
+     *
+     * @param context
+     */
+    public static void deleteImageCache(final Context context,
+                                        @Nullable final ImageCacheClearedListener listener) {
+
+        // For performing an action on the main thread
+        final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (listener != null) listener.onImageCacheCleared();
+                return false;
+            }
+        });
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Toolbox.deleteBitmapDirectory(context);
-                GlideApp.get(context).clearDiskCache();
+                deleteImageCacheAsync(context);
+                handler.sendMessage(new Message());
             }
         }).start();
+    }
+
+    /**
+     * Removes all images from app's images directory
+     * <p>
+     * Note: This needs to be called from a background thread since we're performing a data
+     * operation
+     *
+     * @param context
+     */
+    private static void deleteImageCacheAsync(final Context context) {
+        Toolbox.deleteBitmapDirectory(context);
+        GlideApp.get(context).clearDiskCache();
+    }
+
+    public interface ImageCacheClearedListener {
+        void onImageCacheCleared();
     }
 }

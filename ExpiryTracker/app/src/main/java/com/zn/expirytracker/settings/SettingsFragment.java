@@ -66,6 +66,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceAccountSignOut;
     // TODO: Hide for now
 //    static Preference mPreferenceAccountSync;
+    static Preference mPreferenceClearCache;
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
@@ -133,6 +134,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountSignIn = findPreference(getString(R.string.pref_account_sign_in_key));
         mPreferenceAccountSignOut = findPreference(getString(R.string.pref_account_sign_out_key));
 //        mPreferenceAccountSync = findPreference(getString(R.string.pref_account_sync_key));
+        mPreferenceClearCache = findPreference(getString(R.string.pref_delete_cache_key));
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
@@ -278,6 +280,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
 //                return false;
 //            }
 //        });
+        // Clear Glide cache
+        mPreferenceClearCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                clearImageCache();
+                return true;
+            }
+        });
         // Only show the wipe feature if current account is not the demo one
         mPreferenceAccountDelete.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -664,6 +674,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .newInstance(null, false, deleteType);
         dialog.setTargetFragment(this, 0);
         dialog.show(getFragmentManager(), ConfirmDeleteDialogFragment.class.getSimpleName());
+    }
+
+    /**
+     * Clears the glide image cache and displays a message when finished
+     */
+    private void clearImageCache() {
+        mPreferenceClearCache.setEnabled(false);
+        AuthToolbox.deleteImageCache(mHostActivity, new AuthToolbox.ImageCacheClearedListener() {
+            @Override
+            public void onImageCacheCleared() {
+                Toolbox.showToast(mHostActivity,
+                        getString(R.string.message_image_cache_deleted));
+                mPreferenceClearCache.setEnabled(true);
+            }
+        });
     }
 
     /**

@@ -69,6 +69,10 @@
         <!--android:summary="@string/pref_account_sync_summary"-->
         <!--android:title="@string/pref_account_sync_label" />-->
         <Preference
+            android:key="@string/pref_delete_cache_key"
+            android:summary="@string/pref_delete_cache_summary"
+            android:title="@string/pref_delete_cache_label" />
+        <Preference
             android:key="@string/pref_account_delete_key"
             android:summary="@string/pref_account_delete_summary"
             android:title="@string/pref_account_delete_label" />
@@ -91,9 +95,9 @@
             android:title="@string/pref_about_licenses_label" />
         <Preference
             android:key="@string/pref_about_developer_key"
+            android:selectable="false"
             android:summary="@string/pref_about_developer_summary"
-            android:title="@string/pref_about_developer_label"
-            android:selectable="false"/>
+            android:title="@string/pref_about_developer_label" />
         <Preference
             android:key="@string/pref_about_contact_key"
             android:summary="@string/pref_about_contact_summary"

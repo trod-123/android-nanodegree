@@ -358,6 +358,7 @@
     <string name="message_error_parse_date">There was an error parsing the date</string>
     <string name="message_error_save_image_cache">There was a problem setting the image cache</string>
     <string name="message_broken_image">Failed to load image</string>
+    <string name="message_image_cache_deleted">Image cache deleted</string>
 
     <!-- endregion -->
 
@@ -470,7 +471,8 @@
 
     <!-- 1: ANIMAL, 2: ANIMAL EMOJI -->
     <string name="share_text">&appname; has been a lifesaver in reminding me when my foods expire, and it\'s saved me some money too! Seriously, this is an awesome app. It even has cute %1$s icons %2$s. Check it out!</string>
-    <string name="contact_email_subject" translatable="false">[&appname; ANDROID APP Support]</string>
+    <string name="contact_email_subject" translatable="false">[&appname;
+        ANDROID APP Support]</string>
     <string name="contact_email_body">--- Please write your message above. Hardware details below are helpful for diagnosing issues, so please do not modify them ---</string>
     <string name="contact_email_no_app">No e-mail app found on this device. You need to install an e-mail app to contact the developer.</string>
 
