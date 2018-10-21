@@ -3,6 +3,13 @@
 
     <!-- region Activities and Fragments -->
 
+    <item name="welcome_icon_alpha" format="float" type="dimen">0.8</item>
+    <dimen name="welcome_margin_vertical">32dp</dimen>
+    <dimen name="welcome_margin_horizontal">32dp</dimen>
+    <dimen name="wel_page_icon_size_large">128dp</dimen>
+    <dimen name="wel_page_icon_size_med">96dp</dimen>
+    <dimen name="wel_page_icon_size_small">64dp</dimen>
+
     <dimen name="auth_fields_horizontal_margin">32dp</dimen>
     <dimen name="auth_fields_vertical_margin">4dp</dimen>
     <dimen name="auth_app_logo_size">80dp</dimen>

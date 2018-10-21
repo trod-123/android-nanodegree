@@ -54,6 +54,31 @@
 
     <!-- endregion -->
 
+    <!-- region Welcome -->
+
+    <string name="wel_page_first_title">Welcome!</string>
+    <string name="wel_page_first_description">Glad to have you on board!\n\nYou are one step closer to regaining control over whether your expiring foods make it in your belly, or in the trash.</string>
+
+    <string name="wel_page_capture_title">Quickly add new items</string>
+    <string name="wel_page_capture_description">Add items by scanning their barcode or taking their picture</string>
+
+    <string name="wel_page_dates_title">Setting dates has never been simpler</string>
+    <string name="wel_page_dates_description">Pick a date, or say it through your mic!</string>
+
+    <string name="wel_page_view_title">Easy At a Glance viewing</string>
+    <string name="wel_page_view_description">Focus on foods close to expiring with help from clear headlines and filterable bar charts and lists</string>
+
+    <string name="wel_page_notifications_title">Get notified!</string>
+    <string name="wel_page_notifications_description">Hard keeping track of your foods? Get reminded when foods are going bad through daily notifications</string>
+
+    <string name="wel_page_save_title">Be in control</string>
+    <string name="wel_page_save_description">Keep money in your wallet by keeping food out of the trash</string>
+
+    <string name="wel_page_final_title">That\'s it!</string>
+    <string name="wel_page_final_description">It\'s really easy and quick. So let\'s get started!</string>
+
+    <!-- endregion -->
+
     <!-- region At a glance -->
 
     <!-- Bar chart -->

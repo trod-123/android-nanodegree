@@ -10,6 +10,15 @@
     <color name="textColorPrimaryLight">@color/md_blue_grey_600</color>
     <color name="textColorError">@color/md_red_700</color>
 
+    <!-- Welcome activity -->
+    <color name="wel_page_first">@color/colorPrimary</color>
+    <color name="wel_page_capture">@color/colorAccent</color>
+    <color name="wel_page_dates">@color/md_blue_grey_700</color>
+    <color name="wel_page_view">@color/md_indigo_700</color>
+    <color name="wel_page_notifications">@color/md_red_700</color>
+    <color name="wel_page_save">@color/md_green_700</color>
+    <color name="wel_page_final">@color/md_purple_700</color>
+
     <!-- Expiration alerts -->
     <color name="expires_alert_high">@color/md_red_500</color>
     <color name="expires_alert_med">@color/md_orange_500</color>

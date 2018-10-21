@@ -1,20 +1,17 @@
 package com.zn.expirytracker.ui;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.tabs.TabLayout;
+import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
@@ -24,6 +21,10 @@ import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -39,9 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
     MainPagerAdapter mPagerAdapter;
 
+    WelcomeHelper mWelcomeScreen;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mWelcomeScreen.onSaveInstanceState(outState);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mWelcomeScreen = new WelcomeHelper(this, IntroActivity.class);
+//        mWelcomeScreen.forceShow(); // for debugging only
+        mWelcomeScreen.show(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         Timber.tag(MainActivity.class.getSimpleName());

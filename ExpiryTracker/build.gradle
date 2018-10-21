@@ -63,4 +63,5 @@ ext {
     firebaseMlKitVisionImageLabelModelVersion = '15.0.0'
     easyPermissionsVersion = '2.0.0'
     ossLicensesVersion = '16.0.0'
+    welcomeVersion = '1.4.1'
 }

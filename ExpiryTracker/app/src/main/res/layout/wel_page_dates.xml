@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/md_blue_500">
+
+
+    <ImageView
+        android:id="@+id/iv_wel_dates_calendar"
+        android:layout_width="@dimen/wel_page_icon_size_large"
+        android:layout_height="@dimen/wel_page_icon_size_large"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_wel_page_midline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_calendar_custom_white_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_wel_dates_mic"
+        android:layout_width="@dimen/wel_page_icon_size_med"
+        android:layout_height="@dimen/wel_page_icon_size_med"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="@dimen/welcome_icon_alpha"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv_wel_dates_tap"
+        app:layout_constraintTop_toTopOf="@+id/guideline_wel_page_midline"
+        app:srcCompat="@drawable/ic_mic_white_24dp" />
+
+    <ImageView
+        android:id="@+id/iv_wel_dates_tap"
+        android:layout_width="@dimen/wel_page_icon_size_med"
+        android:layout_height="@dimen/wel_page_icon_size_med"
+        android:layout_marginEnd="16dp"
+        android:alpha="@dimen/welcome_icon_alpha"
+        app:layout_constraintEnd_toStartOf="@+id/iv_wel_dates_mic"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline_wel_page_midline"
+        app:srcCompat="@drawable/ic_gesture_tap_white_24dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_wel_page_midline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".6" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

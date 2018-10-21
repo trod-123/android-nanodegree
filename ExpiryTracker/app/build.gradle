@@ -159,6 +159,9 @@ dependencies {
     // EasyPermissions
     implementation "pub.devrel:easypermissions:$easyPermissionsVersion"
 
+    // Welcome intro
+    implementation "com.stephentuso:welcome:$welcomeVersion"
+
     // OSS licensing
     implementation "com.google.android.gms:play-services-oss-licenses:$ossLicensesVersion"
 }

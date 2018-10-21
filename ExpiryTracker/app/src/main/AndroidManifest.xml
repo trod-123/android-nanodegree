@@ -85,6 +85,8 @@
         <activity
             android:name=".settings.WebViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".ui.IntroActivity"
+            android:theme="@style/WelcomeScreenTheme.Centered"/>
 
         <receiver
             android:name=".ui.widget.FoodWidget"

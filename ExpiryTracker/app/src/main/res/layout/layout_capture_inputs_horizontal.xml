@@ -58,8 +58,7 @@
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
-                android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_barcode_scan_black_24dp" />
+                app:srcCompat="@drawable/ic_barcode_scan_white_24dp" />
 
             <!-- Content description set by parent -->
             <TextView
@@ -119,8 +118,7 @@
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
-                android:tint="@android:color/white"
-                app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+                app:srcCompat="@drawable/ic_photo_camera_white_24dp" />
 
             <!-- Content description set by parent -->
             <TextView
