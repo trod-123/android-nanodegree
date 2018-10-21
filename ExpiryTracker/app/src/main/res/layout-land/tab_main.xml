@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    tools:background="@color/colorPrimary"
+    tools:ignore="useCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/iv_tab_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:tint="@android:color/white"
+        tools:ignore="contentDescription"
+        tools:src="@drawable/ic_chart_bar_white_24dp" />
+
+    <TextView
+        android:id="@+id/tv_tab_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:textColor="@android:color/white"
+        tools:text="At A Glance" />
+
+</LinearLayout>

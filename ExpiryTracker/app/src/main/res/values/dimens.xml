@@ -83,6 +83,8 @@
     <dimen name="text_input_edit_text_size">18sp</dimen>
     <dimen name="text_input_edit_text_numeric_size">24sp</dimen>
 
+    <dimen name="tab_height">56dp</dimen>
+
     <!-- endregion -->
 
     <!-- region Dialogs and home screen widgets -->

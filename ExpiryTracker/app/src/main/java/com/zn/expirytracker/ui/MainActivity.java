@@ -2,8 +2,6 @@ package com.zn.expirytracker.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Menu;
@@ -141,20 +139,15 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabs() {
         TabLayout.Tab tabAtAGlance = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_AT_A_GLANCE);
         if (tabAtAGlance != null) {
-            tabAtAGlance.setText(R.string.fragment_at_a_glance_name)
-                    .setIcon(R.drawable.ic_chart_bar_white_24dp)
-                    .setContentDescription(R.string.fragment_at_a_glance_name);
-            tabAtAGlance.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        } else {
+            tabAtAGlance.setCustomView(mPagerAdapter.getTabView(
+                    MainPagerAdapter.FRAGMENT_AT_A_GLANCE, this));
             Timber.e("MainActivity/At a glance tab was null! Not setting tab elements...");
         }
         TabLayout.Tab tabList = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_LIST);
         if (tabList != null) {
-            tabList.setText(R.string.fragment_food_list_name)
-                    .setIcon(R.drawable.ic_format_list_bulleted_white_24dp)
-                    .setContentDescription(R.string.fragment_food_list_name);
-            tabList.getIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-            tabList.getIcon().setAlpha(128);
+            tabList.setCustomView(mPagerAdapter.getTabView(
+                    MainPagerAdapter.FRAGMENT_LIST, this));
+            mPagerAdapter.setAlpha(tabList, 0.5f);
         } else {
             Timber.e("MainActivity/List tab was null! Not setting tab elements...");
         }
@@ -163,12 +156,12 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                tab.getIcon().setAlpha(255);
+                mPagerAdapter.setAlpha(tab, 1f);
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                tab.getIcon().setAlpha(128);
+                mPagerAdapter.setAlpha(tab, 0.5f);
             }
 
             @Override

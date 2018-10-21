@@ -17,12 +17,12 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout_main"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_height="@dimen/tab_height"
             android:layout_gravity="bottom"
             android:background="@color/colorPrimary"
+            android:elevation="8dp"
             android:layoutDirection="ltr"
-            app:tabSelectedTextColor="@android:color/white"
-            app:tabTextColor="@color/colorPrimaryLight" />
+            app:tabIndicatorHeight="0dp" />
 
     </com.zn.expirytracker.ui.NonSwipeableViewPager>
 
@@ -32,6 +32,6 @@
         android:id="@+id/root_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="?android:attr/actionBarSize" />
+        android:layout_marginBottom="@dimen/tab_height" />
 
 </FrameLayout>
