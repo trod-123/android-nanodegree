@@ -168,12 +168,17 @@ public class MainActivity extends AppCompatActivity
             Timber.e("MainActivity/Capture tab was null! Not setting tab elements...");
         }
 
+        // Prevent view pager from showing Capture tab when tab is clicked
         ((LinearLayout) mTabLayout.getChildAt(0)).getChildAt(MainPagerAdapter.ACTIVITY_CAPTURE).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (!mPickerShowing && event.getAction() == MotionEvent.ACTION_UP)
-                    showInputTypePickerDialog();
-                return true;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (!mPickerShowing)
+                        showInputTypePickerDialog();
+                    return true;
+                } else {
+                    return false;
+                }
             }
         });
 
