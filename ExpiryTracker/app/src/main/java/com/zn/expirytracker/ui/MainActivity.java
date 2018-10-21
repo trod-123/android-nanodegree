@@ -6,14 +6,19 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.android.material.tabs.TabLayout;
 import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
+import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.settings.SettingsActivity;
+import com.zn.expirytracker.ui.capture.CaptureActivity;
+import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
@@ -27,7 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
 
     @BindView(R.id.viewPager_main)
     ViewPager mViewPager;
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     View mRootMain;
 
     MainPagerAdapter mPagerAdapter;
+    private boolean mPickerShowing;
 
     WelcomeHelper mWelcomeScreen;
 
@@ -141,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         if (tabAtAGlance != null) {
             tabAtAGlance.setCustomView(mPagerAdapter.getTabView(
                     MainPagerAdapter.FRAGMENT_AT_A_GLANCE, this));
+        } else {
             Timber.e("MainActivity/At a glance tab was null! Not setting tab elements...");
         }
         TabLayout.Tab tabList = mTabLayout.getTabAt(MainPagerAdapter.FRAGMENT_LIST);
@@ -151,6 +159,23 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Timber.e("MainActivity/List tab was null! Not setting tab elements...");
         }
+        TabLayout.Tab tabCapture = mTabLayout.getTabAt(MainPagerAdapter.ACTIVITY_CAPTURE);
+        if (tabCapture != null) {
+            tabCapture.setCustomView(mPagerAdapter.getTabView(
+                    MainPagerAdapter.ACTIVITY_CAPTURE, this));
+            mPagerAdapter.setAlpha(tabCapture, 0.5f);
+        } else {
+            Timber.e("MainActivity/Capture tab was null! Not setting tab elements...");
+        }
+
+        ((LinearLayout) mTabLayout.getChildAt(0)).getChildAt(MainPagerAdapter.ACTIVITY_CAPTURE).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!mPickerShowing && event.getAction() == MotionEvent.ACTION_UP)
+                    showInputTypePickerDialog();
+                return true;
+            }
+        });
 
         // Change color of icons by selection
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -200,4 +225,42 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Implement
         Toolbox.showToast(this, "This will launch Search!");
     }
+
+    // region Input type picker dialog
+
+    private void showInputTypePickerDialog() {
+        mPickerShowing = true;
+        // Show the bottom sheet
+        AddItemInputPickerBottomSheet bottomSheet = new AddItemInputPickerBottomSheet();
+        bottomSheet.show(getSupportFragmentManager(),
+                AddItemInputPickerBottomSheet.class.getSimpleName());
+    }
+
+    @Override
+    public void onCameraInputSelected() {
+        // Ensure device has camera activity to handle this first
+        if (Toolbox.checkCameraHardware(this)) {
+            Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+            startActivity(intent);
+        } else {
+            Timber.d("Attempted to start Capture, but device does not have a camera");
+            Toolbox.showSnackbarMessage(mRootMain, getString(R.string.message_camera_required));
+        }
+        mPickerShowing = false;
+    }
+
+    @Override
+    public void onTextInputSelected() {
+        UserMetrics.incrementUserTextOnlyInputCount();
+        Intent intent = new Intent(MainActivity.this, AddActivity.class);
+        startActivity(intent);
+        mPickerShowing = false;
+    }
+
+    @Override
+    public void onCancelled() {
+        mPickerShowing = false;
+    }
+
+    // endregion
 }

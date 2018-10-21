@@ -16,20 +16,26 @@ import timber.log.Timber;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private static final int NUM_ITEMS = 2;
+    private static final int NUM_ITEMS = 3;
     public static int FRAGMENT_AT_A_GLANCE = 0;
     public static int FRAGMENT_LIST = 1;
+    public static int ACTIVITY_CAPTURE = 2;
 
     private final int[] RES_TITLES = new int[]{
-            R.string.fragment_at_a_glance_name, R.string.fragment_food_list_name
+            R.string.fragment_at_a_glance_name,
+            R.string.fragment_food_list_name,
+            R.string.action_add_item
     };
     private final int[] RES_ICONS = new int[]{
-            R.drawable.ic_chart_bar_white_24dp, R.drawable.ic_format_list_bulleted_white_24dp
+            R.drawable.ic_chart_bar_white_24dp,
+            R.drawable.ic_format_list_bulleted_white_24dp,
+            R.drawable.ic_add_white_24dp
     };
 
     public MainPagerAdapter(FragmentManager fm, boolean leftToRightLayout) {
         super(fm);
         if (!leftToRightLayout) {
+            ACTIVITY_CAPTURE = 2;
             FRAGMENT_AT_A_GLANCE = 1;
             FRAGMENT_LIST = 0;
         }
@@ -41,6 +47,8 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             return AtAGlanceFragment.newInstance();
         } else if (position == FRAGMENT_LIST) {
             return FoodListFragment.newInstance();
+        } else if (position == ACTIVITY_CAPTURE) {
+            return BlankFragment.newInstance();
         } else {
             Timber.e("MainPagerAdapter: invalid position provided. Returning no fragment...");
             return null;

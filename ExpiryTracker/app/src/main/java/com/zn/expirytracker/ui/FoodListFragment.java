@@ -1,7 +1,6 @@
 package com.zn.expirytracker.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -11,13 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.ui.capture.CaptureActivity;
-import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.Toolbox;
 
@@ -35,8 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-public class FoodListFragment extends Fragment
-        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
+public class FoodListFragment extends Fragment {
 
     private static final String KEY_DRAWABLE_ID_INT = Toolbox.createStaticKeyString(
             FoodListFragment.class, "drawable_id_int");
@@ -52,8 +46,6 @@ public class FoodListFragment extends Fragment
     SwipeRefreshLayout mSrFoodList;
     @BindView(R.id.rv_food_list)
     RecyclerView mRvFoodList;
-    @BindView(R.id.fab_food_list_add)
-    FloatingActionButton mFabAdd;
 
     private Activity mHostActivity;
 
@@ -116,13 +108,6 @@ public class FoodListFragment extends Fragment
             }
         });
 
-        mFabAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showInputTypePickerDialog();
-            }
-        });
-
         return rootView;
     }
 
@@ -135,19 +120,6 @@ public class FoodListFragment extends Fragment
         mRvFoodList.setHasFixedSize(true);
         mListAdapter = new FoodListAdapter(mHostActivity, true);
         mRvFoodList.setAdapter(mListAdapter);
-        mRvFoodList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    // view scrolls up (user scrolls down)
-                    mFabAdd.hide();
-                } else {
-                    // view scrolls down (user scrolls up)
-                    mFabAdd.show();
-                }
-            }
-        });
 
         // Remove items by swipe
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
@@ -241,37 +213,6 @@ public class FoodListFragment extends Fragment
             mIvEmpty.setContentDescription(
                     DataToolbox.getAnimalContentDescriptionById(mResourceId));
         }
-    }
-
-    // endregion
-
-    // region Input type picker dialog
-
-    private void showInputTypePickerDialog() {
-        // Show the bottom sheet
-        AddItemInputPickerBottomSheet bottomSheet = new AddItemInputPickerBottomSheet();
-        bottomSheet.setTargetFragment(this, 0);
-        bottomSheet.show(getFragmentManager(),
-                AddItemInputPickerBottomSheet.class.getSimpleName());
-    }
-
-    @Override
-    public void onCameraInputSelected() {
-        // Ensure device has camera activity to handle this first
-        if (Toolbox.checkCameraHardware(mHostActivity)) {
-            Intent intent = new Intent(mHostActivity, CaptureActivity.class);
-            startActivity(intent);
-        } else {
-            Timber.d("Attempted to start Capture, but device does not have a camera");
-            Toolbox.showSnackbarMessage(mRootView, getString(R.string.message_camera_required));
-        }
-    }
-
-    @Override
-    public void onTextInputSelected() {
-        UserMetrics.incrementUserTextOnlyInputCount();
-        Intent intent = new Intent(mHostActivity, AddActivity.class);
-        startActivity(intent);
     }
 
     // endregion

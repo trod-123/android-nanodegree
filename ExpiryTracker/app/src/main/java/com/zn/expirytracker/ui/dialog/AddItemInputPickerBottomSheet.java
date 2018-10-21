@@ -1,15 +1,16 @@
 package com.zn.expirytracker.ui.dialog;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.zn.expirytracker.R;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -27,6 +28,8 @@ public class AddItemInputPickerBottomSheet extends BottomSheetDialogFragment
         void onCameraInputSelected();
 
         void onTextInputSelected();
+
+        void onCancelled();
     }
 
     public static AddItemInputPickerBottomSheet newInstance() {
@@ -38,7 +41,11 @@ public class AddItemInputPickerBottomSheet extends BottomSheetDialogFragment
         super.onCreate(savedInstanceState);
         try {
             mListener = (OnInputMethodSelectedListener) getTargetFragment();
-        } catch (ClassCastException e) {
+            if (mListener == null) {
+                // Activity is likely calling this instead of a Fragment
+                mListener = (OnInputMethodSelectedListener) getActivity();
+            }
+        } catch (ClassCastException | IllegalStateException e) {
             throw new ClassCastException("Calling Fragment must implement " +
                     "OnInputMethodSelectedListener");
         }
@@ -68,5 +75,10 @@ public class AddItemInputPickerBottomSheet extends BottomSheetDialogFragment
                 dismiss();
                 break;
         }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        mListener.onCancelled();
     }
 }

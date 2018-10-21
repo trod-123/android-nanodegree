@@ -163,7 +163,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tiEt_edit_count"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_center"
         app:layout_constraintTop_toTopOf="@+id/tiEt_edit_count"
-        app:srcCompat="@drawable/ic_add_black_24dp"
+        app:srcCompat="@drawable/ic_add_white_24dp"
         android:contentDescription="@string/action_add_count"/>
 
     <ImageView

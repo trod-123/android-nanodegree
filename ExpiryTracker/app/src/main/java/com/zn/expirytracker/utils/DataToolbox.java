@@ -1,7 +1,6 @@
 package com.zn.expirytracker.utils;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Pair;
 import android.util.SparseIntArray;
 
@@ -17,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import androidx.annotation.NonNull;
 
 import static com.zn.expirytracker.utils.Constants.GREETING_AFTERNOON_BOUNDS;
 import static com.zn.expirytracker.utils.Constants.GREETING_EVENING_BOUNDS;
@@ -612,7 +613,7 @@ public class DataToolbox {
             case COUNTER:
                 return R.drawable.ic_tabletop_black_24dp;
             case CUSTOM:
-                return R.drawable.ic_add_black_24dp;
+                return R.drawable.ic_add_white_24dp;
             default:
                 return NO_STORAGE_ICON_RESOURCE;
         }

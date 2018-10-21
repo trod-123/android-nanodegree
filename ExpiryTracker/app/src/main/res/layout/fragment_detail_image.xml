@@ -36,7 +36,7 @@
         android:padding="@dimen/detail_add_image_icon_padding"
         android:tint="#A0FFFFFF"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_add_black_24dp"
+        app:srcCompat="@drawable/ic_add_white_24dp"
         tools:visibility="visible" />
 
     <ProgressBar
