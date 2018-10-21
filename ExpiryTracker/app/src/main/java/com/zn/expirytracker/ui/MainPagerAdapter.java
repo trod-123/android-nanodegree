@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.utils.DebugFields;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -16,7 +17,7 @@ import timber.log.Timber;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private static final int NUM_ITEMS = 3;
+    private static int NUM_ITEMS = 2;
     public static int FRAGMENT_AT_A_GLANCE = 0;
     public static int FRAGMENT_LIST = 1;
     public static int ACTIVITY_CAPTURE = 2;
@@ -34,8 +35,13 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     public MainPagerAdapter(FragmentManager fm, boolean leftToRightLayout) {
         super(fm);
+        if (!DebugFields.SHOW_ADD_FAB_IN_MAIN) {
+            NUM_ITEMS = 3;
+        }
         if (!leftToRightLayout) {
-            ACTIVITY_CAPTURE = 2;
+            if (!DebugFields.SHOW_ADD_FAB_IN_MAIN) {
+                ACTIVITY_CAPTURE = 2;
+            }
             FRAGMENT_AT_A_GLANCE = 1;
             FRAGMENT_LIST = 0;
         }

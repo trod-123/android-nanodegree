@@ -51,4 +51,10 @@ public class DebugFields {
      * </ul>
      */
     public static final boolean OVERRIDE_EXPIRY_DATE_RULES = false;
+
+    /**
+     * {@code true} to show the Add fab in Main Activity. Otherwise, includes the Add
+     * in Tab
+     */
+    public static final boolean SHOW_ADD_FAB_IN_MAIN = true;
 }

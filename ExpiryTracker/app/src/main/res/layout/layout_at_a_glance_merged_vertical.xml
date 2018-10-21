@@ -18,16 +18,16 @@
             layout="@layout/layout_bar_chart_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp" />
 
         <include
             layout="@layout/layout_bar_chart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/bar_chart_horizontal_margin"
-            android:layout_marginStart="@dimen/bar_chart_horizontal_margin" />
+            android:layout_marginStart="@dimen/bar_chart_horizontal_margin"
+            android:layout_marginEnd="@dimen/bar_chart_horizontal_margin" />
 
         <include
             layout="@layout/layout_at_a_glance_summary"
@@ -39,6 +39,7 @@
             android:id="@+id/rv_glance_food_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/list_buffer_vertical"
             tools:listitem="@layout/item_food" />
 
     </LinearLayout>

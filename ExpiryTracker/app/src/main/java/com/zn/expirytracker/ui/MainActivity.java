@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.R;
@@ -22,6 +23,7 @@ import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
+import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity
     ViewPager mViewPager;
     @BindView(R.id.tabLayout_main)
     TabLayout mTabLayout;
+    @BindView(R.id.fab_food_list_add)
+    FloatingActionButton mFabAdd;
     @BindView(R.id.root_main)
     View mRootMain;
 
@@ -74,6 +78,17 @@ public class MainActivity extends AppCompatActivity
         mTabLayout.setupWithViewPager(mViewPager);
 
         setupTabs();
+
+        if (DebugFields.SHOW_ADD_FAB_IN_MAIN) {
+            mFabAdd.setVisibility(View.VISIBLE);
+            mFabAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showInputTypePickerDialog();
+                    mFabAdd.hide();
+                }
+            });
+        }
     }
 
     @Override
@@ -159,28 +174,31 @@ public class MainActivity extends AppCompatActivity
         } else {
             Timber.e("MainActivity/List tab was null! Not setting tab elements...");
         }
-        TabLayout.Tab tabCapture = mTabLayout.getTabAt(MainPagerAdapter.ACTIVITY_CAPTURE);
-        if (tabCapture != null) {
-            tabCapture.setCustomView(mPagerAdapter.getTabView(
-                    MainPagerAdapter.ACTIVITY_CAPTURE, this));
-            mPagerAdapter.setAlpha(tabCapture, 0.5f);
-        } else {
-            Timber.e("MainActivity/Capture tab was null! Not setting tab elements...");
-        }
 
-        // Prevent view pager from showing Capture tab when tab is clicked
-        ((LinearLayout) mTabLayout.getChildAt(0)).getChildAt(MainPagerAdapter.ACTIVITY_CAPTURE).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (!mPickerShowing)
-                        showInputTypePickerDialog();
-                    return true;
-                } else {
-                    return false;
-                }
+        if (!DebugFields.SHOW_ADD_FAB_IN_MAIN) {
+            TabLayout.Tab tabCapture = mTabLayout.getTabAt(MainPagerAdapter.ACTIVITY_CAPTURE);
+            if (tabCapture != null) {
+                tabCapture.setCustomView(mPagerAdapter.getTabView(
+                        MainPagerAdapter.ACTIVITY_CAPTURE, this));
+                mPagerAdapter.setAlpha(tabCapture, 0.5f);
+            } else {
+                Timber.e("MainActivity/Capture tab was null! Not setting tab elements...");
             }
-        });
+
+            // Prevent view pager from showing Capture tab when tab is clicked
+            ((LinearLayout) mTabLayout.getChildAt(0)).getChildAt(MainPagerAdapter.ACTIVITY_CAPTURE).setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (!mPickerShowing)
+                            showInputTypePickerDialog();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        }
 
         // Change color of icons by selection
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -234,7 +252,7 @@ public class MainActivity extends AppCompatActivity
     // region Input type picker dialog
 
     private void showInputTypePickerDialog() {
-        mPickerShowing = true;
+        updatePickerState(true);
         // Show the bottom sheet
         AddItemInputPickerBottomSheet bottomSheet = new AddItemInputPickerBottomSheet();
         bottomSheet.show(getSupportFragmentManager(),
@@ -251,7 +269,7 @@ public class MainActivity extends AppCompatActivity
             Timber.d("Attempted to start Capture, but device does not have a camera");
             Toolbox.showSnackbarMessage(mRootMain, getString(R.string.message_camera_required));
         }
-        mPickerShowing = false;
+        updatePickerState(false);
     }
 
     @Override
@@ -259,12 +277,23 @@ public class MainActivity extends AppCompatActivity
         UserMetrics.incrementUserTextOnlyInputCount();
         Intent intent = new Intent(MainActivity.this, AddActivity.class);
         startActivity(intent);
-        mPickerShowing = false;
+        updatePickerState(false);
     }
 
     @Override
     public void onCancelled() {
-        mPickerShowing = false;
+        updatePickerState(false);
+    }
+
+    private void updatePickerState(boolean pickerShowing) {
+        mPickerShowing = pickerShowing;
+        if (DebugFields.SHOW_ADD_FAB_IN_MAIN) {
+            if (pickerShowing) {
+                mFabAdd.hide();
+            } else {
+                mFabAdd.show();
+            }
+        }
     }
 
     // endregion

@@ -18,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            tools:listitem="@layout/item_food" />
+            tools:listitem="@layout/item_food"
+            android:paddingBottom="@dimen/list_buffer_vertical"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
