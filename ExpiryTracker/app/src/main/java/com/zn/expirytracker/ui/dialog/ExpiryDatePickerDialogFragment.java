@@ -4,9 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import android.widget.DatePicker;
 
 import com.zn.expirytracker.R;
@@ -15,6 +12,10 @@ import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 
 /**
  * {@link DialogFragment} that prompts for the expiry dates of an item
@@ -130,8 +131,10 @@ public class ExpiryDatePickerDialogFragment extends DialogFragment
         int month = dateToDisplay.getMonthOfYear() - 1; // DateTime starts counting months from 1
         int year = dateToDisplay.getYear();
 
-        TitledDatePickerDialog dialog = new TitledDatePickerDialog(getActivity(), this, year, month, day);
-        dialog.setPermanentTitle(getString(R.string.action_set_expiry_date));
+//        TitledDatePickerDialog dialog = new TitledDatePickerDialog(getActivity(), this, year, month, day);
+//        dialog.setPermanentTitle(getString(R.string.action_set_expiry_date));
+
+        DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
 
         if (!mReprompt) {
             Toolbox.showToast(getContext(), prompt);
