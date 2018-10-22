@@ -147,6 +147,11 @@
 
     <string name="pref_about_title">About</string>
 
+    <!-- Welcome features -->
+    <string name="pref_about_welcome_key" translatable="false">Welcome Features Summary</string>
+    <string name="pref_about_welcome_label">Welcome features summary</string>
+    <string name="pref_about_welcome_summary">View &appname;\'s intro blurb once more</string>
+
     <!-- Privacy Policy -->
     <string name="pref_about_privacy_policy_key" translatable="false">Privacy Policy</string>
     <string name="pref_about_privacy_policy_label">Privacy policy</string>

@@ -27,6 +27,7 @@ import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
+import com.zn.expirytracker.ui.IntroActivity;
 import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
@@ -83,6 +84,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferenceAccountDelete;
     static Preference mPreferenceDisplayName;
     static Preference mPreferenceWipeDeviceData;
+    static Preference mPreferenceWelcome;
     static Preference mPreferencePrivacyPolicy;
     static Preference mPreferenceEula;
     static Preference mPreferenceOpenSourceLicenses;
@@ -151,6 +153,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceAccountDelete = findPreference(getString(R.string.pref_account_delete_key));
         mPreferenceDisplayName = findPreference(getString(R.string.pref_account_display_name_key));
         mPreferenceWipeDeviceData = findPreference(getString(R.string.pref_account_wipe_data_key));
+        mPreferenceWelcome = findPreference(getString(R.string.pref_about_welcome_key));
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
         mPreferenceEula = findPreference(getString(R.string.pref_about_eula_key));
         mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
@@ -173,6 +176,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setPreferenceIcon(mPreferenceClearCache, context, tint, R.drawable.ic_delete_folder_outline_white_24dp);
         setPreferenceIcon(mPreferenceWipeDeviceData, context, tint, R.drawable.ic_delete_outline_white_24dp);
         setPreferenceIcon(mPreferenceAccountDelete, context, tint, R.drawable.ic_delete_forever_outline_white_24dp);
+        setPreferenceIcon(mPreferenceWelcome, context, tint, R.drawable.ic_human_greeting_white_24dp);
         setPreferenceIcon(mPreferencePrivacyPolicy, context, tint, R.drawable.ic_vpn_white_24dp);
         setPreferenceIcon(mPreferenceEula, context, tint, R.drawable.ic_clipboard_outline_white_24dp);
         setPreferenceIcon(mPreferenceOpenSourceLicenses, context, tint, R.drawable.ic_contact_multiple_outline_white_24dp);
@@ -343,6 +347,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     showWipeDataConfirmationDialog(ConfirmDeleteDialogFragment.DeleteType.DEVICE);
                     // Delete handled in ConfirmDeleteDialogFragment.onConfirmDeleteButtonClicked
                     return true;
+                } else if (preference.equals(mPreferenceWelcome)) {
+                    showWelcomeActivity(mPreferenceWelcome);
+                    return true;
                 } else if (preference.equals(mPreferencePrivacyPolicy)) {
                     startWebViewActivity(preference, preference.getTitle().toString(),
                             Urls.URL_PRIVACY_POLICY);
@@ -366,6 +373,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceClearCache.setOnPreferenceClickListener(listener);
         mPreferenceAccountDelete.setOnPreferenceClickListener(listener);
         mPreferenceWipeDeviceData.setOnPreferenceClickListener(listener);
+        mPreferenceWelcome.setOnPreferenceClickListener(listener);
         mPreferencePrivacyPolicy.setOnPreferenceClickListener(listener);
         mPreferenceEula.setOnPreferenceClickListener(listener);
         mPreferenceOpenSourceLicenses.setOnPreferenceClickListener(listener);
@@ -731,6 +739,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 mPreferenceClearCache.setEnabled(true);
             }
         });
+    }
+
+    private static void showWelcomeActivity(Preference preference) {
+        Context context = preference.getContext();
+        context.startActivity(new Intent(context, IntroActivity.class));
     }
 
     /**

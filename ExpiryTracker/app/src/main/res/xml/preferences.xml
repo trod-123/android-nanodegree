@@ -85,6 +85,10 @@
 
     <PreferenceCategory android:title="@string/pref_about_title">
         <Preference
+            android:key="@string/pref_about_welcome_key"
+            android:summary="@string/pref_about_welcome_summary"
+            android:title="@string/pref_about_welcome_label" />
+        <Preference
             android:key="@string/pref_about_privacy_policy_key"
             android:title="@string/pref_about_privacy_policy_label" />
         <Preference
