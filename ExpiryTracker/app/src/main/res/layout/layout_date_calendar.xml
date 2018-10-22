@@ -10,7 +10,7 @@
         android:id="@+id/layout_date_calendar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_calendar_black_24dp"
+        android:src="@drawable/ic_calendar_white_24dp"
         android:tint="@color/icon_tint"
         tools:ignore="contentDescription" />
 

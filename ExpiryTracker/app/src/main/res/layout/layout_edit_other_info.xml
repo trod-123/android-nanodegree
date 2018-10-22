@@ -147,7 +147,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_weight"
         app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
-        app:srcCompat="@drawable/ic_clipboard_outline_black_24dp" />
+        app:srcCompat="@drawable/ic_clipboard_outline_white_24dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_notes"

@@ -182,7 +182,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_detail_notes_label"
-        app:srcCompat="@drawable/ic_clipboard_outline_black_24dp" />
+        app:srcCompat="@drawable/ic_clipboard_outline_white_24dp" />
 
     <!-- endregion -->
 

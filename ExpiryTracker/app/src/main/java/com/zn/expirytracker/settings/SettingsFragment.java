@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -40,6 +41,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.ListPreference;
@@ -155,6 +157,27 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferenceContact = findPreference(getString(R.string.pref_about_contact_key));
         mPreferenceVersion = findPreference(getString(R.string.pref_about_version_key));
 
+        // Set icons, tinted
+        Context context = getContext();
+        int tint = ContextCompat.getColor(context, R.color.icon_tint);
+        setPreferenceIcon(mPreferenceNotifications, context, tint, R.drawable.ic_alert_outline_white_24dp);
+        setPreferenceIcon(mPreferenceNotificationsNumDays, context, tint, R.drawable.ic_calendar_white_24dp);
+        setPreferenceIcon(mPreferenceNotificationsTod, context, tint, R.drawable.ic_clock_outline_white_24dp);
+        setPreferenceIcon(mPreferenceWidget, context, tint, R.drawable.ic_widget_white_24dp);
+        setPreferenceIcon(mPreferenceCaptureBeep, context, tint, R.drawable.ic_volume_high_white_24dp);
+        setPreferenceIcon(mPreferenceCaptureVibrate, context, tint, R.drawable.ic_vibrate_white_24dp);
+        setPreferenceIcon(mPreferenceCaptureVoice, context, tint, R.drawable.ic_mic_white_24dp);
+        setPreferenceIcon(mPreferenceAccountSignOut, context, tint, R.drawable.ic_logout_white_24dp);
+        setPreferenceIcon(mPreferenceAccountSignIn, context, tint, R.drawable.ic_login_white_24dp);
+        setPreferenceIcon(mPreferenceDisplayName, context, tint, R.drawable.ic_contact_outline_white_24dp);
+        setPreferenceIcon(mPreferenceClearCache, context, tint, R.drawable.ic_delete_folder_outline_white_24dp);
+        setPreferenceIcon(mPreferenceWipeDeviceData, context, tint, R.drawable.ic_delete_outline_white_24dp);
+        setPreferenceIcon(mPreferenceAccountDelete, context, tint, R.drawable.ic_delete_forever_outline_white_24dp);
+        setPreferenceIcon(mPreferencePrivacyPolicy, context, tint, R.drawable.ic_vpn_white_24dp);
+        setPreferenceIcon(mPreferenceEula, context, tint, R.drawable.ic_clipboard_outline_white_24dp);
+        setPreferenceIcon(mPreferenceOpenSourceLicenses, context, tint, R.drawable.ic_contact_multiple_outline_white_24dp);
+        setPreferenceIcon(mPreferenceContact, context, tint, R.drawable.ic_message_outline_white_24dp);
+
         // Set summaries and enabled based on switches or checkboxes
         setOnPreferenceChangeListener(mPreferenceNotifications);
         setOnPreferenceChangeListener(mPreferenceNotificationsNumDays);
@@ -170,6 +193,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
         if (AuthToolbox.isSignedIn()) disableDemoAccountSettings(AuthToolbox.getUserId());
 
         setVersionInfo();
+    }
+
+    /**
+     * Sets an icon for a preference
+     *
+     * @param preference
+     * @param context
+     * @param tintColor
+     * @param iconResId
+     */
+    private void setPreferenceIcon(Preference preference, Context context, int tintColor, int iconResId) {
+        Drawable icon = context.getDrawable(iconResId);
+        icon.setTint(tintColor);
+        preference.setIcon(icon);
     }
 
     @Override
