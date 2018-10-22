@@ -297,7 +297,7 @@ public class DetailFragment extends Fragment {
 
     private void populateViewElements(@NonNull Food food) {
         mRootView.setVisibility(View.INVISIBLE);
-        Toolbox.showView(mPb, true, false);
+        Toolbox.showView(mPb, true, false, true);
 
         // Check if date has changed
         if (mPreviousDate != food.getDateExpiry()) {
@@ -317,7 +317,7 @@ public class DetailFragment extends Fragment {
                 images.size() - 1 : 0, false);
         // call again out here to invalidate views (see note in EditFragment
         mPagerAdapter.notifyDataSetChanged();
-        Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false);
+        Toolbox.showView(mIvPagerEmpty, images == null || images.isEmpty(), false, true);
         mViewPager.setContentDescription(food.getFoodName());
 
         // Main layout
@@ -420,7 +420,7 @@ public class DetailFragment extends Fragment {
         setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, inputType != null);
 
         mRootView.setVisibility(View.VISIBLE);
-        Toolbox.showView(mPb, false, false);
+        Toolbox.showView(mPb, false, false, true);
     }
 
     private void setInfoVisibility(ImageView iconView, TextView labelView, TextView valueView,

@@ -35,6 +35,7 @@ public class Constants {
     public static final float GLIDE_THUMBNAIL_MULTIPLIER = 0.1f;
 
     public static final int DURATION_TRANSITION = 150; // millis
+    public static final long DURATION_VISIBILITY_ANIMATION = 300; // millis
 
     public static final int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
     public static final int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;

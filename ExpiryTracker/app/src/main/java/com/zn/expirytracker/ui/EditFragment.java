@@ -657,7 +657,7 @@ public class EditFragment extends Fragment implements
      * @param view
      */
     private void hideViewIfEmptyString(@Nullable String string, View view) {
-        Toolbox.showView(view, string != null && !string.isEmpty(), true);
+        Toolbox.showView(view, string != null && !string.isEmpty(), true, true);
     }
 
     /**

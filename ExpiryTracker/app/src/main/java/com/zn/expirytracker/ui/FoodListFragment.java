@@ -281,7 +281,7 @@ public class FoodListFragment extends Fragment {
     }
 
     private void showEmptyView(boolean show) {
-        Toolbox.showView(mEmptyView, show, false);
+        Toolbox.showView(mEmptyView, show, false, true);
         if (show) {
             if (mResourceId == RESOURCE_ID_NOT_SET) {
                 mResourceId = DataToolbox.getRandomAnimalDrawableId();

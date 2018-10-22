@@ -106,8 +106,8 @@ public class AuthToolbox {
      * @param progressBar
      */
     public static void showLoadingOverlay(boolean show, View noClickOverlay, View progressBar) {
-        Toolbox.showView(noClickOverlay, show, true);
-        Toolbox.showView(progressBar, show, false);
+        Toolbox.showView(noClickOverlay, show, true, true);
+        Toolbox.showView(progressBar, show, false, true);
     }
 
     /**

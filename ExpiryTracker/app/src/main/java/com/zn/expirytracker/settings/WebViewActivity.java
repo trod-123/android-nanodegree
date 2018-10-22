@@ -4,9 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +15,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -92,16 +92,16 @@ public class WebViewActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 loadingFinished = false;
-                Toolbox.showView(view, false, false);
-                Toolbox.showView(mPb, true, false);
+                Toolbox.showView(view, false, false, true);
+                Toolbox.showView(mPb, true, false, true);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 if (!redirect) loadingFinished = true;
                 if (loadingFinished && !redirect) {
-                    Toolbox.showView(view, true, false);
-                    Toolbox.showView(mPb, false, false);
+                    Toolbox.showView(view, true, false, true);
+                    Toolbox.showView(mPb, false, false, true);
                 } else {
                     redirect = false;
                 }

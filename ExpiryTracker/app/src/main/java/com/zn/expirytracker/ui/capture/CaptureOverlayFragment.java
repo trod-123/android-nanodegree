@@ -2,7 +2,6 @@ package com.zn.expirytracker.ui.capture;
 
 import android.app.Activity;
 import android.app.Dialog;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,10 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.cardview.widget.CardView;
 import android.util.Pair;
 import android.view.Display;
 import android.view.Gravity;
@@ -60,6 +55,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -351,8 +351,8 @@ public class CaptureOverlayFragment extends Fragment
         } else {
             mHostActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         }
-        Toolbox.showView(mRootView, show, false);
-        Toolbox.showView(mPb, !show, false);
+        Toolbox.showView(mRootView, show, false, true);
+        Toolbox.showView(mPb, !show, false, true);
     }
 
     /**
@@ -467,21 +467,21 @@ public class CaptureOverlayFragment extends Fragment
                 // Set the main image to the first image from the list
                 String imageUri = imageUris.get(0);
 
-                Toolbox.showView(mPbImage, true, false);
+                Toolbox.showView(mPbImage, true, false, true);
                 Toolbox.loadImageFromUrl(mHostActivity, imageUri, mIvImage, new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                 Target<Bitmap> target, boolean isFirstResource) {
                         // If there is no image, hide the view
                         mIvImage.setVisibility(View.GONE);
-                        Toolbox.showView(mPbImage, false, false);
+                        Toolbox.showView(mPbImage, false, false, true);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                    DataSource dataSource, boolean isFirstResource) {
-                        Toolbox.showView(mPbImage, false, false);
+                        Toolbox.showView(mPbImage, false, false, true);
                         mIvImage.setContentDescription(mName);
                         return false;
                     }
@@ -521,7 +521,7 @@ public class CaptureOverlayFragment extends Fragment
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                             Target<Drawable> target, boolean isFirstResource) {
                                     Timber.e(e, "Error loading barcode bitmap into overlay / barcode");
-                                    Toolbox.showView(mPbImage, false, false);
+                                    Toolbox.showView(mPbImage, false, false, true);
                                     return false;
                                 }
 
@@ -529,7 +529,7 @@ public class CaptureOverlayFragment extends Fragment
                                 public boolean onResourceReady(Drawable resource, Object model,
                                                                Target<Drawable> target, DataSource dataSource,
                                                                boolean isFirstResource) {
-                                    Toolbox.showView(mPbImage, false, false);
+                                    Toolbox.showView(mPbImage, false, false, true);
                                     return false;
                                 }
                             })
@@ -540,14 +540,14 @@ public class CaptureOverlayFragment extends Fragment
                         public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                     Target<Bitmap> target, boolean isFirstResource) {
                             Timber.e(e, "Error loading barcode bitmap into overlay / barcode uri");
-                            Toolbox.showView(mPbImage, false, false);
+                            Toolbox.showView(mPbImage, false, false, true);
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
-                            Toolbox.showView(mPbImage, false, false);
+                            Toolbox.showView(mPbImage, false, false, true);
                             return false;
                         }
                     });
@@ -570,7 +570,7 @@ public class CaptureOverlayFragment extends Fragment
     private void populateFieldsFromImageOnly(@Nullable Bitmap image, @Nullable String imagePath) {
         mTvDescription.setVisibility(View.GONE);
         // Load the barcode in the main image instead and hide the other
-        Toolbox.showView(mPbImage, true, false);
+        Toolbox.showView(mPbImage, true, false, true);
         if (image != null) {
             GlideApp.with(mHostActivity)
                     .load(image)
@@ -579,7 +579,7 @@ public class CaptureOverlayFragment extends Fragment
                         public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                     Target<Drawable> target, boolean isFirstResource) {
                             Timber.e(e, "Error loading image bitmap into overlay / image only");
-                            Toolbox.showView(mPbImage, false, false);
+                            Toolbox.showView(mPbImage, false, false, true);
                             return false;
                         }
 
@@ -587,7 +587,7 @@ public class CaptureOverlayFragment extends Fragment
                         public boolean onResourceReady(Drawable resource, Object model,
                                                        Target<Drawable> target, DataSource dataSource,
                                                        boolean isFirstResource) {
-                            Toolbox.showView(mPbImage, false, false);
+                            Toolbox.showView(mPbImage, false, false, true);
                             return false;
                         }
                     })
@@ -598,14 +598,14 @@ public class CaptureOverlayFragment extends Fragment
                 public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                             Target<Bitmap> target, boolean isFirstResource) {
                     Timber.e(e, "Error loading image bitmap into overlay / image only path");
-                    Toolbox.showView(mPbImage, false, false);
+                    Toolbox.showView(mPbImage, false, false, true);
                     return false;
                 }
 
                 @Override
                 public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                DataSource dataSource, boolean isFirstResource) {
-                    Toolbox.showView(mPbImage, false, false);
+                    Toolbox.showView(mPbImage, false, false, true);
                     return false;
                 }
             });

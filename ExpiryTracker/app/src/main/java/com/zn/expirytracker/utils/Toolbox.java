@@ -236,10 +236,11 @@ public class Toolbox {
      *
      * @param show
      */
-    public static void showView(final View view, final boolean show, final boolean isButton) {
+    public static void showView(final View view, final boolean show, final boolean isButton,
+                                boolean animate) {
         view.animate()
                 .alpha(show ? 1f : 0f)
-                .setDuration(300)
+                .setDuration(animate ? Constants.DURATION_VISIBILITY_ANIMATION : 0)
                 .setListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {

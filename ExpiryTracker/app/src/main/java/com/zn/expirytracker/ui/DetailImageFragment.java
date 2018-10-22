@@ -2,8 +2,6 @@ package com.zn.expirytracker.ui;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,8 @@ import com.bumptech.glide.request.target.Target;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -108,23 +108,23 @@ public class DetailImageFragment extends Fragment {
 
         if (mImageUriString != null) {
             mImageView.setImageDrawable(null);
-            Toolbox.showView(mPb, true, false);
+            Toolbox.showView(mPb, true, false, true);
             Toolbox.loadImageFromUrl(getContext(), mImageUriString, mImageView,
                     new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model,
                                                     Target<Bitmap> target, boolean isFirstResource) {
                             Timber.e(e, "There was an error loading the image: %s", mImageUriString);
-                            Toolbox.showView(mPb, false, false);
-                            Toolbox.showView(mIvBroken, true, false);
+                            Toolbox.showView(mPb, false, false, true);
+                            Toolbox.showView(mIvBroken, true, false, true);
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
                                                        DataSource dataSource, boolean isFirstResource) {
-                            Toolbox.showView(mPb, false, false);
-                            Toolbox.showView(mIvBroken, false, false);
+                            Toolbox.showView(mPb, false, false, true);
+                            Toolbox.showView(mIvBroken, false, false, true);
                             return false;
                         }
                     });

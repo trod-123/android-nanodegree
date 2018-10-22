@@ -173,23 +173,22 @@ public class FoodListAdapter extends PagedListAdapter<Food, FoodListAdapter.Food
             @Nullable List<String> images = food.getImages();
             if (images != null && !images.isEmpty()) {
                 mImage.setImageDrawable(null);
-                mImage.setVisibility(View.VISIBLE);
-                mPb.setVisibility(View.VISIBLE);
-                mIvBroken.setVisibility(View.GONE);
+                Toolbox.showView(mPb, true, false, false);
+                Toolbox.showView(mIvBroken, false, false, false);
                 Toolbox.loadImageFromUrl(mContext, images.get(0), mImage, new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                         Timber.e(e, "Error loading image in adapter");
-                        mPb.setVisibility(View.GONE);
-                        mIvBroken.setVisibility(View.VISIBLE);
+                        Toolbox.showView(mPb, false, false, true);
+                        Toolbox.showView(mIvBroken, true, false, true);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                         mImage.setContentDescription(food.getFoodName());
-                        mPb.setVisibility(View.GONE);
-                        mIvBroken.setVisibility(View.GONE);
+                        Toolbox.showView(mPb, false, false, true);
+                        Toolbox.showView(mIvBroken, false, false, true);
                         return false;
                     }
                 });
