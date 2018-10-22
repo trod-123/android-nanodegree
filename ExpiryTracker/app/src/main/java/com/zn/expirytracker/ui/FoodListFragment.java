@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
@@ -51,6 +52,7 @@ public class FoodListFragment extends Fragment {
 
     private FoodListAdapter mListAdapter;
     private FoodViewModel mViewModel;
+    private Food mSoftDeletedItem;
 
     private int mResourceId = RESOURCE_ID_NOT_SET;
 
@@ -76,6 +78,11 @@ public class FoodListFragment extends Fragment {
 
         mHostActivity = getActivity();
         mViewModel = MainActivity.obtainViewModel(getActivity());
+        try {
+            mFoodSwipedListener = (FoodListFragmentListener) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Hosting activity needs to implement FoodListFragmentListener");
+        }
 
         if (savedInstanceState != null) {
             mResourceId = savedInstanceState.getInt(KEY_DRAWABLE_ID_INT, RESOURCE_ID_NOT_SET);
@@ -91,7 +98,8 @@ public class FoodListFragment extends Fragment {
 
         setupRecyclerView();
 
-        mViewModel.getAllFoods(true).observe(this, new Observer<PagedList<Food>>() {
+        // Include all food columns for "undelete" feature
+        mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
             @Override
             public void onChanged(@Nullable PagedList<Food> foods) {
                 if (foods != null) {
@@ -102,7 +110,7 @@ public class FoodListFragment extends Fragment {
                     }
                     showEmptyView(foods.size() == 0);
                 } else {
-                    Timber.e("ListFragment ViewModel foods list was null. Showing empty view...");
+                    Timber.e("deleteImage ListFragment ViewModel foods list was null. Showing empty view...");
                     showEmptyView(true);
                 }
             }
@@ -112,6 +120,31 @@ public class FoodListFragment extends Fragment {
     }
 
     // region RecyclerView setup
+
+    private FoodListFragmentListener mFoodSwipedListener;
+
+    /**
+     * Allows the hosting Activity to show the Snackbar since the hosting activity has the Fab.
+     * Otherwise, the Fab will cover up the Snackbar.
+     * <p>
+     * The fragment still takes care of data operations
+     */
+    public interface FoodListFragmentListener {
+        /**
+         * Provides info for the Snackbar to show when a food has been swiped
+         *
+         * @param message
+         * @param actionListener
+         * @param dismissCallback
+         */
+        void onFoodSwiped(String message, View.OnClickListener actionListener,
+                          Snackbar.Callback dismissCallback);
+
+        /**
+         * Handle the Snackbar being dismissed
+         */
+        void onSnackbarDismissed();
+    }
 
     private void setupRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(mHostActivity,
@@ -132,11 +165,32 @@ public class FoodListFragment extends Fragment {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                Food food = mListAdapter.getFoodAtPosition(position);
-                mViewModel.delete(true, food);
-                Toolbox.showSnackbarMessage(mRootView, getString(R.string.message_item_removed,
-                        food.getFoodName()));
+                if (mSoftDeletedItem != null) {
+                    // Remove the cache, there can only be one soft deleted item at most
+                    deleteSoftDeleted();
+                }
+                final int position = viewHolder.getAdapterPosition();
+                mSoftDeletedItem = mListAdapter.getFoodAtPosition(position);
+                // Don't delete the images from Storage just yet
+                mViewModel.delete(true, false, mSoftDeletedItem);
+                mFoodSwipedListener.onFoodSwiped(
+                        getString(R.string.message_item_removed, mSoftDeletedItem.getFoodName()),
+                        // Undelete
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                restoreSoftDeleted();
+                            }
+                        },
+                        // No action = delete confirmed. Remove images on Firebase Storage
+                        new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar transientBottomBar, int event) {
+                                if (event != DISMISS_EVENT_ACTION) {
+                                    deleteSoftDeleted();
+                                }
+                            }
+                        });
             }
         });
         helper.attachToRecyclerView(mRvFoodList);
@@ -152,6 +206,29 @@ public class FoodListFragment extends Fragment {
 //            }
 //        });
         mSrFoodList.setEnabled(false);
+    }
+
+    /**
+     * Restores the soft deleted item
+     */
+    private void restoreSoftDeleted() {
+        mViewModel.insert(true, mSoftDeletedItem);
+        mRvFoodList.smoothScrollToPosition(0);
+        mSoftDeletedItem = null;
+    }
+
+    /**
+     * Permanently deletes the soft deleted item and removes the cache and the existing Snackbar
+     * callback
+     */
+    private void deleteSoftDeleted() {
+        if (mSoftDeletedItem != null) {
+            mViewModel.deleteImages(true,
+                    mSoftDeletedItem.getImages(), mSoftDeletedItem.get_id());
+            mSoftDeletedItem = null;
+            // Ensure there are no outstanding Snackbar dismiss callbacks
+            mFoodSwipedListener.onSnackbarDismissed();
+        }
     }
 
     /**

@@ -7,9 +7,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputLayout;
 import android.util.Patterns;
 import android.view.View;
 
@@ -17,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -32,6 +30,8 @@ import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.FoodWidget;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import timber.log.Timber;
 
 /**
@@ -465,7 +465,8 @@ public class AuthToolbox {
      * @param wipeCloudData
      */
     private static void deleteData(FoodViewModel viewModel, Context context, boolean wipeCloudData) {
-        viewModel.delete(wipeCloudData, viewModel.getAllFoods_List().toArray(new Food[]{}));
+        viewModel.delete(wipeCloudData, true,
+                viewModel.getAllFoods_List().toArray(new Food[]{}));
         deleteImageCacheAsync(context);
     }
 

@@ -1,17 +1,11 @@
 package com.zn.expirytracker.ui;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.model.Food;
@@ -24,6 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -53,6 +54,7 @@ public class DetailActivity extends AppCompatActivity
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
     private List<Food> mFoodsList; // sync'd with pager adapter in onChanged()
+    private Food mSoftDeletedItem;
 
     /**
      * For setting up the first page the user sees
@@ -245,14 +247,66 @@ public class DetailActivity extends AppCompatActivity
     }
 
     /**
+     * For removing old callbacks
+     */
+    private Snackbar mCurrentSnackbar;
+
+    /**
+     * For replacing the current Snackbar's callback, ensuring callbacks do not stack
+     */
+    private Snackbar.Callback mDismissCallback;
+
+    /**
      * Deletes the food item at the current position of the adapter
      */
     @Override
     public void onDeleteItem() {
-        Food food = mFoodsList.get(mCurrentPosition);
-        mViewModel.delete(true, food);
+        if (mSoftDeletedItem != null) {
+            // Remove the cache, there can only be one soft deleted item at most
+            deleteSoftDeleted();
+        }
+        mSoftDeletedItem = mFoodsList.get(mCurrentPosition);
+        // Don't delete the images from Storage just yet
+        mViewModel.delete(true, false, mSoftDeletedItem);
         mAllowRecreatingFragments = true;
-        Toolbox.showToast(this, getString(R.string.message_item_removed,
-                food.getFoodName()));
+        mCurrentSnackbar = Snackbar.make(mRootView, getString(R.string.message_item_removed,
+                mSoftDeletedItem.getFoodName()), Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.action_undo), new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        restoreSoftDeleted();
+                        mAllowRecreatingFragments = true;
+                    }
+                })
+                .addCallback(mDismissCallback = new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar transientBottomBar, int event) {
+                        if (event != DISMISS_EVENT_ACTION) {
+                            // No action = delete confirmed. Remove images on Firebase Storage
+                            deleteSoftDeleted();
+                        }
+                    }
+                });
+        mCurrentSnackbar.show();
+    }
+
+    /**
+     * Restores the soft deleted item
+     */
+    private void restoreSoftDeleted() {
+        mViewModel.insert(true, mSoftDeletedItem);
+        mSoftDeletedItem = null;
+    }
+
+    /**
+     * Permanently deletes the soft deleted item and removes the cache and the existing Snackbar
+     * callback
+     */
+    private void deleteSoftDeleted() {
+        mViewModel.deleteImages(true,
+                mSoftDeletedItem.getImages(), mSoftDeletedItem.get_id());
+        mSoftDeletedItem = null;
+        // Ensure there are no outstanding Snackbar dismiss callbacks
+        mCurrentSnackbar.removeCallback(mDismissCallback);
     }
 }

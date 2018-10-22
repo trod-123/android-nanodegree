@@ -1,13 +1,8 @@
 package com.zn.expirytracker.data;
 
 import android.app.Application;
-import androidx.lifecycle.LiveData;
-import androidx.paging.LivePagedListBuilder;
-import androidx.paging.PagedList;
 import android.content.Context;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +19,11 @@ import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 import timber.log.Timber;
 
 /**
@@ -189,11 +189,11 @@ public class FoodRepository {
      * @param wipeCloudStorage
      * @param food
      */
-    public void deleteFood(boolean wipeCloudStorage, Food food) {
+    public void deleteFood(boolean wipeCloudStorage, boolean wipeCloudImages, Food food) {
         new DeleteAsyncTask(mFoodDao, food).execute(mContext);
         if (wipeCloudStorage && mIsSignedIn) {
             FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
-            deleteImages(true, food);
+            deleteImages(wipeCloudImages, food);
         }
     }
 
@@ -203,12 +203,12 @@ public class FoodRepository {
      * @param wipeCloudStorage
      * @param foods
      */
-    public void deleteFoods(boolean wipeCloudStorage, Food... foods) {
+    public void deleteFoods(boolean wipeCloudStorage, boolean wipeCloudImages, Food... foods) {
         new DeleteAsyncTask(mFoodDao, foods).execute(mContext);
         if (wipeCloudStorage && mIsSignedIn) {
             for (Food food : foods) {
                 FirebaseDatabaseHelper.delete(food.get_id(), mContext, true);
-                deleteImages(true, food);
+                deleteImages(wipeCloudImages, food);
             }
         }
     }
@@ -364,7 +364,7 @@ public class FoodRepository {
         @Override
         protected void onPostExecute(List<Food> foods) {
             for (Food food : foods) {
-                FirebaseDatabaseHelper.write(food, mContext, false);
+                FirebaseDatabaseHelper.write(food, mContext, true);
                 FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
             }
         }
@@ -540,7 +540,7 @@ public class FoodRepository {
                     if (food != null) {
                         Timber.d("Food removed from RTD: id_%s %s",
                                 food.get_id(), food.getFoodName());
-                        deleteFood(false, food); // don't save to cloud to avoid infinite loop
+                        deleteFood(false, false, food); // don't save to cloud to avoid infinite loop
                     } else {
                         Timber.e("Food removed from RTD was null. Not updating DB...");
                     }

@@ -2,7 +2,6 @@ package com.zn.expirytracker.data.firebase;
 
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.NonNull;
 import android.webkit.URLUtil;
 
 import com.google.android.gms.tasks.Continuation;
@@ -21,6 +20,7 @@ import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 import static com.zn.expirytracker.data.FoodRepository.getImageUriType;
@@ -39,7 +39,7 @@ public class FirebaseStorageHelper {
     /**
      * Replaces local uris with Firebase Storage uris by iterating for local uris in the
      * {@link Food}'s image list, uploading those images, and then replacing the original
-     * uris with Firebase Storage download uris. Does nothing to Web uris.
+     * uris with Firebase Storage download uris. If there are no local uris, this does nothing
      * <p>
      * Updates Firebase RTD once all images have been uploaded
      * <p>
@@ -58,13 +58,11 @@ public class FirebaseStorageHelper {
         final String foodId = String.valueOf(food.get_id());
         // Get the user id, to serve as first child
         String uid = AuthToolbox.getUserId();
-        boolean isThereLocal = false;
         for (int i = 0; i < imagesUris.size(); i++) {
             final String imageUriString = imagesUris.get(i);
             // Check form
             FoodRepository.UriType type = getImageUriType(imageUriString);
             if (type == FoodRepository.UriType.LOCAL) {
-                isThereLocal = true;
                 // Only take action on uris referencing internal storage. Get the Uri form. This
                 // only works with local file paths
                 // https://firebase.google.com/docs/storage/android/upload-files
@@ -111,11 +109,6 @@ public class FirebaseStorageHelper {
             } else {
                 imageUploadCounter++; // keep incrementing the counter
             }
-        }
-        if (!isThereLocal) {
-            // If there are no images that need to be uploaded to FS, just write to RTD. Since we've
-            // only called RTD through the listeners, this line is needed to get to RTD
-            FirebaseDatabaseHelper.write(food, context, true);
         }
     }
 

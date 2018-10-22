@@ -1,10 +1,6 @@
 package com.zn.expirytracker.data.viewmodel;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.paging.PagedList;
-import androidx.annotation.NonNull;
 
 import com.zn.expirytracker.data.FoodRepository;
 import com.zn.expirytracker.data.model.Food;
@@ -12,6 +8,10 @@ import com.zn.expirytracker.utils.AuthToolbox;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.paging.PagedList;
 import timber.log.Timber;
 
 /**
@@ -66,12 +66,12 @@ public class FoodViewModel extends AndroidViewModel {
         mRepository.updateFoods(saveToCloud, foods);
     }
 
-    public void delete(boolean wipeCloudStorage, Food food) {
-        mRepository.deleteFood(wipeCloudStorage, food);
+    public void delete(boolean wipeCloudStorage, boolean wipeCloudImages, Food food) {
+        mRepository.deleteFood(wipeCloudStorage, wipeCloudImages, food);
     }
 
-    public void delete(boolean wipeCloudStorage, Food... foods) {
-        mRepository.deleteFoods(wipeCloudStorage, foods);
+    public void delete(boolean wipeCloudStorage, boolean wipeCloudImages, Food... foods) {
+        mRepository.deleteFoods(wipeCloudStorage, wipeCloudImages, foods);
     }
 
     public void deleteImages(boolean removeFromCloud, List<String> imageUris, long foodId) {

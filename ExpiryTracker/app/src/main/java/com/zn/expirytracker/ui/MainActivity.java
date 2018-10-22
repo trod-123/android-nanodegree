@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.R;
@@ -35,7 +36,8 @@ import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
-        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener {
+        implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener,
+        FoodListFragment.FoodListFragmentListener {
 
     @BindView(R.id.viewPager_main)
     ViewPager mViewPager;
@@ -294,6 +296,34 @@ public class MainActivity extends AppCompatActivity
                 mFabAdd.show();
             }
         }
+    }
+
+    // endregion
+
+    // region "Undelete" Snackbars
+
+    /**
+     * For removing old callbacks
+     */
+    private Snackbar mCurrentSnackbar;
+
+    /**
+     * For replacing the current Snackbar's callback, ensuring callbacks do not stack
+     */
+    private Snackbar.Callback mDismissCallback;
+
+    @Override
+    public void onFoodSwiped(String message, View.OnClickListener actionListener,
+                             Snackbar.Callback dismissCallback) {
+        mCurrentSnackbar = Snackbar.make(mRootMain, message, Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.action_undo), actionListener).addCallback(mDismissCallback = dismissCallback);
+        mCurrentSnackbar.show();
+
+    }
+
+    @Override
+    public void onSnackbarDismissed() {
+        mCurrentSnackbar.removeCallback(mDismissCallback);
     }
 
     // endregion

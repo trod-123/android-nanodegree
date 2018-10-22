@@ -51,6 +51,7 @@
     <string name="action_set_expiry_date">Set expiry date</string>
     <string name="action_ok">OK</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_undo">Undo</string>
 
     <!-- endregion -->
 
@@ -342,9 +343,9 @@
     <string name="edit_dialog_delete_confirm_title">Delete this food item?</string>
     <string name="edit_dialog_delete_confirm_generic_food_name">This food item</string>
     <!-- 1: FOOD NAME -->
-    <string name="edit_dialog_delete_confirm_message_has_account">%1$s will be removed from your device and all your synced devices</string>
+    <string name="edit_dialog_delete_confirm_message_has_account">%1$s will be removed from your device and all your synced devices. This can\'t be undone.</string>
     <!-- 1: FOOD NAME -->
-    <string name="edit_dialog_delete_confirm_message_no_account">%1$s will be removed from your device</string>
+    <string name="edit_dialog_delete_confirm_message_no_account">%1$s will be removed from your device. This can\'t be undone.</string>
     <string name="edit_dialog_delete_confirm_cancel">Cancel</string>
     <string name="edit_dialog_delete_confirm_delete">Delete</string>
     <!-- 1: FOOD NAME -->
@@ -364,6 +365,8 @@
     <string name="message_item_updated">Updated %1$s</string>
     <!-- 1: FOOD NAME -->
     <string name="message_item_removed">Removed %1$s</string>
+    <!-- 1: FOOD NAME -->
+    <string name="message_item_restored">%1$s restored</string>
     <string name="message_item_added_generic">Food added</string>
     <string name="message_item_updated_generic">Food updated</string>
     <string name="message_item_removed_generic">Food removed</string>

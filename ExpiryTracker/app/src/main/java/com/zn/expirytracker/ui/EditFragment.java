@@ -2,16 +2,20 @@ package com.zn.expirytracker.ui;
 
 import android.Manifest;
 import android.app.Activity;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.fragment.app.DialogFragment;
@@ -19,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AlertDialog;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -733,7 +738,8 @@ public class EditFragment extends Fragment implements
      */
     private void deleteItem() {
         mFormChangedDetector.updateCachedFields();
-        mViewModel.delete(true, mFood);
+        // User has already confirmed, so delete food, including images from Storage
+        mViewModel.delete(true, true, mFood);
         removeCachedImagesFromStorage(mAddedImageUris);
         mHostActivity.finish();
     }

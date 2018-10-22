@@ -2,9 +2,6 @@ package com.zn.expirytracker.data.firebase;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import timber.log.Timber;
 
 /**
@@ -198,6 +198,7 @@ public class FirebaseDatabaseHelper {
                 .addOnCompleteListener(new FirebaseRTD_OnCompleteListener(
                         "firebase/rtd/timestamp"));
         if (setLocal) {
+            Timber.d("In firebase/rtd/timestamp: local timestamp set");
             SharedPreferences sp = context.getSharedPreferences(
                     Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
             sp.edit().putString(key, timestamp).apply();
