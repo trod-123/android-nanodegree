@@ -18,9 +18,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="spread">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sign_in_login"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/auth_login_button"
@@ -47,9 +47,9 @@
         app:layout_constraintStart_toEndOf="@+id/btn_container_sign_in_login"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sign_in_test"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/auth_test_button"
@@ -66,9 +66,9 @@
 
     </FrameLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_sign_in_create_account"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/auth_create_account"
