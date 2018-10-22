@@ -741,6 +741,7 @@ public class EditFragment extends Fragment implements
         // User has already confirmed, so delete food, including images from Storage
         mViewModel.delete(true, true, mFood);
         removeCachedImagesFromStorage(mAddedImageUris);
+        mHostActivity.setResult(DetailActivity.RESULT_DELETED);
         mHostActivity.finish();
     }
 

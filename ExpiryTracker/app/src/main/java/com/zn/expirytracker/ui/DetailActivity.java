@@ -34,12 +34,19 @@ public class DetailActivity extends AppCompatActivity
 
     public static final String ARG_ITEM_ID_LONG = Toolbox.createStaticKeyString(
             DetailActivity.class, "item_id_long");
+
     /**
      * Override onBackPressed() to simulate going back to MainActivity if user got here via
      * widget or notification
      */
     public static final String EXTRA_LAUNCHED_EXTERNALLY = Toolbox.createStaticKeyString(
             DetailActivity.class, "launched_externally");
+
+    /**
+     * For handling deletes via {@link EditActivity}
+     */
+    public static final int RC_EDIT = 13;
+    public static final int RESULT_DELETED = 14;
 
     private static final String KEY_CURRENT_POSITION_INT = Toolbox.createStaticKeyString(
             DetailActivity.class, "current_position_int");
@@ -195,7 +202,7 @@ public class DetailActivity extends AppCompatActivity
     public void startEditActivity(View view) {
         Intent intent = new Intent(DetailActivity.this, EditActivity.class);
         intent.putExtra(EditFragment.ARG_ITEM_ID_LONG, mFoodsList.get(mViewPager.getCurrentItem()).get_id());
-        startActivity(intent);
+        startActivityForResult(intent, RC_EDIT);
     }
 
     /**
@@ -308,5 +315,13 @@ public class DetailActivity extends AppCompatActivity
         mSoftDeletedItem = null;
         // Ensure there are no outstanding Snackbar dismiss callbacks
         mCurrentSnackbar.removeCallback(mDismissCallback);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_EDIT && resultCode == RESULT_DELETED) {
+            mAllowRecreatingFragments = true;
+        }
     }
 }
