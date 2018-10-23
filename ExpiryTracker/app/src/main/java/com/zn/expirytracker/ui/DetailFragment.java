@@ -116,19 +116,19 @@ public class DetailFragment extends Fragment {
     @BindView(R.id.tv_detail_notes_label)
     TextView mTvNotesLabel;
 
-    @BindView(R.id.tv_detail_barcode)
-    TextView mTvBarcode;
-    @BindView(R.id.iv_detail_barcode)
-    ImageView mIvBarcode;
-    @BindView(R.id.tv_detail_barcode_label)
-    TextView mTvBarcodeLabel;
-
-    @BindView(R.id.tv_detail_input)
-    TextView mTvInput;
-    @BindView(R.id.iv_detail_input)
-    ImageView mIvInput;
-    @BindView(R.id.tv_detail_input_label)
-    TextView mTvInputLabel;
+//    @BindView(R.id.tv_detail_barcode)
+//    TextView mTvBarcode;
+//    @BindView(R.id.iv_detail_barcode)
+//    ImageView mIvBarcode;
+//    @BindView(R.id.tv_detail_barcode_label)
+//    TextView mTvBarcodeLabel;
+//
+//    @BindView(R.id.tv_detail_input)
+//    TextView mTvInput;
+//    @BindView(R.id.iv_detail_input)
+//    ImageView mIvInput;
+//    @BindView(R.id.tv_detail_input_label)
+//    TextView mTvInputLabel;
 
     @BindView(R.id.tv_detail_credit_upcitemdb)
     TextView mTvCreditUpcItemDb;
@@ -394,30 +394,30 @@ public class DetailFragment extends Fragment {
         // Meta data layout
         @Nullable String barcode = food.getBarcode();
         boolean containsBarcodeData = barcode != null && !barcode.equals(Constants.BARCODE_NO_DATA);
-        mTvBarcode.setText(containsBarcodeData ? barcode :
-                getString(R.string.data_barcode_not_in_database));
-        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode,
-                barcode != null && !barcode.isEmpty());
+//        mTvBarcode.setText(containsBarcodeData ? barcode :
+//                getString(R.string.data_barcode_not_in_database));
+//        setInfoVisibility(mIvBarcode, mTvBarcodeLabel, mTvBarcode,
+//                barcode != null && !barcode.isEmpty());
         @Nullable InputType inputType = food.getInputType();
         if (inputType != null) {
             switch (inputType) {
                 case BARCODE:
-                    mTvInput.setText(R.string.food_input_type_barcode);
+//                    mTvInput.setText(R.string.food_input_type_barcode);
                     if (containsBarcodeData) mTvCreditUpcItemDb.setVisibility(View.VISIBLE);
                     break;
                 case IMG_REC:
-                    mTvInput.setText(R.string.food_input_type_imgrec);
+//                    mTvInput.setText(R.string.food_input_type_imgrec);
                     mTvCreditGoogleImgRec.setVisibility(View.VISIBLE);
                     break;
-                case IMG_ONLY:
-                    mTvInput.setText(R.string.food_input_type_imgonly);
-                    break;
-                case TEXT_ONLY:
-                    mTvInput.setText(R.string.food_input_type_textonly);
-                    break;
+//                case IMG_ONLY:
+//                    mTvInput.setText(R.string.food_input_type_imgonly);
+//                    break;
+//                case TEXT_ONLY:
+//                    mTvInput.setText(R.string.food_input_type_textonly);
+//                    break;
             }
         }
-        setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, inputType != null);
+//        setInfoVisibility(mIvInput, mTvInputLabel, mTvInput, inputType != null);
 
         mRootView.setVisibility(View.VISIBLE);
         Toolbox.showView(mPb, false, false, true);
