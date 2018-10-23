@@ -52,6 +52,8 @@ public class DetailFragment extends Fragment {
 
     @BindView(R.id.container_detail_fragment)
     View mRootView;
+    @BindView(R.id.container_detail_fragment_info)
+    View mRootInfoView;
     @BindView(R.id.pb_detail)
     ProgressBar mPb;
     @BindView(R.id.viewPager_detail_image)
@@ -160,6 +162,11 @@ public class DetailFragment extends Fragment {
          * Allows the host to handle food deletions
          */
         void onDeleteItem();
+
+        /**
+         * Allows the host to handle launching the Edit Activity for the selected id
+         */
+        void onEditItem(long itemId);
     }
 
     private DetailFragmentListener mDetailFragmentListener;
@@ -272,6 +279,14 @@ public class DetailFragment extends Fragment {
 //                        Toolbox.showPageIndicator(false, mImageScrim, mPageIndicatorView);
 //                        break;
 //                }
+            }
+        });
+
+        // Clickable container
+        mRootInfoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDetailFragmentListener.onEditItem(mItemId);
             }
         });
 

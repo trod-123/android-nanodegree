@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
@@ -57,6 +58,8 @@ public class DetailActivity extends AppCompatActivity
     View mRootView;
     @BindView(R.id.viewPager_detail)
     NonSwipeableViewPager mViewPager;
+    @BindView(R.id.fab_detail_edit)
+    FloatingActionButton mFabEdit;
 
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
@@ -181,6 +184,14 @@ public class DetailActivity extends AppCompatActivity
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        // Edit fab
+        mFabEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startEditActivity(mFoodsList.get(mViewPager.getCurrentItem()).get_id());
+            }
+        });
     }
 
     @Override
@@ -199,10 +210,15 @@ public class DetailActivity extends AppCompatActivity
         }
     }
 
-    public void startEditActivity(View view) {
+    public void startEditActivity(long itemId) {
         Intent intent = new Intent(DetailActivity.this, EditActivity.class);
-        intent.putExtra(EditFragment.ARG_ITEM_ID_LONG, mFoodsList.get(mViewPager.getCurrentItem()).get_id());
+        intent.putExtra(EditFragment.ARG_ITEM_ID_LONG, itemId);
         startActivityForResult(intent, RC_EDIT);
+    }
+
+    @Override
+    public void onEditItem(long itemId) {
+        startEditActivity(itemId);
     }
 
     /**
