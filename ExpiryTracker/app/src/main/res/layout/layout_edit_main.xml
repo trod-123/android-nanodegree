@@ -66,18 +66,18 @@
     <ImageView
         android:id="@+id/iv_edit_date_good"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_good_thru_date_label"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_date_good"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_date_expiry"
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_good"
-        app:srcCompat="@drawable/ic_calendar_white_24dp"
-        android:contentDescription="@string/food_good_thru_date_label"/>
+        app:srcCompat="@drawable/ic_calendar_white_24dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_date_good"
         style="@style/AppTheme.TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/til_edit_date_expiry"
         app:layout_constraintStart_toStartOf="@+id/til_edit_date_expiry"
         app:layout_constraintTop_toBottomOf="@+id/til_edit_date_expiry">
@@ -87,7 +87,8 @@
             style="@style/AppTheme.TextInputEditText.NonClickable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/food_good_thru_date_label" />
+            android:hint="@string/food_good_thru_date_label"
+            android:visibility="gone" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,22 +96,22 @@
         android:id="@+id/iv_edit_date_good_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/edit_clear_date_good_thru"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_date_good"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
         app:layout_constraintTop_toTopOf="@+id/til_edit_date_good"
-        app:srcCompat="@drawable/ic_clear_black_24dp"
-        android:contentDescription="@string/edit_clear_date_good_thru"/>
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
 
     <ImageView
         android:id="@+id/iv_edit_count"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_count_label"
         app:layout_constraintBottom_toBottomOf="@+id/tv_edit_count"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_date_good"
         app:layout_constraintTop_toTopOf="@+id/tv_edit_count"
-        app:srcCompat="@drawable/ic_counter_black_24dp"
-        android:contentDescription="@string/food_count_label"/>
+        app:srcCompat="@drawable/ic_counter_black_24dp" />
 
     <TextView
         android:id="@+id/tv_edit_count"
@@ -128,18 +129,18 @@
         android:id="@+id/iv_edit_minus_btn"
         style="@style/AppTheme.Icon.ClickableIcon"
         android:layout_marginEnd="32dp"
+        android:contentDescription="@string/action_subtract_count"
         app:layout_constraintEnd_toStartOf="@+id/edit_guideline_center"
         app:layout_constraintTop_toBottomOf="@+id/tv_edit_count"
-        app:srcCompat="@drawable/ic_minus_black_24dp"
-        android:contentDescription="@string/action_subtract_count"/>
+        app:srcCompat="@drawable/ic_minus_black_24dp" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tiEt_edit_count"
         style="@style/AppTheme.TextInputEditText.Numeric"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_edit_minus_btn"
         app:layout_constraintEnd_toStartOf="@+id/iv_edit_plus_btn"
         app:layout_constraintStart_toEndOf="@+id/iv_edit_minus_btn"
@@ -160,20 +161,20 @@
         android:id="@+id/iv_edit_plus_btn"
         style="@style/AppTheme.Icon.ClickableIcon"
         android:layout_marginStart="32dp"
+        android:contentDescription="@string/action_add_count"
         app:layout_constraintBottom_toBottomOf="@+id/tiEt_edit_count"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_center"
         app:layout_constraintTop_toTopOf="@+id/tiEt_edit_count"
-        app:srcCompat="@drawable/ic_add_white_24dp"
-        android:contentDescription="@string/action_add_count"/>
+        app:srcCompat="@drawable/ic_add_white_24dp" />
 
     <ImageView
         android:id="@+id/iv_edit_storage_location"
         style="@style/AppTheme.Icon"
+        android:contentDescription="@string/food_storage_location_label"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_storage_location"
         app:layout_constraintStart_toStartOf="@+id/iv_edit_count"
         app:layout_constraintTop_toTopOf="@+id/til_edit_storage_location"
-        app:srcCompat="@drawable/ic_map_marker_black_24dp"
-        android:contentDescription="@string/food_storage_location_label"/>
+        app:srcCompat="@drawable/ic_map_marker_black_24dp" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_edit_storage_location"
@@ -219,13 +220,13 @@
     <ImageView
         android:id="@+id/iv_edit_description_clear"
         style="@style/AppTheme.Icon.ClickableIcon"
+        android:contentDescription="@string/edit_clear_description"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/til_edit_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
         app:layout_constraintTop_toTopOf="@+id/til_edit_description"
-        app:srcCompat="@drawable/ic_clear_black_24dp"
-        android:contentDescription="@string/edit_clear_description"/>
+        app:srcCompat="@drawable/ic_clear_black_24dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/edit_guideline_start"

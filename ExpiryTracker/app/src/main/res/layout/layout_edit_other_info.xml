@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/tv_edit_other_info_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
         android:text="@string/food_other_info_label"
         android:textColor="@color/textColorPrimary"
         android:textSize="18sp"
@@ -17,181 +18,214 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_edit_brand"
-        style="@style/AppTheme.Icon"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:contentDescription="@string/food_brand_label"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
-        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_start"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
-        app:srcCompat="@drawable/ic_domain_black_24dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_edit_brand"
-        style="@style/AppTheme.TextInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
-        app:layout_constraintTop_toBottomOf="@+id/tv_edit_other_info_label">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tiEt_edit_brand"
-            style="@style/AppTheme.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/food_brand_label"
-            android:inputType="text" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/iv_edit_brand_clear"
-        style="@style/AppTheme.Icon.ClickableIcon"
-        android:contentDescription="@string/edit_clear_brand"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
-
-    <ImageView
-        android:id="@+id/iv_edit_size"
-        style="@style/AppTheme.Icon"
-        android:contentDescription="@string/food_size_label"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
-        app:layout_constraintStart_toStartOf="@+id/iv_edit_brand"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_size"
-        app:srcCompat="@drawable/ic_ruler_black_24dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_edit_size"
-        style="@style/AppTheme.TextInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
-        app:layout_constraintTop_toBottomOf="@+id/til_edit_brand">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tiEt_edit_size"
-            style="@style/AppTheme.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/food_size_label"
-            android:inputType="text" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/iv_edit_size_clear"
-        style="@style/AppTheme.Icon.ClickableIcon"
-        android:contentDescription="@string/edit_clear_size"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_size"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
-
-    <ImageView
-        android:id="@+id/iv_edit_weight"
-        style="@style/AppTheme.Icon"
-        android:contentDescription="@string/food_weight_label"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
-        app:layout_constraintStart_toStartOf="@+id/iv_edit_size"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
-        app:srcCompat="@drawable/ic_scale_black_24dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_edit_weight"
-        style="@style/AppTheme.TextInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
-        app:layout_constraintTop_toBottomOf="@+id/til_edit_size">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tiEt_edit_weight"
-            style="@style/AppTheme.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/food_weight_label"
-            android:inputType="text" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/iv_edit_weight_clear"
-        style="@style/AppTheme.Icon.ClickableIcon"
-        android:contentDescription="@string/edit_clear_weight"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
-
-    <ImageView
-        android:id="@+id/iv_edit_notes"
-        style="@style/AppTheme.Icon"
-        android:contentDescription="@string/food_notes_label"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
-        app:layout_constraintStart_toStartOf="@+id/iv_edit_weight"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
-        app:srcCompat="@drawable/ic_clipboard_outline_white_24dp" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_edit_notes"
-        style="@style/AppTheme.TextInputLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
-        app:layout_constraintTop_toBottomOf="@+id/til_edit_weight">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/tiEt_edit_notes"
-            style="@style/AppTheme.TextInputEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/food_notes_label"
-            android:inputType="text" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/iv_edit_notes_clear"
-        style="@style/AppTheme.Icon.ClickableIcon"
-        android:contentDescription="@string/edit_clear_notes"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
-        app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
-        app:srcCompat="@drawable/ic_clear_black_24dp" />
-
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/edit_guideline_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".15" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/edit_guideline_end"
+        android:id="@+id/edit_guideline_end_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".85" />
+
+    <ImageView
+        android:id="@+id/iv_edit_other_info_caret"
+        style="@style/AppTheme.Icon.ClickableIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_edit_other_info_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edit_guideline_end_parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_edit_other_info_label"
+        app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp"
+        tools:ignore="contentDescription" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_edit_other_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_other_info_label">
+
+        <ImageView
+            android:id="@+id/iv_edit_brand"
+            style="@style/AppTheme.Icon"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="@string/food_brand_label"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
+            app:layout_constraintEnd_toStartOf="@+id/edit_guideline_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
+            app:srcCompat="@drawable/ic_domain_black_24dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_edit_brand"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiEt_edit_brand"
+                style="@style/AppTheme.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/food_brand_label"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_edit_brand_clear"
+            style="@style/AppTheme.Icon.ClickableIcon"
+            android:contentDescription="@string/edit_clear_brand"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_brand"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_brand"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_edit_size"
+            style="@style/AppTheme.Icon"
+            android:contentDescription="@string/food_size_label"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
+            app:layout_constraintStart_toStartOf="@+id/iv_edit_brand"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_size"
+            app:srcCompat="@drawable/ic_ruler_black_24dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_edit_size"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+            app:layout_constraintTop_toBottomOf="@+id/til_edit_brand">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiEt_edit_size"
+                style="@style/AppTheme.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/food_size_label"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_edit_size_clear"
+            style="@style/AppTheme.Icon.ClickableIcon"
+            android:contentDescription="@string/edit_clear_size"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_size"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_edit_weight"
+            style="@style/AppTheme.Icon"
+            android:contentDescription="@string/food_weight_label"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
+            app:layout_constraintStart_toStartOf="@+id/iv_edit_size"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
+            app:srcCompat="@drawable/ic_scale_black_24dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_edit_weight"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+            app:layout_constraintTop_toBottomOf="@+id/til_edit_size">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiEt_edit_weight"
+                style="@style/AppTheme.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/food_weight_label"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_edit_weight_clear"
+            style="@style/AppTheme.Icon.ClickableIcon"
+            android:contentDescription="@string/edit_clear_weight"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_weight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_weight"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/iv_edit_notes"
+            style="@style/AppTheme.Icon"
+            android:contentDescription="@string/food_notes_label"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
+            app:layout_constraintStart_toStartOf="@+id/iv_edit_weight"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
+            app:srcCompat="@drawable/ic_clipboard_outline_white_24dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_edit_notes"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_start"
+            app:layout_constraintTop_toBottomOf="@+id/til_edit_weight">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiEt_edit_notes"
+                style="@style/AppTheme.TextInputEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/food_notes_label"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/iv_edit_notes_clear"
+            style="@style/AppTheme.Icon.ClickableIcon"
+            android:contentDescription="@string/edit_clear_notes"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/til_edit_notes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/edit_guideline_end"
+            app:layout_constraintTop_toTopOf="@+id/til_edit_notes"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/edit_guideline_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/edit_guideline_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".85" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

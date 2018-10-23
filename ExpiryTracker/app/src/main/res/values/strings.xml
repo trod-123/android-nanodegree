@@ -262,7 +262,7 @@
     <string name="food_storage_location_label">Stored in</string>
     <string name="food_count_label">Count</string>
     <string name="food_description_label">Description</string>
-    <string name="food_other_info_label">Other info</string>
+    <string name="food_other_info_label">More info</string>
     <string name="food_brand_label">Brand</string>
     <string name="food_size_label">Size</string>
     <string name="food_weight_label">Weight</string>

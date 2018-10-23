@@ -64,10 +64,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DetailActivity" />
         </activity>
+
+        <!-- stateVisible forces keyboard to pop up when an edit text requested focus at start of activity -->
         <activity
             android:name=".ui.AddActivity"
             android:label="@string/activity_add_item_name"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -85,8 +88,9 @@
         <activity
             android:name=".settings.WebViewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
-        <activity android:name=".ui.IntroActivity"
-            android:theme="@style/WelcomeScreenTheme.Centered"/>
+        <activity
+            android:name=".ui.IntroActivity"
+            android:theme="@style/WelcomeScreenTheme.Centered" />
 
         <receiver
             android:name=".ui.widget.FoodWidget"

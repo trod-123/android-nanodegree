@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_edit_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,39 +17,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="96dp">
+            android:paddingBottom="@dimen/list_buffer_vertical">
 
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@android:color/white"
+                android:elevation="@dimen/card_elevation"
+                android:orientation="vertical">
 
-                <LinearLayout
+                <include
+                    layout="@layout/fragment_detail_image_pager"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="16dp"
-                    android:orientation="vertical">
+                    android:layout_height="@dimen/detail_image_height" />
 
-                    <include layout="@layout/fragment_detail_image_pager"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/detail_image_height"/>
+                <include
+                    layout="@layout/layout_edit_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp" />
 
-                    <include
-                        layout="@layout/layout_edit_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginStart="@dimen/edit_fields_horizontal_margin"
-                        android:layout_marginEnd="@dimen/edit_fields_horizontal_margin"/>
+                <include
+                    layout="@layout/layout_edit_other_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp" />
 
-                    <include layout="@layout/layout_edit_other_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/edit_fields_horizontal_margin"
-                        android:layout_marginEnd="@dimen/edit_fields_horizontal_margin"/>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
         </LinearLayout>
 

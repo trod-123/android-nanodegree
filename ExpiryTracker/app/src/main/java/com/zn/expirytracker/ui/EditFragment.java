@@ -2,28 +2,12 @@ package com.zn.expirytracker.ui;
 
 import android.Manifest;
 import android.app.Activity;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.google.android.material.textfield.TextInputEditText;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.FileProvider;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AlertDialog;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -32,9 +16,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.BuildConfig;
 import com.zn.expirytracker.R;
@@ -64,6 +51,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -144,6 +141,12 @@ public class EditFragment extends Fragment implements
             Toolbox.createStaticKeyString(EditFragment.class, "current_camera_capture_loc");
 
     /**
+     * Keep Other Info showing after config changes if it's visible beforehand
+     */
+    private static final String KEY_VISIBILITY_OTHER_INFO =
+            Toolbox.createStaticKeyString(EditFragment.class, "visibility_other_info");
+
+    /**
      * Default code to use for {@link EditFragment#ARG_ITEM_ID_LONG} if adding a new item, not
      * editing an existing one
      */
@@ -200,6 +203,10 @@ public class EditFragment extends Fragment implements
     @BindView(R.id.iv_edit_description_clear)
     ImageView mIvDescriptionClear;
 
+    @BindView(R.id.layout_edit_other_info)
+    View mOtherInfoRootView;
+    @BindView(R.id.iv_edit_other_info_caret)
+    ImageView mIvExpandOtherInfo;
     @BindView(R.id.tiEt_edit_brand)
     TextInputEditText mEtBrand;
     @BindView(R.id.iv_edit_brand_clear)
@@ -248,6 +255,7 @@ public class EditFragment extends Fragment implements
     private List<String> mCachedImageUris;
     private int mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
     private boolean mRestoredInstance;
+    private boolean mIsOtherInfoShowing = false;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -266,6 +274,7 @@ public class EditFragment extends Fragment implements
         outState.putLong(KEY_CURRENT_GOOD_THRU_DATE_LONG, mGoodThruDate);
         outState.putSerializable(KEY_CURRENT_STORAGE_LOC_ENUM, mLoc);
         outState.putString(KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING, mCurrentCameraCapturePath);
+        outState.putBoolean(KEY_VISIBILITY_OTHER_INFO, mIsOtherInfoShowing);
         super.onSaveInstanceState(outState);
     }
 
@@ -397,6 +406,9 @@ public class EditFragment extends Fragment implements
             mCurrentCameraCapturePath =
                     savedInstanceState.getString(KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING);
 
+            mIsOtherInfoShowing = savedInstanceState.getBoolean(KEY_VISIBILITY_OTHER_INFO);
+            showOtherInfoFields(mIsOtherInfoShowing);
+
             mRestoredInstance = true;
         }
 
@@ -426,6 +438,12 @@ public class EditFragment extends Fragment implements
 
         setTextChangedListeners();
         setClickListeners();
+
+        if (!mRestoredInstance && mAddMode) {
+            // Allow user to enter food name right away upon loading Add. Make sure in Manifest,
+            // android:windowSoftInputMode="stateVisible" is also set for the keyboard to pop up
+            mEtFoodName.requestFocus();
+        }
 
         return rootView;
     }
@@ -626,6 +644,9 @@ public class EditFragment extends Fragment implements
                 mEtDateGood.setText(fieldFormattedDate);
                 setGoodThruDateViewAttributes();
                 break;
+            case R.id.iv_edit_other_info_caret:
+                showOtherInfoFields(mIsOtherInfoShowing = !mIsOtherInfoShowing);
+                break;
         }
     }
 
@@ -648,6 +669,28 @@ public class EditFragment extends Fragment implements
         mIvSizeClear.setOnClickListener(new ClearTextClickListener(mEtSize));
         mIvWeightClear.setOnClickListener(new ClearTextClickListener(mEtWeight));
         mIvNotesClear.setOnClickListener(new ClearTextClickListener(mEtNotes));
+
+        mIvExpandOtherInfo.setOnClickListener(this);
+    }
+
+    private void showOtherInfoFields(boolean show) {
+        mIvExpandOtherInfo.setImageResource(show ? R.drawable.ic_keyboard_arrow_up_black_24dp :
+                R.drawable.ic_keyboard_arrow_down_black_24dp);
+        mOtherInfoRootView.setVisibility(show ? View.VISIBLE : View.GONE);
+        //Toolbox.showView(mOtherInfoRootView, show, true, true);
+        //showView(mHostActivity, mOtherInfoRootView, show);
+    }
+
+    private void showView(Context context, View v, boolean show) {
+        Animation a = AnimationUtils.loadAnimation(context, show ?
+                R.anim.slide_down : R.anim.slide_up);
+        if (a != null) {
+            a.reset();
+            if (v != null) {
+                v.clearAnimation();
+                v.startAnimation(a);
+            }
+        }
     }
 
     /**
