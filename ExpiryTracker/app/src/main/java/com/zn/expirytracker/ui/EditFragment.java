@@ -1441,7 +1441,11 @@ public class EditFragment extends Fragment implements
                     "EditFragment/RemoveImage");
             mAddedImageUris.remove(path);
         }
-        mPagerAdapter.notifyDataSetChanged();
+        if (!Toolbox.isLeftToRightLayout()) {
+            mPagerAdapter.setImageUris(mImageUris);
+        } else {
+            mPagerAdapter.notifyDataSetChanged();
+        }
         mPageIndicatorView.setCount(mPagerAdapter.getCount());
     }
 

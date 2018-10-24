@@ -1,5 +1,10 @@
 package com.zn.expirytracker.ui;
 
+import com.zn.expirytracker.utils.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -7,11 +12,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
 
+    /**
+     * Could be either the LTR or RTL list
+     */
     private List<String> mImageUris;
     private boolean mEditMode;
     private boolean mLeftToRightLayout;
@@ -58,17 +63,22 @@ public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
             if (mLeftToRightLayout) {
                 if (position < mImageUris.size()) {
                     return DetailImageFragment.newInstance(mImageUris.get(position), mEditMode);
-                } else if (mEditMode) {
+                } else if (mEditMode && isThereRoomForMore()) {
                     // Guaranteed to always be the last position; only create if we're editing
                     return DetailImageFragment.newInstance(null, true);
                 }
             } else if (mEditMode) {
-                if (position == 0) {
-                    // Guaranteed to always be the first; only create if we're editing
-                    return DetailImageFragment.newInstance(null, true);
-                } else if (position - 1 < mImageUris.size()) {
-                    // Subtract 1 from position to compensate for Add fragment added first
-                    return DetailImageFragment.newInstance(mImageUris.get(position - 1), true);
+                // image list position depends on whether we add the Add fragment
+                if (isThereRoomForMore()) {
+                    if (position == 0) {
+                        // Guaranteed to always be the first; only create if we're editing
+                        return DetailImageFragment.newInstance(null, true);
+                    } else if (position - 1 < mImageUris.size()) {
+                        // Subtract 1 from position to compensate for Add fragment added first
+                        return DetailImageFragment.newInstance(mImageUris.get(position - 1), true);
+                    }
+                } else {
+                    return DetailImageFragment.newInstance(mImageUris.get(position), true);
                 }
             } else if (position < mImageUris.size()) {
                 return DetailImageFragment.newInstance(mImageUris.get(position), false);
@@ -81,6 +91,16 @@ public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         // Add one for the dedicated add image fragment, only if we're editing
-        return mImageUris != null ? (mEditMode ? mImageUris.size() + 1 : mImageUris.size()) : 0;
+        return mImageUris != null ? (mEditMode && isThereRoomForMore() ? mImageUris.size() + 1 :
+                mImageUris.size()) : 0;
+    }
+
+    /**
+     * Checks to see if there is room for more images to be added
+     *
+     * @return
+     */
+    private boolean isThereRoomForMore() {
+        return mImageUris.size() < Constants.MAX_IMAGE_LIST_SIZE;
     }
 }

@@ -60,5 +60,15 @@ public class Constants {
     public static final int GREETING_MORNING_BOUNDS = 5;
     public static final int GREETING_AFTERNOON_BOUNDS = 12;
 
-    public static final int MAX_BARCODE_IMAGE_LIST_SIZE = 3;
+    /**
+     * Max number of images saved from the image list provided by UpcItemDb
+     */
+    public static final int MAX_BARCODE_IMAGE_LIST_SIZE = 1;
+
+    /**
+     * Max number of images users can attach to a single item
+     * <p>
+     * Note: When setting, this must be greater than 2 (one for barcode, one for scanned image)
+     */
+    public static final int MAX_IMAGE_LIST_SIZE = 3;
 }
