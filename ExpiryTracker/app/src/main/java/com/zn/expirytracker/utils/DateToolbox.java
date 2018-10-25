@@ -363,8 +363,6 @@ public class DateToolbox {
 
     /**
      * Gets the date in millis after the number of {@code plusDays} provided
-     * <p>
-     * TODO: Currently supports only English.
      *
      * @param baseDateStartOfDay
      * @param plusDays
