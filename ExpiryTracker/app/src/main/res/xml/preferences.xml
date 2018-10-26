@@ -6,7 +6,7 @@
             android:defaultValue="@bool/pref_notifications_receive_default"
             android:key="@string/pref_notifications_receive_key"
             android:summary="@string/pref_notifications_receive_summary"
-            android:title="@string/pref_notifications_title" />
+            android:title="@string/pref_notifications_receive_label" />
         <ListPreference
             android:defaultValue="@string/pref_expire_num_days_default"
             android:entries="@array/pref_expire_num_days_entries"
@@ -98,10 +98,10 @@
             android:key="@string/pref_about_licenses_key"
             android:title="@string/pref_about_licenses_label" />
         <SwitchPreference
+            android:defaultValue="@bool/pref_about_crashlytics_optin_default"
             android:key="@string/pref_about_crashlytics_optin_key"
             android:summary="@string/pref_about_crashlytics_optin_summary"
-            android:title="@string/pref_about_crashlytics_optin_label"
-            android:defaultValue="@bool/pref_about_crashlytics_optin_default"/>
+            android:title="@string/pref_about_crashlytics_optin_label" />
         <Preference
             android:key="@string/pref_about_developer_key"
             android:selectable="false"
