@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
+apply plugin: 'io.fabric'
 
 android {
     signingConfigs {
@@ -107,6 +108,9 @@ dependencies {
 
     // Firebase x Google AdMob
 //    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
+
+    // Firebase Crashlytics
+    implementation "com.crashlytics.sdk.android:crashlytics:$firebaseCrashlyticsVersion"
 
     // Firebase ML Kit
     implementation "com.google.firebase:firebase-ml-vision:$firebaseMlKitVersion"

@@ -7,6 +7,7 @@
     <bool name="pref_capture_beep_default">true</bool>
     <bool name="pref_capture_vibrate_default">true</bool>
     <bool name="pref_capture_voice_input_default">false</bool>
+    <bool name="pref_about_crashlytics_optin_default">true</bool>
 
     <!-- endregion -->
 

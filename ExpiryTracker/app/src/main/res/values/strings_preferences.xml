@@ -164,6 +164,11 @@
     <string name="pref_about_licenses_key" translatable="false">Open-source licenses</string>
     <string name="pref_about_licenses_label">Open-source licenses</string>
 
+    <!-- Crashlytics reporting -->
+    <string name="pref_about_crashlytics_optin_key" translatable="false">Crashlytics opt-in</string>
+    <string name="pref_about_crashlytics_optin_label">Send crash reports automatically</string>
+    <string name="pref_about_crashlytics_optin_summary">By default, crash reports are sent to the developer as they occur in real time. This allows the developer to address and fix crashes more quickly. Disabling this option will prevent the app from sending these reports automatically</string>
+
     <!-- Version -->
     <string name="pref_about_version_key" translatable="false">Version</string>
     <string name="pref_about_version_label">Version</string>

@@ -2,8 +2,6 @@ package com.zn.expirytracker.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.zn.expirytracker.R;
@@ -11,6 +9,8 @@ import com.zn.expirytracker.data.model.InputType;
 
 import java.util.List;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 

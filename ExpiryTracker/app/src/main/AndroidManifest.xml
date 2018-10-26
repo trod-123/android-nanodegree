@@ -30,6 +30,10 @@
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="barcode, label, ocr, ica" />
+        <!-- Disable automatic Crashlytics reporting to custommize Crashlytics -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
 
         <activity
             android:name=".ui.SignInActivity"

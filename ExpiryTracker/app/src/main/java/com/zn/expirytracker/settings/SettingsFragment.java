@@ -88,6 +88,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     static Preference mPreferencePrivacyPolicy;
     static Preference mPreferenceEula;
     static Preference mPreferenceOpenSourceLicenses;
+    static Preference mPreferenceCrashlyticsEnabled;
     static Preference mPreferenceContact;
     static Preference mPreferenceVersion;
 
@@ -157,6 +158,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         mPreferencePrivacyPolicy = findPreference(getString(R.string.pref_about_privacy_policy_key));
         mPreferenceEula = findPreference(getString(R.string.pref_about_eula_key));
         mPreferenceOpenSourceLicenses = findPreference(getString(R.string.pref_about_licenses_key));
+        mPreferenceCrashlyticsEnabled = findPreference(getString(R.string.pref_about_crashlytics_optin_key));
         mPreferenceContact = findPreference(getString(R.string.pref_about_contact_key));
         mPreferenceVersion = findPreference(getString(R.string.pref_about_version_key));
 
@@ -180,6 +182,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setPreferenceIcon(mPreferencePrivacyPolicy, context, tint, R.drawable.ic_vpn_white_24dp);
         setPreferenceIcon(mPreferenceEula, context, tint, R.drawable.ic_clipboard_outline_white_24dp);
         setPreferenceIcon(mPreferenceOpenSourceLicenses, context, tint, R.drawable.ic_contact_multiple_outline_white_24dp);
+        setPreferenceIcon(mPreferenceCrashlyticsEnabled, context, tint, R.drawable.ic_bug_white_24dp);
         setPreferenceIcon(mPreferenceContact, context, tint, R.drawable.ic_message_outline_white_24dp);
 
         // Set summaries and enabled based on switches or checkboxes
@@ -191,6 +194,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setOnPreferenceChangeListener(mPreferenceCaptureVibrate);
         setOnPreferenceChangeListener(mPreferenceCaptureVoice);
         setOnPreferenceChangeListener(mPreferenceDisplayName);
+        setOnPreferenceChangeListener(mPreferenceCrashlyticsEnabled);
 
         // Set the behavior for the custom preferences
         setAccountPreferencesActions();
@@ -617,16 +621,20 @@ public class SettingsFragment extends PreferenceFragmentCompat
         } else if (preference.equals(mPreferenceWidget)) {
             // Request update
             UpdateWidgetService.updateFoodWidget(preference.getContext());
-        } else if (preference.equals(mPreferenceNotifications)) {
-            // Update notification jobscheduler from switch toggle
-            if (!mInitializeGuard)
-                // Do not call when we've just initialized the OnPreferenceChangeListener
+        }
+
+        if (!mInitializeGuard) {
+            // Do not call when we've just initialized the OnPreferenceChangeListener
+            if (preference.equals(mPreferenceNotifications)) {
+                // Update notification jobscheduler from switch toggle
                 scheduleNotifications(context, (boolean) value);
-        } else if (preference.equals(mPreferenceNotificationsTod)) {
-            // Handle notification jobschedule from tod change
-            if (!mInitializeGuard)
-                // Do not call when we've just initialized the OnPreferenceChangeListener
+            } else if (preference.equals(mPreferenceNotificationsTod)) {
+                // Handle notification jobschedule from tod change
                 scheduleNotifications(context, (String) value);
+            } else if (preference.equals(mPreferenceCrashlyticsEnabled)) {
+                // Do not call when we've just initialized the OnPreferenceChangeListener
+                Toolbox.showToast(context, context.getString(R.string.message_restart_required));
+            }
         }
     }
 

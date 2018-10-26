@@ -97,6 +97,11 @@
         <Preference
             android:key="@string/pref_about_licenses_key"
             android:title="@string/pref_about_licenses_label" />
+        <SwitchPreference
+            android:key="@string/pref_about_crashlytics_optin_key"
+            android:summary="@string/pref_about_crashlytics_optin_summary"
+            android:title="@string/pref_about_crashlytics_optin_label"
+            android:defaultValue="@bool/pref_about_crashlytics_optin_default"/>
         <Preference
             android:key="@string/pref_about_developer_key"
             android:selectable="false"
