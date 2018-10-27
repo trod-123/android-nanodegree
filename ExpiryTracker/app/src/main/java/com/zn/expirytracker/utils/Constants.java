@@ -12,6 +12,8 @@ public class Constants {
     public static final String SHARED_PREFS_NAME = "com.zn.expirytracker.sp";
     public static final String FOOD_TIMESTAMP = "food_updated";
     public static final String PREFS_TIMESTAMP = "prefs_updated";
+    public static final String SP_KEY_BARCODE_LIMIT_SEEN = "barcode_limit_seen";
+    public static final String SP_KEY_IMAGE_LIMIT_SEEN = "image_limit_seen";
 
     /**
      * A uid label for unregistered users, used to store

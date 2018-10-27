@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -443,6 +444,14 @@ public class EditFragment extends Fragment implements
             // Allow user to enter food name right away upon loading Add. Make sure in Manifest,
             // android:windowSoftInputMode="stateVisible" is also set for the keyboard to pop up
             mEtFoodName.requestFocus();
+        }
+
+        // Show the image limit message
+        SharedPreferences sp = mHostActivity.getSharedPreferences(
+                Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        if (!sp.getBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, false)) {
+            Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.limits_image_list_size));
+            sp.edit().putBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, true).apply();
         }
 
         return rootView;

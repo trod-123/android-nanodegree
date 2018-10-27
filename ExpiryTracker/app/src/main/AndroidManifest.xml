@@ -63,7 +63,8 @@
         <activity
             android:name=".ui.EditActivity"
             android:label="@string/activity_edit_item_name"
-            android:parentActivityName=".ui.DetailActivity">
+            android:parentActivityName=".ui.DetailActivity"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.DetailActivity" />
@@ -74,7 +75,7 @@
             android:name=".ui.AddActivity"
             android:label="@string/activity_add_item_name"
             android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateVisible">
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

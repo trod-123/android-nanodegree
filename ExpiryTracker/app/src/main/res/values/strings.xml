@@ -532,6 +532,13 @@
 
     <!-- endregion -->
 
+    <string name="limits_capture_barcode">Currently, you can only scan at most 100 barcodes per day</string>
+    <string name="limits_image_list_size">Currently, you can only have up to 3 images max per food item</string>
+
+    <!-- region Limits -->
+
+    <!-- endregion -->
+
     <!-- region Internal -->
 
     <string name="undefined_generic">Undefined</string>

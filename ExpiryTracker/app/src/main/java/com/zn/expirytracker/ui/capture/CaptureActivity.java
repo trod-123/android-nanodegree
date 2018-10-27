@@ -130,6 +130,12 @@ public class CaptureActivity extends AppCompatActivity implements
         } else {
             getRuntimePermissions();
         }
+
+        // Show the barcode scans limit message
+        if (!sp.getBoolean(Constants.SP_KEY_BARCODE_LIMIT_SEEN, false)) {
+            Toolbox.showSnackbarMessage(mRootView, getString(R.string.limits_capture_barcode));
+            sp.edit().putBoolean(Constants.SP_KEY_BARCODE_LIMIT_SEEN, true).apply();
+        }
     }
 
     @Override
