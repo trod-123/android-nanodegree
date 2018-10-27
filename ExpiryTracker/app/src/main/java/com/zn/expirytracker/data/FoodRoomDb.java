@@ -1,22 +1,23 @@
 package com.zn.expirytracker.data;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
-import androidx.room.Database;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
 import android.content.Context;
 import android.os.AsyncTask;
-import androidx.annotation.NonNull;
 
 import com.zn.expirytracker.BuildConfig;
-import com.zn.expirytracker.data.model.Cache;
 import com.zn.expirytracker.data.contracts.DatabaseContract;
+import com.zn.expirytracker.data.model.Cache;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.data.model.Temp;
 import com.zn.expirytracker.utils.DebugFields;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Food.class, Temp.class, Cache.class},
         version = DatabaseContract.CURRENT_VERSION)
@@ -87,7 +88,7 @@ public abstract class FoodRoomDb extends RoomDatabase {
                     TestDataGen.DEFAULT_DATE_BOUNDS, TestDataGen.DEFAULT_GOOD_THRU_DATE_BOUNDS,
                     TestDataGen.DEFAULT_COUNT_BOUNDS, TestDataGen.DEFAULT_SIZE_FORMAT,
                     TestDataGen.DEFAULT_SIZE_BOUNDS, TestDataGen.DEFAULT_WEIGHT_FORMAT,
-                    TestDataGen.DEFAULT_IMAGE_COUNT_BOUNDS);
+                    TestDataGen.DEFAULT_IMAGE_COUNT_BOUNDS, false);
             List<Food> foods = dataGenerator.getAllFoods();
             db.foodDao().insert(foods.toArray(new Food[]{}));
         }

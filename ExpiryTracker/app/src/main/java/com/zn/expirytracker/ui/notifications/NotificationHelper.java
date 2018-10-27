@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -25,15 +25,19 @@ import com.zn.expirytracker.data.FoodRoomDb;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
 import com.zn.expirytracker.ui.MainActivity;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 import timber.log.Timber;
 
 public class NotificationHelper {
@@ -56,13 +60,19 @@ public class NotificationHelper {
      */
     private static final int DEFAULT_TRIGGER_END_JITTER = 1; // 1 minute
 
-    private static final int DEFAULT_MORNING_HOUR = 9;
-    private static final int DEFAULT_AFTERNOON_HOUR = 15;
-    private static final int DEFAULT_EVENING_HOUR = 21;
-    private static final int DEFAULT_OVERNIGHT_HOUR = 3;
-
     public enum TimeOfDay {
         MORNING, AFTERNOON, EVENING, OVERNIGHT
+    }
+
+    private Context mContext;
+
+    /**
+     * Constructor needed for creating and showing the notification
+     *
+     * @param context
+     */
+    public NotificationHelper(Context context) {
+        mContext = context;
     }
 
     /**
@@ -208,16 +218,16 @@ public class NotificationHelper {
         int hour;
         switch (tod) {
             case MORNING:
-                hour = DEFAULT_MORNING_HOUR;
+                hour = Constants.DEFAULT_MORNING_HOUR;
                 break;
             case AFTERNOON:
-                hour = DEFAULT_AFTERNOON_HOUR;
+                hour = Constants.DEFAULT_AFTERNOON_HOUR;
                 break;
             case EVENING:
-                hour = DEFAULT_EVENING_HOUR;
+                hour = Constants.DEFAULT_EVENING_HOUR;
                 break;
             case OVERNIGHT:
-                hour = DEFAULT_OVERNIGHT_HOUR;
+                hour = Constants.DEFAULT_OVERNIGHT_HOUR;
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unexpected tod: %s", tod));
@@ -235,114 +245,121 @@ public class NotificationHelper {
     /**
      * Shows the notification for the provided list of foods
      *
-     * @param context
-     * @param daysFilter
      * @param foods
      */
-    public static void showNotification(Context context, int daysFilter, @NonNull List<Food> foods) {
+    public void showNotification(@NonNull List<Food> foods) {
         if (foods.size() == 0) {
             // Don't show any notification if there is no food expiring within the time range set
             // by the JobScheduler
             return;
         }
 
+        boolean singleFoodCase = false;
         long currentTimeStartOfDay = DateToolbox.getTimeInMillisStartOfDay(
                 System.currentTimeMillis());
-        String contentText;
-        Bitmap largeIcon = null;
         PendingIntent contentIntent;
 
         if (foods.size() == 1) {
             // Single food case
             Food food = foods.get(0);
-
             if (food.getDateExpiry() < currentTimeStartOfDay) {
                 // Do not show notification if food is already expired
                 return;
             }
-
-            // Get the readable date food is expiring, and set in message
-            String formattedDate = DateToolbox.getFormattedExpiryDateString(context, currentTimeStartOfDay,
-                    food.getDateExpiry());
-            // Make the "e" in the "Expires" message lowercase
-            formattedDate = formattedDate.substring(0, 1).toLowerCase() + formattedDate.substring(1);
-            contentText = String.format("%s %s", food.getFoodName(), formattedDate);
-
-            // TODO: Get the first food image, if available, and set in message
-//            if (food.getImages() != null && food.getImages().size() > 0) {
-//                String imageUri = food.getImages().get(0);
-//                largeIcon = Toolbox.getThumbnailFromUrl(context, imageUri); // must be in bg thread
-//            } else {
-//                largeIcon = null;
-//            }
-
-            // Set pending intent to the food detail
-            Intent intent = new Intent(context, DetailActivity.class);
-            intent.putExtra(DetailActivity.ARG_ITEM_ID_LONG, food.get_id());
-            intent.putExtra(DetailActivity.EXTRA_LAUNCHED_EXTERNALLY, true);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            contentIntent = PendingIntent.getActivity(
-                    context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            // TODO: Set action to "delete" food, and handle it
-
-            // TODO: Set action to "view" food, and handle it (use same pending intent above)
-
-        } else {
-            // Multi-food case
-            largeIcon = null;
-
-            // Get the number of foods expiring today and tomorrow
-            SparseIntArray frequencies = DataToolbox.getIntFrequencies(
-                    foods, currentTimeStartOfDay, true, 7); // 7 days in a week. Guaranteed array will have size = 7
-
-            // Don't include expired foods (negative X values)
-            int startIndex = DataToolbox.getStartingPositiveIndex(
-                    frequencies, DataToolbox.NO_INDEX_LIMIT);
-            int foodsCountCurrent = frequencies.get(startIndex);
-            int foodsCountNextDay = frequencies.get(startIndex + 1);
-
-            // Get the total number of foods expiring, without including foods already expired
-            int totalFoodCountsFromFilter = DataToolbox.getTotalFrequencyCounts(
-                    frequencies, startIndex, DataToolbox.NO_INDEX_LIMIT);
-
-            if (totalFoodCountsFromFilter == 0) {
-                // Don't show notification if there are no foods expiring!
-                return;
-            }
-
-            if (daysFilter < 2) {
-                // Set a shorter summary if we're only looking at current and/or next day
-                contentText = DataToolbox.getPartialSummary(context, daysFilter,
-                        foodsCountCurrent, foodsCountNextDay);
-            } else {
-                // Use the same summary for AAG to set in message. Instead of WeeklyDaysFilter, use number of days
-                contentText = DataToolbox.getFullSummary(context, daysFilter, totalFoodCountsFromFilter,
-                        foodsCountCurrent, foodsCountNextDay);
-            }
-
-            // Set pending intent to launch AAG fragment
-            Intent intent = new Intent(context, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            contentIntent = PendingIntent.getActivity(
-                    context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            // TODO: Set action to "view" food, and handle it (use same pending intent above)
-
+            singleFoodCase = true;
         }
 
-        // Build and show the notification
-        Notification.Builder builder = new Notification.Builder(context)
-                .setContentTitle(context.getString(R.string.notification_content_title))
-                .setContentText(contentText)
-                .setSmallIcon(R.drawable.ic_cube_black_24dp)
-                .setLargeIcon(largeIcon)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true)
-                .setStyle(new Notification.BigTextStyle().bigText(contentText)) // for multiline text
-                .setContentIntent(contentIntent);
+        // Get the number of foods expiring today and tomorrow
+        SparseIntArray frequencies = DataToolbox.getIntFrequencies(
+                foods, currentTimeStartOfDay, true, 7); // 7 days in a week. Guaranteed array will have size = 7
 
+        // Don't include expired foods (negative X values)
+        int startIndex = DataToolbox.getStartingPositiveIndex(
+                frequencies, DataToolbox.NO_INDEX_LIMIT);
+
+        // Get the total number of foods expiring, without including foods already expired
+        int totalFoodCountsFromFilter = DataToolbox.getTotalFrequencyCounts(
+                frequencies, startIndex, DataToolbox.NO_INDEX_LIMIT);
+
+        if (totalFoodCountsFromFilter == 0) {
+            // Don't show notification if there are no foods expiring!
+            return;
+        }
+
+        // Get the food mapping of day counts and food lists
+        SparseArray<List<Food>> foodDateMap = DataToolbox.getFoodDateMap(
+                foods, currentTimeStartOfDay, true, 7);
+
+        if (totalFoodCountsFromFilter == 1 || singleFoodCase) {
+            // Get the sole food that's expiring
+            Food food = DataToolbox.getFirstFoodFromFoodDateMap(foodDateMap, false);
+            if (food != null) {
+                // Get the readable date food is expiring, and set in message
+                String contentTitle = DateToolbox.getFormattedExpiryDateString(mContext,
+                        currentTimeStartOfDay, food.getDateExpiry());
+
+                // Set pending intent to the food detail
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                intent.putExtra(DetailActivity.ARG_ITEM_ID_LONG, food.get_id());
+                intent.putExtra(DetailActivity.EXTRA_LAUNCHED_EXTERNALLY, true);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                contentIntent = PendingIntent.getActivity(
+                        mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                // TODO: Set action to "delete" food, and handle it
+
+                new GenerateSingleFoodNotificationTask(food, contentTitle, food.getFoodName(),
+                        contentIntent).execute();
+            }
+        } else {
+            // Set pending intent to launch AAG fragment
+            Intent intent = new Intent(mContext, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            contentIntent = PendingIntent.getActivity(
+                    mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            // Get the content and title strings
+            StringBuilder contentBuilder = new StringBuilder();
+            List<String> lines = DataToolbox.getDailyLinesSummary(mContext, foodDateMap, currentTimeStartOfDay,
+                    Constants.MAX_DAILY_LINE_SUMMARY_FOOD_COUNT);
+            for (int i = 0; i < lines.size(); i++) {
+                contentBuilder.append(lines.get(i));
+                contentBuilder.append("\n");
+            }
+            String contentTitle = DataToolbox.getRandomTitleSummary(mContext);
+            if (lines.size() == 1) {
+                // Get the readable date food is expiring, and set in message
+                Food food = DataToolbox.getFirstFoodFromFoodDateMap(foodDateMap, false);
+                if (food != null) contentTitle = DateToolbox.getFormattedExpiryDateString(mContext,
+                        currentTimeStartOfDay, food.getDateExpiry());
+            }
+
+            showNotificationHelper(mContext, getNotificationBuilder(mContext, contentTitle,
+                    contentBuilder.toString().trim(), null, contentIntent));
+        }
+
+        // Schedule the next notification
+        scheduleNotificationJob(mContext, true);
+    }
+
+    /**
+     * Helper that fetches latest data. This needs to be called on a background thread
+     */
+    public List<Food> fetchLatestData(int daysFilter) {
+        long expiryDateFilter = DateToolbox.getDateBounds(
+                DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis()), daysFilter);
+
+        FoodRoomDb db = FoodRoomDb.getDatabase(mContext);
+        return db.foodDao().getAllFoodExpiringBeforeDate_List(expiryDateFilter);
+    }
+
+    /**
+     * Shows a notification and sets the channel if device SDK >= O
+     *
+     * @param context
+     * @param nBuilder
+     */
+    private void showNotificationHelper(Context context, Notification.Builder nBuilder) {
         NotificationManager nm = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -351,22 +368,72 @@ public class NotificationHelper {
                     context.getString(R.string.notification_channel_name),
                     NotificationManager.IMPORTANCE_HIGH);
             nm.createNotificationChannel(notificationChannel);
-            builder.setChannelId(channelId);
+            nBuilder.setChannelId(channelId);
         }
-        nm.notify(ID_REMINDER_NOTIFICATIONS, builder.build());
-
-        // Set the recurring notification
-        scheduleNotificationJob(context, true);
+        nm.notify(ID_REMINDER_NOTIFICATIONS, nBuilder.build());
     }
 
     /**
-     * Helper that fetches latest data. This needs to be called on a background thread
+     * Returns the Notification Builder for a multiple foods notification
+     *
+     * @param context
+     * @param contentTitle
+     * @param contentText
+     * @param largeIcon
+     * @param contentIntent
+     * @return
      */
-    public static List<Food> fetchLatestData(Context context, int daysFilter) {
-        long expiryDateFilter = DateToolbox.getDateBounds(
-                DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis()), daysFilter);
+    private Notification.Builder getNotificationBuilder(Context context, String contentTitle,
+                                                        String contentText, Bitmap largeIcon,
+                                                        PendingIntent contentIntent) {
+        Notification.Builder builder = new Notification.Builder(context)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(R.drawable.ic_cube_black_24dp)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(contentIntent);
+        if (largeIcon != null) {
+            builder.setLargeIcon(largeIcon)
+                    .setStyle(new Notification.BigPictureStyle()
+                            .bigPicture(largeIcon));
+        } else {
+            builder.setStyle(new Notification.BigTextStyle()
+                    .bigText(contentText)); // for multiline text
+        }
+        return builder;
+    }
 
-        FoodRoomDb db = FoodRoomDb.getDatabase(context);
-        return db.foodDao().getAllFoodExpiringBeforeDate_List(expiryDateFilter);
+    private class GenerateSingleFoodNotificationTask extends AsyncTask<Void, Void, Bitmap> {
+        private Food mFood;
+        private String mTitle;
+        private String mContent;
+        private PendingIntent mIntent;
+
+        GenerateSingleFoodNotificationTask(Food food, String title, String content,
+                                           PendingIntent intent) {
+            mFood = food;
+            mTitle = title;
+            mContent = content;
+            mIntent = intent;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            showNotificationHelper(mContext, getNotificationBuilder(mContext, mTitle, mContent,
+                    bitmap, mIntent));
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... voids) {
+            // Get the first food image, if available, and set in message
+            if (mFood.getImages() != null && mFood.getImages().size() > 0) {
+                String imageUri = mFood.getImages().get(0);
+                return Toolbox.getThumbnailFromUrl(mContext, imageUri); // must be in bg thread
+            } else {
+                return null;
+            }
+        }
     }
 }

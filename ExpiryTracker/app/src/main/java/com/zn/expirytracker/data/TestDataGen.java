@@ -8,6 +8,7 @@ import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -283,10 +284,10 @@ public class TestDataGen {
 
     private TestDataGen(int numChartEntries, int numFoodData, int dateBounds,
                         int goodThruDateBounds, int countBounds, String sizesFormat, int sizeBounds,
-                        String weightsFormat, int imageCountBounds) {
+                        String weightsFormat, int imageCountBounds, boolean sorted) {
         mBarEntries = generateTestChartValues(numChartEntries, countBounds);
         mFoodNames = generateFoodNames(numFoodData);
-        mExpiryDates = generateExpiryDates(numFoodData, dateBounds);
+        mExpiryDates = generateExpiryDates(numFoodData, dateBounds, sorted);
         mGoodThruDates = generateGoodThruDates(mExpiryDates, goodThruDateBounds);
         mCounts = generateCounts(numFoodData, countBounds);
         mLocs = generateStorageLocs(numFoodData);
@@ -310,21 +311,31 @@ public class TestDataGen {
      * Generates an instance of this class with the passed attributes and returns the created
      * instance. If an instance already exists, then this method returns the original instance,
      * unmodified. If the instance needs to be recreated with new attributes, then call
-     * {@link TestDataGen#recreateInstance(int, int, int, int, int, String, int, String, int)}
+     * {@link TestDataGen#recreateInstance(int, int, int, int, int, String, int, String, int, boolean)}
      * to replace the current instance
+     * <p>
+     * Pre-set constants are available, e.g. {@link TestDataGen#DEFAULT_COUNT_BOUNDS}, etc
      *
-     * @param numChartEntries
-     * @param numFoodData
-     * @param dateBounds
-     * @param countBounds
+     * @param numChartEntries    Number of entries to include in the At a Glance bar chart
+     * @param numFoodData        Number of foods
+     * @param dateBounds         Max number of days from the current date for foods to expire
+     * @param goodThruDateBounds Max number of days from the current date for foods to go bad
+     * @param countBounds        Max number of quantities each food can set
+     * @param sizesFormat        String format for sizes
+     * @param sizeBounds         Max size each food can set
+     * @param weightsFormat      String format for weights
+     * @param imageCountBounds   Max number of images each food can set
+     * @param sorted             {@code true} if the food should be sorted in ascending date order
+     * @return
      */
     public static TestDataGen generateInstance(int numChartEntries, int numFoodData, int dateBounds,
                                                int goodThruDateBounds, int countBounds,
                                                String sizesFormat, int sizeBounds,
-                                               String weightsFormat, int imageCountBounds) {
+                                               String weightsFormat, int imageCountBounds,
+                                               boolean sorted) {
         if (INSTANCE == null) {
             INSTANCE = new TestDataGen(numChartEntries, numFoodData, dateBounds, goodThruDateBounds,
-                    countBounds, sizesFormat, sizeBounds, weightsFormat, imageCountBounds);
+                    countBounds, sizesFormat, sizeBounds, weightsFormat, imageCountBounds, sorted);
         }
         return INSTANCE;
     }
@@ -345,9 +356,10 @@ public class TestDataGen {
     public static TestDataGen recreateInstance(int numChartEntries, int numFoodData, int dateBounds,
                                                int goodThruDateBounds, int countBounds,
                                                String sizesFormat, int sizeBounds,
-                                               String weightsFormat, int imageCountBounds) {
+                                               String weightsFormat, int imageCountBounds,
+                                               boolean sorted) {
         INSTANCE = new TestDataGen(numChartEntries, numFoodData, dateBounds, goodThruDateBounds,
-                countBounds, sizesFormat, sizeBounds, weightsFormat, imageCountBounds);
+                countBounds, sizesFormat, sizeBounds, weightsFormat, imageCountBounds, sorted);
         return INSTANCE;
     }
 
@@ -546,10 +558,13 @@ public class TestDataGen {
      * @param dateBounds
      * @return
      */
-    private long[] generateExpiryDates(int numFoodData, int dateBounds) {
+    private long[] generateExpiryDates(int numFoodData, int dateBounds, boolean sorted) {
         long[] dates = new long[numFoodData];
         for (int i = 0; i < numFoodData; i++) {
             dates[i] = System.currentTimeMillis() + randomizer.nextInt(dateBounds);
+        }
+        if (sorted) {
+            Arrays.sort(dates);
         }
         return dates;
     }

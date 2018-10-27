@@ -186,7 +186,7 @@
     <string name="expiry_msg_today">Expires today!</string>
     <string name="expiry_msg_tomorrow">Expires tomorrow!</string>
     <!-- 1: DATE -->
-    <string name="expiry_msg_soon">Expires soon on %1$s</string>
+    <string name="expiry_msg_soon">Expires soon this %1$s</string>
     <!-- 1: DATE -->
     <string name="expiry_msg_next_dow">Expires next %1$s</string>
     <!-- 1: DATE -->
@@ -243,6 +243,14 @@
     <string name="expiring_food_none">No expiring foods during this time</string>
     <string name="empty_image_list">Empty image list</string>
     <string name="food_image_list">Food image list</string>
+
+    <string name="food_one">1 food</string>
+    <!-- 1: NUM FOODS -->
+    <string name="food_many">%1$d foods</string>
+    <plurals name="food">
+        <item quantity="one">@string/food_one</item>
+        <item quantity="other">@string/food_many</item>
+    </plurals>
 
     <!-- endregion -->
 
@@ -467,7 +475,18 @@
 
     <string name="notification_channel_id" translatable="false">ch_reminders</string>
     <string name="notification_channel_name">Food expiry reminders</string>
-    <string name="notification_content_title">Reminder: You have foods expiring soon!</string>
+    <string name="notification_content_title_1">Reminder: You have foods expiring soon!</string>
+    <string name="notification_content_title_2">Reminder: Your foods are going bad soon!</string>
+    <string name="notification_content_title_3">Reminder: Some foods will be expiring soon!</string>
+    <string name="notification_content_title_4">Reminder: Consume soon, don\'t throw!</string>
+    <string name="notification_content_title_5">Reminder: Do your wallet a favor. Consume these soon!</string>
+    <string-array name="notification_content_title">
+        <item>@string/notification_content_title_1</item>
+        <item>@string/notification_content_title_2</item>
+        <item>@string/notification_content_title_3</item>
+        <item>@string/notification_content_title_4</item>
+        <item>@string/notification_content_title_5</item>
+    </string-array>
 
     <!-- endregion -->
 

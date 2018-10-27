@@ -2,6 +2,7 @@ package com.zn.expirytracker.utils;
 
 import android.content.Context;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 
 import com.github.mikephil.charting.data.BarEntry;
@@ -336,7 +337,7 @@ public class DataToolbox {
     }
 
     /**
-     * Gets the index of the first non-negative key-value. Assumes {@code data} keys are sorted in
+     * Gets the index of the first non-negative key. Assumes {@code data} keys are sorted in
      * increasing order
      *
      * @param data
@@ -347,7 +348,7 @@ public class DataToolbox {
         int entriesSize = data.size();
         int index = 0;
         while (index < limit && index < entriesSize - 1) {
-            if (data.get(index) >= 0) break;
+            if (data.keyAt(index) >= 0) break;
             index++;
             if (limit != NO_INDEX_LIMIT)
                 limit++; // offset limit since we haven't reached point where key is 0
@@ -393,7 +394,7 @@ public class DataToolbox {
         int entriesSize = data.size();
         int totalFoodsCountFromFilter = 0;
         for (int i = startIndex; i < limit && i < entriesSize; i++) {
-            totalFoodsCountFromFilter += data.get(i);
+            totalFoodsCountFromFilter += data.valueAt(i);
         }
         return totalFoodsCountFromFilter;
     }
@@ -506,6 +507,120 @@ public class DataToolbox {
         long[] dates = getAllExpiryDatesFromFood(foods);
         int[] numDaysUntilCurrent = DateToolbox.getNumDaysBetweenDatesArray(dates, baseDateInMillis);
         return getIntFrequencies(numDaysUntilCurrent, fillInGaps, maxSize);
+    }
+
+    /**
+     * Returns a mapping of foods with {@code daysFromCurrent} as the key and the list of foods
+     * expiring on that day as the value
+     * <p>
+     * Assumes the foods are sorted. This will return an inaccurate result otherwise
+     * <p>
+     * If {@code fillInGaps} is true, then places where keys do not have any foods contain empty
+     * Lists
+     *
+     * @param foods
+     * @param baseDateInMillis
+     * @param fillInGaps
+     * @param maxSize
+     * @return
+     */
+    public static SparseArray<List<Food>> getFoodDateMap(List<Food> foods,
+                                                         long baseDateInMillis,
+                                                         boolean fillInGaps, int maxSize) {
+        SparseArray<List<Food>> map = new SparseArray<>();
+        SparseIntArray frequencies = getIntFrequencies(foods, baseDateInMillis, fillInGaps, maxSize);
+        for (int i = 0, index = 0; i < frequencies.size(); i++) {
+            List<Food> foodsAtIndex = new ArrayList<>();
+            int numFoodsAtIndex = frequencies.valueAt(i);
+            for (int j = 0; j < numFoodsAtIndex; j++) {
+                foodsAtIndex.add(foods.get(index++));
+            }
+            map.append(frequencies.keyAt(i), foodsAtIndex);
+        }
+        return map;
+    }
+
+    /**
+     * Generates a day by day list of foods expiring per day, if there is any on a day. A generic
+     * quantity string takes the place of the food list on a day if the number of foods exceeds
+     * {@code defaultDailyLength} that day. The day is skipped if there is no food expiring that day
+     *
+     * @param context
+     * @param foodDateMap
+     * @param currentTimeStartOfDay
+     * @param defaultDailyLength
+     * @return
+     */
+    public static List<String> getDailyLinesSummary(Context context, SparseArray<List<Food>> foodDateMap,
+                                                    long currentTimeStartOfDay, int defaultDailyLength) {
+        List<String> strings = new ArrayList<>();
+        for (int i = 0; i < foodDateMap.size(); i++) {
+            if (foodDateMap.keyAt(i) >= 0) {
+                // Only search for positive keys
+                List<Food> foodsExpiringThisDay = foodDateMap.valueAt(i);
+                int size = foodsExpiringThisDay.size();
+                if (size > 0) {
+                    StringBuilder contentTextBuilder = new StringBuilder();
+                    String expiryString = DateToolbox.getFormattedRelativeDateString(context,
+                            currentTimeStartOfDay,
+                            DateToolbox.getNumDaysBetweenDates(currentTimeStartOfDay,
+                                    foodsExpiringThisDay.get(0).getDateExpiry()),
+                            false);
+                    if (size <= defaultDailyLength) {
+                        // Spell out each food
+                        contentTextBuilder.append(String.format("%s (%s): ",
+                                expiryString, context.getResources().getQuantityString(
+                                        R.plurals.food, size, size)));
+                        for (int j = 0; j < size; j++) {
+                            contentTextBuilder.append(foodsExpiringThisDay.get(j).getFoodName());
+                            if (j < size - 1)
+                                contentTextBuilder.append(", "); // only add if not last
+                        }
+                    } else {
+                        // Too many foods, set generic line
+                        contentTextBuilder.append(String.format("%s: %s", expiryString,
+                                context.getResources().getQuantityString
+                                        (R.plurals.food, size, size)));
+                    }
+                    strings.add(contentTextBuilder.toString().trim());
+                } else {
+                    // No line if no food
+                }
+            }
+        }
+        return strings;
+    }
+
+    /**
+     * Returns a random title for the Food expiration summary
+     *
+     * @param context
+     * @return
+     */
+    public static String getRandomTitleSummary(Context context) {
+        String[] titles = context.getResources().getStringArray(R.array.notification_content_title);
+        return titles[mRandomizer.nextInt(titles.length)];
+    }
+
+    /**
+     * Returns the first food from the food date map. If {@code includeExpired} is true, this
+     * will iterate through expired days as well
+     * <p>
+     * Returns {@code null} if there are no foods in the map
+     *
+     * @param foodDateMap
+     * @param includeExpired
+     * @return
+     */
+    public static Food getFirstFoodFromFoodDateMap(SparseArray<List<Food>> foodDateMap,
+                                                   boolean includeExpired) {
+        // Get the sole food that's expiring
+        for (int i = 0; i < foodDateMap.size(); i++) {
+            if ((includeExpired || foodDateMap.keyAt(i) >= 0) && foodDateMap.valueAt(i).size() != 0) {
+                return foodDateMap.valueAt(i).get(0);
+            }
+        }
+        return null;
     }
 
     /**

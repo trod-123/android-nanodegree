@@ -1,7 +1,12 @@
 package com.zn.expirytracker;
 
 import android.content.Context;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 
+import com.zn.expirytracker.data.TestDataGen;
+import com.zn.expirytracker.data.model.Food;
+import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 
 import org.joda.time.DateTime;
@@ -10,19 +15,34 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
 @RunWith(AndroidJUnit4.class)
 public class ToolboxTests {
 
+    private static final String TAG = ToolboxTests.class.getSimpleName();
+
     private Context mInstContext;
+    private List<Food> mTestFoods;
+    private long mCurrentDateTimeStartOfDay;
 
     @Before
     public void setup() {
         // .getContext() and .getTargetContext() provide different Contexts. Accessing resources
         // requires .getTargetContext(). Using the former will result in a Resource not found error
         mInstContext = InstrumentationRegistry.getTargetContext();
+
+        TestDataGen foodDataGen = TestDataGen.generateInstance(TestDataGen.DEFAULT_NUM_CHART_ENTRIES,
+                TestDataGen.DEFAULT_NUM_FOOD_DATA, TestDataGen.DEFAULT_DATE_BOUNDS,
+                TestDataGen.DEFAULT_GOOD_THRU_DATE_BOUNDS, TestDataGen.DEFAULT_COUNT_BOUNDS,
+                TestDataGen.DEFAULT_SIZE_FORMAT, TestDataGen.DEFAULT_SIZE_BOUNDS,
+                TestDataGen.DEFAULT_WEIGHT_FORMAT, TestDataGen.DEFAULT_IMAGE_COUNT_BOUNDS, true);
+        mTestFoods = foodDataGen.getAllFoods();
+        mCurrentDateTimeStartOfDay = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
     }
 
     @Test
@@ -92,6 +112,45 @@ public class ToolboxTests {
             tested = tested.plusDays(1);
             String actual = DateToolbox.getFormattedExpiryDateString(mInstContext, initial, tested);
             Assert.assertEquals(actual, expected);
+        }
+    }
+
+    @Test
+    public void testGetFoodDateMap_NoFillGaps() {
+        testGetFoodDateMap(false);
+    }
+
+    @Test
+    public void testGetFoodDateMap_FillGaps() {
+        testGetFoodDateMap(true);
+    }
+
+    private void testGetFoodDateMap(boolean fillGaps) {
+        int MAX_SIZE = 7;
+        SparseArray<List<Food>> map = DataToolbox.getFoodDateMap(mTestFoods,
+                mCurrentDateTimeStartOfDay, fillGaps, MAX_SIZE);
+        SparseIntArray frequencies = DataToolbox.getIntFrequencies(mTestFoods,
+                mCurrentDateTimeStartOfDay, fillGaps, MAX_SIZE);
+
+        // STEP 1: Verify size
+        Assert.assertEquals(map.size(), frequencies.size());
+
+        List<Integer> countDays = new ArrayList<>();
+        for (int i = 0; i < mTestFoods.size(); i++) {
+            countDays.add(DateToolbox.getNumDaysBetweenDates(mCurrentDateTimeStartOfDay, mTestFoods.get(i).getDateExpiry()));
+        }
+
+        for (int i = 0; i < frequencies.size(); i++) {
+            // STEP 2: Verify count
+            List<Food> foodsAtKey = map.valueAt(i);
+            int keyValueSize = frequencies.valueAt(i);
+            Assert.assertEquals(foodsAtKey.size(), keyValueSize);
+            for (int j = 0; j < keyValueSize; j++) {
+                // STEP 3: Verify dates
+                int numDaysUntilExpiryDate = DateToolbox.getNumDaysBetweenDates(
+                        mCurrentDateTimeStartOfDay, foodsAtKey.get(j).getDateExpiry());
+                Assert.assertEquals(numDaysUntilExpiryDate, frequencies.keyAt(i));
+            }
         }
     }
 }

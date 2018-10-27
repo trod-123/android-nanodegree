@@ -433,12 +433,12 @@ public class AtAGlanceFragment extends Fragment
             mTvChartHeaderNumFoods.setText(mHostActivity.getResources().getQuantityString(
                     R.plurals.at_a_glance_bar_chart_header_count, foodsCount, foodsCount,
                     DateToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
-                            daysFromCurrent)));
+                            daysFromCurrent, true)));
         } else {
             mTvChartHeaderNumFoods.setText(getString(
                     R.string.at_a_glance_bar_chart_header_count_none, null,
                     DateToolbox.getFormattedRelativeDateString(mHostActivity, mCurrentDateTimeStartOfDay,
-                            daysFromCurrent)));
+                            daysFromCurrent, true)));
         }
     }
 

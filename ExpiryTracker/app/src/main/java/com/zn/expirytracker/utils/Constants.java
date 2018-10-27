@@ -71,4 +71,29 @@ public class Constants {
      * Note: When setting, this must be greater than 2 (one for barcode, one for scanned image)
      */
     public static final int MAX_IMAGE_LIST_SIZE = 3;
+
+    /**
+     * Default hour that indicates "morning"
+     */
+    public static final int DEFAULT_MORNING_HOUR = 9;
+
+    /**
+     * Default hour that indicates "afternoon"
+     */
+    public static final int DEFAULT_AFTERNOON_HOUR = 15;
+
+    /**
+     * Default hour that indicates "evening"
+     */
+    public static final int DEFAULT_EVENING_HOUR = 21;
+
+    /**
+     * Default hour that indicates "overnight"
+     */
+    public static final int DEFAULT_OVERNIGHT_HOUR = 3;
+
+    /**
+     * Limit of foods to show per day in day by day line summaries
+     */
+    public static final int MAX_DAILY_LINE_SUMMARY_FOOD_COUNT = 5;
 }

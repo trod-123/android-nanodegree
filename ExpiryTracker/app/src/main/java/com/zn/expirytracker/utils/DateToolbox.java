@@ -98,17 +98,35 @@ public class DateToolbox {
      * @param context
      * @param startDate
      * @param numDaysFromStartDate
+     * @param toLowerCase
+     * @return
+     */
+    public static String getFormattedRelativeDateString(Context context, long startDate,
+                                                        int numDaysFromStartDate,
+                                                        boolean toLowerCase) {
+        DateTime dateTime = new DateTime(startDate);
+        return getFormattedRelativeDateString(context, dateTime, numDaysFromStartDate, toLowerCase);
+    }
+
+    /**
+     * Returns a relative date string, that is either "Today", "Tomorrow", or the DOW (or next DOW)
+     *
+     * @param context
+     * @param startDate
+     * @param numDaysFromStartDate
      * @return
      */
     public static String getFormattedRelativeDateString(Context context, DateTime startDate,
-                                                        int numDaysFromStartDate) {
+                                                        int numDaysFromStartDate,
+                                                        boolean toLowerCase) {
         DateTime currentDate = startDate.plusDays(numDaysFromStartDate);
+        String text;
         if (numDaysFromStartDate == 0) {
             // today
-            return context.getString(R.string.date_today).toLowerCase();
+            text = context.getString(R.string.date_today);
         } else if (numDaysFromStartDate == 1) {
             // tomorrow
-            return context.getString(R.string.date_tomorrow).toLowerCase();
+            text = context.getString(R.string.date_tomorrow);
         } else if (numDaysFromStartDate >= 2 && numDaysFromStartDate < 7) {
             // full DOW
             return currentDate.dayOfWeek().getAsText();
@@ -117,8 +135,12 @@ public class DateToolbox {
             return context.getString(R.string.date_next, currentDate.dayOfWeek().getAsText());
         } else {
             // on this day
-            return context.getString(R.string.date_generic).toLowerCase();
+            text = context.getString(R.string.date_generic);
         }
+        if (toLowerCase) {
+            text = text.toLowerCase();
+        }
+        return text;
     }
 
     /**
