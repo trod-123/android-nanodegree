@@ -76,7 +76,7 @@ public class Constants {
     /**
      * Max number of foods users can simultaneously store in their database
      */
-    public static final int MAX_FOODS_DATABASE_SIZE_DEFAULT = 1;
+    public static final int MAX_FOODS_DATABASE_SIZE_DEFAULT = 100;
 
     /**
      * Denotes no limit to how many foods users can simultaneously store in their database
