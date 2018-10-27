@@ -20,7 +20,6 @@ public class Constants {
      * This is also used in Shared Preferences to keep track of whether the user is logged in or not
      */
     public static final String AUTH_GUEST = "unregistered";
-    public static final boolean ENABLE_GUEST_WIDGET = true;
 
     public static final float ALPHA_ACTIVATED = 1f;
     public static final float ALPHA_DEACTIVATED = 0.3f;

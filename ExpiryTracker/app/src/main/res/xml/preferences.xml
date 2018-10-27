@@ -30,7 +30,8 @@
             android:entryValues="@array/pref_expire_num_days_values"
             android:key="@string/pref_widget_num_days_key"
             android:summary="@string/pref_widget_num_days_summary"
-            android:title="@string/pref_widget_num_days_label" />
+            android:title="@string/pref_widget_num_days_label"
+            android:enabled="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_capture_title">
@@ -53,7 +54,8 @@
         <Preference
             android:key="@string/pref_account_sign_in_key"
             android:summary="@string/pref_account_sign_in_summary"
-            android:title="@string/pref_account_sign_in_label" />
+            android:title="@string/pref_account_sign_in_label"
+            android:enabled="false"/>
         <Preference
             android:key="@string/pref_account_sign_out_key"
             android:title="@string/pref_account_sign_out_label" />

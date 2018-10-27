@@ -44,7 +44,7 @@
 
     <!-- region Widget -->
 
-    <string name="pref_widget_title">Widgets</string>
+    <string name="pref_widget_title">Widgets (coming soon!)</string>
 
     <!-- Food to show based on number of days until expiry date -->
     <string name="pref_widget_num_days_key" translatable="false">Number of days</string>
@@ -111,7 +111,7 @@
 
     <!-- Sign-in/out button -->
     <string name="pref_account_sign_in_key" translatable="false">Sign in button</string>
-    <string name="pref_account_sign_in_label">Sign in</string>
+    <string name="pref_account_sign_in_label">Sign in (coming soon!)</string>
     <string name="pref_account_sign_in_summary">Create an account or log-in to access and save your food data online so it can be shared across your devices</string>
 
     <string name="pref_account_sign_out_key" translatable="false">Sign out button</string>

@@ -57,4 +57,9 @@ public class DebugFields {
      * in Tab
      */
     public static final boolean SHOW_ADD_FAB_IN_MAIN = true;
+
+    /**
+     * {@code true} to allow Guests to use the widget
+     */
+    public static final boolean ENABLE_GUEST_WIDGET = false;
 }

@@ -96,8 +96,10 @@
             android:name=".ui.IntroActivity"
             android:theme="@style/WelcomeScreenTheme.Centered" />
 
+        <!-- TODO: Disable the widget for now -->
         <receiver
             android:name=".ui.widget.FoodWidget"
+            android:enabled="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
