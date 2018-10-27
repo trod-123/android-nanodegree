@@ -59,7 +59,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -262,7 +261,7 @@ public class CaptureOverlayFragment extends Fragment
         }
 
         mHostActivity = getActivity();
-        mViewModel = ViewModelProviders.of(this).get(FoodViewModel.class);
+        mViewModel = CaptureActivity.obtainViewModel(getActivity());
         mCurrentDateStartOfDay = DateToolbox.getTimeInMillisStartOfDay(System.currentTimeMillis());
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mHostActivity);

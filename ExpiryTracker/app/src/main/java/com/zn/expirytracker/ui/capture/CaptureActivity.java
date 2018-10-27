@@ -20,7 +20,9 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode;
 import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.UserMetrics;
+import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
+import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.barcodescanning.BarcodeScanningProcessor;
 import com.zn.expirytracker.ui.capture.helpers.GraphicOverlay;
 import com.zn.expirytracker.ui.capture.imagelabeling.ImageLabelingProcessor;
@@ -36,7 +38,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -88,6 +94,7 @@ public class CaptureActivity extends AppCompatActivity implements
     private CameraSource mCameraSource;
     private InputType mCurrentInputType = DEFAULT_INPUT_TYPE;
     private boolean mCameraActivated;
+    private FoodViewModel mViewModel;
 
     private Handler mJitterHandler = new Handler(Looper.getMainLooper());
 
@@ -133,9 +140,22 @@ public class CaptureActivity extends AppCompatActivity implements
 
         // Show the barcode scans limit message
         if (!sp.getBoolean(Constants.SP_KEY_BARCODE_LIMIT_SEEN, false)) {
-            Toolbox.showSnackbarMessage(mRootView, getString(R.string.limits_capture_barcode));
+            Toolbox.showSnackbarMessage(mRootView,
+                    getString(R.string.limits_capture_barcode, Constants.MAX_BARCODE_SCANS_DAILY));
             sp.edit().putBoolean(Constants.SP_KEY_BARCODE_LIMIT_SEEN, true).apply();
         }
+
+        // For checking database size. If already full, then force return to previous Activity
+        mViewModel = obtainViewModel(this);
+        mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
+            @Override
+            public void onChanged(PagedList<Food> foods) {
+                int size = foods.size();
+                if (size + 1 > Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+                    onBackPressed();
+                }
+            }
+        });
     }
 
     @Override
@@ -223,6 +243,17 @@ public class CaptureActivity extends AppCompatActivity implements
                 // Prevent clicking on the "dialog" from dismissing the fragment due to root's click listener
                 break;
         }
+    }
+
+    /**
+     * Allows this ViewModel instance to be bound to MainActivity, and allow it to be shared
+     * across AAG and List Fragments
+     *
+     * @param activity
+     * @return
+     */
+    public static FoodViewModel obtainViewModel(FragmentActivity activity) {
+        return ViewModelProviders.of(activity).get(FoodViewModel.class);
     }
 
     /**

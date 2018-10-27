@@ -38,7 +38,7 @@ public class Constants {
     public static final int DURATION_TRANSITION = 150; // millis
     public static final long DURATION_VISIBILITY_ANIMATION = 300; // millis
 
-    public static final int DEFAULT_TOAST_LENGTH = Toast.LENGTH_SHORT;
+    public static final int DEFAULT_TOAST_LENGTH = Toast.LENGTH_LONG;
     public static final int DEFAULT_SNACKBAR_LENGTH = Snackbar.LENGTH_LONG;
 
     /**
@@ -72,6 +72,24 @@ public class Constants {
      * Note: When setting, this must be greater than 2 (one for barcode, one for scanned image)
      */
     public static final int MAX_IMAGE_LIST_SIZE = 3;
+
+    /**
+     * Max number of foods users can simultaneously store in their database
+     */
+    public static final int MAX_FOODS_DATABASE_SIZE_DEFAULT = 1;
+
+    /**
+     * Denotes no limit to how many foods users can simultaneously store in their database
+     */
+    public static final int MAX_FOODS_DATABASE_SIZE_NO_LIMIT = Integer.MAX_VALUE;
+
+    /**
+     * Max number of barcode scans users can do in a day
+     * <p>
+     * Note: This is the free limit granted by the UpcItemDb. This should not be changed unless a
+     * license is purchased
+     */
+    public static final int MAX_BARCODE_SCANS_DAILY = 100;
 
     /**
      * Default hour that indicates "morning"

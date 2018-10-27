@@ -532,10 +532,16 @@
 
     <!-- endregion -->
 
-    <string name="limits_capture_barcode">Currently, you can only scan at most 100 barcodes per day</string>
-    <string name="limits_image_list_size">Currently, you can only have up to 3 images max per food item</string>
-
     <!-- region Limits -->
+
+    <!-- 1: NUM BARCODES -->
+    <string name="limits_capture_barcode">Currently, you can only scan at most %1$d barcodes per day</string>
+    <!-- 1: NUM IMAGES -->
+    <string name="limits_image_list_size">Currently, you can only have up to %1$d images max per item</string>
+    <!-- 1: DATABASE SIZE -->
+    <string name="limits_food_storage_hit">You reached your database limit of %1$d items. Remove some items to store more.</string>
+    <string name="limits_food_storage_no_hit">Currently, you can only store a max of %1$d items. You can store %2$d more.</string>
+    <string name="limits_food_storage_counter">0</string>
 
     <!-- endregion -->
 

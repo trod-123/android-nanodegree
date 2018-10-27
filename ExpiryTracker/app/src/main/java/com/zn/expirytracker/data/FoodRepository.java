@@ -8,6 +8,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
+import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.firebase.FirebaseStorageHelper;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
@@ -15,6 +16,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.AuthToolbox;
+import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
@@ -326,22 +328,33 @@ public class FoodRepository {
 
         @Override
         protected Long[] doInBackground(Context... contexts) {
-            Long[] insertedIds = mAsyncTaskDao.insert(mFoods);
-            // Update the widget
-            UpdateWidgetService.updateFoodWidget(contexts[0]);
-            return insertedIds;
+            int size = mAsyncTaskDao.getAllFoods_List().size();
+            if (mFoods.length + size <= Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+                Long[] insertedIds = mAsyncTaskDao.insert(mFoods);
+                // Update the widget
+                UpdateWidgetService.updateFoodWidget(contexts[0]);
+                return insertedIds;
+            } else {
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(Long[] ids) {
-            Timber.d("FoodDao/foods inserted");
-            if (mSaveToCloud && mIsSignedIn) {
-                for (int i = 0; i < mFoods.length; i++) {
-                    Food food = mFoods[i];
-                    food.set_id(ids[i]);
-                    FirebaseDatabaseHelper.write(food, mContext, true);
-                    FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
+            if (ids != null) {
+                Timber.d("FoodDao/foods inserted");
+                if (mSaveToCloud && mIsSignedIn) {
+                    for (int i = 0; i < mFoods.length; i++) {
+                        Food food = mFoods[i];
+                        food.set_id(ids[i]);
+                        FirebaseDatabaseHelper.write(food, mContext, true);
+                        FirebaseStorageHelper.uploadAllLocalUrisToFirebaseStorage(food, mContext);
+                    }
                 }
+            } else {
+                Timber.w("FoodDao/foods not inserted. max limit reached");
+                Toolbox.showToast(mContext, mContext.getString(
+                        R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
             }
         }
     }

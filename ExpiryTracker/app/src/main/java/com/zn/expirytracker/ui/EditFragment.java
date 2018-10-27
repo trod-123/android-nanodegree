@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -148,6 +149,12 @@ public class EditFragment extends Fragment implements
             Toolbox.createStaticKeyString(EditFragment.class, "visibility_other_info");
 
     /**
+     * Enable saving, if there is still room in the database
+     */
+    private static final String KEY_IS_SAVE_ENABLED =
+            Toolbox.createStaticKeyString(EditFragment.class, "is_save_enabled");
+
+    /**
      * Default code to use for {@link EditFragment#ARG_ITEM_ID_LONG} if adding a new item, not
      * editing an existing one
      */
@@ -257,6 +264,7 @@ public class EditFragment extends Fragment implements
     private int mCurrentImagePosition = IMAGE_PAGER_POSITION_NOT_SET;
     private boolean mRestoredInstance;
     private boolean mIsOtherInfoShowing = false;
+    private boolean mIsSaveEnabled = true;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -276,6 +284,7 @@ public class EditFragment extends Fragment implements
         outState.putSerializable(KEY_CURRENT_STORAGE_LOC_ENUM, mLoc);
         outState.putString(KEY_CURRENT_CAMERA_CAPTURE_LOC_STRING, mCurrentCameraCapturePath);
         outState.putBoolean(KEY_VISIBILITY_OTHER_INFO, mIsOtherInfoShowing);
+        outState.putBoolean(KEY_IS_SAVE_ENABLED, mIsSaveEnabled);
         super.onSaveInstanceState(outState);
     }
 
@@ -410,6 +419,8 @@ public class EditFragment extends Fragment implements
             mIsOtherInfoShowing = savedInstanceState.getBoolean(KEY_VISIBILITY_OTHER_INFO);
             showOtherInfoFields(mIsOtherInfoShowing);
 
+            mIsSaveEnabled = savedInstanceState.getBoolean(KEY_IS_SAVE_ENABLED);
+
             mRestoredInstance = true;
         }
 
@@ -444,17 +455,49 @@ public class EditFragment extends Fragment implements
             // Allow user to enter food name right away upon loading Add. Make sure in Manifest,
             // android:windowSoftInputMode="stateVisible" is also set for the keyboard to pop up
             mEtFoodName.requestFocus();
+            // Check storage limits
+            new GetStorageLimitAsyncTask().execute();
         }
 
         // Show the image limit message
         SharedPreferences sp = mHostActivity.getSharedPreferences(
                 Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         if (!sp.getBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, false)) {
-            Toolbox.showSnackbarMessage(mRootLayout, getString(R.string.limits_image_list_size));
+            Toolbox.showSnackbarMessage(mRootLayout,
+                    getString(R.string.limits_image_list_size, Constants.MAX_IMAGE_LIST_SIZE));
             sp.edit().putBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, true).apply();
         }
 
         return rootView;
+    }
+
+    /**
+     * Checks the current database size, and sets {@link EditFragment#mIsSaveEnabled} to true
+     * if there is still room available for at least one more food item to be added
+     */
+    private class GetStorageLimitAsyncTask extends AsyncTask<Void, Void, Integer> {
+        @Override
+        protected void onPostExecute(Integer size) {
+            mIsSaveEnabled = size + 1 <= Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT;
+            if (!mIsSaveEnabled) {
+                Toolbox.showToast(mHostActivity, getString(
+                        R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
+                enableSaving();
+            }
+        }
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            return mViewModel.getAllFoods_List().size();
+        }
+    }
+
+    /**
+     * Helper for recreating the options menu, enabling or disabling saving according to the current
+     * value of {@link EditFragment#mIsSaveEnabled}
+     */
+    private void enableSaving() {
+        mHostActivity.invalidateOptionsMenu();
     }
 
     @Override
@@ -463,6 +506,19 @@ public class EditFragment extends Fragment implements
             inflater.inflate(R.menu.menu_add, menu);
         } else {
             inflater.inflate(R.menu.menu_edit, menu);
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        // Enable the save button
+        MenuItem item = menu.findItem(R.id.action_save);
+        if (mIsSaveEnabled) {
+            item.setEnabled(true);
+            item.getIcon().setAlpha(255);
+        } else {
+            item.setEnabled(false);
+            item.getIcon().setAlpha(128);
         }
     }
 
@@ -832,12 +888,17 @@ public class EditFragment extends Fragment implements
     }
 
     /**
-     * Prompts the user to either discard or save changes
+     * Prompts the user to either discard or save changes. If save is disabled, then this
+     * automatically discards changes and goes back to the previous Activity
      */
     private void showFormChangedDialog() {
-        FormChangedDialogFragment dialog = new FormChangedDialogFragment();
-        dialog.setTargetFragment(this, 0);
-        dialog.show(getFragmentManager(), FormChangedDialogFragment.class.getSimpleName());
+        if (mIsSaveEnabled) {
+            FormChangedDialogFragment dialog = new FormChangedDialogFragment();
+            dialog.setTargetFragment(this, 0);
+            dialog.show(getFragmentManager(), FormChangedDialogFragment.class.getSimpleName());
+        } else {
+            discardChanges();
+        }
     }
 
     /**

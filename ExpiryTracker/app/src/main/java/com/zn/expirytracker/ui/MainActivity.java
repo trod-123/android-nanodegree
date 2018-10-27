@@ -17,6 +17,7 @@ import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.firebase.UserMetrics;
+import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
@@ -29,7 +30,9 @@ import com.zn.expirytracker.utils.Toolbox;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity
 
     MainPagerAdapter mPagerAdapter;
     private boolean mPickerShowing;
+    private FoodViewModel mViewModel;
+    private int mDatabaseSize = 0;
 
     WelcomeHelper mWelcomeScreen;
 
@@ -91,6 +96,25 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         }
+
+        // For checking database size and showing/hiding the Fab add accordingly
+        // By using a ViewModel observer, we could continuously check after user removes items in
+        // any way
+        mViewModel = obtainViewModel(this);
+        mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
+            @Override
+            public void onChanged(PagedList<Food> foods) {
+                mDatabaseSize = foods.size();
+                invalidateOptionsMenu();
+                if (mDatabaseSize + 1 > Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+                    Toolbox.showToast(MainActivity.this, getString(
+                            R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
+                    mFabAdd.hide();
+                } else {
+                    mFabAdd.show();
+                }
+            }
+        });
     }
 
     @Override
@@ -131,8 +155,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_database_size);
+        item.setTitle(Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize + "");
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_database_size:
+                showDatabaseLimitMessage();
+                return true;
             case R.id.action_settings:
                 launchSettings();
                 return true;
@@ -219,6 +253,14 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    private void showDatabaseLimitMessage() {
+        String message = mDatabaseSize != Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT ?
+                getString(R.string.limits_food_storage_no_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT,
+                        Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize) :
+                getString(R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT);
+        Toolbox.showSnackbarMessage(mRootMain, message);
     }
 
     private void launchSettings() {
