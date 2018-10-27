@@ -453,6 +453,10 @@
     <string name="auth_test_button">Log-in to test</string>
     <string name="auth_name_label">Your name</string>
     <string name="auth_signup_button">Sign up!</string>
+    <string name="auth_agreement_sign_up">By signing up, you agree to our %1$s and that you have read our %2$s.</string>
+    <string name="auth_agreement_proceed">By using this app, you agree to our %1$s and that you have read our %2$s.</string>
+    <string name="auth_terms">Terms</string>
+    <string name="auth_privacy_policy">Privacy Policy</string>
 
     <!-- Auth errors -->
 

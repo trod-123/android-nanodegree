@@ -43,8 +43,10 @@
         <include
             android:id="@+id/layout_sign_up_buttons"
             layout="@layout/layout_sign_up_buttons"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/auth_fields_horizontal_margin"
+            android:layout_marginStart="@dimen/auth_fields_horizontal_margin"
             android:layout_marginBottom="32dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -3,16 +3,16 @@ package com.zn.expirytracker.ui;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.appcompat.app.AppCompatActivity;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
@@ -23,6 +23,8 @@ import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.OnEditClearErrorsTextWatcher;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
@@ -53,6 +55,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     ProgressBar mPbSignup;
     @BindView(R.id.btn_sign_up_existing_account)
     Button mBtnLogin;
+    @BindView(R.id.tv_sign_up_privacy_policy)
+    TextView mTvAgreement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mEtName.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilName));
         mEtEmail.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilEmail));
         mEtPassword.addTextChangedListener(new OnEditClearErrorsTextWatcher(mTilPassword));
+
+        // Set the agreement terms links
+        mTvAgreement.setText(Toolbox.getSpannableAgreementText(
+                this, getString(R.string.auth_agreement_sign_up,
+                        getString(R.string.auth_terms), getString(R.string.auth_privacy_policy))));
+        mTvAgreement.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Set the name to the currently stored username
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);

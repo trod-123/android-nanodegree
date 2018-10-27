@@ -1,10 +1,13 @@
 package com.zn.expirytracker.ui;
 
 import com.stephentuso.welcome.BasicPage;
+import com.stephentuso.welcome.FragmentWelcomePage;
 import com.stephentuso.welcome.ParallaxPage;
 import com.stephentuso.welcome.WelcomeActivity;
 import com.stephentuso.welcome.WelcomeConfiguration;
 import com.zn.expirytracker.R;
+
+import androidx.fragment.app.Fragment;
 
 public class IntroActivity extends WelcomeActivity {
 
@@ -42,13 +45,14 @@ public class IntroActivity extends WelcomeActivity {
                         getString(R.string.wel_page_save_description))
                         .background(R.color.wel_page_save)
                 )
-                .page(new BasicPage(R.drawable.ic_check_white_24dp,
-                        getString(R.string.wel_page_final_title),
-                        getString(R.string.wel_page_final_description))
-                        .background(R.color.wel_page_final)
-                )
-                .bottomLayout(WelcomeConfiguration.BottomLayout.STANDARD_DONE_IMAGE)
+                .page(new FragmentWelcomePage() {
+                    @Override
+                    protected Fragment fragment() {
+                        return new IntroFinalFragment();
+                    }
+                }.background(R.color.wel_page_final))
 
+                .bottomLayout(WelcomeConfiguration.BottomLayout.STANDARD_DONE_IMAGE)
                 .showPrevButton(true)
                 .swipeToDismiss(false)
                 .canSkip(false)

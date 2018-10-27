@@ -355,11 +355,13 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     showWelcomeActivity(mPreferenceWelcome);
                     return true;
                 } else if (preference.equals(mPreferencePrivacyPolicy)) {
-                    startWebViewActivity(preference, preference.getTitle().toString(),
+                    Toolbox.startWebViewActivity(preference.getContext(),
+                            preference.getTitle().toString(),
                             Urls.URL_PRIVACY_POLICY);
                     return true;
                 } else if (preference.equals(mPreferenceEula)) {
-                    startWebViewActivity(preference, preference.getTitle().toString(),
+                    Toolbox.startWebViewActivity(preference.getContext(),
+                            preference.getTitle().toString(),
                             Urls.URL_EULA);
                     return true;
                 } else if (preference.equals(mPreferenceOpenSourceLicenses)) {
@@ -752,21 +754,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
     private static void showWelcomeActivity(Preference preference) {
         Context context = preference.getContext();
         context.startActivity(new Intent(context, IntroActivity.class));
-    }
-
-    /**
-     * Helper for starting the {@link WebViewActivity}
-     *
-     * @param preference
-     * @param title
-     * @param url
-     */
-    private static void startWebViewActivity(Preference preference, String title, String url) {
-        Context context = preference.getContext();
-        Intent intent = new Intent(context, WebViewActivity.class);
-        intent.putExtra(WebViewActivity.KEY_WEBVIEW_TITLE_STRING, title);
-        intent.putExtra(WebViewActivity.KEY_WEBVIEW_URL, url);
-        context.startActivity(intent);
     }
 
     /**

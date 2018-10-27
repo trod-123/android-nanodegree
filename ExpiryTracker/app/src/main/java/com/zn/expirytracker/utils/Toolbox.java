@@ -3,6 +3,7 @@ package com.zn.expirytracker.utils;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
@@ -14,7 +15,10 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Vibrator;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ClickableSpan;
 import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.View;
@@ -32,6 +36,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
+import com.zn.expirytracker.R;
+import com.zn.expirytracker.settings.WebViewActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -623,4 +629,59 @@ public class Toolbox {
         v.vibrate(Constants.DEFAULT_VIBRATION_BUTTON_PRESS_LENGTH);
     }
 
+    /**
+     * Helper for starting the {@link WebViewActivity}
+     *
+     * @param context
+     * @param title
+     * @param url
+     */
+    public static void startWebViewActivity(Context context, String title, String url) {
+        Intent intent = new Intent(context, WebViewActivity.class);
+        intent.putExtra(WebViewActivity.KEY_WEBVIEW_TITLE_STRING, title);
+        intent.putExtra(WebViewActivity.KEY_WEBVIEW_URL, url);
+        context.startActivity(intent);
+    }
+
+    /**
+     * Returns a clickable String with redirects to the EULA and Privacy Policy
+     * <p>
+     * Requires that {@code agreementWithTermsAndPrivacyPolicy} have "Terms" and "Privacy Policy"
+     * included, otherwise this would not work
+     * <p>
+     * https://stackoverflow.com/questions/9969789/clickable-word-inside-textview-in-android
+     *
+     * @param context
+     * @param agreementWithTermsAndPrivacyPolicy
+     * @return
+     */
+    public static SpannableString getSpannableAgreementText(final Context context,
+                                                            String agreementWithTermsAndPrivacyPolicy) {
+        // Set the agreement terms links
+        // https://stackoverflow.com/questions/9969789/clickable-word-inside-textview-in-android
+        SpannableString agreementText = new SpannableString(agreementWithTermsAndPrivacyPolicy);
+        ClickableSpan termsCSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toolbox.startWebViewActivity(context,
+                        context.getString(R.string.auth_terms), Urls.URL_EULA);
+            }
+        };
+        String terms = context.getString(R.string.auth_terms);
+        int termsIndex = agreementText.toString().indexOf(terms);
+        agreementText.setSpan(termsCSpan, termsIndex,
+                termsIndex + terms.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        ClickableSpan privacyCSpan = new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+                Toolbox.startWebViewActivity(context,
+                        context.getString(R.string.auth_privacy_policy), Urls.URL_PRIVACY_POLICY);
+            }
+        };
+        String privacy = context.getString(R.string.auth_privacy_policy);
+        int privacyIndex = agreementText.toString().indexOf(privacy);
+        agreementText.setSpan(privacyCSpan, privacyIndex,
+                privacyIndex + privacy.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        return agreementText;
+    }
 }
