@@ -54,7 +54,6 @@ public class IntroActivity extends WelcomeActivity {
 
                 .bottomLayout(WelcomeConfiguration.BottomLayout.STANDARD_DONE_IMAGE)
                 .showPrevButton(true)
-                .swipeToDismiss(false)
                 .canSkip(false)
                 .exitAnimation(android.R.anim.fade_out)
                 .build();

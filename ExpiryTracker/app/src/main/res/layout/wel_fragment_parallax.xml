@@ -4,30 +4,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:clipChildren="false"
     android:orientation="vertical">
 
-    <!-- Show text on top instead of below, and tweak the margins -->
-    <LinearLayout
+    <!-- Show title on top instead of below, and tweak the margins -->
+    <TextView
+        android:id="@+id/wel_title"
+        style="?attr/welcomeLargeTextStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/wel_title"
-            style="?attr/welcomeLargeTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp" />
-
-        <TextView
-            android:id="@+id/wel_description"
-            style="?attr/welcomeNormalTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
+        android:layout_marginBottom="48dp"
+        tools:text="Quickly add new items"/>
 
     <!-- Add margins to make fragment smaller -->
     <FrameLayout
@@ -40,5 +29,13 @@
         android:layout_marginBottom="@dimen/welcome_margin_vertical"
         android:layout_weight="1"
         android:clipChildren="false" />
+
+    <TextView
+        android:id="@+id/wel_description"
+        style="?attr/welcomeNormalTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="48dp"/>
 
 </LinearLayout>
