@@ -497,7 +497,8 @@ public class AuthToolbox {
     }
 
     /**
-     * Removes all images from app's images directory
+     * Removes Glide cache and bitmap directory. Removes bitmap directory only if user is signed-in,
+     * to handle cases where local images have not been uploaded to Firebase just yet
      * <p>
      * Note: This needs to be called from a background thread since we're performing a data
      * operation
@@ -505,7 +506,9 @@ public class AuthToolbox {
      * @param context
      */
     private static void deleteImageCacheAsync(final Context context) {
-        Toolbox.deleteBitmapDirectory(context);
+        if (AuthToolbox.isSignedIn()) {
+            Toolbox.deleteBitmapDirectory(context);
+        }
         GlideApp.get(context).clearDiskCache();
     }
 
