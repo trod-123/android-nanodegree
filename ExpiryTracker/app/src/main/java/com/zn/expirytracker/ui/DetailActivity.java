@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.zn.expirytracker.AdStrategy;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.model.Food;
@@ -60,6 +62,9 @@ public class DetailActivity extends AppCompatActivity
     NonSwipeableViewPager mViewPager;
     @BindView(R.id.fab_detail_edit)
     FloatingActionButton mFabEdit;
+    @Nullable
+    @BindView(R.id.adView_detail)
+    AdView mAdView;
 
     private DetailPagerAdapter mPagerAdapter;
     private FoodViewModel mViewModel;
@@ -110,8 +115,19 @@ public class DetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Timber.tag(DetailActivity.class.getSimpleName());
 
-        setContentView(R.layout.activity_detail);
+        // Set the ad view accordingly
+        // https://stackoverflow.com/questions/13323097/in-app-purchase-remove-ads
+        if (AdStrategy.areAdsEnabled(this)) {
+            setContentView(R.layout.activity_detail_ads);
+        } else {
+            setContentView(R.layout.activity_detail);
+        }
         ButterKnife.bind(this);
+
+        // Set up the ad
+        if (mAdView != null) {
+            AdStrategy.loadAds(mAdView);
+        }
 
         Intent intent = getIntent();
         if (intent != null) {

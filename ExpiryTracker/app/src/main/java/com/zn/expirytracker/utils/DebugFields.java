@@ -62,4 +62,9 @@ public class DebugFields {
      * {@code true} to allow Guests to use the widget
      */
     public static final boolean ENABLE_GUEST_WIDGET = false;
+
+    /**
+     * {@code true} to always show ads
+     */
+    public static final boolean ALWAYS_SHOW_ADS = true;
 }

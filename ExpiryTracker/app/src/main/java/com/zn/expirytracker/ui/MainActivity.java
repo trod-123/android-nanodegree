@@ -10,10 +10,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.stephentuso.welcome.WelcomeHelper;
+import com.zn.expirytracker.AdStrategy;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.firebase.UserMetrics;
@@ -28,6 +30,7 @@ import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
@@ -50,6 +53,9 @@ public class MainActivity extends AppCompatActivity
     FloatingActionButton mFabAdd;
     @BindView(R.id.root_main)
     View mRootMain;
+    @Nullable
+    @BindView(R.id.adView_main)
+    AdView mAdView;
 
     MainPagerAdapter mPagerAdapter;
     private boolean mPickerShowing;
@@ -67,14 +73,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.tag(MainActivity.class.getSimpleName());
 
         mWelcomeScreen = new WelcomeHelper(this, IntroActivity.class);
 //        mWelcomeScreen.forceShow(); // for debugging only
         mWelcomeScreen.show(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
-        Timber.tag(MainActivity.class.getSimpleName());
+        // Set the ad view accordingly
+        // https://stackoverflow.com/questions/13323097/in-app-purchase-remove-ads
+        if (AdStrategy.areAdsEnabled(this)) {
+            setContentView(R.layout.activity_main_ads);
+        } else {
+            setContentView(R.layout.activity_main);
+        }
         ButterKnife.bind(this);
+
+        // Set up the ad
+        if (mAdView != null) {
+            AdStrategy.loadAds(mAdView);
+        }
 
         mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), Toolbox.isLeftToRightLayout());
         mViewPager.setAdapter(mPagerAdapter);

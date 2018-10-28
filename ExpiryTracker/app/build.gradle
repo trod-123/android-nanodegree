@@ -29,6 +29,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        buildConfigField 'String', "AdMobId", ADMOB_ID
+        resValue 'string', "ad_mob_id", ADMOB_ID
+        buildConfigField 'String', "AdMob_UnitId_Main", ADMOB_UNIT_ID_MAIN
+        resValue 'string', "ad_mob_unit_id_main", ADMOB_UNIT_ID_MAIN
+        buildConfigField 'String', "AdMob_UnitId_Detail", ADMOB_UNIT_ID_DETAIL
+        resValue 'string', "ad_mob_unit_id_detail", ADMOB_UNIT_ID_DETAIL
     }
     buildTypes {
         release {
@@ -107,7 +113,7 @@ dependencies {
     implementation "com.google.firebase:firebase-auth:$firebaseAuthVersion"
 
     // Firebase x Google AdMob
-//    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
+    implementation "com.google.firebase:firebase-ads:$firebaseAdsVersion"
 
     // Firebase Crashlytics
     implementation "com.crashlytics.sdk.android:crashlytics:$firebaseCrashlyticsVersion"

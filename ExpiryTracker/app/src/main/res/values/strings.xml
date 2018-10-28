@@ -545,6 +545,12 @@
 
     <!-- endregion -->
 
+    <!-- region Ads -->
+
+    <string name="ad_mob_unit_id_test">ca-app-pub-3940256099942544/6300978111</string>
+
+    <!-- endregion -->
+
     <!-- region Internal -->
 
     <string name="undefined_generic">Undefined</string>

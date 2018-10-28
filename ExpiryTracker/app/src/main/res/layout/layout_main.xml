@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MainActivity">
+
+    <com.zn.expirytracker.ui.NonSwipeableViewPager
+        android:id="@+id/viewPager_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:enablePaging="false">
+
+        <!-- Even for RTL layouts, use layoutDirection="ltr" to properly neutralize instantiating
+        fragments in reversed order -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout_main"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_height"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimary"
+            android:elevation="8dp"
+            android:layoutDirection="ltr"
+            app:tabIndicatorHeight="0dp" />
+
+    </com.zn.expirytracker.ui.NonSwipeableViewPager>
+
+    <!-- This is for enabling Snackbars to show above the TabLayout
+    https://stackoverflow.com/questions/31492351/how-can-you-adjust-android-snackbar-to-a-specific-position-on-screen-->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/root_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/tab_height">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_food_list_add"
+            android:layout_width="@dimen/fab_size"
+            android:layout_height="@dimen/fab_size"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:clickable="true"
+            android:contentDescription="@string/action_add_item"
+            android:focusable="true"
+            android:tint="@android:color/white"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_add_white_24dp" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</FrameLayout>

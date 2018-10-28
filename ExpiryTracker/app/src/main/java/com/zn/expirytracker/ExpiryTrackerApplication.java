@@ -78,6 +78,8 @@ public class ExpiryTrackerApplication extends MultiDexApplication {
             }
             Timber.plant(new CrashReportingTree());
         }
+
+        AdStrategy.initializeAds(this);
     }
 
     /**
