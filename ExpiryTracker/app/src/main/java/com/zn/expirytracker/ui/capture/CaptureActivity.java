@@ -26,7 +26,8 @@ import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.capture.barcodescanning.BarcodeScanningProcessor;
 import com.zn.expirytracker.ui.capture.helpers.GraphicOverlay;
 import com.zn.expirytracker.ui.capture.imagelabeling.ImageLabelingProcessor;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.io.IOException;
@@ -151,7 +152,7 @@ public class CaptureActivity extends AppCompatActivity implements
             @Override
             public void onChanged(PagedList<Food> foods) {
                 int size = foods.size();
-                if (size + 1 > Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+                if (size + 1 > KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
                     onBackPressed();
                 }
             }

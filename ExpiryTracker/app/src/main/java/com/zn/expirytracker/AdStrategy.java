@@ -6,8 +6,8 @@ import android.content.SharedPreferences;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.zn.expirytracker.utils.Constants;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.KeyConstants;
 
 import androidx.annotation.NonNull;
 
@@ -45,7 +45,7 @@ public class AdStrategy {
     public static boolean areAdsEnabled(Context context) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SHARED_PREFS_NAME,
                 Context.MODE_PRIVATE);
-        return sp.getBoolean(KEY_ENABLE_ADS, DebugFields.ALWAYS_SHOW_ADS);
+        return sp.getBoolean(KEY_ENABLE_ADS, KeyConstants.ALWAYS_SHOW_ADS);
     }
 
     /**

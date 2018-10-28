@@ -16,7 +16,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import java.util.List;
@@ -329,7 +329,7 @@ public class FoodRepository {
         @Override
         protected Long[] doInBackground(Context... contexts) {
             int size = mAsyncTaskDao.getAllFoods_List().size();
-            if (mFoods.length + size <= Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+            if (mFoods.length + size <= KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
                 Long[] insertedIds = mAsyncTaskDao.insert(mFoods);
                 // Update the widget
                 UpdateWidgetService.updateFoodWidget(contexts[0]);
@@ -354,7 +354,7 @@ public class FoodRepository {
             } else {
                 Timber.w("FoodDao/foods not inserted. max limit reached");
                 Toolbox.showToast(mContext, mContext.getString(
-                        R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
+                        R.string.limits_food_storage_hit, KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
             }
         }
     }

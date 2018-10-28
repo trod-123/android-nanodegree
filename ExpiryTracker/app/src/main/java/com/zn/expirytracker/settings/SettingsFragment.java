@@ -32,9 +32,9 @@ import com.zn.expirytracker.ui.dialog.ConfirmDeleteDialogFragment;
 import com.zn.expirytracker.ui.notifications.NotificationHelper;
 import com.zn.expirytracker.ui.widget.UpdateWidgetService;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
-import com.zn.expirytracker.utils.Urls;
+import com.zn.expirytracker.constants.Urls;
 
 import java.util.ArrayList;
 import java.util.HashSet;

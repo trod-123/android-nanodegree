@@ -37,7 +37,7 @@
         <!-- AdMob -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/ad_mob_id"/>
+            android:value="@string/ad_mob_id" />
 
         <activity
             android:name=".ui.SignInActivity"
@@ -101,10 +101,9 @@
             android:name=".ui.IntroActivity"
             android:theme="@style/WelcomeScreenTheme.Centered" />
 
-        <!-- TODO: Disable the widget for now -->
         <receiver
             android:name=".ui.widget.FoodWidget"
-            android:enabled="false"
+            android:enabled="@bool/enable_widget"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -138,6 +137,7 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
+            <!-- Note these paths need to be updated whenever the package name changes -->
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />

@@ -32,6 +32,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
@@ -42,9 +44,7 @@ import com.zn.expirytracker.data.viewmodel.FoodViewModel;
 import com.zn.expirytracker.ui.dialog.ExpiryDatePickerDialogFragment;
 import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.TextInputDialogFragment;
-import com.zn.expirytracker.utils.Constants;
 import com.zn.expirytracker.utils.DateToolbox;
-import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;

@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.utils.OnEditClearErrorsTextWatcher;
 import com.zn.expirytracker.utils.Toolbox;
 

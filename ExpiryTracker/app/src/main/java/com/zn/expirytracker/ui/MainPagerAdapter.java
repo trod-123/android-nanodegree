@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

@@ -19,7 +19,6 @@ import com.zn.expirytracker.ui.MainActivity;
 import com.zn.expirytracker.ui.SignInActivity;
 import com.zn.expirytracker.utils.AuthToolbox;
 import com.zn.expirytracker.utils.DataToolbox;
-import com.zn.expirytracker.utils.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -187,7 +186,7 @@ public class FoodWidget extends AppWidgetProvider {
                                 int appWidgetId, boolean hideProgressBar) {
         RemoteViews views;
 
-        if (DebugFields.ENABLE_GUEST_WIDGET || AuthToolbox.isSignedIn()) {
+        if (context.getResources().getBoolean(R.bool.enable_widget) || AuthToolbox.isSignedIn()) {
             // Set the regular widget
             views = new RemoteViews(context.getPackageName(), R.layout.food_widget);
             if (!hideProgressBar) {

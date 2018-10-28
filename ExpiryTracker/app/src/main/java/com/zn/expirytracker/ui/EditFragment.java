@@ -38,11 +38,12 @@ import com.zn.expirytracker.ui.dialog.FormChangedDialogFragment;
 import com.zn.expirytracker.ui.dialog.OnDialogCancelListener;
 import com.zn.expirytracker.ui.dialog.StorageLocationDialogFragment;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.EditToolbox;
 import com.zn.expirytracker.utils.FormChangedDetector;
+import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -464,7 +465,7 @@ public class EditFragment extends Fragment implements
                 Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
         if (!sp.getBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, false)) {
             Toolbox.showSnackbarMessage(mRootLayout,
-                    getString(R.string.limits_image_list_size, Constants.MAX_IMAGE_LIST_SIZE));
+                    getString(R.string.limits_image_list_size, KeyConstants.MAX_IMAGE_LIST_SIZE));
             sp.edit().putBoolean(Constants.SP_KEY_IMAGE_LIMIT_SEEN, true).apply();
         }
 
@@ -478,10 +479,10 @@ public class EditFragment extends Fragment implements
     private class GetStorageLimitAsyncTask extends AsyncTask<Void, Void, Integer> {
         @Override
         protected void onPostExecute(Integer size) {
-            mIsSaveEnabled = size + 1 <= Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT;
+            mIsSaveEnabled = size + 1 <= KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT;
             if (!mIsSaveEnabled) {
                 Toolbox.showToast(mHostActivity, getString(
-                        R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
+                        R.string.limits_food_storage_hit, KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
                 enableSaving();
             }
         }

@@ -12,7 +12,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.ValueEventListener;
 import com.zn.expirytracker.R;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 
 import timber.log.Timber;
 

@@ -25,10 +25,10 @@ import com.zn.expirytracker.data.FoodRoomDb;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
 import com.zn.expirytracker.ui.MainActivity;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;

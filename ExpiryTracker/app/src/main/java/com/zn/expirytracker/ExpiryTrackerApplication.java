@@ -10,7 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.leakcanary.LeakCanary;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

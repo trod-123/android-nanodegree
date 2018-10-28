@@ -1,4 +1,4 @@
-package com.zn.expirytracker.utils;
+package com.zn.expirytracker.constants;
 
 import android.widget.Toast;
 
@@ -62,36 +62,6 @@ public class Constants {
     public static final int GREETING_AFTERNOON_BOUNDS = 12;
 
     /**
-     * Max number of images saved from the image list provided by UpcItemDb
-     */
-    public static final int MAX_BARCODE_IMAGE_LIST_SIZE = 1;
-
-    /**
-     * Max number of images users can attach to a single item
-     * <p>
-     * Note: When setting, this must be greater than 2 (one for barcode, one for scanned image)
-     */
-    public static final int MAX_IMAGE_LIST_SIZE = 3;
-
-    /**
-     * Max number of foods users can simultaneously store in their database
-     */
-    public static final int MAX_FOODS_DATABASE_SIZE_DEFAULT = 100;
-
-    /**
-     * Denotes no limit to how many foods users can simultaneously store in their database
-     */
-    public static final int MAX_FOODS_DATABASE_SIZE_NO_LIMIT = Integer.MAX_VALUE;
-
-    /**
-     * Max number of barcode scans users can do in a day
-     * <p>
-     * Note: This is the free limit granted by the UpcItemDb. This should not be changed unless a
-     * license is purchased
-     */
-    public static final int MAX_BARCODE_SCANS_DAILY = 100;
-
-    /**
      * Default hour that indicates "morning"
      */
     public static final int DEFAULT_MORNING_HOUR = 9;
@@ -115,4 +85,19 @@ public class Constants {
      * Limit of foods to show per day in day by day line summaries
      */
     public static final int MAX_DAILY_LINE_SUMMARY_FOOD_COUNT = 5;
+    /**
+     * Max number of images saved from the image list provided by UpcItemDb
+     */
+    public static final int MAX_BARCODE_IMAGE_LIST_SIZE = 1;
+    /**
+     * Max number of barcode scans users can do in a day
+     * <p>
+     * Note: This is the free limit granted by the UpcItemDb. This should not be changed unless a
+     * license is purchased
+     */
+    public static final int MAX_BARCODE_SCANS_DAILY = 100;
+    /**
+     * Denotes no limit to how many foods users can simultaneously store in their database
+     */
+    public static final int MAX_FOODS_DATABASE_SIZE_NO_LIMIT = Integer.MAX_VALUE;
 }

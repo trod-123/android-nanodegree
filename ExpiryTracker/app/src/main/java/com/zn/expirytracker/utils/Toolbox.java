@@ -37,6 +37,8 @@ import com.rd.PageIndicatorView;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.GlideRequest;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.Urls;
 import com.zn.expirytracker.settings.WebViewActivity;
 
 import java.io.File;

@@ -18,7 +18,7 @@ import com.zn.expirytracker.data.contracts.SettingsDatabaseContract;
 import com.zn.expirytracker.data.contracts.UserDatabaseContract;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 
 import java.util.HashMap;
 import java.util.List;

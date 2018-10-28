@@ -25,9 +25,10 @@ import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
 import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
+import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import androidx.annotation.Nullable;
@@ -117,21 +118,23 @@ public class MainActivity extends AppCompatActivity
         // For checking database size and showing/hiding the Fab add accordingly
         // By using a ViewModel observer, we could continuously check after user removes items in
         // any way
-        mViewModel = obtainViewModel(this);
-        mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
-            @Override
-            public void onChanged(PagedList<Food> foods) {
-                mDatabaseSize = foods.size();
-                invalidateOptionsMenu();
-                if (mDatabaseSize + 1 > Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
-                    Toolbox.showToast(MainActivity.this, getString(
-                            R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
-                    mFabAdd.hide();
-                } else {
-                    mFabAdd.show();
+        if (KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT != Constants.MAX_FOODS_DATABASE_SIZE_NO_LIMIT) {
+            mViewModel = obtainViewModel(this);
+            mViewModel.getAllFoods(false).observe(this, new Observer<PagedList<Food>>() {
+                @Override
+                public void onChanged(PagedList<Food> foods) {
+                    mDatabaseSize = foods.size();
+                    invalidateOptionsMenu();
+                    if (mDatabaseSize + 1 > KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT) {
+                        Toolbox.showToast(MainActivity.this, getString(
+                                R.string.limits_food_storage_hit, KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT));
+                        mFabAdd.hide();
+                    } else {
+                        mFabAdd.show();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -174,7 +177,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_database_size);
-        item.setTitle(Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize + "");
+        if (KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT != Constants.MAX_FOODS_DATABASE_SIZE_NO_LIMIT) {
+            item.setTitle(KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize + "");
+        } else {
+            item.setVisible(false);
+        }
         return true;
     }
 
@@ -273,10 +280,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showDatabaseLimitMessage() {
-        String message = mDatabaseSize != Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT ?
-                getString(R.string.limits_food_storage_no_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT,
-                        Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize) :
-                getString(R.string.limits_food_storage_hit, Constants.MAX_FOODS_DATABASE_SIZE_DEFAULT);
+        String message = mDatabaseSize != KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT ?
+                getString(R.string.limits_food_storage_no_hit, KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT,
+                        KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT - mDatabaseSize) :
+                getString(R.string.limits_food_storage_hit, KeyConstants.MAX_FOODS_DATABASE_SIZE_DEFAULT);
         Toolbox.showSnackbarMessage(mRootMain, message);
     }
 

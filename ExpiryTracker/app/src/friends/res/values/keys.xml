@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Set as resource so we can use in Manifest -->
+    <bool name="enable_widget">true</bool>
+</resources>

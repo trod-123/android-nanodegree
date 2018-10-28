@@ -20,10 +20,10 @@ import java.util.Random;
 
 import androidx.annotation.NonNull;
 
-import static com.zn.expirytracker.utils.Constants.GREETING_AFTERNOON_BOUNDS;
-import static com.zn.expirytracker.utils.Constants.GREETING_EVENING_BOUNDS;
-import static com.zn.expirytracker.utils.Constants.GREETING_GENERIC_THRESHOLD;
-import static com.zn.expirytracker.utils.Constants.GREETING_MORNING_BOUNDS;
+import static com.zn.expirytracker.constants.Constants.GREETING_AFTERNOON_BOUNDS;
+import static com.zn.expirytracker.constants.Constants.GREETING_EVENING_BOUNDS;
+import static com.zn.expirytracker.constants.Constants.GREETING_GENERIC_THRESHOLD;
+import static com.zn.expirytracker.constants.Constants.GREETING_MORNING_BOUNDS;
 
 /**
  * Set of helper methods for returning data

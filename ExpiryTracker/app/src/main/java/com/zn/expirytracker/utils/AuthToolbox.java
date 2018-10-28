@@ -21,6 +21,7 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.zn.expirytracker.GlideApp;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.data.firebase.FirebaseDatabaseHelper;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;

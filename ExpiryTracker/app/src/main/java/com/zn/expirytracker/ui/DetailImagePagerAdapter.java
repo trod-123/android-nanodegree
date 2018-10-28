@@ -1,6 +1,6 @@
 package com.zn.expirytracker.ui;
 
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.KeyConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +101,6 @@ public class DetailImagePagerAdapter extends FragmentStatePagerAdapter {
      * @return
      */
     private boolean isThereRoomForMore() {
-        return mImageUris.size() < Constants.MAX_IMAGE_LIST_SIZE;
+        return mImageUris.size() < KeyConstants.MAX_IMAGE_LIST_SIZE;
     }
 }

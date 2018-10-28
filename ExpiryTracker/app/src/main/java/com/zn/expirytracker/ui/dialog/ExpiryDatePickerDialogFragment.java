@@ -8,7 +8,7 @@ import android.widget.DatePicker;
 
 import com.zn.expirytracker.R;
 import com.zn.expirytracker.utils.DateToolbox;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;

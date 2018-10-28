@@ -24,7 +24,7 @@ import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.InputType;
 import com.zn.expirytracker.data.model.Storage;
 import com.zn.expirytracker.data.viewmodel.FoodViewModel;
-import com.zn.expirytracker.utils.Constants;
+import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
 import com.zn.expirytracker.utils.Toolbox;

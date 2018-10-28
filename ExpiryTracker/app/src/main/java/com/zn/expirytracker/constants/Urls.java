@@ -1,4 +1,4 @@
-package com.zn.expirytracker.utils;
+package com.zn.expirytracker.constants;
 
 public class Urls {
 

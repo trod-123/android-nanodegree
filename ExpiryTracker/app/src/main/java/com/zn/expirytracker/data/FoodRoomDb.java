@@ -9,7 +9,7 @@ import com.zn.expirytracker.data.model.Cache;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.data.model.FoodDao;
 import com.zn.expirytracker.data.model.Temp;
-import com.zn.expirytracker.utils.DebugFields;
+import com.zn.expirytracker.constants.DebugFields;
 
 import java.util.List;
 
