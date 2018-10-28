@@ -49,6 +49,17 @@ android {
             debuggable true
         }
     }
+    flavorDimensions "version"
+    productFlavors {
+        open {
+            dimension "version"
+        }
+        friends {
+            dimension "version"
+            applicationIdSuffix ".friends"
+            versionNameSuffix "-friends"
+        }
+    }
 }
 
 dependencies {

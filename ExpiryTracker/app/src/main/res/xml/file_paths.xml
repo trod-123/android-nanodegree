@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <!-- Note these paths need to be updated whenever the package name changes -->
     <external-path
-        name="images.free.debug"
-        path="Android/data/com.zn.expirytracker.free.debug/files/Pictures" />
+        name="images.debug"
+        path="Android/data/com.zn.expirytracker.debug/files/Pictures" />
     <external-path
-        name="images.free"
-        path="Android/data/com.zn.expirytracker.free/files/Pictures" />
+        name="images.friends.debug"
+        path="Android/data/com.zn.expirytracker.friends.debug/files/Pictures" />
     <external-path
-        name="images.paid.debug"
-        path="Android/data/com.zn.expirytracker.paid.debug/files/Pictures" />
+        name="images"
+        path="Android/data/com.zn.expirytracker/files/Pictures" />
     <external-path
-        name="images.paid"
-        path="Android/data/com.zn.expirytracker.paid/files/Pictures" />
+        name="images.friends"
+        path="Android/data/com.zn.expirytracker.friends/files/Pictures" />
 </paths>
