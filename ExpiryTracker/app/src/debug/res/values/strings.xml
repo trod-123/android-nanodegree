@@ -1,0 +1,12 @@
+<!DOCTYPE resources [<!ENTITY appname "Expiry Tracker (debug)">]>
+
+<resources>
+
+    <!-- Note zero-quantity plurals don't work as intended. Need to handle separately
+    https://stackoverflow.com/questions/5651902/android-plurals-treatment-of-zero -->
+
+    <!-- region App -->
+
+    <string name="app_name" translatable="false">&appname;</string>
+
+</resources>
