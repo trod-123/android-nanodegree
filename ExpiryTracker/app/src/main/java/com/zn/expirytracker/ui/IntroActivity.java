@@ -15,7 +15,7 @@ public class IntroActivity extends WelcomeActivity {
     protected WelcomeConfiguration configuration() {
         return new WelcomeConfiguration.Builder(this)
 
-                .page(new BasicPage(R.drawable.web_hi_res_512,
+                .page(new BasicPage(R.drawable.saved_full_logo,
                         getString(R.string.wel_page_first_title),
                         getString(R.string.wel_page_first_description))
                         .background(R.color.wel_page_first)

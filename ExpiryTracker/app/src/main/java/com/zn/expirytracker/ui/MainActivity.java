@@ -17,6 +17,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.stephentuso.welcome.WelcomeHelper;
 import com.zn.expirytracker.AdStrategy;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.DebugFields;
+import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.data.firebase.FirebaseUpdaterHelper;
 import com.zn.expirytracker.data.firebase.UserMetrics;
 import com.zn.expirytracker.data.model.Food;
@@ -25,14 +28,12 @@ import com.zn.expirytracker.settings.SettingsActivity;
 import com.zn.expirytracker.ui.capture.CaptureActivity;
 import com.zn.expirytracker.ui.dialog.AddItemInputPickerBottomSheet;
 import com.zn.expirytracker.utils.AuthToolbox;
-import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
-import com.zn.expirytracker.constants.DebugFields;
-import com.zn.expirytracker.constants.KeyConstants;
 import com.zn.expirytracker.utils.Toolbox;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity
         implements AddItemInputPickerBottomSheet.OnInputMethodSelectedListener,
         FoodListFragment.FoodListFragmentListener {
 
+    @BindView(R.id.toolbar_main)
+    Toolbar mToolbar;
     @BindView(R.id.viewPager_main)
     ViewPager mViewPager;
     @BindView(R.id.tabLayout_main)
@@ -88,6 +91,10 @@ public class MainActivity extends AppCompatActivity
             setContentView(R.layout.activity_main);
         }
         ButterKnife.bind(this);
+
+        // Set the logo toolbar
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
 
         // Set up the ad
         if (mAdView != null) {

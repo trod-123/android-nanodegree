@@ -15,7 +15,7 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/web_hi_res_512" />
+        app:srcCompat="@drawable/saved_web_hi_res_512" />
 
     <TextView
         android:id="@+id/tv_sign_in_app_name"

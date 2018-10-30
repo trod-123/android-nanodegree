@@ -7,6 +7,8 @@
     android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
+    <include layout="@layout/layout_main_toolbar"/>
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView_main"
         android:layout_width="match_parent"

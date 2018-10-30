@@ -22,7 +22,7 @@
             android:layout_height="36dp"
             android:layout_gravity="center_vertical"
             android:layout_margin="16dp"
-            android:src="@mipmap/zn_logo_blackwhite"
+            android:src="@mipmap/ic_launcher"
             android:contentDescription="@string/app_name"/>
 
         <TextView
