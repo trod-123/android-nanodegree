@@ -14,7 +14,7 @@ public class IntroActivity extends WelcomeActivity {
     @Override
     protected WelcomeConfiguration configuration() {
         return new WelcomeConfiguration.Builder(this)
-                .page(new BasicPage(R.drawable.saved_full_logo_colored,
+                .page(new BasicPage(R.drawable.saved_full_logo_colored_high_res,
                         getString(R.string.wel_page_first_title),
                         getString(R.string.wel_page_first_description))
                 )
