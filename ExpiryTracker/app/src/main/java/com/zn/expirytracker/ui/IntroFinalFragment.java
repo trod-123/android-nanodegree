@@ -42,14 +42,14 @@ public class IntroFinalFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mTvTitle.setText(R.string.wel_page_final_title);
+        mTvTitle.setText(R.string.wel_page_first_title);
         mTvTitle.setTextColor(getResources().getColor(R.color.colorAccent));
-        mTvDescription.setText(R.string.wel_page_final_description);
+        mTvDescription.setText(R.string.wel_page_first_description);
         mTvDescription.setTextColor(getResources().getColor(R.color.textColorPrimaryDark));
-        mIv.setImageResource(R.drawable.ic_check_accent_24dp);
+        mIv.setImageResource(R.drawable.saved_full_logo_colored_high_res);
 
         // Set the agreement
-        mTvDescription.append("\n\n\n\n");
+        mTvDescription.append("\n\n\n");
         mTvDescription.append(Toolbox.getSpannableAgreementText(
                 mTvDescription.getContext(), getString(R.string.auth_agreement_proceed,
                         getString(R.string.auth_terms), getString(R.string.auth_privacy_policy))));

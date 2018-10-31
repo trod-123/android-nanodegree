@@ -65,10 +65,11 @@
         <item name="welcomeDividerStyle">@style/WelcomeScreenDivider</item>
         <item name="welcomeTitleTextStyle">@style/WelcomeScreenText.Title.Centered</item>
         <item name="welcomeLargeTextStyle">@style/WelcomeScreenTheme.CustomLargeText</item>
-        <item name="welcomeNormalTextStyle">@style/WelcomeScreenText.Centered</item>
+        <item name="welcomeNormalTextStyle">@style/WelcomeScreenTheme.CustomNormalText</item>
         <item name="android:textColorPrimary">@color/wel_page_header_color</item>
         <item name="android:textColorSecondary">@color/wel_page_description_color</item>
         <item name="android:background">@color/wel_page_background</item>
+        <item name="welcomeButtonDoneText">@string/wel_page_done_button</item>
     </style>
 
     <style name="WelcomeScreenTheme.Centered" parent="BaseWelcomeScreenTheme">
@@ -90,6 +91,11 @@
     <style name="WelcomeScreenTheme.CustomLargeText" parent="WelcomeScreenText.Large.Centered">
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">sans-serif-smallcaps</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="WelcomeScreenTheme.CustomNormalText" parent="WelcomeScreenText.Centered">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <!-- endregion -->
