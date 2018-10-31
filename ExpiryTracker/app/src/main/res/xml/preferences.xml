@@ -26,12 +26,12 @@
     <PreferenceCategory android:title="@string/pref_widget_title">
         <ListPreference
             android:defaultValue="@string/pref_expire_num_days_default"
+            android:enabled="@bool/enable_widget"
             android:entries="@array/pref_expire_num_days_entries"
             android:entryValues="@array/pref_expire_num_days_values"
             android:key="@string/pref_widget_num_days_key"
             android:summary="@string/pref_widget_num_days_summary"
-            android:title="@string/pref_widget_num_days_label"
-            android:enabled="@bool/enable_widget"/>
+            android:title="@string/pref_widget_num_days_label" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_capture_title">
@@ -52,10 +52,10 @@
 
     <PreferenceCategory android:title="@string/pref_account_title">
         <Preference
+            android:enabled="false"
             android:key="@string/pref_account_sign_in_key"
             android:summary="@string/pref_account_sign_in_summary"
-            android:title="@string/pref_account_sign_in_label"
-            android:enabled="false"/>
+            android:title="@string/pref_account_sign_in_label" />
         <Preference
             android:key="@string/pref_account_sign_out_key"
             android:title="@string/pref_account_sign_out_label" />
@@ -86,10 +86,10 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_about_title">
-        <Preference
-            android:key="@string/pref_about_welcome_key"
-            android:summary="@string/pref_about_welcome_summary"
-            android:title="@string/pref_about_welcome_label" />
+        <!--<Preference-->
+            <!--android:key="@string/pref_about_welcome_key"-->
+            <!--android:summary="@string/pref_about_welcome_summary"-->
+            <!--android:title="@string/pref_about_welcome_label" />-->
         <Preference
             android:key="@string/pref_about_privacy_policy_key"
             android:title="@string/pref_about_privacy_policy_label" />
