@@ -31,6 +31,8 @@
     <color name="tab_background">@color/colorPrimary</color>
     <color name="tab_icon_selected">@color/colorAccent</color>
     <color name="tab_icon_unselected">@color/textColorPrimary</color>
+    <color name="bar_chart_bars">@color/colorAccent</color>
+    <color name="bar_chart_bars_highlighted">@color/textColorPrimaryDark</color>
 
     <color name="imageForeground_scrimStart">#00000000</color>
     <color name="imageForeground_scrimEnd">#90000000</color>

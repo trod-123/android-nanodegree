@@ -258,8 +258,9 @@ public class AtAGlanceFragment extends Fragment
                 // required to associate RIGHT axis with the data. by default it is dependent on LEFT
                 dataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
             }
-            dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.colorAccent)); // set color of bars
-            dataSet.setHighLightColor(ContextCompat.getColor(mHostActivity, R.color.colorAccentDark));
+            dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.bar_chart_bars)); // set color of bars
+            dataSet.setHighLightColor(ContextCompat.getColor(mHostActivity,
+                    R.color.bar_chart_bars_highlighted));
             dataSet.setDrawValues(false); // don't show values for each point
             BarData barData = new BarData(dataSet);
             barData.setBarWidth(0.6f);
