@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -21,14 +23,14 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.zn.expirytracker.R;
+import com.zn.expirytracker.constants.Constants;
+import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.data.FoodRoomDb;
 import com.zn.expirytracker.data.model.Food;
 import com.zn.expirytracker.ui.DetailActivity;
 import com.zn.expirytracker.ui.MainActivity;
-import com.zn.expirytracker.constants.Constants;
 import com.zn.expirytracker.utils.DataToolbox;
 import com.zn.expirytracker.utils.DateToolbox;
-import com.zn.expirytracker.constants.DebugFields;
 import com.zn.expirytracker.utils.Toolbox;
 
 import org.joda.time.DateTime;
@@ -39,6 +41,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import timber.log.Timber;
+
+import static android.app.Notification.CATEGORY_REMINDER;
 
 public class NotificationHelper {
 
@@ -247,10 +251,9 @@ public class NotificationHelper {
      *
      * @param foods
      */
-    public void showNotification(@NonNull List<Food> foods) {
+    public void showNotification(int daysFilter, @NonNull List<Food> foods) {
         if (foods.size() == 0) {
-            // Don't show any notification if there is no food expiring within the time range set
-            // by the JobScheduler
+            showNoFoodsExpiringNotification(daysFilter);
             return;
         }
 
@@ -263,7 +266,7 @@ public class NotificationHelper {
             // Single food case
             Food food = foods.get(0);
             if (food.getDateExpiry() < currentTimeStartOfDay) {
-                // Do not show notification if food is already expired
+                showNoFoodsExpiringNotification(daysFilter);
                 return;
             }
             singleFoodCase = true;
@@ -282,7 +285,7 @@ public class NotificationHelper {
                 frequencies, startIndex, DataToolbox.NO_INDEX_LIMIT);
 
         if (totalFoodCountsFromFilter == 0) {
-            // Don't show notification if there are no foods expiring!
+            showNoFoodsExpiringNotification(daysFilter);
             return;
         }
 
@@ -313,10 +316,7 @@ public class NotificationHelper {
             }
         } else {
             // Set pending intent to launch AAG fragment
-            Intent intent = new Intent(mContext, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            contentIntent = PendingIntent.getActivity(
-                    mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            contentIntent = getAAGPendingIntent();
 
             // Get the content and title strings
             StringBuilder contentBuilder = new StringBuilder();
@@ -324,9 +324,9 @@ public class NotificationHelper {
                     Constants.MAX_DAILY_LINE_SUMMARY_FOOD_COUNT);
             for (int i = 0; i < lines.size(); i++) {
                 contentBuilder.append(lines.get(i));
-                contentBuilder.append("\n");
+                if (i < lines.size() - 1) contentBuilder.append("<br>");
             }
-            String contentTitle = DataToolbox.getRandomTitleSummary(mContext);
+            String contentTitle = getRandomNotificationTitle(mContext);
             if (lines.size() == 1) {
                 // Get the readable date food is expiring, and set in message
                 Food food = DataToolbox.getFirstFoodFromFoodDateMap(foodDateMap, false);
@@ -335,8 +335,37 @@ public class NotificationHelper {
             }
 
             showNotificationHelper(mContext, getNotificationBuilder(mContext, contentTitle,
-                    contentBuilder.toString().trim(), null, contentIntent));
+                    Html.fromHtml(contentBuilder.toString().trim()), null, contentIntent));
         }
+
+        // Schedule the next notification
+        scheduleNotificationJob(mContext, true);
+    }
+
+    /**
+     * Get the pending intent that launches the AAG fragment
+     *
+     * @return
+     */
+    private PendingIntent getAAGPendingIntent() {
+        Intent intent = new Intent(mContext, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return PendingIntent.getActivity(mContext, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Show the empty notification if there are no foods expiring
+     *
+     * @param daysFilter
+     */
+    private void showNoFoodsExpiringNotification(int daysFilter) {
+        String contentTitle = getRandomEmptyNotificationTitle(mContext);
+        String contentText = DataToolbox.getBriefEmptySummaryHeader(mContext, daysFilter);
+        PendingIntent contentIntent = getAAGPendingIntent();
+
+        showNotificationHelper(mContext, getNotificationBuilder(mContext, contentTitle,
+                contentText, null, contentIntent));
 
         // Schedule the next notification
         scheduleNotificationJob(mContext, true);
@@ -374,6 +403,57 @@ public class NotificationHelper {
     }
 
     /**
+     * Returns a base builder without content text or icon
+     *
+     * @param context
+     * @param contentTitle
+     * @param contentIntent
+     * @return
+     */
+    private Notification.Builder getRawNotificationBuilder(Context context, String contentTitle,
+                                                           PendingIntent contentIntent) {
+        return new Notification.Builder(context)
+                .setContentTitle(contentTitle)
+                .setSmallIcon(R.drawable.ic_logo_notification_white)
+                .setColor(context.getResources().getColor(R.color.colorAccent))
+                .setSubText(context.getString(R.string.notification_subtext))
+                .setCategory(CATEGORY_REMINDER)
+                .setShowWhen(true) // shows how long ago notification was sent
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(contentIntent);
+    }
+
+    /**
+     * Returns the Notification Builder for a multiple foods notification
+     *
+     * @param context
+     * @param contentTitle
+     * @param contentText
+     * @param largeIcon
+     * @param contentIntent
+     * @return
+     */
+    private Notification.Builder getNotificationBuilder(Context context, String contentTitle,
+                                                        Spanned contentText, Bitmap largeIcon,
+                                                        PendingIntent contentIntent) {
+        Notification.Builder builder = getRawNotificationBuilder(context, contentTitle,
+                contentIntent);
+        builder.setContentText(contentText);
+        if (largeIcon != null) {
+            builder.setLargeIcon(largeIcon)
+                    .setStyle(new Notification.BigPictureStyle()
+                            .bigPicture(largeIcon));
+        } else {
+            builder.setStyle(new Notification.BigTextStyle()
+                    .setBigContentTitle(contentTitle)
+                    .bigText(contentText)); // for multiline text
+        }
+        return builder;
+    }
+
+    /**
      * Returns the Notification Builder for a multiple foods notification
      *
      * @param context
@@ -386,23 +466,41 @@ public class NotificationHelper {
     private Notification.Builder getNotificationBuilder(Context context, String contentTitle,
                                                         String contentText, Bitmap largeIcon,
                                                         PendingIntent contentIntent) {
-        Notification.Builder builder = new Notification.Builder(context)
-                .setContentTitle(contentTitle)
-                .setContentText(contentText)
-                .setSmallIcon(R.drawable.ic_cube_black_24dp)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true)
-                .setContentIntent(contentIntent);
+        Notification.Builder builder = getRawNotificationBuilder(context, contentTitle,
+                contentIntent);
+        builder.setContentText(contentText);
         if (largeIcon != null) {
             builder.setLargeIcon(largeIcon)
                     .setStyle(new Notification.BigPictureStyle()
                             .bigPicture(largeIcon));
         } else {
             builder.setStyle(new Notification.BigTextStyle()
+                    .setBigContentTitle(contentTitle)
                     .bigText(contentText)); // for multiline text
         }
         return builder;
+    }
+
+    /**
+     * Returns a random title for the notifications
+     *
+     * @param context
+     * @return
+     */
+    public static String getRandomNotificationTitle(Context context) {
+        String[] titles = context.getResources().getStringArray(R.array.notification_title);
+        return (String) Toolbox.getRandomObjectFromArray(titles);
+    }
+
+    /**
+     * Returns a random empty title for the notifications
+     *
+     * @param context
+     * @return
+     */
+    public static String getRandomEmptyNotificationTitle(Context context) {
+        String[] titles = context.getResources().getStringArray(R.array.notification_title_none);
+        return (String) Toolbox.getRandomObjectFromArray(titles);
     }
 
     private class GenerateSingleFoodNotificationTask extends AsyncTask<Void, Void, Bitmap> {

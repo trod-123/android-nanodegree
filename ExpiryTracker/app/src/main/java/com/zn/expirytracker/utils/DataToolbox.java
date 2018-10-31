@@ -159,18 +159,36 @@ public class DataToolbox {
     public static String getFullSummary(Context context, int numDaysFilter,
                                         int totalFoodsCountFromFilter, int foodsCountCurrent,
                                         int foodsCountNextDay) {
-        String filterString;
-        if (numDaysFilter == 6) {
-            filterString = context.getString(R.string.date_weekly_filter_7_days_text);
-        } else {
-            filterString = context.getString(R.string.date_filter_x_days, numDaysFilter);
-        }
-        return getFullSummaryHelper(context, filterString.toLowerCase(),
+
+        return getFullSummaryHelper(context, getFilterString(context, numDaysFilter).toLowerCase(),
                 totalFoodsCountFromFilter, foodsCountCurrent, foodsCountNextDay);
     }
 
     /**
+     * Today / Today or tomorrow / a week / n days
+     *
+     * @param context
+     * @param numDaysFilter
+     * @return
+     */
+    private static String getFilterString(Context context, int numDaysFilter) {
+        switch (numDaysFilter) {
+            case 0:
+                return context.getString(R.string.date_today);
+            case 1:
+                return context.getString(R.string.date_today_or_tomorrow);
+            case 6:
+                return context.getString(R.string.date_weekly_filter_7_days_text);
+            default:
+                return context.getString(R.string.date_filter_x_days, numDaysFilter);
+        }
+    }
+
+    /**
      * Helper to generate the full summary
+     * <p>
+     * You have x foods expiring within d days, with y foods expiring today and z foods expiring
+     * tomorrow
      *
      * @param context
      * @param filterString
@@ -189,8 +207,11 @@ public class DataToolbox {
             builder.append(context.getResources().getQuantityString(R.plurals.at_a_glance_summary,
                     totalFoodsCountFromFilter, totalFoodsCountFromFilter, filterString));
         } else {
+            // If we have no foods, then just show the main bit
             builder.append(context.getString(R.string.at_a_glance_summary_none,
                     null, filterString));
+            builder.append(".");
+            return builder.toString();
         }
         if (foodsCountCurrent != 0) {
             builder.append(context.getResources().getQuantityString(
@@ -210,6 +231,20 @@ public class DataToolbox {
         }
         builder.append(".");
         return builder.toString();
+    }
+
+    /**
+     * Brief empty header for summary usage
+     * <p>
+     * No foods expiring within x [days]
+     *
+     * @param context
+     * @param numDaysFilter
+     * @return
+     */
+    public static String getBriefEmptySummaryHeader(Context context, int numDaysFilter) {
+        return context.getString(R.string.notification_content_none,
+                getFilterString(context, numDaysFilter).toLowerCase());
     }
 
     /**
@@ -568,7 +603,7 @@ public class DataToolbox {
                             false);
                     if (size <= defaultDailyLength) {
                         // Spell out each food
-                        contentTextBuilder.append(String.format("%s (%s): ",
+                        contentTextBuilder.append(String.format("<b>%s (%s): </b>",
                                 expiryString, context.getResources().getQuantityString(
                                         R.plurals.food, size, size)));
                         for (int j = 0; j < size; j++) {
@@ -578,7 +613,7 @@ public class DataToolbox {
                         }
                     } else {
                         // Too many foods, set generic line
-                        contentTextBuilder.append(String.format("%s: %s", expiryString,
+                        contentTextBuilder.append(String.format("<b>%s: </b>%s", expiryString,
                                 context.getResources().getQuantityString
                                         (R.plurals.food, size, size)));
                     }
@@ -589,17 +624,6 @@ public class DataToolbox {
             }
         }
         return strings;
-    }
-
-    /**
-     * Returns a random title for the Food expiration summary
-     *
-     * @param context
-     * @return
-     */
-    public static String getRandomTitleSummary(Context context) {
-        String[] titles = context.getResources().getStringArray(R.array.notification_content_title);
-        return titles[mRandomizer.nextInt(titles.length)];
     }
 
     /**

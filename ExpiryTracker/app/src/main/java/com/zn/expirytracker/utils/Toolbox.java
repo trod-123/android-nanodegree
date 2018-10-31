@@ -51,6 +51,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
@@ -685,5 +686,15 @@ public class Toolbox {
         agreementText.setSpan(privacyCSpan, privacyIndex,
                 privacyIndex + privacy.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return agreementText;
+    }
+
+    /**
+     * Convenience method for getting a random Object from an array of Objects
+     *
+     * @param objects
+     * @return
+     */
+    public static Object getRandomObjectFromArray(Object[] objects) {
+        return objects[new Random().nextInt(objects.length)];
     }
 }

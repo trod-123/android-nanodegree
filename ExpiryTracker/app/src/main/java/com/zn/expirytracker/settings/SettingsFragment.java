@@ -649,8 +649,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
         if (!enabled) {
             // Cancel the job if notifications are not enabled
             NotificationHelper.cancelNotificationJob(context);
+            Toolbox.showToast(context, context.getString(R.string.notification_disable));
         } else {
             NotificationHelper.scheduleNotificationJob(context, false);
+            Toolbox.showToast(context, context.getString(R.string.notification_enable));
         }
     }
 

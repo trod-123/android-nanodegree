@@ -478,19 +478,36 @@
 
     <!-- region Notifications -->
 
+    <string name="notification_enable">Got it. We\'ll send you reminders! Just sit back.</string>
+    <string name="notification_disable">Alright. We\'ll no longer send you reminders.</string>
     <string name="notification_channel_id" translatable="false">ch_reminders</string>
     <string name="notification_channel_name">Food expiry reminders</string>
-    <string name="notification_content_title_1">Reminder: You have foods expiring soon!</string>
-    <string name="notification_content_title_2">Reminder: Your foods are going bad soon!</string>
-    <string name="notification_content_title_3">Reminder: Some foods will be expiring soon!</string>
-    <string name="notification_content_title_4">Reminder: Consume soon, don\'t throw!</string>
-    <string name="notification_content_title_5">Reminder: Do your wallet a favor. Consume these soon!</string>
-    <string-array name="notification_content_title">
-        <item>@string/notification_content_title_1</item>
-        <item>@string/notification_content_title_2</item>
-        <item>@string/notification_content_title_3</item>
-        <item>@string/notification_content_title_4</item>
-        <item>@string/notification_content_title_5</item>
+    <string name="notification_subtext">Reminder</string>
+    <!-- 1: DATE -->
+    <string name="notification_content_none">No foods expiring within %1$s</string>
+    <string name="notification_title_none_1">No expiring foods coming up</string>
+    <string name="notification_title_none_2">Rest easy for now</string>
+    <string name="notification_title_none_3">Today looks good with your foods</string>
+    <string name="notification_title_none_4">All seems quiet for now&#8230;</string>
+    <string name="notification_title_none_5">All good for now!</string>
+    <string-array name="notification_title_none">
+        <item>@string/notification_title_none_1</item>
+        <item>@string/notification_title_none_2</item>
+        <item>@string/notification_title_none_3</item>
+        <item>@string/notification_title_none_4</item>
+        <item>@string/notification_title_none_5</item>
+    </string-array>
+    <string name="notification_title_1">You have foods expiring soon!</string>
+    <string name="notification_title_2">You have foods going bad soon!</string>
+    <string name="notification_title_3">Some foods will be expiring soon!</string>
+    <string name="notification_title_4">Consume soon, don\'t throw!</string>
+    <string name="notification_title_5">Do your wallet a favor and consume these soon!</string>
+    <string-array name="notification_title">
+        <item>@string/notification_title_1</item>
+        <item>@string/notification_title_2</item>
+        <item>@string/notification_title_3</item>
+        <item>@string/notification_title_4</item>
+        <item>@string/notification_title_5</item>
     </string-array>
 
     <!-- endregion -->

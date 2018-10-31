@@ -10,7 +10,7 @@
 
     <!-- Receiving notifications -->
     <string name="pref_notifications_receive_key" translatable="false">Receive reminder notifications</string>
-    <string name="pref_notifications_receive_label">Show reminder notifications</string>
+    <string name="pref_notifications_receive_label">Show daily reminders</string>
     <string name="pref_notifications_receive_summary">Get notified when your food is close to expiring!</string>
 
     <!-- When to receive notifications -->
@@ -20,7 +20,7 @@
 
     <!-- Time of day to receive notifications -->
     <string name="pref_notifications_tod_key" translatable="false">Notification time of day</string>
-    <string name="pref_notifications_tod_label">Time of day to get notified</string>
+    <string name="pref_notifications_tod_label">When to be reminded</string>
     <string name="pref_notifications_tod_summary">When during the day do you want to be reminded?</string>
     <string name="pref_notifications_tod_entries_0">Morning, ~9 am</string>
     <string name="pref_notifications_tod_entries_1">Afternoon, ~3 pm</string>

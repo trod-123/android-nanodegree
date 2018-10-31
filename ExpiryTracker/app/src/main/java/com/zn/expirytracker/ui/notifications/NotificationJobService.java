@@ -55,7 +55,7 @@ public class NotificationJobService extends JobService {
 
         @Override
         protected void onPostExecute(List<Food> foods) {
-            mHelper.showNotification(foods);
+            mHelper.showNotification(mDaysFilter, foods);
 
             NotificationJobService js = mJobServiceReference.get();
             js.jobFinished(mJob, false);
