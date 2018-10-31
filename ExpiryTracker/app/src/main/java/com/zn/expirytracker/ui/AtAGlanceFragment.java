@@ -60,8 +60,7 @@ public class AtAGlanceFragment extends Fragment
     private static final String KEY_CURRENT_DATE_FILTER =
             Toolbox.createStaticKeyString(AtAGlanceFragment.class, "current_date_filter");
 
-    @BindView(R.id.layout_at_a_glance_root)
-    View mRootLayout;
+    View mRootView;
     @BindView(R.id.chart_at_a_glance)
     BarChart mBarChart;
     @BindView(R.id.rv_glance_food_list)
@@ -134,9 +133,9 @@ public class AtAGlanceFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView =
-                inflater.inflate(R.layout.fragment_at_a_glance, container, false);
-        ButterKnife.bind(this, rootView);
+        mRootView = inflater.inflate(R.layout.fragment_at_a_glance, container, false);
+        mRootView.setAlpha(0);
+        ButterKnife.bind(this, mRootView);
 
         // Set up the listener for the extended fab. Only take action if the filter changes
         mFabChartDateRange.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +181,7 @@ public class AtAGlanceFragment extends Fragment
         setupRecyclerView();
         updateGreeting(mCurrentDateTime);
 
-        return rootView;
+        return mRootView;
     }
 
     @Override
@@ -219,7 +218,7 @@ public class AtAGlanceFragment extends Fragment
                             Toolbox.isLeftToRightLayout());
                     updateListHeader(foods, mCurrentFilter);
                     updateSummary(mCurrentFilter, mFullList_barChartEntries);
-                    mRootLayout.animate().setDuration(750).alpha(1f);
+                    mRootView.animate().setDuration(750).alpha(1f);
                 }
                 // removing the observer means removing foods from list won't update liveData
 //                liveData.removeObserver(this);

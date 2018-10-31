@@ -3,10 +3,8 @@
 <!-- Hide the views until data is loaded -->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_at_a_glance_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:alpha="0"
     android:background="@android:color/white">
 
     <LinearLayout
