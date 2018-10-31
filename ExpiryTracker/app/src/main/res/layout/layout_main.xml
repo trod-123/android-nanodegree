@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/tab_height"
             android:layout_gravity="bottom"
-            android:background="@color/colorPrimary"
+            android:background="@color/tab_background"
             android:elevation="8dp"
             android:layoutDirection="ltr"
             app:tabIndicatorHeight="0dp" />

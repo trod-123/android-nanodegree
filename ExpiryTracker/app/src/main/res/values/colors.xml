@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#33691e</color>
-    <color name="colorPrimaryDark">#003d00</color>
-    <color name="colorPrimaryLight">#629749</color>
-    <color name="colorAccent">@color/md_purple_500</color>
-    <color name="colorAccentLight">@color/md_purple_300</color>
+    <color name="colorPrimary">@android:color/white</color>
+    <color name="colorPrimaryDark">@android:color/white</color>
+    <color name="colorPrimaryLight">@android:color/white</color>
+    <color name="colorAccent">#b71c1c</color>
+    <color name="colorAccentDark">#7f0000</color>
+    <color name="colorAccentLight">#f05545</color>
     <color name="textColorPrimary">@color/md_blue_grey_800</color>
     <color name="textColorPrimaryDark">@color/md_blue_grey_900</color>
     <color name="textColorPrimaryLight">@color/md_blue_grey_600</color>
     <color name="textColorError">@color/md_red_700</color>
 
     <!-- Welcome activity -->
-    <color name="wel_page_first">@color/colorPrimary</color>
-    <color name="wel_page_capture">@color/colorAccent</color>
-    <color name="wel_page_dates">@color/md_blue_grey_700</color>
-    <color name="wel_page_view">@color/md_indigo_700</color>
-    <color name="wel_page_notifications">@color/md_red_700</color>
-    <color name="wel_page_save">@color/md_green_700</color>
-    <color name="wel_page_final">@color/md_purple_700</color>
+    <color name="wel_page_background">@color/colorPrimary</color>
+    <color name="wel_page_header_color">@color/colorAccent</color>
+    <color name="wel_page_description_color">@color/textColorPrimaryDark</color>
+    <color name="wel_page_button_color">@color/icon_tint_accent</color>
 
     <!-- Expiration alerts -->
     <color name="expires_alert_high">@color/md_red_500</color>
     <color name="expires_alert_med">@color/md_orange_500</color>
     <color name="expires_alert_low">@color/md_yellow_500</color>
-    <color name="expires_alert_none">@color/colorPrimary</color>
+    <color name="expires_alert_none">@color/md_green_500</color>
 
     <color name="background_list_item_delete">@color/textColorPrimaryDark</color>
-    <color name="icon_tint">@color/textColorPrimary</color>
+    <color name="icon_tint_light_background">@color/textColorPrimaryDark</color>
+    <color name="icon_tint_dark_background">@android:color/white</color>
+    <color name="icon_tint_accent">@color/colorAccent</color>
     <color name="border">@color/md_grey_300</color>
+    <color name="tab_background">@color/colorPrimary</color>
+    <color name="tab_icon_selected">@color/colorAccent</color>
+    <color name="tab_icon_unselected">@color/textColorPrimary</color>
 
     <color name="imageForeground_scrimStart">#00000000</color>
     <color name="imageForeground_scrimEnd">#90000000</color>

@@ -7,10 +7,10 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:paddingBottom="@dimen/list_item_padding_vertical"
-    android:paddingEnd="@dimen/list_item_padding_horizontal"
     android:paddingStart="@dimen/list_item_padding_horizontal"
-    android:paddingTop="@dimen/list_item_padding_vertical">
+    android:paddingTop="@dimen/list_item_padding_vertical"
+    android:paddingEnd="@dimen/list_item_padding_horizontal"
+    android:paddingBottom="@dimen/list_item_padding_vertical">
 
     <!-- Content description set in Java -->
     <com.zn.expirytracker.ui.NumberCircleView
@@ -25,11 +25,11 @@
         android:id="@+id/tv_list_item_food_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="@dimen/list_item_name_padding"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:textColor="@color/textColorPrimary"
+        android:textColor="@color/textColorPrimaryDark"
         android:textSize="@dimen/list_item_name_size"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/iv_list_item_storage_icon"
@@ -54,7 +54,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
-        android:tint="@color/icon_tint"
+        android:tint="@color/icon_tint_light_background"
         app:layout_constraintBottom_toBottomOf="@+id/tv_list_item_food_name"
         app:layout_constraintEnd_toStartOf="@+id/tv_list_item_count"
         app:layout_constraintTop_toTopOf="@+id/tv_list_item_food_name"

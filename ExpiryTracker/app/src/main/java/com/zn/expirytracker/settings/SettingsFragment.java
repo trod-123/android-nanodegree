@@ -164,7 +164,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         // Set icons, tinted
         Context context = getContext();
-        int tint = ContextCompat.getColor(context, R.color.icon_tint);
+        int tint = ContextCompat.getColor(context, R.color.icon_tint_light_background);
         setPreferenceIcon(mPreferenceNotifications, context, tint, R.drawable.ic_alert_outline_white_24dp);
         setPreferenceIcon(mPreferenceNotificationsNumDays, context, tint, R.drawable.ic_calendar_white_24dp);
         setPreferenceIcon(mPreferenceNotificationsTod, context, tint, R.drawable.ic_clock_outline_white_24dp);

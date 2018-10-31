@@ -90,7 +90,7 @@
             android:fitsSystemWindows="true"
             android:label="@string/activity_capture_name"
             android:parentActivityName=".ui.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar.Translucent">
+            android:theme="@style/AppTheme.Dark.NoActionBar.Translucent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />

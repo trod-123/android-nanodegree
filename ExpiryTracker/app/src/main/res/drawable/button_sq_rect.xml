@@ -6,6 +6,6 @@
         android:radius="@dimen/fab_extended_corner_radius"/>
 
     <solid
-        android:color="@color/colorPrimary"/>
+        android:color="@color/colorAccent"/>
 
 </shape>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light status bar only -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- API 23 onward -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <!-- Light status bar only -->
+    <style name="AppTheme.NoActionBar" parent="BaseTheme.NoActionBar">
+        <!-- API 23 onward -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

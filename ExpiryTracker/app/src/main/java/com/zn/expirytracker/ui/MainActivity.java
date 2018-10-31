@@ -230,6 +230,7 @@ public class MainActivity extends AppCompatActivity
         if (tabAtAGlance != null) {
             tabAtAGlance.setCustomView(mPagerAdapter.getTabView(
                     MainPagerAdapter.FRAGMENT_AT_A_GLANCE, this));
+            mPagerAdapter.setColor(tabAtAGlance, getResources().getColor(R.color.tab_icon_selected));
         } else {
             Timber.e("MainActivity/At a glance tab was null! Not setting tab elements...");
         }
@@ -237,7 +238,7 @@ public class MainActivity extends AppCompatActivity
         if (tabList != null) {
             tabList.setCustomView(mPagerAdapter.getTabView(
                     MainPagerAdapter.FRAGMENT_LIST, this));
-            mPagerAdapter.setAlpha(tabList, 0.5f);
+            mPagerAdapter.setColor(tabList, getResources().getColor(R.color.tab_icon_unselected));
         } else {
             Timber.e("MainActivity/List tab was null! Not setting tab elements...");
         }
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity
             if (tabCapture != null) {
                 tabCapture.setCustomView(mPagerAdapter.getTabView(
                         MainPagerAdapter.ACTIVITY_CAPTURE, this));
-                mPagerAdapter.setAlpha(tabCapture, 0.5f);
+                mPagerAdapter.setColor(tabCapture, getResources().getColor(R.color.tab_icon_unselected));
             } else {
                 Timber.e("MainActivity/Capture tab was null! Not setting tab elements...");
             }
@@ -271,12 +272,12 @@ public class MainActivity extends AppCompatActivity
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mPagerAdapter.setAlpha(tab, 1f);
+                mPagerAdapter.setColor(tab, getResources().getColor(R.color.tab_icon_selected));
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                mPagerAdapter.setAlpha(tab, 0.5f);
+                mPagerAdapter.setColor(tab, getResources().getColor(R.color.tab_icon_unselected));
             }
 
             @Override

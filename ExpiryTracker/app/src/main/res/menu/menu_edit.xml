@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_save"
         android:title="@string/action_save"
-        android:icon="@drawable/ic_check_white_24dp"
+        android:icon="@drawable/ic_check_accent_24dp"
         app:showAsAction="ifRoom"/>
 
     <item

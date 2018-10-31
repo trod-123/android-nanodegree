@@ -260,6 +260,7 @@ public class AtAGlanceFragment extends Fragment
                 dataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
             }
             dataSet.setColor(ContextCompat.getColor(mHostActivity, R.color.colorAccent)); // set color of bars
+            dataSet.setHighLightColor(ContextCompat.getColor(mHostActivity, R.color.colorAccentDark));
             dataSet.setDrawValues(false); // don't show values for each point
             BarData barData = new BarData(dataSet);
             barData.setBarWidth(0.6f);

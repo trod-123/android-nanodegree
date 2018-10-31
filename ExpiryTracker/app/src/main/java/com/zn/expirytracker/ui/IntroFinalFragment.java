@@ -17,6 +17,9 @@ import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Custom fragment to allow for Spannable text needed for the agreements
+ */
 public class IntroFinalFragment extends Fragment {
 
     @BindView(R.id.wel_title)
@@ -40,8 +43,10 @@ public class IntroFinalFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mTvTitle.setText(R.string.wel_page_final_title);
+        mTvTitle.setTextColor(getResources().getColor(R.color.colorAccent));
         mTvDescription.setText(R.string.wel_page_final_description);
-        mIv.setImageResource(R.drawable.ic_check_white_24dp);
+        mTvDescription.setTextColor(getResources().getColor(R.color.textColorPrimaryDark));
+        mIv.setImageResource(R.drawable.ic_check_accent_24dp);
 
         // Set the agreement
         mTvDescription.append("\n\n\n\n");

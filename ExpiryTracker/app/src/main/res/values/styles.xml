@@ -1,45 +1,87 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Base application theme, common across all versions -->
+    <style name="BaseTheme" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimaryDark</item>
         <!-- Prevents error: java.lang.IllegalStateException: Must specify preferenceTheme in theme -->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+
         <!-- For automatically adjusting text to match LTR or RTL layout -->
         <item name="android:textAlignment">gravity</item>
         <item name="android:textDirection">locale</item>
     </style>
 
-    <!-- Base application theme with no action bar -->
-    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- For pre-v23 with a translucent status bar and dark navigation bar -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- Needed for v21 and v22 to compensate for light status bar -->
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!-- Base application theme with no action bar. Common across all versions  -->
+    <style name="BaseTheme.NoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimaryDark</item>
+        <!-- For setting the overflow button color for light theming -->
+        <item name="actionOverflowButtonStyle">@style/DarkOverflowStyle</item>
+
+        <!-- For automatically adjusting text to match LTR or RTL layout -->
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:textDirection">locale</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Translucent" parent="AppTheme.NoActionBar">
+    <!-- For pre-v23 providing a dark status bar and navigation bar -->
+    <style name="AppTheme.NoActionBar" parent="BaseTheme.NoActionBar">
+        <!-- Needed for v21 and v22 to compensate for light status bar -->
+        <item name="android:fitsSystemWindows">true</item>
         <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="AppTheme.Dark.NoActionBar.Translucent" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+
+        <!-- For automatically adjusting text to match LTR or RTL layout -->
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:textDirection">locale</item>
+    </style>
+
+    <!-- For setting the color of the overflow icon for custom toolbars -->
+    <style name="DarkOverflowStyle" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/icon_tint_light_background</item>
     </style>
 
     <!-- region WelcomeScreen -->
 
-    <style name="WelcomeScreenTheme.Centered" parent="WelcomeScreenTheme">
+    <style name="BaseWelcomeScreenTheme" parent="WelcomeScreenTheme.Light.SolidNavigation">
         <item name="welcomeIndicatorStyle">@style/WelcomeScreenPageIndicator.Animated</item>
         <item name="welcomeDividerStyle">@style/WelcomeScreenDivider</item>
         <item name="welcomeTitleTextStyle">@style/WelcomeScreenText.Title.Centered</item>
         <item name="welcomeLargeTextStyle">@style/WelcomeScreenTheme.CustomLargeText</item>
         <item name="welcomeNormalTextStyle">@style/WelcomeScreenText.Centered</item>
+        <item name="android:textColorPrimary">@color/wel_page_header_color</item>
+        <item name="android:textColorSecondary">@color/wel_page_description_color</item>
+        <item name="android:background">@color/wel_page_background</item>
+    </style>
+
+    <style name="WelcomeScreenTheme.Centered" parent="BaseWelcomeScreenTheme">
+
     </style>
 
     <!-- Animated indicators -->
     <style name="WelcomeScreenPageIndicator.Animated">
         <item name="animation">slide</item>
+        <item name="currentPageColor">@color/colorAccent</item>
     </style>
 
-    <style name="WelcomeScreenDivider" parent="WelcomeScreenDivider.Dark">
+    <style name="WelcomeScreenDivider" parent="WelcomeScreenDivider.Light">
         <item name="android:background">@color/divider_list_item</item>
         <item name="android:layout_height">@dimen/list_item_divider_height</item>
     </style>
@@ -53,7 +95,7 @@
     <!-- endregion -->
 
     <style name="AppTheme.Icon" parent="AppTheme">
-        <item name="android:tint">@color/icon_tint</item>
+        <item name="android:tint">@color/icon_tint_light_background</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>

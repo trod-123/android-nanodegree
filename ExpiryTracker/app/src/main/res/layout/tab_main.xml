@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:tint="@android:color/white"
+        android:tint="@color/icon_tint_light_background"
         tools:ignore="contentDescription"
         tools:src="@drawable/ic_chart_bar_white_24dp" />
 
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textColor="@android:color/white"
+        android:textColor="@color/icon_tint_light_background"
         tools:text="At A Glance" />
 
 </LinearLayout>

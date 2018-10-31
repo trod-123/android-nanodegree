@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light status bar and navigation bar -->
+    <style name="AppTheme" parent="BaseTheme">
+        <!-- API 27 upwards -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarDividerColor">@color/divider_list_item</item>
+    </style>
+
+    <!-- Light status bar and navigation bar -->
+    <style name="AppTheme.NoActionBar" parent="BaseTheme.NoActionBar">
+        <!-- API 27 upwards -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="WelcomeScreenTheme.Centered" parent="BaseWelcomeScreenTheme">
+        <!-- API 27 upwards -->
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+</resources>

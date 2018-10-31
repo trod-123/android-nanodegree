@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:layout_gravity="center_horizontal"
-        android:background="@android:color/white"
+        android:background="@color/textColorPrimary"
         app:adSize="SMART_BANNER"
         app:adUnitId="@string/ad_mob_unit_id_test" />
 

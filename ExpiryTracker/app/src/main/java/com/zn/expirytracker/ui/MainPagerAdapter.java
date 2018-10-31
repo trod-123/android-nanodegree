@@ -1,6 +1,7 @@
 package com.zn.expirytracker.ui;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -87,7 +88,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     }
 
     /**
-     * Helper for setting alpha value for all elements of custom view
+     * Helper for setting alpha value for all elements of custom tab view
      *
      * @param tab
      * @param alpha
@@ -95,5 +96,19 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public void setAlpha(TabLayout.Tab tab, float alpha) {
         tab.getCustomView().findViewById(R.id.iv_tab_main).setAlpha(alpha);
         tab.getCustomView().findViewById(R.id.tv_tab_main).setAlpha(alpha);
+    }
+
+    /**
+     * Helper for setting color for all elements of custom tab view
+     * <p>
+     * https://stackoverflow.com/questions/11376516/change-drawable-color-programmatically
+     *
+     * @param tab
+     * @param colorId
+     */
+    public void setColor(TabLayout.Tab tab, int colorId) {
+        ((ImageView) tab.getCustomView().findViewById(R.id.iv_tab_main))
+                .setColorFilter(colorId, PorterDuff.Mode.SRC_IN);
+        ((TextView) tab.getCustomView().findViewById(R.id.tv_tab_main)).setTextColor(colorId);
     }
 }
