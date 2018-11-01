@@ -8,6 +8,8 @@ Click on the project name to see more details for that project.
 ## [Nanodegree Capstone: Expiry Tracker](/ExpiryTracker)
 _(Submitted: October 2, 2018)_
 
+_\[Revised version submitted to the Google Play Store on October 31, 2018 under a new name and in open beta. Expiry Tracker will no longer be maintained through this repository]_
+
 _An app that I ideated, designed, and built from scratch. This Capstone project provided me the experience of owning the full development of an app, from ideation to creation. It was quite a rewarding experience, and I learned a lot about Android while doing it._
 
 Tracks when your food and groceries will expire, and stores all data remotely on Firebase Realtime Database and Storage. Barcode scanning pulls data from an online upc item database.
