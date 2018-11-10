@@ -1,6 +1,8 @@
 # Nanodegree Capstone: ExpiryTracker
 _(Submitted: October 2, 2018)_
 
+_[Revised version submitted to the Google Play Store on October 31, 2018 under a new name and is closed-source. Expiry Tracker will no longer be maintained through this repository]_
+
 Tracks when your food and groceries will expire, and stores all data remotely on the cloud for access across all your Android devices
 
 ![Sign-in](/website/images/screenshot_capstone_signin-phone-portrait.png)
